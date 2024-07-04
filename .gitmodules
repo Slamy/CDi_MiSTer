@@ -1,0 +1,3 @@
+[submodule "tg68k"]
+	path = tg68k
+	url = git@github.com:Slamy/TG68K.C.git
