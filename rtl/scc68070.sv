@@ -1,3 +1,9 @@
+// SCC68070
+// Uses https://github.com/Slamy/TG68K.C as a fork of TG68k core with some modifications
+// TODO UART implementation which can be used on a real MiSTer to run the selftest
+// TODO MMU (not required for system boot)
+// TODO DMA (not required for system boot)
+
 module scc68070 (
     input clk,
     input reset,
@@ -104,6 +110,8 @@ module scc68070 (
 
         if (timer_status_register.t0_ov && picr1.timer_ipl != 0) begin
             ipl = picr1.timer_ipl;
+            // TODO might be a problem later on with the timing when multiple IRQs
+            // are occuring at the same time as IPL is not latched in the same cycle
             autovector = 0;
         end
 

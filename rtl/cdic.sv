@@ -1,3 +1,7 @@
+// CD-Interface Controller
+// TODO implement audio
+// TODO implement CD reading
+
 module cdic (
     input clk,
     input [23:1] address,

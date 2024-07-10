@@ -1,3 +1,7 @@
+// 68HC05 Microcontroller
+// Uses naked 6805 core and attaches peripherals to it
+// Used core is https://opencores.org/projects/68hc05 which only implements basic functionality
+// and no peripherals
 
 module uc68hc05 (
     input clk,

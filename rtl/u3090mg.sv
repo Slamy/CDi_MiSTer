@@ -1,3 +1,8 @@
+// U3090MG Display Controller for the Front Display
+// Information only based on philips_cdi_210.pdf, the service manual of the CDi 210
+// Memory map not available, I2C protocol unknown
+// TODO reverse engineer using real CDi 210 and logic analyzer
+
 module u3090mg (
     input clk,
 

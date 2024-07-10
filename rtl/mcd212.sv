@@ -1,3 +1,7 @@
+// MCD 212 - DRAM and Video
+// TODO Remove internal memory which cannot be synthesized. Replace with external bus
+// TODO Attach an SDRAM controller
+
 module mcd212 (
     input clk,
     input [22:1] address,
@@ -10,6 +14,8 @@ module mcd212 (
     input cs,
     output csrom
 );
+
+    // TODO remove this
     bit [15:0] testram[512*1024]  /*verilator public_flat_rw*/;
 
     wire [22:0] addressb = {address[22:1], 1'b0};

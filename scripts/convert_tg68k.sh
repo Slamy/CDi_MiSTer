@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# This script converts the TG68K VHDL code to Verilog usable by Verilator
+
 cd "$(dirname "$0")/../tg68k"
 
 ghdl_mcode -a -fsynopsys --std=08 TG68K_Pack.vhd
