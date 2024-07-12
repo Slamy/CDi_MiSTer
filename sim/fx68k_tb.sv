@@ -2,7 +2,8 @@
 
 module fx68k_tb;
     bit clk  /*verilator public_flat_rw*/;
-    bit reset = 1;  // External sync reset on emulated system
+    bit reset_slave = 1;  // External sync reset on emulated system
+    bit reset_68k = 1;  // External sync reset on emulated system
 
     wire write_strobe;
     wire as;
@@ -48,7 +49,7 @@ module fx68k_tb;
     wire bus_err_ram_area2 = (addr_byte >= 24'hf00000);
     wire bus_err = (bus_err_ram_area1 || bus_err_ram_area2) && as && (lds || uds);
 
-    wire trap_addr_error  /*verilator public_flat_rd*/ = scc68070_0.tg68.tg68kdotcinst.trap_addr_error;
+    //wire trap_addr_error  /*verilator public_flat_rd*/ = scc68070_0.tg68.tg68kdotcinst.trap_addr_error;
     always @(posedge clk) begin
         uds_q <= uds;
         lds_q <= lds;
@@ -95,17 +96,33 @@ module fx68k_tb;
     end
 
 
+    wire [7:0] r  /*verilator public_flat_rd*/;
+    wire [7:0] g  /*verilator public_flat_rd*/;
+    wire [7:0] b  /*verilator public_flat_rd*/;
+    wire hsync;
+    wire vsync;
+    wire hblank;
+    wire vblank;
+
     mcd212 mcd212_inst (
         .clk,
-        .address(addr[22:1]),
-        .din(cpu_data_out),
-        .dout(mcd212_dout),
-        .bus_ack(mcd212_bus_ack),
-        .uds(uds),
-        .lds(lds),
-        .write_strobe(write_strobe),
+        .reset(reset_68k),
+        .cpu_address(addr[22:1]),
+        .cpu_din(cpu_data_out),
+        .cpu_dout(mcd212_dout),
+        .cpu_bus_ack(mcd212_bus_ack),
+        .cpu_uds(uds),
+        .cpu_lds(lds),
+        .cpu_write_strobe(write_strobe),
         .cs(attex_cs_mcd212),
-        .csrom
+        .csrom,
+        .r,
+        .g,
+        .b,
+        .hsync,
+        .vsync,
+        .hblank,
+        .vblank
     );
 
     cdic cdic_inst (
@@ -119,15 +136,13 @@ module fx68k_tb;
         .cs(attex_cs_cdic)
     );
 
-    //wire [31:0] d1  /*verilator public_flat_rd*/ = scc68070_0.tg68.tg68kdotcinst.regfile[1];
-    //wire [31:0] d0  /*verilator public_flat_rd*/ = scc68070_0.tg68.tg68kdotcinst.regfile[0];
-
     wire vsdc_intn = 1'b1;
     wire in2in;
+    /*
 
     scc68070 scc68070_0 (
         .clk,
-        .reset,  // External sync reset on emulated system
+        .reset(reset_68k),  // External sync reset on emulated system
         .write_strobe,
         .as,
         .lds,
@@ -143,13 +158,14 @@ module fx68k_tb;
         .data_out(cpu_data_out),
         .addr
     );
-
-    bit [19:0] resetcnt /*verilator public_flat_rw*/ = 0;
+*/
+    bit [19:0] resetcnt  /*verilator public_flat_rw*/ = 0;
 
     always_ff @(posedge clk) begin
         resetcnt <= resetcnt + 1;
-        if (resetcnt[19]) reset <= 0;
-        //if (resetcnt[3]) reset <= 0;
+        if (resetcnt[19]) reset_68k <= 0;
+        if (resetcnt[3]) reset_slave <= 0;
+
     end
     initial begin
         //reset = 1;
@@ -219,8 +235,10 @@ module fx68k_tb;
     bit slave_irq;
     bit [7:0] irq_cooldown = 0;
 
+    /*
     uc68hc05 uc68hc05_0 (
         .clk,
+        .reset(reset_slave),
         .porta_in,
         .porta_out,
         .portb_in,
@@ -233,6 +251,7 @@ module fx68k_tb;
         .ddrb,
         .ddrc
     );
+*/
 
     u3090mg u3090mg (
         .clk,

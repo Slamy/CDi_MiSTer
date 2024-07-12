@@ -37,13 +37,14 @@ module cdic (
                 end
             endcase
         end else if (cs) begin
-                $display("CDIC %x", address[13:1]);
-            
+            $display("CDIC %x", address[13:1]);
+
         end
 
     end
 
     always_comb begin
+        dout = 16'h0;
 
         case (address[13:1])
             13'h001FFA: begin  // 0x3FF4  ABUF	Audio buffer register
@@ -65,7 +66,10 @@ module cdic (
                 dout = 16'h0;
             end
             default: begin
+                // TODO fix this. Must be clocked for proper block ram
+`ifdef VERILATOR
                 dout = ram[address[13:1]];
+`endif
             end
         endcase
     end
