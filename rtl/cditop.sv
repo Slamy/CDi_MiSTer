@@ -1,9 +1,11 @@
 
 module cditop (
-    input clk,
+    input clk30,
     input reset,
 
-    input pal,
+    input debug_uart_loopback,
+    input debug_uart_fake_space,
+
     input scandouble,
 
     output reg ce_pix,
@@ -15,47 +17,48 @@ module cditop (
 
     output [7:0] r,
     output [7:0] g,
-    output [7:0] b
+    output [7:0] b,
+
+    output [24:0] sdram_addr,
+    output        sdram_rd,
+    output        sdram_wr,
+    output        sdram_word,
+    output [15:0] sdram_din,
+    input  [15:0] sdram_dout,
+    input         sdram_busy,
+
+    output scc68_uart_tx,
+    input  scc68_uart_rx
+
 );
 
     wire write_strobe;
     wire as;
-    wire lds;
-    wire uds;
+    (* keep *) wire lds;
+    (* keep *) wire uds;
 
-    wire bus_ack;
+    (* keep *) bit bus_ack;
 
-    bit [15:0] data_in;
+    (* keep *) bit [15:0] data_in;
     wire [15:0] cpu_data_out;
-    wire [23:1] addr;
+    (* keep *) wire [23:1] addr;
     wire [23:0] addr_byte = {addr[23:1], 1'b0};
 
-    // 512 kB of ROM
-    // TODO remove this after proper integration of ROM
-    bit [15:0] rom[23]  /*verilator public_flat_rw*/;
-
-    initial begin
-        $readmemh("testrom.mem", rom);
-    end
-
-
     // 8 kB of NVRAM
-    // TODO set size again to 8192 when inferred as block ram
-    bit [7:0] nvram[16]  /*verilator public_flat_rw*/;
+    bit [7:0] nvram[8192]  /*verilator public_flat_rw*/;
 
     wire mcd212_bus_ack;
     wire [15:0] mcd212_dout;
     wire [15:0] cdic_dout;
-    wire csrom;
+    bit cdic_bus_ack;
+
+    bit [7:0] nvram_readout;
+    bit nvram_bus_ack;
 
     wire attex_cs_mcd212 = ((addr_byte <= 24'h27ffff) || (addr_byte >= 24'h400000)) && as && !addr[23];
     wire attex_cs_cdic = addr_byte[23:16] == 8'h30;
     wire attex_cs_slave = addr_byte[23:16] == 8'h31;
     wire attex_cs_nvram = addr_byte[23:16] == 8'h32;
-
-    bit cs_q = 0;
-    bit lds_q = 0;
-    bit uds_q = 0;
 
     bit [15:0] data_in_q = 0;
 
@@ -65,12 +68,10 @@ module cditop (
     wire bus_err_ram_area2 = (addr_byte >= 24'hf00000);
     wire bus_err = (bus_err_ram_area1 || bus_err_ram_area2) && as && (lds || uds);
 
-    always @(posedge clk) begin
-        uds_q <= uds;
-        lds_q <= lds;
+    always_ff @(posedge clk30) begin
         data_in_q <= data_in;
-        
-        ce_pix <= 1;
+
+        ce_pix <= !ce_pix;
 
         if (bus_ack) begin
             if ((lds || uds) && attex_cs_cdic && write_strobe)
@@ -106,7 +107,7 @@ module cditop (
 
 
     mcd212 mcd212_inst (
-        .clk,
+        .clk(clk30),
         .reset,
         .cpu_address(addr[22:1]),
         .cpu_din(cpu_data_out),
@@ -116,38 +117,46 @@ module cditop (
         .cpu_lds(lds),
         .cpu_write_strobe(write_strobe),
         .cs(attex_cs_mcd212),
-        .csrom,
-        .r,
-        .g,
+        .r(r),
+        .g(g),
         .b,
         .hsync(HSync),
         .vsync(VSync),
         .hblank(HBlank),
-        .vblank(VBlank)
+        .vblank(VBlank),
+        .sdram_addr(sdram_addr),
+        .sdram_rd(sdram_rd),
+        .sdram_wr(sdram_wr),
+        .sdram_word(sdram_word),
+        .sdram_din(sdram_din),
+        .sdram_dout(sdram_dout),
+        .sdram_busy(sdram_busy)
     );
 
     cdic cdic_inst (
-        .clk,
+        .clk(clk30),
+        .reset,
         .address(addr),
         .din(cpu_data_out),
         .dout(cdic_dout),
         .uds(uds),
         .lds(lds),
         .write_strobe(write_strobe),
-        .cs(attex_cs_cdic)
+        .cs(attex_cs_cdic),
+        .bus_ack(cdic_bus_ack)
     );
 
     wire vsdc_intn = 1'b1;
     wire in2in;
 
     scc68070 scc68070_0 (
-        .clk,
-        .reset,  // External sync reset on emulated system
+        .clk(clk30),
+        .reset(reset),  // External sync reset on emulated system
         .write_strobe,
         .as,
         .lds,
         .uds,
-        .bus_ack,
+        .bus_ack(bus_ack),
         .bus_err,
         .int1(!vsdc_intn),
         .int2(1'b0),  // unconnected in CDi MONO1
@@ -156,13 +165,12 @@ module cditop (
         .in5(1'b0),
         .data_in(data_in),
         .data_out(cpu_data_out),
-        .addr
+        .addr,
+        .uart_tx(scc68_uart_tx),
+        .uart_rx(scc68_uart_rx),
+        .debug_uart_loopback,
+        .debug_uart_fake_space
     );
-
-    // make sure that the scc68070 is not optimized away
-    //assign r = addr[2] ? 8'hff : 0;
-    //assign g = addr[3] ? 8'hff : 0;
-    //assign b = 8'hff;
 
     bit [7:0] ddra;
     bit [7:0] ddrb;
@@ -176,34 +184,41 @@ module cditop (
     bit [7:0] portc_out;
     wire [7:0] portd_in = {!write_strobe, 7'b1111111};
 
-    bit slave_bus_ack;
+    (* keep *) bit slave_bus_ack;
 
     always_comb begin
         bus_ack = 1;
         data_in = 0;
 
-        if (csrom) begin
-            data_in = rom[addr[18:1]];
-        end else if (attex_cs_slave) begin
+        if (attex_cs_slave) begin
             if (porta_out == 8'h01) data_in = 16'h0202;  // TODO Slave has wrong answer
             else data_in = {porta_out, porta_out};
             bus_ack = slave_bus_ack;
-
         end else if (attex_cs_cdic) begin
             data_in = cdic_dout;
+            bus_ack = cdic_bus_ack;
         end else if (attex_cs_nvram) begin
-            data_in = {nvram[addr[13:1]], nvram[addr[13:1]]};
+            data_in = {nvram_readout, nvram_readout};
+            bus_ack = nvram_bus_ack || write_strobe;
         end else if (attex_cs_mcd212) begin
             data_in = mcd212_dout;
             bus_ack = mcd212_bus_ack;
         end
     end
 
-    always @(posedge clk) begin
+    always_ff @(posedge clk30) begin
 
         if (attex_cs_nvram) begin
-            if (uds && write_strobe) nvram[addr[13:1]] <= cpu_data_out[15:8];
+            if (uds && write_strobe) begin
+                nvram[addr[13:1]] <= cpu_data_out[15:8];
+            end else begin
+                nvram_readout <= nvram[addr[13:1]];
+
+                if (nvram_bus_ack) nvram_bus_ack <= 0;
+                else nvram_bus_ack <= 1;
+            end
         end
+
     end
 
     wire disdat_from_uc = ddrc[3] ? portc_out[3] : 1'b1;
@@ -218,12 +233,12 @@ module cditop (
     bit dtackslaven_q = 0;
     bit in2in_q = 1;
 
-    bit slave_irq;
+    (* keep *) bit slave_irq;
     bit [7:0] irq_cooldown = 0;
 
     uc68hc05 uc68hc05_0 (
-        .clk,
-        .reset,
+        .clk30,
+        .reset(reset),
         .porta_in,
         .porta_out,
         .portb_in,
@@ -238,7 +253,7 @@ module cditop (
     );
 
     u3090mg u3090mg (
-        .clk,
+        .clk(clk30),
         .sda_in(disdat_from_uc),
         .sda_out(disdat_to_ic),
         .scl(disclk)
@@ -248,16 +263,24 @@ module cditop (
         slave_bus_ack = dtackslaven && !dtackslaven_q;
         slave_irq = irq_cooldown == 1;
     end
-    always_ff @(posedge clk) begin
-        attex_cs_slave_q <= attex_cs_slave;
-        dtackslaven_q <= dtackslaven;
-        in2in_q <= in2in;
+    
+    always_ff @(posedge clk30) begin
+        if (reset) begin
+            irq_cooldown <= 0;
+            attex_cs_slave_q <= 0;
+            dtackslaven_q <= 0;
+        end else begin
+            attex_cs_slave_q <= attex_cs_slave;
+            dtackslaven_q <= dtackslaven;
+            in2in_q <= in2in;
 
-        if (!in2in && in2in_q) $display("SLAVE IRQ2 1");
-        if (in2in && !in2in_q) $display("SLAVE IRQ2 0");
+            if (!in2in && in2in_q) $display("SLAVE IRQ2 1");
+            if (in2in && !in2in_q) $display("SLAVE IRQ2 0");
 
-        if (attex_cs_slave && !attex_cs_slave_q) irq_cooldown <= 20;
-        else if (irq_cooldown != 0) irq_cooldown <= irq_cooldown - 1;
+            if (attex_cs_slave && !attex_cs_slave_q) irq_cooldown <= 20;
+            else if (irq_cooldown != 0) irq_cooldown <= irq_cooldown - 1;
+        end
+
     end
 
 endmodule

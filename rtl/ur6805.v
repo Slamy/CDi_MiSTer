@@ -4,29 +4,29 @@ module fadd
    input  cin,
    output s,
    output cout);
-  wire n4106_o;
-  wire n4107_o;
-  wire n4108_o;
-  wire n4109_o;
-  wire n4110_o;
-  wire n4111_o;
-  wire n4112_o;
-  assign s = n4107_o;
-  assign cout = n4112_o;
+  wire n4144_o;
+  wire n4145_o;
+  wire n4146_o;
+  wire n4147_o;
+  wire n4148_o;
+  wire n4149_o;
+  wire n4150_o;
+  assign s = n4145_o;
+  assign cout = n4150_o;
   /* 6805.vhd:19:10  */
-  assign n4106_o = a ^ b;
+  assign n4144_o = a ^ b;
   /* 6805.vhd:19:16  */
-  assign n4107_o = n4106_o ^ cin;
+  assign n4145_o = n4144_o ^ cin;
   /* 6805.vhd:20:14  */
-  assign n4108_o = a & b;
+  assign n4146_o = a & b;
   /* 6805.vhd:20:27  */
-  assign n4109_o = a & cin;
+  assign n4147_o = a & cin;
   /* 6805.vhd:20:21  */
-  assign n4110_o = n4108_o | n4109_o;
+  assign n4148_o = n4146_o | n4147_o;
   /* 6805.vhd:20:42  */
-  assign n4111_o = b & cin;
+  assign n4149_o = b & cin;
   /* 6805.vhd:20:36  */
-  assign n4112_o = n4110_o | n4111_o;
+  assign n4150_o = n4148_o | n4149_o;
 endmodule
 
 module add8
@@ -36,203 +36,203 @@ module add8
    output [7:0] sum,
    output cout);
   wire [6:0] c;
-  wire n4031_o;
-  wire n4032_o;
-  wire a0_n4033;
-  wire a0_n4034;
+  wire n4069_o;
+  wire n4070_o;
+  wire a0_n4071;
+  wire a0_n4072;
   wire a0_s;
   wire a0_cout;
-  wire n4039_o;
-  wire n4040_o;
-  wire n4041_o;
-  wire stage_n1_as_n4042;
-  wire stage_n1_as_n4043;
+  wire n4077_o;
+  wire n4078_o;
+  wire n4079_o;
+  wire stage_n1_as_n4080;
+  wire stage_n1_as_n4081;
   wire stage_n1_as_s;
   wire stage_n1_as_cout;
-  wire n4048_o;
-  wire n4049_o;
-  wire n4050_o;
-  wire stage_n2_as_n4051;
-  wire stage_n2_as_n4052;
+  wire n4086_o;
+  wire n4087_o;
+  wire n4088_o;
+  wire stage_n2_as_n4089;
+  wire stage_n2_as_n4090;
   wire stage_n2_as_s;
   wire stage_n2_as_cout;
-  wire n4057_o;
-  wire n4058_o;
-  wire n4059_o;
-  wire stage_n3_as_n4060;
-  wire stage_n3_as_n4061;
+  wire n4095_o;
+  wire n4096_o;
+  wire n4097_o;
+  wire stage_n3_as_n4098;
+  wire stage_n3_as_n4099;
   wire stage_n3_as_s;
   wire stage_n3_as_cout;
-  wire n4066_o;
-  wire n4067_o;
-  wire n4068_o;
-  wire stage_n4_as_n4069;
-  wire stage_n4_as_n4070;
+  wire n4104_o;
+  wire n4105_o;
+  wire n4106_o;
+  wire stage_n4_as_n4107;
+  wire stage_n4_as_n4108;
   wire stage_n4_as_s;
   wire stage_n4_as_cout;
-  wire n4075_o;
-  wire n4076_o;
-  wire n4077_o;
-  wire stage_n5_as_n4078;
-  wire stage_n5_as_n4079;
+  wire n4113_o;
+  wire n4114_o;
+  wire n4115_o;
+  wire stage_n5_as_n4116;
+  wire stage_n5_as_n4117;
   wire stage_n5_as_s;
   wire stage_n5_as_cout;
-  wire n4084_o;
-  wire n4085_o;
-  wire n4086_o;
-  wire stage_n6_as_n4087;
-  wire stage_n6_as_n4088;
+  wire n4122_o;
+  wire n4123_o;
+  wire n4124_o;
+  wire stage_n6_as_n4125;
+  wire stage_n6_as_n4126;
   wire stage_n6_as_s;
   wire stage_n6_as_cout;
-  wire n4093_o;
-  wire n4094_o;
-  wire n4095_o;
-  wire a31_n4096;
-  wire a31_n4097;
+  wire n4131_o;
+  wire n4132_o;
+  wire n4133_o;
+  wire a31_n4134;
+  wire a31_n4135;
   wire a31_s;
   wire a31_cout;
-  wire [6:0] n4102_o;
-  wire [7:0] n4103_o;
-  assign sum = n4103_o;
-  assign cout = a31_n4097;
+  wire [6:0] n4140_o;
+  wire [7:0] n4141_o;
+  assign sum = n4141_o;
+  assign cout = a31_n4135;
   /* 6805.vhd:34:10  */
-  assign c = n4102_o; // (signal)
+  assign c = n4140_o; // (signal)
   /* 6805.vhd:43:33  */
-  assign n4031_o = a[0];
+  assign n4069_o = a[0];
   /* 6805.vhd:43:39  */
-  assign n4032_o = b[0];
+  assign n4070_o = b[0];
   /* 6805.vhd:43:49  */
-  assign a0_n4033 = a0_s; // (signal)
+  assign a0_n4071 = a0_s; // (signal)
   /* 6805.vhd:43:57  */
-  assign a0_n4034 = a0_cout; // (signal)
+  assign a0_n4072 = a0_cout; // (signal)
   /* 6805.vhd:43:3  */
   fadd a0 (
-    .a(n4031_o),
-    .b(n4032_o),
+    .a(n4069_o),
+    .b(n4070_o),
     .cin(cin),
     .s(a0_s),
     .cout(a0_cout));
   /* 6805.vhd:45:33  */
-  assign n4039_o = a[1];
+  assign n4077_o = a[1];
   /* 6805.vhd:45:39  */
-  assign n4040_o = b[1];
+  assign n4078_o = b[1];
   /* 6805.vhd:45:45  */
-  assign n4041_o = c[6];
+  assign n4079_o = c[6];
   /* 6805.vhd:45:53  */
-  assign stage_n1_as_n4042 = stage_n1_as_s; // (signal)
+  assign stage_n1_as_n4080 = stage_n1_as_s; // (signal)
   /* 6805.vhd:45:61  */
-  assign stage_n1_as_n4043 = stage_n1_as_cout; // (signal)
+  assign stage_n1_as_n4081 = stage_n1_as_cout; // (signal)
   /* 6805.vhd:45:14  */
   fadd stage_n1_as (
-    .a(n4039_o),
-    .b(n4040_o),
-    .cin(n4041_o),
+    .a(n4077_o),
+    .b(n4078_o),
+    .cin(n4079_o),
     .s(stage_n1_as_s),
     .cout(stage_n1_as_cout));
   /* 6805.vhd:45:33  */
-  assign n4048_o = a[2];
+  assign n4086_o = a[2];
   /* 6805.vhd:45:39  */
-  assign n4049_o = b[2];
+  assign n4087_o = b[2];
   /* 6805.vhd:45:45  */
-  assign n4050_o = c[5];
+  assign n4088_o = c[5];
   /* 6805.vhd:45:53  */
-  assign stage_n2_as_n4051 = stage_n2_as_s; // (signal)
+  assign stage_n2_as_n4089 = stage_n2_as_s; // (signal)
   /* 6805.vhd:45:61  */
-  assign stage_n2_as_n4052 = stage_n2_as_cout; // (signal)
+  assign stage_n2_as_n4090 = stage_n2_as_cout; // (signal)
   /* 6805.vhd:45:14  */
   fadd stage_n2_as (
-    .a(n4048_o),
-    .b(n4049_o),
-    .cin(n4050_o),
+    .a(n4086_o),
+    .b(n4087_o),
+    .cin(n4088_o),
     .s(stage_n2_as_s),
     .cout(stage_n2_as_cout));
   /* 6805.vhd:45:33  */
-  assign n4057_o = a[3];
+  assign n4095_o = a[3];
   /* 6805.vhd:45:39  */
-  assign n4058_o = b[3];
+  assign n4096_o = b[3];
   /* 6805.vhd:45:45  */
-  assign n4059_o = c[4];
+  assign n4097_o = c[4];
   /* 6805.vhd:45:53  */
-  assign stage_n3_as_n4060 = stage_n3_as_s; // (signal)
+  assign stage_n3_as_n4098 = stage_n3_as_s; // (signal)
   /* 6805.vhd:45:61  */
-  assign stage_n3_as_n4061 = stage_n3_as_cout; // (signal)
+  assign stage_n3_as_n4099 = stage_n3_as_cout; // (signal)
   /* 6805.vhd:45:14  */
   fadd stage_n3_as (
-    .a(n4057_o),
-    .b(n4058_o),
-    .cin(n4059_o),
+    .a(n4095_o),
+    .b(n4096_o),
+    .cin(n4097_o),
     .s(stage_n3_as_s),
     .cout(stage_n3_as_cout));
   /* 6805.vhd:45:33  */
-  assign n4066_o = a[4];
+  assign n4104_o = a[4];
   /* 6805.vhd:45:39  */
-  assign n4067_o = b[4];
+  assign n4105_o = b[4];
   /* 6805.vhd:45:45  */
-  assign n4068_o = c[3];
+  assign n4106_o = c[3];
   /* 6805.vhd:45:53  */
-  assign stage_n4_as_n4069 = stage_n4_as_s; // (signal)
+  assign stage_n4_as_n4107 = stage_n4_as_s; // (signal)
   /* 6805.vhd:45:61  */
-  assign stage_n4_as_n4070 = stage_n4_as_cout; // (signal)
+  assign stage_n4_as_n4108 = stage_n4_as_cout; // (signal)
   /* 6805.vhd:45:14  */
   fadd stage_n4_as (
-    .a(n4066_o),
-    .b(n4067_o),
-    .cin(n4068_o),
+    .a(n4104_o),
+    .b(n4105_o),
+    .cin(n4106_o),
     .s(stage_n4_as_s),
     .cout(stage_n4_as_cout));
   /* 6805.vhd:45:33  */
-  assign n4075_o = a[5];
+  assign n4113_o = a[5];
   /* 6805.vhd:45:39  */
-  assign n4076_o = b[5];
+  assign n4114_o = b[5];
   /* 6805.vhd:45:45  */
-  assign n4077_o = c[2];
+  assign n4115_o = c[2];
   /* 6805.vhd:45:53  */
-  assign stage_n5_as_n4078 = stage_n5_as_s; // (signal)
+  assign stage_n5_as_n4116 = stage_n5_as_s; // (signal)
   /* 6805.vhd:45:61  */
-  assign stage_n5_as_n4079 = stage_n5_as_cout; // (signal)
+  assign stage_n5_as_n4117 = stage_n5_as_cout; // (signal)
   /* 6805.vhd:45:14  */
   fadd stage_n5_as (
-    .a(n4075_o),
-    .b(n4076_o),
-    .cin(n4077_o),
+    .a(n4113_o),
+    .b(n4114_o),
+    .cin(n4115_o),
     .s(stage_n5_as_s),
     .cout(stage_n5_as_cout));
   /* 6805.vhd:45:33  */
-  assign n4084_o = a[6];
+  assign n4122_o = a[6];
   /* 6805.vhd:45:39  */
-  assign n4085_o = b[6];
+  assign n4123_o = b[6];
   /* 6805.vhd:45:45  */
-  assign n4086_o = c[1];
+  assign n4124_o = c[1];
   /* 6805.vhd:45:53  */
-  assign stage_n6_as_n4087 = stage_n6_as_s; // (signal)
+  assign stage_n6_as_n4125 = stage_n6_as_s; // (signal)
   /* 6805.vhd:45:61  */
-  assign stage_n6_as_n4088 = stage_n6_as_cout; // (signal)
+  assign stage_n6_as_n4126 = stage_n6_as_cout; // (signal)
   /* 6805.vhd:45:14  */
   fadd stage_n6_as (
-    .a(n4084_o),
-    .b(n4085_o),
-    .cin(n4086_o),
+    .a(n4122_o),
+    .b(n4123_o),
+    .cin(n4124_o),
     .s(stage_n6_as_s),
     .cout(stage_n6_as_cout));
   /* 6805.vhd:47:33  */
-  assign n4093_o = a[7];
+  assign n4131_o = a[7];
   /* 6805.vhd:47:39  */
-  assign n4094_o = b[7];
+  assign n4132_o = b[7];
   /* 6805.vhd:47:45  */
-  assign n4095_o = c[0];
+  assign n4133_o = c[0];
   /* 6805.vhd:47:51  */
-  assign a31_n4096 = a31_s; // (signal)
+  assign a31_n4134 = a31_s; // (signal)
   /* 6805.vhd:47:59  */
-  assign a31_n4097 = a31_cout; // (signal)
+  assign a31_n4135 = a31_cout; // (signal)
   /* 6805.vhd:47:3  */
   fadd a31 (
-    .a(n4093_o),
-    .b(n4094_o),
-    .cin(n4095_o),
+    .a(n4131_o),
+    .b(n4132_o),
+    .cin(n4133_o),
     .s(a31_s),
     .cout(a31_cout));
-  assign n4102_o = {a0_n4034, stage_n1_as_n4043, stage_n2_as_n4052, stage_n3_as_n4061, stage_n4_as_n4070, stage_n5_as_n4079, stage_n6_as_n4088};
-  assign n4103_o = {a31_n4096, stage_n6_as_n4087, stage_n5_as_n4078, stage_n4_as_n4069, stage_n3_as_n4060, stage_n2_as_n4051, stage_n1_as_n4042, a0_n4033};
+  assign n4140_o = {a0_n4072, stage_n1_as_n4081, stage_n2_as_n4090, stage_n3_as_n4099, stage_n4_as_n4108, stage_n5_as_n4117, stage_n6_as_n4126};
+  assign n4141_o = {a31_n4134, stage_n6_as_n4125, stage_n5_as_n4116, stage_n4_as_n4107, stage_n3_as_n4098, stage_n2_as_n4089, stage_n1_as_n4080, a0_n4071};
 endmodule
 
 module add8c
@@ -244,67 +244,67 @@ module add8c
    output [7:0] cout);
   reg [7:0] zero;
   reg [7:0] aa;
-  wire [7:0] n3954_o;
-  wire n3955_o;
-  wire n3956_o;
-  wire n3957_o;
-  wire stage_n1_sta_n3958;
-  wire stage_n1_sta_n3959;
+  wire [7:0] n3992_o;
+  wire n3993_o;
+  wire n3994_o;
+  wire n3995_o;
+  wire stage_n1_sta_n3996;
+  wire stage_n1_sta_n3997;
   wire stage_n1_sta_s;
   wire stage_n1_sta_cout;
-  wire n3964_o;
-  wire n3965_o;
-  wire n3966_o;
-  wire stage_n2_sta_n3967;
-  wire stage_n2_sta_n3968;
+  wire n4002_o;
+  wire n4003_o;
+  wire n4004_o;
+  wire stage_n2_sta_n4005;
+  wire stage_n2_sta_n4006;
   wire stage_n2_sta_s;
   wire stage_n2_sta_cout;
-  wire n3973_o;
-  wire n3974_o;
-  wire n3975_o;
-  wire stage_n3_sta_n3976;
-  wire stage_n3_sta_n3977;
+  wire n4011_o;
+  wire n4012_o;
+  wire n4013_o;
+  wire stage_n3_sta_n4014;
+  wire stage_n3_sta_n4015;
   wire stage_n3_sta_s;
   wire stage_n3_sta_cout;
-  wire n3982_o;
-  wire n3983_o;
-  wire n3984_o;
-  wire stage_n4_sta_n3985;
-  wire stage_n4_sta_n3986;
+  wire n4020_o;
+  wire n4021_o;
+  wire n4022_o;
+  wire stage_n4_sta_n4023;
+  wire stage_n4_sta_n4024;
   wire stage_n4_sta_s;
   wire stage_n4_sta_cout;
-  wire n3991_o;
-  wire n3992_o;
-  wire n3993_o;
-  wire stage_n5_sta_n3994;
-  wire stage_n5_sta_n3995;
+  wire n4029_o;
+  wire n4030_o;
+  wire n4031_o;
+  wire stage_n5_sta_n4032;
+  wire stage_n5_sta_n4033;
   wire stage_n5_sta_s;
   wire stage_n5_sta_cout;
-  wire n4000_o;
-  wire n4001_o;
-  wire n4002_o;
-  wire stage_n6_sta_n4003;
-  wire stage_n6_sta_n4004;
+  wire n4038_o;
+  wire n4039_o;
+  wire n4040_o;
+  wire stage_n6_sta_n4041;
+  wire stage_n6_sta_n4042;
   wire stage_n6_sta_s;
   wire stage_n6_sta_cout;
-  wire n4009_o;
-  wire n4010_o;
-  wire n4011_o;
-  wire stage_n7_sta_n4012;
-  wire stage_n7_sta_n4013;
+  wire n4047_o;
+  wire n4048_o;
+  wire n4049_o;
+  wire stage_n7_sta_n4050;
+  wire stage_n7_sta_n4051;
   wire stage_n7_sta_s;
   wire stage_n7_sta_cout;
-  wire n4018_o;
-  wire n4019_o;
-  wire n4020_o;
-  wire stage_n8_sta_n4021;
-  wire stage_n8_sta_n4022;
+  wire n4056_o;
+  wire n4057_o;
+  wire n4058_o;
+  wire stage_n8_sta_n4059;
+  wire stage_n8_sta_n4060;
   wire stage_n8_sta_s;
   wire stage_n8_sta_cout;
-  wire [7:0] n4027_o;
-  wire [7:0] n4028_o;
-  assign sum_out = n4027_o;
-  assign cout = n4028_o;
+  wire [7:0] n4065_o;
+  wire [7:0] n4066_o;
+  assign sum_out = n4065_o;
+  assign cout = n4066_o;
   /* 6805.vhd:65:10  */
   always @*
     zero = 8'b00000000; // (isignal)
@@ -312,149 +312,149 @@ module add8c
     zero = 8'b00000000;
   /* 6805.vhd:66:10  */
   always @*
-    aa = n3954_o; // (isignal)
+    aa = n3992_o; // (isignal)
   initial
     aa = 8'b00000000;
   /* 6805.vhd:75:11  */
-  assign n3954_o = b ? a : zero;
+  assign n3992_o = b ? a : zero;
   /* 6805.vhd:77:26  */
-  assign n3955_o = aa[0];
+  assign n3993_o = aa[0];
   /* 6805.vhd:77:37  */
-  assign n3956_o = sum_in[0];
+  assign n3994_o = sum_in[0];
   /* 6805.vhd:77:45  */
-  assign n3957_o = cin[0];
+  assign n3995_o = cin[0];
   /* 6805.vhd:77:51  */
-  assign stage_n1_sta_n3958 = stage_n1_sta_s; // (signal)
+  assign stage_n1_sta_n3996 = stage_n1_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n1_sta_n3959 = stage_n1_sta_cout; // (signal)
+  assign stage_n1_sta_n3997 = stage_n1_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n1_sta (
-    .a(n3955_o),
-    .b(n3956_o),
-    .cin(n3957_o),
+    .a(n3993_o),
+    .b(n3994_o),
+    .cin(n3995_o),
     .s(stage_n1_sta_s),
     .cout(stage_n1_sta_cout));
   /* 6805.vhd:77:26  */
-  assign n3964_o = aa[1];
+  assign n4002_o = aa[1];
   /* 6805.vhd:77:37  */
-  assign n3965_o = sum_in[1];
+  assign n4003_o = sum_in[1];
   /* 6805.vhd:77:45  */
-  assign n3966_o = cin[1];
+  assign n4004_o = cin[1];
   /* 6805.vhd:77:51  */
-  assign stage_n2_sta_n3967 = stage_n2_sta_s; // (signal)
+  assign stage_n2_sta_n4005 = stage_n2_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n2_sta_n3968 = stage_n2_sta_cout; // (signal)
+  assign stage_n2_sta_n4006 = stage_n2_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n2_sta (
-    .a(n3964_o),
-    .b(n3965_o),
-    .cin(n3966_o),
+    .a(n4002_o),
+    .b(n4003_o),
+    .cin(n4004_o),
     .s(stage_n2_sta_s),
     .cout(stage_n2_sta_cout));
   /* 6805.vhd:77:26  */
-  assign n3973_o = aa[2];
+  assign n4011_o = aa[2];
   /* 6805.vhd:77:37  */
-  assign n3974_o = sum_in[2];
+  assign n4012_o = sum_in[2];
   /* 6805.vhd:77:45  */
-  assign n3975_o = cin[2];
+  assign n4013_o = cin[2];
   /* 6805.vhd:77:51  */
-  assign stage_n3_sta_n3976 = stage_n3_sta_s; // (signal)
+  assign stage_n3_sta_n4014 = stage_n3_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n3_sta_n3977 = stage_n3_sta_cout; // (signal)
+  assign stage_n3_sta_n4015 = stage_n3_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n3_sta (
-    .a(n3973_o),
-    .b(n3974_o),
-    .cin(n3975_o),
+    .a(n4011_o),
+    .b(n4012_o),
+    .cin(n4013_o),
     .s(stage_n3_sta_s),
     .cout(stage_n3_sta_cout));
   /* 6805.vhd:77:26  */
-  assign n3982_o = aa[3];
+  assign n4020_o = aa[3];
   /* 6805.vhd:77:37  */
-  assign n3983_o = sum_in[3];
+  assign n4021_o = sum_in[3];
   /* 6805.vhd:77:45  */
-  assign n3984_o = cin[3];
+  assign n4022_o = cin[3];
   /* 6805.vhd:77:51  */
-  assign stage_n4_sta_n3985 = stage_n4_sta_s; // (signal)
+  assign stage_n4_sta_n4023 = stage_n4_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n4_sta_n3986 = stage_n4_sta_cout; // (signal)
+  assign stage_n4_sta_n4024 = stage_n4_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n4_sta (
-    .a(n3982_o),
-    .b(n3983_o),
-    .cin(n3984_o),
+    .a(n4020_o),
+    .b(n4021_o),
+    .cin(n4022_o),
     .s(stage_n4_sta_s),
     .cout(stage_n4_sta_cout));
   /* 6805.vhd:77:26  */
-  assign n3991_o = aa[4];
+  assign n4029_o = aa[4];
   /* 6805.vhd:77:37  */
-  assign n3992_o = sum_in[4];
+  assign n4030_o = sum_in[4];
   /* 6805.vhd:77:45  */
-  assign n3993_o = cin[4];
+  assign n4031_o = cin[4];
   /* 6805.vhd:77:51  */
-  assign stage_n5_sta_n3994 = stage_n5_sta_s; // (signal)
+  assign stage_n5_sta_n4032 = stage_n5_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n5_sta_n3995 = stage_n5_sta_cout; // (signal)
+  assign stage_n5_sta_n4033 = stage_n5_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n5_sta (
-    .a(n3991_o),
-    .b(n3992_o),
-    .cin(n3993_o),
+    .a(n4029_o),
+    .b(n4030_o),
+    .cin(n4031_o),
     .s(stage_n5_sta_s),
     .cout(stage_n5_sta_cout));
   /* 6805.vhd:77:26  */
-  assign n4000_o = aa[5];
+  assign n4038_o = aa[5];
   /* 6805.vhd:77:37  */
-  assign n4001_o = sum_in[5];
+  assign n4039_o = sum_in[5];
   /* 6805.vhd:77:45  */
-  assign n4002_o = cin[5];
+  assign n4040_o = cin[5];
   /* 6805.vhd:77:51  */
-  assign stage_n6_sta_n4003 = stage_n6_sta_s; // (signal)
+  assign stage_n6_sta_n4041 = stage_n6_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n6_sta_n4004 = stage_n6_sta_cout; // (signal)
+  assign stage_n6_sta_n4042 = stage_n6_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n6_sta (
-    .a(n4000_o),
-    .b(n4001_o),
-    .cin(n4002_o),
+    .a(n4038_o),
+    .b(n4039_o),
+    .cin(n4040_o),
     .s(stage_n6_sta_s),
     .cout(stage_n6_sta_cout));
   /* 6805.vhd:77:26  */
-  assign n4009_o = aa[6];
+  assign n4047_o = aa[6];
   /* 6805.vhd:77:37  */
-  assign n4010_o = sum_in[6];
+  assign n4048_o = sum_in[6];
   /* 6805.vhd:77:45  */
-  assign n4011_o = cin[6];
+  assign n4049_o = cin[6];
   /* 6805.vhd:77:51  */
-  assign stage_n7_sta_n4012 = stage_n7_sta_s; // (signal)
+  assign stage_n7_sta_n4050 = stage_n7_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n7_sta_n4013 = stage_n7_sta_cout; // (signal)
+  assign stage_n7_sta_n4051 = stage_n7_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n7_sta (
-    .a(n4009_o),
-    .b(n4010_o),
-    .cin(n4011_o),
+    .a(n4047_o),
+    .b(n4048_o),
+    .cin(n4049_o),
     .s(stage_n7_sta_s),
     .cout(stage_n7_sta_cout));
   /* 6805.vhd:77:26  */
-  assign n4018_o = aa[7];
+  assign n4056_o = aa[7];
   /* 6805.vhd:77:37  */
-  assign n4019_o = sum_in[7];
+  assign n4057_o = sum_in[7];
   /* 6805.vhd:77:45  */
-  assign n4020_o = cin[7];
+  assign n4058_o = cin[7];
   /* 6805.vhd:77:51  */
-  assign stage_n8_sta_n4021 = stage_n8_sta_s; // (signal)
+  assign stage_n8_sta_n4059 = stage_n8_sta_s; // (signal)
   /* 6805.vhd:77:63  */
-  assign stage_n8_sta_n4022 = stage_n8_sta_cout; // (signal)
+  assign stage_n8_sta_n4060 = stage_n8_sta_cout; // (signal)
   /* 6805.vhd:77:5  */
   fadd stage_n8_sta (
-    .a(n4018_o),
-    .b(n4019_o),
-    .cin(n4020_o),
+    .a(n4056_o),
+    .b(n4057_o),
+    .cin(n4058_o),
     .s(stage_n8_sta_s),
     .cout(stage_n8_sta_cout));
-  assign n4027_o = {stage_n8_sta_n4021, stage_n7_sta_n4012, stage_n6_sta_n4003, stage_n5_sta_n3994, stage_n4_sta_n3985, stage_n3_sta_n3976, stage_n2_sta_n3967, stage_n1_sta_n3958};
-  assign n4028_o = {stage_n8_sta_n4022, stage_n7_sta_n4013, stage_n6_sta_n4004, stage_n5_sta_n3995, stage_n4_sta_n3986, stage_n3_sta_n3977, stage_n2_sta_n3968, stage_n1_sta_n3959};
+  assign n4065_o = {stage_n8_sta_n4059, stage_n7_sta_n4050, stage_n6_sta_n4041, stage_n5_sta_n4032, stage_n4_sta_n4023, stage_n3_sta_n4014, stage_n2_sta_n4005, stage_n1_sta_n3996};
+  assign n4066_o = {stage_n8_sta_n4060, stage_n7_sta_n4051, stage_n6_sta_n4042, stage_n5_sta_n4033, stage_n4_sta_n4024, stage_n3_sta_n4015, stage_n2_sta_n4006, stage_n1_sta_n3997};
 endmodule
 
 module mul8
@@ -465,315 +465,316 @@ module mul8
   wire [63:0] s;
   wire [63:0] c;
   wire [63:0] ss;
-  wire n3835_o;
-  wire [7:0] st0_n3836;
-  wire [7:0] st0_n3837;
+  wire n3873_o;
+  wire [7:0] st0_n3874;
+  wire [7:0] st0_n3875;
   wire [7:0] st0_sum_out;
   wire [7:0] st0_cout;
-  wire [6:0] n3842_o;
-  wire [7:0] n3844_o;
-  wire n3845_o;
-  wire n3846_o;
-  wire [7:0] n3847_o;
-  wire [7:0] n3848_o;
-  wire [7:0] stage_n1_st_n3849;
-  wire [7:0] stage_n1_st_n3850;
+  wire [6:0] n3880_o;
+  wire [7:0] n3882_o;
+  wire n3883_o;
+  wire n3884_o;
+  wire [7:0] n3885_o;
+  wire [7:0] n3886_o;
+  wire [7:0] stage_n1_st_n3887;
+  wire [7:0] stage_n1_st_n3888;
   wire [7:0] stage_n1_st_sum_out;
   wire [7:0] stage_n1_st_cout;
-  wire [6:0] n3855_o;
-  wire [7:0] n3857_o;
-  wire n3858_o;
-  wire n3859_o;
-  wire [7:0] n3860_o;
-  wire [7:0] n3861_o;
-  wire [7:0] stage_n2_st_n3862;
-  wire [7:0] stage_n2_st_n3863;
+  wire [6:0] n3893_o;
+  wire [7:0] n3895_o;
+  wire n3896_o;
+  wire n3897_o;
+  wire [7:0] n3898_o;
+  wire [7:0] n3899_o;
+  wire [7:0] stage_n2_st_n3900;
+  wire [7:0] stage_n2_st_n3901;
   wire [7:0] stage_n2_st_sum_out;
   wire [7:0] stage_n2_st_cout;
-  wire [6:0] n3868_o;
-  wire [7:0] n3870_o;
-  wire n3871_o;
-  wire n3872_o;
-  wire [7:0] n3873_o;
-  wire [7:0] n3874_o;
-  wire [7:0] stage_n3_st_n3875;
-  wire [7:0] stage_n3_st_n3876;
+  wire [6:0] n3906_o;
+  wire [7:0] n3908_o;
+  wire n3909_o;
+  wire n3910_o;
+  wire [7:0] n3911_o;
+  wire [7:0] n3912_o;
+  wire [7:0] stage_n3_st_n3913;
+  wire [7:0] stage_n3_st_n3914;
   wire [7:0] stage_n3_st_sum_out;
   wire [7:0] stage_n3_st_cout;
-  wire [6:0] n3881_o;
-  wire [7:0] n3883_o;
-  wire n3884_o;
-  wire n3885_o;
-  wire [7:0] n3886_o;
-  wire [7:0] n3887_o;
-  wire [7:0] stage_n4_st_n3888;
-  wire [7:0] stage_n4_st_n3889;
+  wire [6:0] n3919_o;
+  wire [7:0] n3921_o;
+  wire n3922_o;
+  wire n3923_o;
+  wire [7:0] n3924_o;
+  wire [7:0] n3925_o;
+  wire [7:0] stage_n4_st_n3926;
+  wire [7:0] stage_n4_st_n3927;
   wire [7:0] stage_n4_st_sum_out;
   wire [7:0] stage_n4_st_cout;
-  wire [6:0] n3894_o;
-  wire [7:0] n3896_o;
-  wire n3897_o;
-  wire n3898_o;
-  wire [7:0] n3899_o;
-  wire [7:0] n3900_o;
-  wire [7:0] stage_n5_st_n3901;
-  wire [7:0] stage_n5_st_n3902;
-  wire [7:0] stage_n5_st_sum_out;
-  wire [7:0] stage_n5_st_cout;
-  wire [6:0] n3907_o;
-  wire [7:0] n3909_o;
-  wire n3910_o;
-  wire n3911_o;
-  wire [7:0] n3912_o;
-  wire [7:0] n3913_o;
-  wire [7:0] stage_n6_st_n3914;
-  wire [7:0] stage_n6_st_n3915;
-  wire [7:0] stage_n6_st_sum_out;
-  wire [7:0] stage_n6_st_cout;
-  wire [6:0] n3920_o;
-  wire [7:0] n3922_o;
-  wire n3923_o;
-  wire n3924_o;
-  wire [7:0] n3925_o;
-  wire [7:0] n3926_o;
-  wire [7:0] stage_n7_st_n3927;
-  wire [7:0] stage_n7_st_n3928;
-  wire [7:0] stage_n7_st_sum_out;
-  wire [7:0] stage_n7_st_cout;
-  wire [6:0] n3933_o;
-  wire [7:0] n3935_o;
+  wire [6:0] n3932_o;
+  wire [7:0] n3934_o;
+  wire n3935_o;
   wire n3936_o;
   wire [7:0] n3937_o;
   wire [7:0] n3938_o;
-  localparam n3939_o = 1'b0;
-  wire [7:0] add_n3940;
+  wire [7:0] stage_n5_st_n3939;
+  wire [7:0] stage_n5_st_n3940;
+  wire [7:0] stage_n5_st_sum_out;
+  wire [7:0] stage_n5_st_cout;
+  wire [6:0] n3945_o;
+  wire [7:0] n3947_o;
+  wire n3948_o;
+  wire n3949_o;
+  wire [7:0] n3950_o;
+  wire [7:0] n3951_o;
+  wire [7:0] stage_n6_st_n3952;
+  wire [7:0] stage_n6_st_n3953;
+  wire [7:0] stage_n6_st_sum_out;
+  wire [7:0] stage_n6_st_cout;
+  wire [6:0] n3958_o;
+  wire [7:0] n3960_o;
+  wire n3961_o;
+  wire n3962_o;
+  wire [7:0] n3963_o;
+  wire [7:0] n3964_o;
+  wire [7:0] stage_n7_st_n3965;
+  wire [7:0] stage_n7_st_n3966;
+  wire [7:0] stage_n7_st_sum_out;
+  wire [7:0] stage_n7_st_cout;
+  wire [6:0] n3971_o;
+  wire [7:0] n3973_o;
+  wire n3974_o;
+  wire [7:0] n3975_o;
+  wire [7:0] n3976_o;
+  localparam n3977_o = 1'b0;
+  wire [7:0] add_n3978;
   wire [7:0] add_sum;
   wire add_cout;
-  wire [63:0] n3946_o;
-  wire [63:0] n3947_o;
-  wire [63:0] n3948_o;
-  wire [15:0] n3949_o;
-  assign prod = n3949_o;
+  wire [63:0] n3984_o;
+  wire [63:0] n3985_o;
+  wire [63:0] n3986_o;
+  wire [15:0] n3987_o;
+  assign prod = n3987_o;
   /* 6805.vhd:92:10  */
   always @*
     zero = 8'b00000000; // (isignal)
   initial
     zero = 8'b00000000;
   /* 6805.vhd:95:10  */
-  assign s = n3946_o; // (signal)
+  assign s = n3984_o; // (signal)
   /* 6805.vhd:96:10  */
-  assign c = n3947_o; // (signal)
+  assign c = n3985_o; // (signal)
   /* 6805.vhd:97:10  */
-  assign ss = n3948_o; // (signal)
+  assign ss = n3986_o; // (signal)
   /* 6805.vhd:115:24  */
-  assign n3835_o = b[0];
+  assign n3873_o = b[0];
   /* 6805.vhd:115:45  */
-  assign st0_n3836 = st0_sum_out; // (signal)
+  assign st0_n3874 = st0_sum_out; // (signal)
   /* 6805.vhd:115:51  */
-  assign st0_n3837 = st0_cout; // (signal)
+  assign st0_n3875 = st0_cout; // (signal)
   /* 6805.vhd:115:3  */
   add8c st0 (
-    .b(n3835_o),
+    .b(n3873_o),
     .a(a),
     .sum_in(zero),
     .cin(zero),
     .sum_out(st0_sum_out),
     .cout(st0_cout));
   /* 6805.vhd:116:22  */
-  assign n3842_o = s[63:57];
+  assign n3880_o = s[63:57];
   /* 6805.vhd:116:16  */
-  assign n3844_o = {1'b0, n3842_o};
+  assign n3882_o = {1'b0, n3880_o};
   /* 6805.vhd:117:18  */
-  assign n3845_o = s[56];
+  assign n3883_o = s[56];
   /* 6805.vhd:120:25  */
-  assign n3846_o = b[1];
+  assign n3884_o = b[1];
   /* 6805.vhd:120:35  */
-  assign n3847_o = ss[63:56];
+  assign n3885_o = ss[63:56];
   /* 6805.vhd:120:44  */
-  assign n3848_o = c[63:56];
+  assign n3886_o = c[63:56];
   /* 6805.vhd:120:51  */
-  assign stage_n1_st_n3849 = stage_n1_st_sum_out; // (signal)
+  assign stage_n1_st_n3887 = stage_n1_st_sum_out; // (signal)
   /* 6805.vhd:120:57  */
-  assign stage_n1_st_n3850 = stage_n1_st_cout; // (signal)
+  assign stage_n1_st_n3888 = stage_n1_st_cout; // (signal)
   /* 6805.vhd:120:5  */
   add8c stage_n1_st (
-    .b(n3846_o),
+    .b(n3884_o),
     .a(a),
-    .sum_in(n3847_o),
-    .cin(n3848_o),
+    .sum_in(n3885_o),
+    .cin(n3886_o),
     .sum_out(stage_n1_st_sum_out),
     .cout(stage_n1_st_cout));
   /* 6805.vhd:121:24  */
-  assign n3855_o = s[55:49];
+  assign n3893_o = s[55:49];
   /* 6805.vhd:121:18  */
-  assign n3857_o = {1'b0, n3855_o};
+  assign n3895_o = {1'b0, n3893_o};
   /* 6805.vhd:122:20  */
-  assign n3858_o = s[48];
+  assign n3896_o = s[48];
   /* 6805.vhd:120:25  */
-  assign n3859_o = b[2];
+  assign n3897_o = b[2];
   /* 6805.vhd:120:35  */
-  assign n3860_o = ss[55:48];
+  assign n3898_o = ss[55:48];
   /* 6805.vhd:120:44  */
-  assign n3861_o = c[55:48];
+  assign n3899_o = c[55:48];
   /* 6805.vhd:120:51  */
-  assign stage_n2_st_n3862 = stage_n2_st_sum_out; // (signal)
+  assign stage_n2_st_n3900 = stage_n2_st_sum_out; // (signal)
   /* 6805.vhd:120:57  */
-  assign stage_n2_st_n3863 = stage_n2_st_cout; // (signal)
+  assign stage_n2_st_n3901 = stage_n2_st_cout; // (signal)
   /* 6805.vhd:120:5  */
   add8c stage_n2_st (
-    .b(n3859_o),
+    .b(n3897_o),
     .a(a),
-    .sum_in(n3860_o),
-    .cin(n3861_o),
+    .sum_in(n3898_o),
+    .cin(n3899_o),
     .sum_out(stage_n2_st_sum_out),
     .cout(stage_n2_st_cout));
   /* 6805.vhd:121:24  */
-  assign n3868_o = s[47:41];
+  assign n3906_o = s[47:41];
   /* 6805.vhd:121:18  */
-  assign n3870_o = {1'b0, n3868_o};
+  assign n3908_o = {1'b0, n3906_o};
   /* 6805.vhd:122:20  */
-  assign n3871_o = s[40];
+  assign n3909_o = s[40];
   /* 6805.vhd:120:25  */
-  assign n3872_o = b[3];
+  assign n3910_o = b[3];
   /* 6805.vhd:120:35  */
-  assign n3873_o = ss[47:40];
+  assign n3911_o = ss[47:40];
   /* 6805.vhd:120:44  */
-  assign n3874_o = c[47:40];
+  assign n3912_o = c[47:40];
   /* 6805.vhd:120:51  */
-  assign stage_n3_st_n3875 = stage_n3_st_sum_out; // (signal)
+  assign stage_n3_st_n3913 = stage_n3_st_sum_out; // (signal)
   /* 6805.vhd:120:57  */
-  assign stage_n3_st_n3876 = stage_n3_st_cout; // (signal)
+  assign stage_n3_st_n3914 = stage_n3_st_cout; // (signal)
   /* 6805.vhd:120:5  */
   add8c stage_n3_st (
-    .b(n3872_o),
+    .b(n3910_o),
     .a(a),
-    .sum_in(n3873_o),
-    .cin(n3874_o),
+    .sum_in(n3911_o),
+    .cin(n3912_o),
     .sum_out(stage_n3_st_sum_out),
     .cout(stage_n3_st_cout));
   /* 6805.vhd:121:24  */
-  assign n3881_o = s[39:33];
+  assign n3919_o = s[39:33];
   /* 6805.vhd:121:18  */
-  assign n3883_o = {1'b0, n3881_o};
+  assign n3921_o = {1'b0, n3919_o};
   /* 6805.vhd:122:20  */
-  assign n3884_o = s[32];
+  assign n3922_o = s[32];
   /* 6805.vhd:120:25  */
-  assign n3885_o = b[4];
+  assign n3923_o = b[4];
   /* 6805.vhd:120:35  */
-  assign n3886_o = ss[39:32];
+  assign n3924_o = ss[39:32];
   /* 6805.vhd:120:44  */
-  assign n3887_o = c[39:32];
+  assign n3925_o = c[39:32];
   /* 6805.vhd:120:51  */
-  assign stage_n4_st_n3888 = stage_n4_st_sum_out; // (signal)
+  assign stage_n4_st_n3926 = stage_n4_st_sum_out; // (signal)
   /* 6805.vhd:120:57  */
-  assign stage_n4_st_n3889 = stage_n4_st_cout; // (signal)
+  assign stage_n4_st_n3927 = stage_n4_st_cout; // (signal)
   /* 6805.vhd:120:5  */
   add8c stage_n4_st (
-    .b(n3885_o),
+    .b(n3923_o),
     .a(a),
-    .sum_in(n3886_o),
-    .cin(n3887_o),
+    .sum_in(n3924_o),
+    .cin(n3925_o),
     .sum_out(stage_n4_st_sum_out),
     .cout(stage_n4_st_cout));
   /* 6805.vhd:121:24  */
-  assign n3894_o = s[31:25];
+  assign n3932_o = s[31:25];
   /* 6805.vhd:121:18  */
-  assign n3896_o = {1'b0, n3894_o};
+  assign n3934_o = {1'b0, n3932_o};
   /* 6805.vhd:122:20  */
-  assign n3897_o = s[24];
+  assign n3935_o = s[24];
   /* 6805.vhd:120:25  */
-  assign n3898_o = b[5];
+  assign n3936_o = b[5];
   /* 6805.vhd:120:35  */
-  assign n3899_o = ss[31:24];
+  assign n3937_o = ss[31:24];
   /* 6805.vhd:120:44  */
-  assign n3900_o = c[31:24];
+  assign n3938_o = c[31:24];
   /* 6805.vhd:120:51  */
-  assign stage_n5_st_n3901 = stage_n5_st_sum_out; // (signal)
+  assign stage_n5_st_n3939 = stage_n5_st_sum_out; // (signal)
   /* 6805.vhd:120:57  */
-  assign stage_n5_st_n3902 = stage_n5_st_cout; // (signal)
+  assign stage_n5_st_n3940 = stage_n5_st_cout; // (signal)
   /* 6805.vhd:120:5  */
   add8c stage_n5_st (
-    .b(n3898_o),
+    .b(n3936_o),
     .a(a),
-    .sum_in(n3899_o),
-    .cin(n3900_o),
+    .sum_in(n3937_o),
+    .cin(n3938_o),
     .sum_out(stage_n5_st_sum_out),
     .cout(stage_n5_st_cout));
   /* 6805.vhd:121:24  */
-  assign n3907_o = s[23:17];
+  assign n3945_o = s[23:17];
   /* 6805.vhd:121:18  */
-  assign n3909_o = {1'b0, n3907_o};
+  assign n3947_o = {1'b0, n3945_o};
   /* 6805.vhd:122:20  */
-  assign n3910_o = s[16];
+  assign n3948_o = s[16];
   /* 6805.vhd:120:25  */
-  assign n3911_o = b[6];
+  assign n3949_o = b[6];
   /* 6805.vhd:120:35  */
-  assign n3912_o = ss[23:16];
+  assign n3950_o = ss[23:16];
   /* 6805.vhd:120:44  */
-  assign n3913_o = c[23:16];
+  assign n3951_o = c[23:16];
   /* 6805.vhd:120:51  */
-  assign stage_n6_st_n3914 = stage_n6_st_sum_out; // (signal)
+  assign stage_n6_st_n3952 = stage_n6_st_sum_out; // (signal)
   /* 6805.vhd:120:57  */
-  assign stage_n6_st_n3915 = stage_n6_st_cout; // (signal)
+  assign stage_n6_st_n3953 = stage_n6_st_cout; // (signal)
   /* 6805.vhd:120:5  */
   add8c stage_n6_st (
-    .b(n3911_o),
+    .b(n3949_o),
     .a(a),
-    .sum_in(n3912_o),
-    .cin(n3913_o),
+    .sum_in(n3950_o),
+    .cin(n3951_o),
     .sum_out(stage_n6_st_sum_out),
     .cout(stage_n6_st_cout));
   /* 6805.vhd:121:24  */
-  assign n3920_o = s[15:9];
+  assign n3958_o = s[15:9];
   /* 6805.vhd:121:18  */
-  assign n3922_o = {1'b0, n3920_o};
+  assign n3960_o = {1'b0, n3958_o};
   /* 6805.vhd:122:20  */
-  assign n3923_o = s[8];
+  assign n3961_o = s[8];
   /* 6805.vhd:120:25  */
-  assign n3924_o = b[7];
+  assign n3962_o = b[7];
   /* 6805.vhd:120:35  */
-  assign n3925_o = ss[15:8];
+  assign n3963_o = ss[15:8];
   /* 6805.vhd:120:44  */
-  assign n3926_o = c[15:8];
+  assign n3964_o = c[15:8];
   /* 6805.vhd:120:51  */
-  assign stage_n7_st_n3927 = stage_n7_st_sum_out; // (signal)
+  assign stage_n7_st_n3965 = stage_n7_st_sum_out; // (signal)
   /* 6805.vhd:120:57  */
-  assign stage_n7_st_n3928 = stage_n7_st_cout; // (signal)
+  assign stage_n7_st_n3966 = stage_n7_st_cout; // (signal)
   /* 6805.vhd:120:5  */
   add8c stage_n7_st (
-    .b(n3924_o),
+    .b(n3962_o),
     .a(a),
-    .sum_in(n3925_o),
-    .cin(n3926_o),
+    .sum_in(n3963_o),
+    .cin(n3964_o),
     .sum_out(stage_n7_st_sum_out),
     .cout(stage_n7_st_cout));
   /* 6805.vhd:121:24  */
-  assign n3933_o = s[7:1];
+  assign n3971_o = s[7:1];
   /* 6805.vhd:121:18  */
-  assign n3935_o = {1'b0, n3933_o};
+  assign n3973_o = {1'b0, n3971_o};
   /* 6805.vhd:122:20  */
-  assign n3936_o = s[0];
+  assign n3974_o = s[0];
   /* 6805.vhd:125:24  */
-  assign n3937_o = ss[7:0];
+  assign n3975_o = ss[7:0];
   /* 6805.vhd:125:30  */
-  assign n3938_o = c[7:0];
+  assign n3976_o = c[7:0];
   /* 6805.vhd:125:41  */
-  assign add_n3940 = add_sum; // (signal)
+  assign add_n3978 = add_sum; // (signal)
   /* 6805.vhd:125:3  */
   add8 add (
-    .a(n3937_o),
-    .b(n3938_o),
-    .cin(n3939_o),
+    .a(n3975_o),
+    .b(n3976_o),
+    .cin(n3977_o),
     .sum(add_sum),
     .cout());
-  assign n3946_o = {st0_n3836, stage_n1_st_n3849, stage_n2_st_n3862, stage_n3_st_n3875, stage_n4_st_n3888, stage_n5_st_n3901, stage_n6_st_n3914, stage_n7_st_n3927};
-  assign n3947_o = {st0_n3837, stage_n1_st_n3850, stage_n2_st_n3863, stage_n3_st_n3876, stage_n4_st_n3889, stage_n5_st_n3902, stage_n6_st_n3915, stage_n7_st_n3928};
-  assign n3948_o = {n3844_o, n3857_o, n3870_o, n3883_o, n3896_o, n3909_o, n3922_o, n3935_o};
-  assign n3949_o = {add_n3940, n3936_o, n3923_o, n3910_o, n3897_o, n3884_o, n3871_o, n3858_o, n3845_o};
+  assign n3984_o = {st0_n3874, stage_n1_st_n3887, stage_n2_st_n3900, stage_n3_st_n3913, stage_n4_st_n3926, stage_n5_st_n3939, stage_n6_st_n3952, stage_n7_st_n3965};
+  assign n3985_o = {st0_n3875, stage_n1_st_n3888, stage_n2_st_n3901, stage_n3_st_n3914, stage_n4_st_n3927, stage_n5_st_n3940, stage_n6_st_n3953, stage_n7_st_n3966};
+  assign n3986_o = {n3882_o, n3895_o, n3908_o, n3921_o, n3934_o, n3947_o, n3960_o, n3973_o};
+  assign n3987_o = {add_n3978, n3974_o, n3961_o, n3948_o, n3935_o, n3922_o, n3909_o, n3896_o, n3883_o};
 endmodule
 
 module UR6805
   (input  clk,
+   input  clken,
    input  rst,
    input  extirq,
    input  timerirq,
@@ -860,7 +861,7 @@ module UR6805
   wire [7:0] n76_o;
   wire n78_o;
   wire [7:0] n79_o;
-  wire n84_o;
+  wire n100_o;
   wire n103_o;
   wire n104_o;
   wire n106_o;
@@ -3063,1615 +3064,1634 @@ module UR6805
   wire [15:0] n3686_o;
   wire [7:0] n3693_o;
   wire [15:0] n3695_o;
-  wire [63:0] n3711_o;
-  wire [63:0] n3713_o;
-  reg [63:0] n3762_q;
-  reg [63:0] n3763_q;
-  reg [7:0] n3764_q;
-  reg [7:0] n3765_q;
-  reg [15:0] n3766_q;
-  reg [15:0] n3767_q;
-  reg n3768_q;
-  reg n3769_q;
-  reg n3770_q;
-  reg n3771_q;
-  reg n3772_q;
-  reg [7:0] n3773_q;
-  reg [15:0] n3774_q;
-  reg [3:0] n3775_q;
-  reg [2:0] n3776_q;
-  reg [3:0] n3777_q;
-  wire n3778_o;
-  wire [7:0] n3779_o;
-  reg [7:0] n3780_q;
-  reg n3781_q;
-  reg n3782_q;
-  reg n3783_q;
-  reg n3784_q;
-  reg n3785_q;
-  reg n3786_q;
-  wire n3787_o;
-  wire [7:0] n3788_o;
-  reg [7:0] n3789_q;
-  reg n3790_q;
-  wire [7:0] n3791_o;
-  wire [7:0] n3792_o;
-  wire [7:0] n3793_o;
-  wire [7:0] n3794_o;
-  wire [7:0] n3795_o;
-  wire [7:0] n3796_o;
-  wire [7:0] n3797_o;
-  wire [7:0] n3798_o;
-  wire [1:0] n3799_o;
-  reg [7:0] n3800_o;
-  wire [1:0] n3801_o;
-  reg [7:0] n3802_o;
-  wire n3803_o;
-  wire [7:0] n3804_o;
-  wire [7:0] n3805_o;
-  wire [7:0] n3806_o;
-  wire [7:0] n3807_o;
-  wire [7:0] n3808_o;
-  wire [7:0] n3809_o;
-  wire [7:0] n3810_o;
-  wire [7:0] n3811_o;
-  wire [7:0] n3812_o;
-  wire [1:0] n3813_o;
-  reg [7:0] n3814_o;
-  wire [1:0] n3815_o;
-  reg [7:0] n3816_o;
-  wire n3817_o;
-  wire [7:0] n3818_o;
-  wire [7:0] n3819_o;
-  wire [7:0] n3820_o;
-  wire [7:0] n3821_o;
-  wire [7:0] n3822_o;
-  wire [7:0] n3823_o;
-  wire [7:0] n3824_o;
+  wire n3701_o;
+  wire n3702_o;
+  wire [63:0] n3781_o;
+  wire [63:0] n3782_o;
+  wire [7:0] n3783_o;
+  reg [7:0] n3784_q;
+  wire [7:0] n3785_o;
+  reg [7:0] n3786_q;
+  wire [15:0] n3787_o;
+  reg [15:0] n3788_q;
+  wire [15:0] n3789_o;
+  reg [15:0] n3790_q;
+  wire n3791_o;
+  reg n3792_q;
+  wire n3793_o;
+  reg n3794_q;
+  wire n3795_o;
+  reg n3796_q;
+  wire n3797_o;
+  reg n3798_q;
+  wire n3799_o;
+  reg n3800_q;
+  wire [7:0] n3801_o;
+  reg [7:0] n3802_q;
+  wire [15:0] n3803_o;
+  reg [15:0] n3804_q;
+  wire [3:0] n3805_o;
+  reg [3:0] n3806_q;
+  wire [2:0] n3807_o;
+  reg [2:0] n3808_q;
+  wire [3:0] n3809_o;
+  reg [3:0] n3810_q;
+  wire n3811_o;
+  wire n3812_o;
+  wire [7:0] n3813_o;
+  reg [7:0] n3814_q;
+  reg n3815_q;
+  reg n3816_q;
+  reg n3817_q;
+  reg n3818_q;
+  wire n3819_o;
+  reg n3820_q;
+  wire n3821_o;
+  reg n3822_q;
+  wire n3823_o;
+  wire n3824_o;
   wire [7:0] n3825_o;
-  wire [7:0] n3826_o;
-  wire [1:0] n3827_o;
-  reg [7:0] n3828_o;
-  wire [1:0] n3829_o;
-  reg [7:0] n3830_o;
-  wire n3831_o;
+  reg [7:0] n3826_q;
+  wire n3827_o;
+  reg n3828_q;
+  wire [7:0] n3829_o;
+  wire [7:0] n3830_o;
+  wire [7:0] n3831_o;
   wire [7:0] n3832_o;
+  wire [7:0] n3833_o;
+  wire [7:0] n3834_o;
+  wire [7:0] n3835_o;
+  wire [7:0] n3836_o;
+  wire [1:0] n3837_o;
+  reg [7:0] n3838_o;
+  wire [1:0] n3839_o;
+  reg [7:0] n3840_o;
+  wire n3841_o;
+  wire [7:0] n3842_o;
+  wire [7:0] n3843_o;
+  wire [7:0] n3844_o;
+  wire [7:0] n3845_o;
+  wire [7:0] n3846_o;
+  wire [7:0] n3847_o;
+  wire [7:0] n3848_o;
+  wire [7:0] n3849_o;
+  wire [7:0] n3850_o;
+  wire [1:0] n3851_o;
+  reg [7:0] n3852_o;
+  wire [1:0] n3853_o;
+  reg [7:0] n3854_o;
+  wire n3855_o;
+  wire [7:0] n3856_o;
+  wire [7:0] n3857_o;
+  wire [7:0] n3858_o;
+  wire [7:0] n3859_o;
+  wire [7:0] n3860_o;
+  wire [7:0] n3861_o;
+  wire [7:0] n3862_o;
+  wire [7:0] n3863_o;
+  wire [7:0] n3864_o;
+  wire [1:0] n3865_o;
+  reg [7:0] n3866_o;
+  wire [1:0] n3867_o;
+  reg [7:0] n3868_o;
+  wire n3869_o;
+  wire [7:0] n3870_o;
   assign addr = n9_o;
-  assign wr = n3790_q;
+  assign wr = n3828_q;
   assign state = mainfsm;
   assign dataout = n46_o;
-  /* 6805.vhd:180:10  */
-  assign mask0 = n3762_q; // (signal)
   /* 6805.vhd:181:10  */
-  assign mask1 = n3763_q; // (signal)
+  assign mask0 = n3781_o; // (signal)
   /* 6805.vhd:182:10  */
-  assign rega = n3764_q; // (signal)
+  assign mask1 = n3782_o; // (signal)
   /* 6805.vhd:183:10  */
-  assign regx = n3765_q; // (signal)
+  assign rega = n3784_q; // (signal)
   /* 6805.vhd:184:10  */
-  assign regsp = n3766_q; // (signal)
+  assign regx = n3786_q; // (signal)
   /* 6805.vhd:185:10  */
-  assign regpc = n3767_q; // (signal)
+  assign regsp = n3788_q; // (signal)
   /* 6805.vhd:186:10  */
-  assign flagh = n3768_q; // (signal)
+  assign regpc = n3790_q; // (signal)
   /* 6805.vhd:187:10  */
-  assign flagi = n3769_q; // (signal)
+  assign flagh = n3792_q; // (signal)
   /* 6805.vhd:188:10  */
-  assign flagn = n3770_q; // (signal)
+  assign flagi = n3794_q; // (signal)
   /* 6805.vhd:189:10  */
-  assign flagz = n3771_q; // (signal)
+  assign flagn = n3796_q; // (signal)
   /* 6805.vhd:190:10  */
-  assign flagc = n3772_q; // (signal)
+  assign flagz = n3798_q; // (signal)
   /* 6805.vhd:191:10  */
-  assign help = n3773_q; // (signal)
+  assign flagc = n3800_q; // (signal)
   /* 6805.vhd:192:10  */
-  assign temp = n3774_q; // (signal)
+  assign help = n3802_q; // (signal)
   /* 6805.vhd:193:10  */
-  assign mainfsm = n3775_q; // (signal)
+  assign temp = n3804_q; // (signal)
   /* 6805.vhd:194:10  */
-  assign addrmux = n3776_q; // (signal)
+  assign mainfsm = n3806_q; // (signal)
   /* 6805.vhd:195:10  */
-  assign datamux = n3777_q; // (signal)
+  assign addrmux = n3808_q; // (signal)
   /* 6805.vhd:196:10  */
-  assign opcode = n3780_q; // (signal)
+  assign datamux = n3810_q; // (signal)
   /* 6805.vhd:197:10  */
-  assign prod = mul_n4; // (signal)
+  assign opcode = n3814_q; // (signal)
   /* 6805.vhd:198:10  */
-  assign extirq_d = n3781_q; // (signal)
+  assign prod = mul_n4; // (signal)
   /* 6805.vhd:199:10  */
-  assign timerirq_d = n3782_q; // (signal)
+  assign extirq_d = n3815_q; // (signal)
   /* 6805.vhd:200:10  */
-  assign extirqrequest = n3783_q; // (signal)
+  assign timerirq_d = n3816_q; // (signal)
   /* 6805.vhd:201:10  */
-  assign timerirqrequest = n3784_q; // (signal)
-  /* 6805.vhd:203:10  */
-  assign trace = n3785_q; // (signal)
+  assign extirqrequest = n3817_q; // (signal)
+  /* 6805.vhd:202:10  */
+  assign timerirqrequest = n3818_q; // (signal)
   /* 6805.vhd:204:10  */
-  assign trace_i = n3786_q; // (signal)
+  assign trace = n3820_q; // (signal)
   /* 6805.vhd:205:10  */
-  assign traceopcode = n3789_q; // (signal)
-  /* 6805.vhd:212:13  */
+  assign trace_i = n3822_q; // (signal)
+  /* 6805.vhd:206:10  */
+  assign traceopcode = n3826_q; // (signal)
+  /* 6805.vhd:213:13  */
   assign mul_n4 = mul_prod; // (signal)
-  /* 6805.vhd:209:3  */
+  /* 6805.vhd:210:3  */
   mul8 mul (
     .a(rega),
     .b(regx),
     .prod(mul_prod));
-  /* 6805.vhd:215:39  */
-  assign n8_o = addrmux == 3'b000;
-  /* 6805.vhd:215:26  */
-  assign n9_o = n8_o ? regpc : n12_o;
   /* 6805.vhd:216:39  */
-  assign n11_o = addrmux == 3'b001;
-  /* 6805.vhd:215:48  */
-  assign n12_o = n11_o ? regsp : n17_o;
-  /* 6805.vhd:217:17  */
-  assign n14_o = {8'b00000000, regx};
+  assign n8_o = addrmux == 3'b000;
+  /* 6805.vhd:216:26  */
+  assign n9_o = n8_o ? regpc : n12_o;
   /* 6805.vhd:217:39  */
-  assign n16_o = addrmux == 3'b010;
+  assign n11_o = addrmux == 3'b001;
   /* 6805.vhd:216:48  */
-  assign n17_o = n16_o ? n14_o : n20_o;
+  assign n12_o = n11_o ? regsp : n17_o;
+  /* 6805.vhd:218:17  */
+  assign n14_o = {8'b00000000, regx};
   /* 6805.vhd:218:39  */
-  assign n19_o = addrmux == 3'b011;
+  assign n16_o = addrmux == 3'b010;
   /* 6805.vhd:217:48  */
-  assign n20_o = n19_o ? temp : n26_o;
-  /* 6805.vhd:219:19  */
-  assign n22_o = {8'b00000000, regx};
-  /* 6805.vhd:219:27  */
-  assign n23_o = n22_o + temp;
-  /* 6805.vhd:219:48  */
-  assign n25_o = addrmux == 3'b100;
+  assign n17_o = n16_o ? n14_o : n20_o;
+  /* 6805.vhd:219:39  */
+  assign n19_o = addrmux == 3'b011;
   /* 6805.vhd:218:48  */
-  assign n26_o = n25_o ? n23_o : n30_o;
-  /* 6805.vhd:220:18  */
-  assign n27_o = regsp + temp;
-  /* 6805.vhd:220:39  */
-  assign n29_o = addrmux == 3'b101;
-  /* 6805.vhd:219:57  */
-  assign n30_o = n29_o ? n27_o : n39_o;
-  /* 6805.vhd:221:19  */
-  assign n32_o = {8'b00000000, regx};
-  /* 6805.vhd:221:42  */
-  assign n33_o = temp[7:0];
-  /* 6805.vhd:221:36  */
-  assign n35_o = {8'b00000000, n33_o};
-  /* 6805.vhd:221:27  */
-  assign n36_o = n32_o + n35_o;
-  /* 6805.vhd:221:70  */
-  assign n38_o = addrmux == 3'b110;
+  assign n20_o = n19_o ? temp : n26_o;
+  /* 6805.vhd:220:19  */
+  assign n22_o = {8'b00000000, regx};
+  /* 6805.vhd:220:27  */
+  assign n23_o = n22_o + temp;
   /* 6805.vhd:220:48  */
-  assign n39_o = n38_o ? n36_o : n43_o;
-  /* 6805.vhd:222:33  */
-  assign n40_o = temp[7:0];
+  assign n25_o = addrmux == 3'b100;
+  /* 6805.vhd:219:48  */
+  assign n26_o = n25_o ? n23_o : n30_o;
+  /* 6805.vhd:221:18  */
+  assign n27_o = regsp + temp;
+  /* 6805.vhd:221:39  */
+  assign n29_o = addrmux == 3'b101;
+  /* 6805.vhd:220:57  */
+  assign n30_o = n29_o ? n27_o : n39_o;
+  /* 6805.vhd:222:19  */
+  assign n32_o = {8'b00000000, regx};
+  /* 6805.vhd:222:42  */
+  assign n33_o = temp[7:0];
+  /* 6805.vhd:222:36  */
+  assign n35_o = {8'b00000000, n33_o};
   /* 6805.vhd:222:27  */
-  assign n42_o = {8'b00000000, n40_o};
-  /* 6805.vhd:222:18  */
-  assign n43_o = regsp + n42_o;
-  /* 6805.vhd:223:46  */
-  assign n45_o = datamux == 4'b0000;
+  assign n36_o = n32_o + n35_o;
+  /* 6805.vhd:222:70  */
+  assign n38_o = addrmux == 3'b110;
+  /* 6805.vhd:221:48  */
+  assign n39_o = n38_o ? n36_o : n43_o;
   /* 6805.vhd:223:33  */
-  assign n46_o = n45_o ? rega : n49_o;
+  assign n40_o = temp[7:0];
+  /* 6805.vhd:223:27  */
+  assign n42_o = {8'b00000000, n40_o};
+  /* 6805.vhd:223:18  */
+  assign n43_o = regsp + n42_o;
   /* 6805.vhd:224:46  */
-  assign n48_o = datamux == 4'b0001;
-  /* 6805.vhd:223:53  */
-  assign n49_o = n48_o ? regx : n52_o;
+  assign n45_o = datamux == 4'b0000;
+  /* 6805.vhd:224:33  */
+  assign n46_o = n45_o ? rega : n49_o;
   /* 6805.vhd:225:46  */
-  assign n51_o = datamux == 4'b0010;
+  assign n48_o = datamux == 4'b0001;
   /* 6805.vhd:224:53  */
-  assign n52_o = n51_o ? regx : n56_o;
-  /* 6805.vhd:226:19  */
-  assign n53_o = regsp[7:0];
+  assign n49_o = n48_o ? regx : n52_o;
   /* 6805.vhd:226:46  */
-  assign n55_o = datamux == 4'b0011;
+  assign n51_o = datamux == 4'b0010;
   /* 6805.vhd:225:53  */
-  assign n56_o = n55_o ? n53_o : n60_o;
+  assign n52_o = n51_o ? regx : n56_o;
   /* 6805.vhd:227:19  */
-  assign n57_o = regsp[15:8];
+  assign n53_o = regsp[7:0];
   /* 6805.vhd:227:46  */
-  assign n59_o = datamux == 4'b0100;
-  /* 6805.vhd:226:55  */
-  assign n60_o = n59_o ? n57_o : n64_o;
+  assign n55_o = datamux == 4'b0011;
+  /* 6805.vhd:226:53  */
+  assign n56_o = n55_o ? n53_o : n60_o;
   /* 6805.vhd:228:19  */
-  assign n61_o = regpc[7:0];
+  assign n57_o = regsp[15:8];
   /* 6805.vhd:228:46  */
-  assign n63_o = datamux == 4'b0101;
+  assign n59_o = datamux == 4'b0100;
   /* 6805.vhd:227:55  */
-  assign n64_o = n63_o ? n61_o : n68_o;
+  assign n60_o = n59_o ? n57_o : n64_o;
   /* 6805.vhd:229:19  */
-  assign n65_o = regpc[15:8];
+  assign n61_o = regpc[7:0];
   /* 6805.vhd:229:46  */
-  assign n67_o = datamux == 4'b0110;
+  assign n63_o = datamux == 4'b0101;
   /* 6805.vhd:228:55  */
-  assign n68_o = n67_o ? n65_o : n72_o;
+  assign n64_o = n63_o ? n61_o : n68_o;
   /* 6805.vhd:230:19  */
-  assign n69_o = temp[7:0];
+  assign n65_o = regpc[15:8];
   /* 6805.vhd:230:46  */
-  assign n71_o = datamux == 4'b0111;
+  assign n67_o = datamux == 4'b0110;
   /* 6805.vhd:229:55  */
-  assign n72_o = n71_o ? n69_o : n76_o;
+  assign n68_o = n67_o ? n65_o : n72_o;
   /* 6805.vhd:231:19  */
-  assign n73_o = temp[15:8];
+  assign n69_o = temp[7:0];
   /* 6805.vhd:231:46  */
-  assign n75_o = datamux == 4'b1000;
+  assign n71_o = datamux == 4'b0111;
   /* 6805.vhd:230:55  */
-  assign n76_o = n75_o ? n73_o : n79_o;
+  assign n72_o = n71_o ? n69_o : n76_o;
+  /* 6805.vhd:232:19  */
+  assign n73_o = temp[15:8];
   /* 6805.vhd:232:46  */
-  assign n78_o = datamux == 4'b1001;
+  assign n75_o = datamux == 4'b1000;
   /* 6805.vhd:231:55  */
+  assign n76_o = n75_o ? n73_o : n79_o;
+  /* 6805.vhd:233:46  */
+  assign n78_o = datamux == 4'b1001;
+  /* 6805.vhd:232:55  */
   assign n79_o = n78_o ? help : traceopcode;
-  /* 6805.vhd:240:12  */
-  assign n84_o = ~rst;
-  /* 6805.vhd:283:20  */
+  /* 6805.vhd:260:12  */
+  assign n100_o = ~rst;
+  /* 6805.vhd:288:20  */
   assign n103_o = $unsigned(extirq) <= $unsigned(1'b0);
-  /* 6805.vhd:283:28  */
+  /* 6805.vhd:288:28  */
   assign n104_o = extirq_d & n103_o;
-  /* 6805.vhd:283:9  */
+  /* 6805.vhd:288:9  */
   assign n106_o = n104_o ? 1'b1 : extirqrequest;
-  /* 6805.vhd:287:22  */
+  /* 6805.vhd:292:22  */
   assign n108_o = $unsigned(timerirq) <= $unsigned(1'b0);
-  /* 6805.vhd:287:30  */
+  /* 6805.vhd:292:30  */
   assign n109_o = timerirq_d & n108_o;
-  /* 6805.vhd:287:9  */
+  /* 6805.vhd:292:9  */
   assign n111_o = n109_o ? 1'b1 : timerirqrequest;
-  /* 6805.vhd:294:29  */
+  /* 6805.vhd:300:29  */
   assign n113_o = temp + 16'b0000000000000001;
-  /* 6805.vhd:292:11  */
+  /* 6805.vhd:298:11  */
   assign n115_o = mainfsm == 4'b0000;
-  /* 6805.vhd:296:11  */
+  /* 6805.vhd:302:11  */
   assign n117_o = mainfsm == 4'b0001;
-  /* 6805.vhd:308:39  */
+  /* 6805.vhd:314:39  */
   assign n118_o = extirqrequest | timerirqrequest;
-  /* 6805.vhd:317:36  */
+  /* 6805.vhd:323:36  */
   assign n120_o = regsp + 16'b0000000000000001;
-  /* 6805.vhd:315:17  */
+  /* 6805.vhd:321:17  */
   assign n122_o = datain == 8'b10000010;
-  /* 6805.vhd:333:36  */
+  /* 6805.vhd:339:36  */
   assign n124_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:320:17  */
+  /* 6805.vhd:326:17  */
   assign n126_o = datain == 8'b00000000;
-  /* 6805.vhd:320:28  */
+  /* 6805.vhd:326:28  */
   assign n128_o = datain == 8'b00000010;
-  /* 6805.vhd:320:28  */
+  /* 6805.vhd:326:28  */
   assign n129_o = n126_o | n128_o;
-  /* 6805.vhd:320:36  */
+  /* 6805.vhd:326:36  */
   assign n131_o = datain == 8'b00000100;
-  /* 6805.vhd:320:36  */
+  /* 6805.vhd:326:36  */
   assign n132_o = n129_o | n131_o;
-  /* 6805.vhd:320:44  */
+  /* 6805.vhd:326:44  */
   assign n134_o = datain == 8'b00000110;
-  /* 6805.vhd:320:44  */
+  /* 6805.vhd:326:44  */
   assign n135_o = n132_o | n134_o;
-  /* 6805.vhd:320:52  */
+  /* 6805.vhd:326:52  */
   assign n137_o = datain == 8'b00001000;
-  /* 6805.vhd:320:52  */
+  /* 6805.vhd:326:52  */
   assign n138_o = n135_o | n137_o;
-  /* 6805.vhd:320:60  */
+  /* 6805.vhd:326:60  */
   assign n140_o = datain == 8'b00001010;
-  /* 6805.vhd:320:60  */
+  /* 6805.vhd:326:60  */
   assign n141_o = n138_o | n140_o;
-  /* 6805.vhd:320:68  */
+  /* 6805.vhd:326:68  */
   assign n143_o = datain == 8'b00001100;
-  /* 6805.vhd:320:68  */
+  /* 6805.vhd:326:68  */
   assign n144_o = n141_o | n143_o;
-  /* 6805.vhd:320:76  */
+  /* 6805.vhd:326:76  */
   assign n146_o = datain == 8'b00001110;
-  /* 6805.vhd:320:76  */
+  /* 6805.vhd:326:76  */
   assign n147_o = n144_o | n146_o;
-  /* 6805.vhd:320:84  */
+  /* 6805.vhd:326:84  */
   assign n149_o = datain == 8'b00000001;
-  /* 6805.vhd:320:84  */
+  /* 6805.vhd:326:84  */
   assign n150_o = n147_o | n149_o;
-  /* 6805.vhd:321:28  */
+  /* 6805.vhd:327:28  */
   assign n152_o = datain == 8'b00000011;
-  /* 6805.vhd:321:28  */
+  /* 6805.vhd:327:28  */
   assign n153_o = n150_o | n152_o;
-  /* 6805.vhd:321:36  */
+  /* 6805.vhd:327:36  */
   assign n155_o = datain == 8'b00000101;
-  /* 6805.vhd:321:36  */
+  /* 6805.vhd:327:36  */
   assign n156_o = n153_o | n155_o;
-  /* 6805.vhd:321:44  */
+  /* 6805.vhd:327:44  */
   assign n158_o = datain == 8'b00000111;
-  /* 6805.vhd:321:44  */
+  /* 6805.vhd:327:44  */
   assign n159_o = n156_o | n158_o;
-  /* 6805.vhd:321:52  */
+  /* 6805.vhd:327:52  */
   assign n161_o = datain == 8'b00001001;
-  /* 6805.vhd:321:52  */
+  /* 6805.vhd:327:52  */
   assign n162_o = n159_o | n161_o;
-  /* 6805.vhd:321:60  */
+  /* 6805.vhd:327:60  */
   assign n164_o = datain == 8'b00001011;
-  /* 6805.vhd:321:60  */
+  /* 6805.vhd:327:60  */
   assign n165_o = n162_o | n164_o;
-  /* 6805.vhd:321:68  */
+  /* 6805.vhd:327:68  */
   assign n167_o = datain == 8'b00001101;
-  /* 6805.vhd:321:68  */
+  /* 6805.vhd:327:68  */
   assign n168_o = n165_o | n167_o;
-  /* 6805.vhd:321:76  */
+  /* 6805.vhd:327:76  */
   assign n170_o = datain == 8'b00001111;
-  /* 6805.vhd:321:76  */
+  /* 6805.vhd:327:76  */
   assign n171_o = n168_o | n170_o;
-  /* 6805.vhd:321:84  */
+  /* 6805.vhd:327:84  */
   assign n173_o = datain == 8'b00010000;
-  /* 6805.vhd:321:84  */
+  /* 6805.vhd:327:84  */
   assign n174_o = n171_o | n173_o;
-  /* 6805.vhd:322:28  */
+  /* 6805.vhd:328:28  */
   assign n176_o = datain == 8'b00010010;
-  /* 6805.vhd:322:28  */
+  /* 6805.vhd:328:28  */
   assign n177_o = n174_o | n176_o;
-  /* 6805.vhd:322:36  */
+  /* 6805.vhd:328:36  */
   assign n179_o = datain == 8'b00010100;
-  /* 6805.vhd:322:36  */
+  /* 6805.vhd:328:36  */
   assign n180_o = n177_o | n179_o;
-  /* 6805.vhd:322:44  */
+  /* 6805.vhd:328:44  */
   assign n182_o = datain == 8'b00010110;
-  /* 6805.vhd:322:44  */
+  /* 6805.vhd:328:44  */
   assign n183_o = n180_o | n182_o;
-  /* 6805.vhd:322:52  */
+  /* 6805.vhd:328:52  */
   assign n185_o = datain == 8'b00011000;
-  /* 6805.vhd:322:52  */
+  /* 6805.vhd:328:52  */
   assign n186_o = n183_o | n185_o;
-  /* 6805.vhd:322:60  */
+  /* 6805.vhd:328:60  */
   assign n188_o = datain == 8'b00011010;
-  /* 6805.vhd:322:60  */
+  /* 6805.vhd:328:60  */
   assign n189_o = n186_o | n188_o;
-  /* 6805.vhd:322:68  */
+  /* 6805.vhd:328:68  */
   assign n191_o = datain == 8'b00011100;
-  /* 6805.vhd:322:68  */
+  /* 6805.vhd:328:68  */
   assign n192_o = n189_o | n191_o;
-  /* 6805.vhd:322:76  */
+  /* 6805.vhd:328:76  */
   assign n194_o = datain == 8'b00011110;
-  /* 6805.vhd:322:76  */
+  /* 6805.vhd:328:76  */
   assign n195_o = n192_o | n194_o;
-  /* 6805.vhd:322:84  */
+  /* 6805.vhd:328:84  */
   assign n197_o = datain == 8'b00010001;
-  /* 6805.vhd:322:84  */
+  /* 6805.vhd:328:84  */
   assign n198_o = n195_o | n197_o;
-  /* 6805.vhd:323:28  */
+  /* 6805.vhd:329:28  */
   assign n200_o = datain == 8'b00010011;
-  /* 6805.vhd:323:28  */
+  /* 6805.vhd:329:28  */
   assign n201_o = n198_o | n200_o;
-  /* 6805.vhd:323:36  */
+  /* 6805.vhd:329:36  */
   assign n203_o = datain == 8'b00010101;
-  /* 6805.vhd:323:36  */
+  /* 6805.vhd:329:36  */
   assign n204_o = n201_o | n203_o;
-  /* 6805.vhd:323:44  */
+  /* 6805.vhd:329:44  */
   assign n206_o = datain == 8'b00010111;
-  /* 6805.vhd:323:44  */
+  /* 6805.vhd:329:44  */
   assign n207_o = n204_o | n206_o;
-  /* 6805.vhd:323:52  */
+  /* 6805.vhd:329:52  */
   assign n209_o = datain == 8'b00011001;
-  /* 6805.vhd:323:52  */
+  /* 6805.vhd:329:52  */
   assign n210_o = n207_o | n209_o;
-  /* 6805.vhd:323:60  */
+  /* 6805.vhd:329:60  */
   assign n212_o = datain == 8'b00011011;
-  /* 6805.vhd:323:60  */
+  /* 6805.vhd:329:60  */
   assign n213_o = n210_o | n212_o;
-  /* 6805.vhd:323:68  */
+  /* 6805.vhd:329:68  */
   assign n215_o = datain == 8'b00011101;
-  /* 6805.vhd:323:68  */
+  /* 6805.vhd:329:68  */
   assign n216_o = n213_o | n215_o;
-  /* 6805.vhd:323:76  */
+  /* 6805.vhd:329:76  */
   assign n218_o = datain == 8'b00011111;
-  /* 6805.vhd:323:76  */
+  /* 6805.vhd:329:76  */
   assign n219_o = n216_o | n218_o;
-  /* 6805.vhd:323:84  */
+  /* 6805.vhd:329:84  */
   assign n221_o = datain == 8'b00110000;
-  /* 6805.vhd:323:84  */
+  /* 6805.vhd:329:84  */
   assign n222_o = n219_o | n221_o;
-  /* 6805.vhd:324:28  */
+  /* 6805.vhd:330:28  */
   assign n224_o = datain == 8'b00110011;
-  /* 6805.vhd:324:28  */
+  /* 6805.vhd:330:28  */
   assign n225_o = n222_o | n224_o;
-  /* 6805.vhd:324:36  */
+  /* 6805.vhd:330:36  */
   assign n227_o = datain == 8'b00110100;
-  /* 6805.vhd:324:36  */
+  /* 6805.vhd:330:36  */
   assign n228_o = n225_o | n227_o;
-  /* 6805.vhd:324:44  */
+  /* 6805.vhd:330:44  */
   assign n230_o = datain == 8'b00110110;
-  /* 6805.vhd:324:44  */
+  /* 6805.vhd:330:44  */
   assign n231_o = n228_o | n230_o;
-  /* 6805.vhd:325:28  */
+  /* 6805.vhd:331:28  */
   assign n233_o = datain == 8'b00110111;
-  /* 6805.vhd:325:28  */
+  /* 6805.vhd:331:28  */
   assign n234_o = n231_o | n233_o;
-  /* 6805.vhd:325:36  */
+  /* 6805.vhd:331:36  */
   assign n236_o = datain == 8'b00111000;
-  /* 6805.vhd:325:36  */
+  /* 6805.vhd:331:36  */
   assign n237_o = n234_o | n236_o;
-  /* 6805.vhd:325:44  */
+  /* 6805.vhd:331:44  */
   assign n239_o = datain == 8'b00111001;
-  /* 6805.vhd:325:44  */
+  /* 6805.vhd:331:44  */
   assign n240_o = n237_o | n239_o;
-  /* 6805.vhd:326:28  */
+  /* 6805.vhd:332:28  */
   assign n242_o = datain == 8'b00111010;
-  /* 6805.vhd:326:28  */
+  /* 6805.vhd:332:28  */
   assign n243_o = n240_o | n242_o;
-  /* 6805.vhd:326:36  */
+  /* 6805.vhd:332:36  */
   assign n245_o = datain == 8'b00111100;
-  /* 6805.vhd:326:36  */
+  /* 6805.vhd:332:36  */
   assign n246_o = n243_o | n245_o;
-  /* 6805.vhd:326:44  */
+  /* 6805.vhd:332:44  */
   assign n248_o = datain == 8'b00111101;
-  /* 6805.vhd:326:44  */
+  /* 6805.vhd:332:44  */
   assign n249_o = n246_o | n248_o;
-  /* 6805.vhd:327:28  */
+  /* 6805.vhd:333:28  */
   assign n251_o = datain == 8'b00111111;
-  /* 6805.vhd:327:28  */
+  /* 6805.vhd:333:28  */
   assign n252_o = n249_o | n251_o;
-  /* 6805.vhd:327:36  */
+  /* 6805.vhd:333:36  */
   assign n254_o = datain == 8'b10110000;
-  /* 6805.vhd:327:36  */
+  /* 6805.vhd:333:36  */
   assign n255_o = n252_o | n254_o;
-  /* 6805.vhd:328:28  */
+  /* 6805.vhd:334:28  */
   assign n257_o = datain == 8'b10110001;
-  /* 6805.vhd:328:28  */
+  /* 6805.vhd:334:28  */
   assign n258_o = n255_o | n257_o;
-  /* 6805.vhd:328:36  */
+  /* 6805.vhd:334:36  */
   assign n260_o = datain == 8'b10110010;
-  /* 6805.vhd:328:36  */
+  /* 6805.vhd:334:36  */
   assign n261_o = n258_o | n260_o;
-  /* 6805.vhd:328:44  */
+  /* 6805.vhd:334:44  */
   assign n263_o = datain == 8'b10110011;
-  /* 6805.vhd:328:44  */
+  /* 6805.vhd:334:44  */
   assign n264_o = n261_o | n263_o;
-  /* 6805.vhd:328:52  */
+  /* 6805.vhd:334:52  */
   assign n266_o = datain == 8'b10110100;
-  /* 6805.vhd:328:52  */
+  /* 6805.vhd:334:52  */
   assign n267_o = n264_o | n266_o;
-  /* 6805.vhd:329:28  */
+  /* 6805.vhd:335:28  */
   assign n269_o = datain == 8'b10110101;
-  /* 6805.vhd:329:28  */
+  /* 6805.vhd:335:28  */
   assign n270_o = n267_o | n269_o;
-  /* 6805.vhd:329:36  */
+  /* 6805.vhd:335:36  */
   assign n272_o = datain == 8'b10110110;
-  /* 6805.vhd:329:36  */
+  /* 6805.vhd:335:36  */
   assign n273_o = n270_o | n272_o;
-  /* 6805.vhd:329:44  */
+  /* 6805.vhd:335:44  */
   assign n275_o = datain == 8'b10110111;
-  /* 6805.vhd:329:44  */
+  /* 6805.vhd:335:44  */
   assign n276_o = n273_o | n275_o;
-  /* 6805.vhd:329:52  */
+  /* 6805.vhd:335:52  */
   assign n278_o = datain == 8'b10111000;
-  /* 6805.vhd:329:52  */
+  /* 6805.vhd:335:52  */
   assign n279_o = n276_o | n278_o;
-  /* 6805.vhd:330:28  */
+  /* 6805.vhd:336:28  */
   assign n281_o = datain == 8'b10111001;
-  /* 6805.vhd:330:28  */
+  /* 6805.vhd:336:28  */
   assign n282_o = n279_o | n281_o;
-  /* 6805.vhd:330:36  */
+  /* 6805.vhd:336:36  */
   assign n284_o = datain == 8'b10111010;
-  /* 6805.vhd:330:36  */
+  /* 6805.vhd:336:36  */
   assign n285_o = n282_o | n284_o;
-  /* 6805.vhd:330:44  */
+  /* 6805.vhd:336:44  */
   assign n287_o = datain == 8'b10111011;
-  /* 6805.vhd:330:44  */
+  /* 6805.vhd:336:44  */
   assign n288_o = n285_o | n287_o;
-  /* 6805.vhd:330:52  */
+  /* 6805.vhd:336:52  */
   assign n290_o = datain == 8'b10111100;
-  /* 6805.vhd:330:52  */
+  /* 6805.vhd:336:52  */
   assign n291_o = n288_o | n290_o;
-  /* 6805.vhd:331:28  */
+  /* 6805.vhd:337:28  */
   assign n293_o = datain == 8'b10111110;
-  /* 6805.vhd:331:28  */
+  /* 6805.vhd:337:28  */
   assign n294_o = n291_o | n293_o;
-  /* 6805.vhd:331:36  */
+  /* 6805.vhd:337:36  */
   assign n296_o = datain == 8'b10111111;
-  /* 6805.vhd:331:36  */
+  /* 6805.vhd:337:36  */
   assign n297_o = n294_o | n296_o;
-  /* 6805.vhd:345:34  */
+  /* 6805.vhd:351:34  */
   assign n299_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:335:17  */
+  /* 6805.vhd:341:17  */
   assign n301_o = datain == 8'b00100000;
-  /* 6805.vhd:335:28  */
+  /* 6805.vhd:341:28  */
   assign n303_o = datain == 8'b00100001;
-  /* 6805.vhd:335:28  */
+  /* 6805.vhd:341:28  */
   assign n304_o = n301_o | n303_o;
-  /* 6805.vhd:335:36  */
+  /* 6805.vhd:341:36  */
   assign n306_o = datain == 8'b00100010;
-  /* 6805.vhd:335:36  */
+  /* 6805.vhd:341:36  */
   assign n307_o = n304_o | n306_o;
-  /* 6805.vhd:335:44  */
+  /* 6805.vhd:341:44  */
   assign n309_o = datain == 8'b00100011;
-  /* 6805.vhd:335:44  */
+  /* 6805.vhd:341:44  */
   assign n310_o = n307_o | n309_o;
-  /* 6805.vhd:335:52  */
+  /* 6805.vhd:341:52  */
   assign n312_o = datain == 8'b00100100;
-  /* 6805.vhd:335:52  */
+  /* 6805.vhd:341:52  */
   assign n313_o = n310_o | n312_o;
-  /* 6805.vhd:335:60  */
+  /* 6805.vhd:341:60  */
   assign n315_o = datain == 8'b00100101;
-  /* 6805.vhd:335:60  */
+  /* 6805.vhd:341:60  */
   assign n316_o = n313_o | n315_o;
-  /* 6805.vhd:335:68  */
+  /* 6805.vhd:341:68  */
   assign n318_o = datain == 8'b00100110;
-  /* 6805.vhd:335:68  */
+  /* 6805.vhd:341:68  */
   assign n319_o = n316_o | n318_o;
-  /* 6805.vhd:335:76  */
+  /* 6805.vhd:341:76  */
   assign n321_o = datain == 8'b00100111;
-  /* 6805.vhd:335:76  */
+  /* 6805.vhd:341:76  */
   assign n322_o = n319_o | n321_o;
-  /* 6805.vhd:335:84  */
+  /* 6805.vhd:341:84  */
   assign n324_o = datain == 8'b00101000;
-  /* 6805.vhd:335:84  */
+  /* 6805.vhd:341:84  */
   assign n325_o = n322_o | n324_o;
-  /* 6805.vhd:336:28  */
+  /* 6805.vhd:342:28  */
   assign n327_o = datain == 8'b00101001;
-  /* 6805.vhd:336:28  */
+  /* 6805.vhd:342:28  */
   assign n328_o = n325_o | n327_o;
-  /* 6805.vhd:336:36  */
+  /* 6805.vhd:342:36  */
   assign n330_o = datain == 8'b00101010;
-  /* 6805.vhd:336:36  */
+  /* 6805.vhd:342:36  */
   assign n331_o = n328_o | n330_o;
-  /* 6805.vhd:336:44  */
+  /* 6805.vhd:342:44  */
   assign n333_o = datain == 8'b00101011;
-  /* 6805.vhd:336:44  */
+  /* 6805.vhd:342:44  */
   assign n334_o = n331_o | n333_o;
-  /* 6805.vhd:336:52  */
+  /* 6805.vhd:342:52  */
   assign n336_o = datain == 8'b00101100;
-  /* 6805.vhd:336:52  */
+  /* 6805.vhd:342:52  */
   assign n337_o = n334_o | n336_o;
-  /* 6805.vhd:336:60  */
+  /* 6805.vhd:342:60  */
   assign n339_o = datain == 8'b00101101;
-  /* 6805.vhd:336:60  */
+  /* 6805.vhd:342:60  */
   assign n340_o = n337_o | n339_o;
-  /* 6805.vhd:336:68  */
+  /* 6805.vhd:342:68  */
   assign n342_o = datain == 8'b00101110;
-  /* 6805.vhd:336:68  */
+  /* 6805.vhd:342:68  */
   assign n343_o = n340_o | n342_o;
-  /* 6805.vhd:336:76  */
+  /* 6805.vhd:342:76  */
   assign n345_o = datain == 8'b00101111;
-  /* 6805.vhd:336:76  */
+  /* 6805.vhd:342:76  */
   assign n346_o = n343_o | n345_o;
-  /* 6805.vhd:336:84  */
+  /* 6805.vhd:342:84  */
   assign n348_o = datain == 8'b11000000;
-  /* 6805.vhd:336:84  */
+  /* 6805.vhd:342:84  */
   assign n349_o = n346_o | n348_o;
-  /* 6805.vhd:337:28  */
+  /* 6805.vhd:343:28  */
   assign n351_o = datain == 8'b11000001;
-  /* 6805.vhd:337:28  */
+  /* 6805.vhd:343:28  */
   assign n352_o = n349_o | n351_o;
-  /* 6805.vhd:337:36  */
+  /* 6805.vhd:343:36  */
   assign n354_o = datain == 8'b11000010;
-  /* 6805.vhd:337:36  */
+  /* 6805.vhd:343:36  */
   assign n355_o = n352_o | n354_o;
-  /* 6805.vhd:337:44  */
+  /* 6805.vhd:343:44  */
   assign n357_o = datain == 8'b11000011;
-  /* 6805.vhd:337:44  */
+  /* 6805.vhd:343:44  */
   assign n358_o = n355_o | n357_o;
-  /* 6805.vhd:337:52  */
+  /* 6805.vhd:343:52  */
   assign n360_o = datain == 8'b11000100;
-  /* 6805.vhd:337:52  */
+  /* 6805.vhd:343:52  */
   assign n361_o = n358_o | n360_o;
-  /* 6805.vhd:338:28  */
+  /* 6805.vhd:344:28  */
   assign n363_o = datain == 8'b11000101;
-  /* 6805.vhd:338:28  */
+  /* 6805.vhd:344:28  */
   assign n364_o = n361_o | n363_o;
-  /* 6805.vhd:338:36  */
+  /* 6805.vhd:344:36  */
   assign n366_o = datain == 8'b11000110;
-  /* 6805.vhd:338:36  */
+  /* 6805.vhd:344:36  */
   assign n367_o = n364_o | n366_o;
-  /* 6805.vhd:338:44  */
+  /* 6805.vhd:344:44  */
   assign n369_o = datain == 8'b11000111;
-  /* 6805.vhd:338:44  */
+  /* 6805.vhd:344:44  */
   assign n370_o = n367_o | n369_o;
-  /* 6805.vhd:338:52  */
+  /* 6805.vhd:344:52  */
   assign n372_o = datain == 8'b11001000;
-  /* 6805.vhd:338:52  */
+  /* 6805.vhd:344:52  */
   assign n373_o = n370_o | n372_o;
-  /* 6805.vhd:339:28  */
+  /* 6805.vhd:345:28  */
   assign n375_o = datain == 8'b11001001;
-  /* 6805.vhd:339:28  */
+  /* 6805.vhd:345:28  */
   assign n376_o = n373_o | n375_o;
-  /* 6805.vhd:339:36  */
+  /* 6805.vhd:345:36  */
   assign n378_o = datain == 8'b11001010;
-  /* 6805.vhd:339:36  */
+  /* 6805.vhd:345:36  */
   assign n379_o = n376_o | n378_o;
-  /* 6805.vhd:339:44  */
+  /* 6805.vhd:345:44  */
   assign n381_o = datain == 8'b11001011;
-  /* 6805.vhd:339:44  */
+  /* 6805.vhd:345:44  */
   assign n382_o = n379_o | n381_o;
-  /* 6805.vhd:339:52  */
+  /* 6805.vhd:345:52  */
   assign n384_o = datain == 8'b11001100;
-  /* 6805.vhd:339:52  */
+  /* 6805.vhd:345:52  */
   assign n385_o = n382_o | n384_o;
-  /* 6805.vhd:340:28  */
+  /* 6805.vhd:346:28  */
   assign n387_o = datain == 8'b11001110;
-  /* 6805.vhd:340:28  */
+  /* 6805.vhd:346:28  */
   assign n388_o = n385_o | n387_o;
-  /* 6805.vhd:340:36  */
+  /* 6805.vhd:346:36  */
   assign n390_o = datain == 8'b11001111;
-  /* 6805.vhd:340:36  */
+  /* 6805.vhd:346:36  */
   assign n391_o = n388_o | n390_o;
-  /* 6805.vhd:340:44  */
+  /* 6805.vhd:346:44  */
   assign n393_o = datain == 8'b11010000;
-  /* 6805.vhd:340:44  */
+  /* 6805.vhd:346:44  */
   assign n394_o = n391_o | n393_o;
-  /* 6805.vhd:341:28  */
+  /* 6805.vhd:347:28  */
   assign n396_o = datain == 8'b11010001;
-  /* 6805.vhd:341:28  */
+  /* 6805.vhd:347:28  */
   assign n397_o = n394_o | n396_o;
-  /* 6805.vhd:341:36  */
+  /* 6805.vhd:347:36  */
   assign n399_o = datain == 8'b11010010;
-  /* 6805.vhd:341:36  */
+  /* 6805.vhd:347:36  */
   assign n400_o = n397_o | n399_o;
-  /* 6805.vhd:341:44  */
+  /* 6805.vhd:347:44  */
   assign n402_o = datain == 8'b11010011;
-  /* 6805.vhd:341:44  */
+  /* 6805.vhd:347:44  */
   assign n403_o = n400_o | n402_o;
-  /* 6805.vhd:341:52  */
+  /* 6805.vhd:347:52  */
   assign n405_o = datain == 8'b11010100;
-  /* 6805.vhd:341:52  */
+  /* 6805.vhd:347:52  */
   assign n406_o = n403_o | n405_o;
-  /* 6805.vhd:342:28  */
+  /* 6805.vhd:348:28  */
   assign n408_o = datain == 8'b11010101;
-  /* 6805.vhd:342:28  */
+  /* 6805.vhd:348:28  */
   assign n409_o = n406_o | n408_o;
-  /* 6805.vhd:342:36  */
+  /* 6805.vhd:348:36  */
   assign n411_o = datain == 8'b11010110;
-  /* 6805.vhd:342:36  */
+  /* 6805.vhd:348:36  */
   assign n412_o = n409_o | n411_o;
-  /* 6805.vhd:342:44  */
+  /* 6805.vhd:348:44  */
   assign n414_o = datain == 8'b11010111;
-  /* 6805.vhd:342:44  */
+  /* 6805.vhd:348:44  */
   assign n415_o = n412_o | n414_o;
-  /* 6805.vhd:342:52  */
+  /* 6805.vhd:348:52  */
   assign n417_o = datain == 8'b11011000;
-  /* 6805.vhd:342:52  */
+  /* 6805.vhd:348:52  */
   assign n418_o = n415_o | n417_o;
-  /* 6805.vhd:343:28  */
+  /* 6805.vhd:349:28  */
   assign n420_o = datain == 8'b11011001;
-  /* 6805.vhd:343:28  */
+  /* 6805.vhd:349:28  */
   assign n421_o = n418_o | n420_o;
-  /* 6805.vhd:343:36  */
+  /* 6805.vhd:349:36  */
   assign n423_o = datain == 8'b11011010;
-  /* 6805.vhd:343:36  */
+  /* 6805.vhd:349:36  */
   assign n424_o = n421_o | n423_o;
-  /* 6805.vhd:343:44  */
+  /* 6805.vhd:349:44  */
   assign n426_o = datain == 8'b11011011;
-  /* 6805.vhd:343:44  */
+  /* 6805.vhd:349:44  */
   assign n427_o = n424_o | n426_o;
-  /* 6805.vhd:343:52  */
+  /* 6805.vhd:349:52  */
   assign n429_o = datain == 8'b11011100;
-  /* 6805.vhd:343:52  */
+  /* 6805.vhd:349:52  */
   assign n430_o = n427_o | n429_o;
-  /* 6805.vhd:344:28  */
+  /* 6805.vhd:350:28  */
   assign n432_o = datain == 8'b11011110;
-  /* 6805.vhd:344:28  */
+  /* 6805.vhd:350:28  */
   assign n433_o = n430_o | n432_o;
-  /* 6805.vhd:344:36  */
-  assign n435_o = datain == 8'b11011111;
-  /* 6805.vhd:344:36  */
-  assign n436_o = n433_o | n435_o;
   /* 6805.vhd:350:36  */
+  assign n435_o = datain == 8'b11011111;
+  /* 6805.vhd:350:36  */
+  assign n436_o = n433_o | n435_o;
+  /* 6805.vhd:356:36  */
   assign n438_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:347:17  */
+  /* 6805.vhd:353:17  */
   assign n440_o = datain == 8'b01110000;
-  /* 6805.vhd:347:28  */
+  /* 6805.vhd:353:28  */
   assign n442_o = datain == 8'b01110011;
-  /* 6805.vhd:347:28  */
+  /* 6805.vhd:353:28  */
   assign n443_o = n440_o | n442_o;
-  /* 6805.vhd:347:36  */
+  /* 6805.vhd:353:36  */
   assign n445_o = datain == 8'b01110100;
-  /* 6805.vhd:347:36  */
+  /* 6805.vhd:353:36  */
   assign n446_o = n443_o | n445_o;
-  /* 6805.vhd:347:44  */
+  /* 6805.vhd:353:44  */
   assign n448_o = datain == 8'b01110110;
-  /* 6805.vhd:347:44  */
+  /* 6805.vhd:353:44  */
   assign n449_o = n446_o | n448_o;
-  /* 6805.vhd:347:52  */
+  /* 6805.vhd:353:52  */
   assign n451_o = datain == 8'b01110111;
-  /* 6805.vhd:347:52  */
+  /* 6805.vhd:353:52  */
   assign n452_o = n449_o | n451_o;
-  /* 6805.vhd:347:60  */
+  /* 6805.vhd:353:60  */
   assign n454_o = datain == 8'b01111000;
-  /* 6805.vhd:347:60  */
+  /* 6805.vhd:353:60  */
   assign n455_o = n452_o | n454_o;
-  /* 6805.vhd:348:28  */
+  /* 6805.vhd:354:28  */
   assign n457_o = datain == 8'b01111001;
-  /* 6805.vhd:348:28  */
+  /* 6805.vhd:354:28  */
   assign n458_o = n455_o | n457_o;
-  /* 6805.vhd:348:36  */
+  /* 6805.vhd:354:36  */
   assign n460_o = datain == 8'b01111010;
-  /* 6805.vhd:348:36  */
+  /* 6805.vhd:354:36  */
   assign n461_o = n458_o | n460_o;
-  /* 6805.vhd:348:44  */
+  /* 6805.vhd:354:44  */
   assign n463_o = datain == 8'b01111100;
-  /* 6805.vhd:348:44  */
+  /* 6805.vhd:354:44  */
   assign n464_o = n461_o | n463_o;
-  /* 6805.vhd:348:52  */
+  /* 6805.vhd:354:52  */
   assign n466_o = datain == 8'b01111101;
-  /* 6805.vhd:348:52  */
+  /* 6805.vhd:354:52  */
   assign n467_o = n464_o | n466_o;
-  /* 6805.vhd:356:34  */
-  assign n469_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:352:17  */
-  assign n471_o = datain == 8'b10100000;
-  /* 6805.vhd:352:28  */
-  assign n473_o = datain == 8'b10100001;
-  /* 6805.vhd:352:28  */
-  assign n474_o = n471_o | n473_o;
-  /* 6805.vhd:352:36  */
-  assign n476_o = datain == 8'b10100010;
-  /* 6805.vhd:352:36  */
-  assign n477_o = n474_o | n476_o;
-  /* 6805.vhd:352:44  */
-  assign n479_o = datain == 8'b10100011;
-  /* 6805.vhd:352:44  */
-  assign n480_o = n477_o | n479_o;
-  /* 6805.vhd:352:52  */
-  assign n482_o = datain == 8'b10100100;
-  /* 6805.vhd:352:52  */
-  assign n483_o = n480_o | n482_o;
-  /* 6805.vhd:353:28  */
-  assign n485_o = datain == 8'b10100101;
-  /* 6805.vhd:353:28  */
-  assign n486_o = n483_o | n485_o;
-  /* 6805.vhd:353:36  */
-  assign n488_o = datain == 8'b10100110;
-  /* 6805.vhd:353:36  */
-  assign n489_o = n486_o | n488_o;
-  /* 6805.vhd:353:44  */
-  assign n491_o = datain == 8'b10101000;
-  /* 6805.vhd:353:44  */
-  assign n492_o = n489_o | n491_o;
-  /* 6805.vhd:354:28  */
-  assign n494_o = datain == 8'b10101001;
-  /* 6805.vhd:354:28  */
-  assign n495_o = n492_o | n494_o;
-  /* 6805.vhd:354:36  */
-  assign n497_o = datain == 8'b10101010;
-  /* 6805.vhd:354:36  */
-  assign n498_o = n495_o | n497_o;
-  /* 6805.vhd:354:44  */
-  assign n500_o = datain == 8'b10101011;
-  /* 6805.vhd:354:44  */
-  assign n501_o = n498_o | n500_o;
-  /* 6805.vhd:354:52  */
-  assign n503_o = datain == 8'b10101110;
-  /* 6805.vhd:354:52  */
-  assign n504_o = n501_o | n503_o;
   /* 6805.vhd:362:34  */
-  assign n506_o = regpc + 16'b0000000000000001;
+  assign n469_o = regpc + 16'b0000000000000001;
   /* 6805.vhd:358:17  */
-  assign n508_o = datain == 8'b11100000;
+  assign n471_o = datain == 8'b10100000;
   /* 6805.vhd:358:28  */
-  assign n510_o = datain == 8'b11100001;
+  assign n473_o = datain == 8'b10100001;
   /* 6805.vhd:358:28  */
-  assign n511_o = n508_o | n510_o;
+  assign n474_o = n471_o | n473_o;
   /* 6805.vhd:358:36  */
-  assign n513_o = datain == 8'b11100010;
+  assign n476_o = datain == 8'b10100010;
   /* 6805.vhd:358:36  */
-  assign n514_o = n511_o | n513_o;
+  assign n477_o = n474_o | n476_o;
   /* 6805.vhd:358:44  */
-  assign n516_o = datain == 8'b11100011;
+  assign n479_o = datain == 8'b10100011;
   /* 6805.vhd:358:44  */
-  assign n517_o = n514_o | n516_o;
+  assign n480_o = n477_o | n479_o;
   /* 6805.vhd:358:52  */
-  assign n519_o = datain == 8'b11100100;
+  assign n482_o = datain == 8'b10100100;
   /* 6805.vhd:358:52  */
-  assign n520_o = n517_o | n519_o;
+  assign n483_o = n480_o | n482_o;
   /* 6805.vhd:359:28  */
-  assign n522_o = datain == 8'b11100101;
+  assign n485_o = datain == 8'b10100101;
   /* 6805.vhd:359:28  */
-  assign n523_o = n520_o | n522_o;
+  assign n486_o = n483_o | n485_o;
   /* 6805.vhd:359:36  */
-  assign n525_o = datain == 8'b11100110;
+  assign n488_o = datain == 8'b10100110;
   /* 6805.vhd:359:36  */
-  assign n526_o = n523_o | n525_o;
+  assign n489_o = n486_o | n488_o;
   /* 6805.vhd:359:44  */
-  assign n528_o = datain == 8'b11100111;
+  assign n491_o = datain == 8'b10101000;
   /* 6805.vhd:359:44  */
-  assign n529_o = n526_o | n528_o;
-  /* 6805.vhd:359:52  */
-  assign n531_o = datain == 8'b11101000;
-  /* 6805.vhd:359:52  */
-  assign n532_o = n529_o | n531_o;
+  assign n492_o = n489_o | n491_o;
   /* 6805.vhd:360:28  */
-  assign n534_o = datain == 8'b11101001;
+  assign n494_o = datain == 8'b10101001;
   /* 6805.vhd:360:28  */
-  assign n535_o = n532_o | n534_o;
+  assign n495_o = n492_o | n494_o;
   /* 6805.vhd:360:36  */
-  assign n537_o = datain == 8'b11101010;
+  assign n497_o = datain == 8'b10101010;
   /* 6805.vhd:360:36  */
-  assign n538_o = n535_o | n537_o;
+  assign n498_o = n495_o | n497_o;
   /* 6805.vhd:360:44  */
-  assign n540_o = datain == 8'b11101011;
+  assign n500_o = datain == 8'b10101011;
   /* 6805.vhd:360:44  */
-  assign n541_o = n538_o | n540_o;
+  assign n501_o = n498_o | n500_o;
   /* 6805.vhd:360:52  */
-  assign n543_o = datain == 8'b11101100;
+  assign n503_o = datain == 8'b10101110;
   /* 6805.vhd:360:52  */
-  assign n544_o = n541_o | n543_o;
-  /* 6805.vhd:361:28  */
-  assign n546_o = datain == 8'b11101110;
-  /* 6805.vhd:361:28  */
-  assign n547_o = n544_o | n546_o;
-  /* 6805.vhd:361:36  */
-  assign n549_o = datain == 8'b11101111;
-  /* 6805.vhd:361:36  */
-  assign n550_o = n547_o | n549_o;
-  /* 6805.vhd:369:36  */
-  assign n552_o = regpc + 16'b0000000000000001;
+  assign n504_o = n501_o | n503_o;
+  /* 6805.vhd:368:34  */
+  assign n506_o = regpc + 16'b0000000000000001;
   /* 6805.vhd:364:17  */
+  assign n508_o = datain == 8'b11100000;
+  /* 6805.vhd:364:28  */
+  assign n510_o = datain == 8'b11100001;
+  /* 6805.vhd:364:28  */
+  assign n511_o = n508_o | n510_o;
+  /* 6805.vhd:364:36  */
+  assign n513_o = datain == 8'b11100010;
+  /* 6805.vhd:364:36  */
+  assign n514_o = n511_o | n513_o;
+  /* 6805.vhd:364:44  */
+  assign n516_o = datain == 8'b11100011;
+  /* 6805.vhd:364:44  */
+  assign n517_o = n514_o | n516_o;
+  /* 6805.vhd:364:52  */
+  assign n519_o = datain == 8'b11100100;
+  /* 6805.vhd:364:52  */
+  assign n520_o = n517_o | n519_o;
+  /* 6805.vhd:365:28  */
+  assign n522_o = datain == 8'b11100101;
+  /* 6805.vhd:365:28  */
+  assign n523_o = n520_o | n522_o;
+  /* 6805.vhd:365:36  */
+  assign n525_o = datain == 8'b11100110;
+  /* 6805.vhd:365:36  */
+  assign n526_o = n523_o | n525_o;
+  /* 6805.vhd:365:44  */
+  assign n528_o = datain == 8'b11100111;
+  /* 6805.vhd:365:44  */
+  assign n529_o = n526_o | n528_o;
+  /* 6805.vhd:365:52  */
+  assign n531_o = datain == 8'b11101000;
+  /* 6805.vhd:365:52  */
+  assign n532_o = n529_o | n531_o;
+  /* 6805.vhd:366:28  */
+  assign n534_o = datain == 8'b11101001;
+  /* 6805.vhd:366:28  */
+  assign n535_o = n532_o | n534_o;
+  /* 6805.vhd:366:36  */
+  assign n537_o = datain == 8'b11101010;
+  /* 6805.vhd:366:36  */
+  assign n538_o = n535_o | n537_o;
+  /* 6805.vhd:366:44  */
+  assign n540_o = datain == 8'b11101011;
+  /* 6805.vhd:366:44  */
+  assign n541_o = n538_o | n540_o;
+  /* 6805.vhd:366:52  */
+  assign n543_o = datain == 8'b11101100;
+  /* 6805.vhd:366:52  */
+  assign n544_o = n541_o | n543_o;
+  /* 6805.vhd:367:28  */
+  assign n546_o = datain == 8'b11101110;
+  /* 6805.vhd:367:28  */
+  assign n547_o = n544_o | n546_o;
+  /* 6805.vhd:367:36  */
+  assign n549_o = datain == 8'b11101111;
+  /* 6805.vhd:367:36  */
+  assign n550_o = n547_o | n549_o;
+  /* 6805.vhd:375:36  */
+  assign n552_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:370:17  */
   assign n554_o = datain == 8'b11110000;
-  /* 6805.vhd:364:28  */
+  /* 6805.vhd:370:28  */
   assign n556_o = datain == 8'b11110001;
-  /* 6805.vhd:364:28  */
+  /* 6805.vhd:370:28  */
   assign n557_o = n554_o | n556_o;
-  /* 6805.vhd:364:36  */
+  /* 6805.vhd:370:36  */
   assign n559_o = datain == 8'b11110010;
-  /* 6805.vhd:364:36  */
+  /* 6805.vhd:370:36  */
   assign n560_o = n557_o | n559_o;
-  /* 6805.vhd:364:44  */
+  /* 6805.vhd:370:44  */
   assign n562_o = datain == 8'b11110011;
-  /* 6805.vhd:364:44  */
+  /* 6805.vhd:370:44  */
   assign n563_o = n560_o | n562_o;
-  /* 6805.vhd:364:52  */
+  /* 6805.vhd:370:52  */
   assign n565_o = datain == 8'b11110100;
-  /* 6805.vhd:364:52  */
+  /* 6805.vhd:370:52  */
   assign n566_o = n563_o | n565_o;
-  /* 6805.vhd:365:28  */
+  /* 6805.vhd:371:28  */
   assign n568_o = datain == 8'b11110101;
-  /* 6805.vhd:365:28  */
+  /* 6805.vhd:371:28  */
   assign n569_o = n566_o | n568_o;
-  /* 6805.vhd:365:36  */
+  /* 6805.vhd:371:36  */
   assign n571_o = datain == 8'b11110110;
-  /* 6805.vhd:365:36  */
+  /* 6805.vhd:371:36  */
   assign n572_o = n569_o | n571_o;
-  /* 6805.vhd:365:44  */
+  /* 6805.vhd:371:44  */
   assign n574_o = datain == 8'b11111000;
-  /* 6805.vhd:365:44  */
+  /* 6805.vhd:371:44  */
   assign n575_o = n572_o | n574_o;
-  /* 6805.vhd:366:28  */
+  /* 6805.vhd:372:28  */
   assign n577_o = datain == 8'b11111001;
-  /* 6805.vhd:366:28  */
+  /* 6805.vhd:372:28  */
   assign n578_o = n575_o | n577_o;
-  /* 6805.vhd:366:36  */
+  /* 6805.vhd:372:36  */
   assign n580_o = datain == 8'b11111010;
-  /* 6805.vhd:366:36  */
+  /* 6805.vhd:372:36  */
   assign n581_o = n578_o | n580_o;
-  /* 6805.vhd:366:44  */
+  /* 6805.vhd:372:44  */
   assign n583_o = datain == 8'b11111011;
-  /* 6805.vhd:366:44  */
+  /* 6805.vhd:372:44  */
   assign n584_o = n581_o | n583_o;
-  /* 6805.vhd:366:52  */
+  /* 6805.vhd:372:52  */
   assign n586_o = datain == 8'b11111110;
-  /* 6805.vhd:366:52  */
+  /* 6805.vhd:372:52  */
   assign n587_o = n584_o | n586_o;
-  /* 6805.vhd:372:34  */
+  /* 6805.vhd:378:34  */
   assign n589_o = {8'b00000000, regx};
-  /* 6805.vhd:371:17  */
+  /* 6805.vhd:377:17  */
   assign n591_o = datain == 8'b11111100;
-  /* 6805.vhd:376:32  */
+  /* 6805.vhd:382:32  */
   assign n592_o = rega[7];
-  /* 6805.vhd:377:27  */
+  /* 6805.vhd:383:27  */
   assign n594_o = rega == 8'b00000000;
-  /* 6805.vhd:377:19  */
+  /* 6805.vhd:383:19  */
   assign n597_o = n594_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:384:34  */
+  /* 6805.vhd:390:34  */
   assign n599_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:374:17  */
+  /* 6805.vhd:380:17  */
   assign n601_o = datain == 8'b11110111;
-  /* 6805.vhd:388:32  */
+  /* 6805.vhd:394:32  */
   assign n602_o = regx[7];
-  /* 6805.vhd:389:27  */
+  /* 6805.vhd:395:27  */
   assign n604_o = regx == 8'b00000000;
-  /* 6805.vhd:389:19  */
+  /* 6805.vhd:395:19  */
   assign n607_o = n604_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:396:34  */
+  /* 6805.vhd:402:34  */
   assign n609_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:386:17  */
+  /* 6805.vhd:392:17  */
   assign n611_o = datain == 8'b11111111;
-  /* 6805.vhd:399:36  */
+  /* 6805.vhd:405:36  */
   assign n613_o = 8'b00000000 - rega;
-  /* 6805.vhd:400:36  */
+  /* 6805.vhd:406:36  */
   assign n615_o = 8'b00000000 - rega;
-  /* 6805.vhd:401:34  */
+  /* 6805.vhd:407:34  */
   assign n616_o = n615_o[7];
-  /* 6805.vhd:402:27  */
+  /* 6805.vhd:408:27  */
   assign n618_o = n615_o == 8'b00000000;
-  /* 6805.vhd:402:19  */
+  /* 6805.vhd:408:19  */
   assign n621_o = n618_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:402:19  */
+  /* 6805.vhd:408:19  */
   assign n624_o = n618_o ? 1'b0 : 1'b1;
-  /* 6805.vhd:409:34  */
+  /* 6805.vhd:415:34  */
   assign n626_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:398:17  */
+  /* 6805.vhd:404:17  */
   assign n628_o = datain == 8'b01000000;
-  /* 6805.vhd:414:32  */
+  /* 6805.vhd:420:32  */
   assign n629_o = prod[7:0];
-  /* 6805.vhd:415:32  */
+  /* 6805.vhd:421:32  */
   assign n630_o = prod[15:8];
-  /* 6805.vhd:416:34  */
-  assign n632_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:411:17  */
-  assign n634_o = datain == 8'b01000010;
-  /* 6805.vhd:419:35  */
-  assign n636_o = rega ^ 8'b11111111;
-  /* 6805.vhd:420:35  */
-  assign n638_o = rega ^ 8'b11111111;
   /* 6805.vhd:422:34  */
-  assign n639_o = n638_o[7];
-  /* 6805.vhd:423:27  */
-  assign n641_o = n638_o == 8'b00000000;
-  /* 6805.vhd:423:19  */
-  assign n644_o = n641_o ? 1'b1 : 1'b0;
+  assign n632_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:417:17  */
+  assign n634_o = datain == 8'b01000010;
+  /* 6805.vhd:425:35  */
+  assign n636_o = rega ^ 8'b11111111;
+  /* 6805.vhd:426:35  */
+  assign n638_o = rega ^ 8'b11111111;
   /* 6805.vhd:428:34  */
-  assign n646_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:418:17  */
-  assign n648_o = datain == 8'b01000011;
-  /* 6805.vhd:431:40  */
-  assign n649_o = rega[7:1];
-  /* 6805.vhd:431:34  */
-  assign n651_o = {1'b0, n649_o};
-  /* 6805.vhd:432:40  */
-  assign n652_o = rega[7:1];
-  /* 6805.vhd:432:34  */
-  assign n654_o = {1'b0, n652_o};
+  assign n639_o = n638_o[7];
+  /* 6805.vhd:429:27  */
+  assign n641_o = n638_o == 8'b00000000;
+  /* 6805.vhd:429:19  */
+  assign n644_o = n641_o ? 1'b1 : 1'b0;
   /* 6805.vhd:434:34  */
-  assign n655_o = rega[0];
-  /* 6805.vhd:435:27  */
-  assign n657_o = n654_o == 8'b00000000;
-  /* 6805.vhd:435:19  */
-  assign n660_o = n657_o ? 1'b1 : 1'b0;
+  assign n646_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:424:17  */
+  assign n648_o = datain == 8'b01000011;
+  /* 6805.vhd:437:40  */
+  assign n649_o = rega[7:1];
+  /* 6805.vhd:437:34  */
+  assign n651_o = {1'b0, n649_o};
+  /* 6805.vhd:438:40  */
+  assign n652_o = rega[7:1];
+  /* 6805.vhd:438:34  */
+  assign n654_o = {1'b0, n652_o};
   /* 6805.vhd:440:34  */
-  assign n662_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:430:17  */
-  assign n664_o = datain == 8'b01000100;
-  /* 6805.vhd:443:42  */
-  assign n665_o = rega[7:1];
-  /* 6805.vhd:443:36  */
-  assign n666_o = {flagc, n665_o};
-  /* 6805.vhd:444:42  */
-  assign n667_o = rega[7:1];
-  /* 6805.vhd:444:36  */
-  assign n668_o = {flagc, n667_o};
+  assign n655_o = rega[0];
+  /* 6805.vhd:441:27  */
+  assign n657_o = n654_o == 8'b00000000;
+  /* 6805.vhd:441:19  */
+  assign n660_o = n657_o ? 1'b1 : 1'b0;
   /* 6805.vhd:446:34  */
-  assign n669_o = rega[0];
-  /* 6805.vhd:447:27  */
-  assign n671_o = n668_o == 8'b00000000;
-  /* 6805.vhd:447:19  */
-  assign n674_o = n671_o ? 1'b1 : 1'b0;
+  assign n662_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:436:17  */
+  assign n664_o = datain == 8'b01000100;
+  /* 6805.vhd:449:42  */
+  assign n665_o = rega[7:1];
+  /* 6805.vhd:449:36  */
+  assign n666_o = {flagc, n665_o};
+  /* 6805.vhd:450:42  */
+  assign n667_o = rega[7:1];
+  /* 6805.vhd:450:36  */
+  assign n668_o = {flagc, n667_o};
   /* 6805.vhd:452:34  */
-  assign n676_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:442:17  */
-  assign n678_o = datain == 8'b01000110;
-  /* 6805.vhd:455:34  */
-  assign n679_o = rega[7];
-  /* 6805.vhd:455:44  */
-  assign n680_o = rega[7:1];
-  /* 6805.vhd:455:38  */
-  assign n681_o = {n679_o, n680_o};
-  /* 6805.vhd:456:34  */
-  assign n682_o = rega[7];
-  /* 6805.vhd:456:44  */
-  assign n683_o = rega[7:1];
-  /* 6805.vhd:456:38  */
-  assign n684_o = {n682_o, n683_o};
-  /* 6805.vhd:457:34  */
-  assign n685_o = rega[7];
+  assign n669_o = rega[0];
+  /* 6805.vhd:453:27  */
+  assign n671_o = n668_o == 8'b00000000;
+  /* 6805.vhd:453:19  */
+  assign n674_o = n671_o ? 1'b1 : 1'b0;
   /* 6805.vhd:458:34  */
-  assign n686_o = rega[0];
-  /* 6805.vhd:459:27  */
-  assign n688_o = n684_o == 8'b00000000;
-  /* 6805.vhd:459:19  */
-  assign n691_o = n688_o ? 1'b1 : 1'b0;
+  assign n676_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:448:17  */
+  assign n678_o = datain == 8'b01000110;
+  /* 6805.vhd:461:34  */
+  assign n679_o = rega[7];
+  /* 6805.vhd:461:44  */
+  assign n680_o = rega[7:1];
+  /* 6805.vhd:461:38  */
+  assign n681_o = {n679_o, n680_o};
+  /* 6805.vhd:462:34  */
+  assign n682_o = rega[7];
+  /* 6805.vhd:462:44  */
+  assign n683_o = rega[7:1];
+  /* 6805.vhd:462:38  */
+  assign n684_o = {n682_o, n683_o};
+  /* 6805.vhd:463:34  */
+  assign n685_o = rega[7];
   /* 6805.vhd:464:34  */
-  assign n693_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:454:17  */
-  assign n695_o = datain == 8'b01000111;
-  /* 6805.vhd:467:34  */
-  assign n696_o = rega[6:0];
-  /* 6805.vhd:467:47  */
-  assign n698_o = {n696_o, 1'b0};
-  /* 6805.vhd:468:34  */
-  assign n699_o = rega[6:0];
-  /* 6805.vhd:468:47  */
-  assign n701_o = {n699_o, 1'b0};
-  /* 6805.vhd:469:34  */
-  assign n702_o = rega[6];
+  assign n686_o = rega[0];
+  /* 6805.vhd:465:27  */
+  assign n688_o = n684_o == 8'b00000000;
+  /* 6805.vhd:465:19  */
+  assign n691_o = n688_o ? 1'b1 : 1'b0;
   /* 6805.vhd:470:34  */
-  assign n703_o = rega[7];
-  /* 6805.vhd:471:27  */
-  assign n705_o = n701_o == 8'b00000000;
-  /* 6805.vhd:471:19  */
-  assign n708_o = n705_o ? 1'b1 : 1'b0;
+  assign n693_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:460:17  */
+  assign n695_o = datain == 8'b01000111;
+  /* 6805.vhd:473:34  */
+  assign n696_o = rega[6:0];
+  /* 6805.vhd:473:47  */
+  assign n698_o = {n696_o, 1'b0};
+  /* 6805.vhd:474:34  */
+  assign n699_o = rega[6:0];
+  /* 6805.vhd:474:47  */
+  assign n701_o = {n699_o, 1'b0};
+  /* 6805.vhd:475:34  */
+  assign n702_o = rega[6];
   /* 6805.vhd:476:34  */
-  assign n710_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:466:17  */
-  assign n712_o = datain == 8'b01001000;
-  /* 6805.vhd:479:34  */
-  assign n713_o = rega[6:0];
-  /* 6805.vhd:479:47  */
-  assign n714_o = {n713_o, flagc};
-  /* 6805.vhd:480:34  */
-  assign n715_o = rega[6:0];
-  /* 6805.vhd:480:47  */
-  assign n716_o = {n715_o, flagc};
-  /* 6805.vhd:481:34  */
-  assign n717_o = rega[6];
+  assign n703_o = rega[7];
+  /* 6805.vhd:477:27  */
+  assign n705_o = n701_o == 8'b00000000;
+  /* 6805.vhd:477:19  */
+  assign n708_o = n705_o ? 1'b1 : 1'b0;
   /* 6805.vhd:482:34  */
-  assign n718_o = rega[7];
-  /* 6805.vhd:483:27  */
-  assign n720_o = n716_o == 8'b00000000;
-  /* 6805.vhd:483:19  */
-  assign n723_o = n720_o ? 1'b1 : 1'b0;
+  assign n710_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:472:17  */
+  assign n712_o = datain == 8'b01001000;
+  /* 6805.vhd:485:34  */
+  assign n713_o = rega[6:0];
+  /* 6805.vhd:485:47  */
+  assign n714_o = {n713_o, flagc};
+  /* 6805.vhd:486:34  */
+  assign n715_o = rega[6:0];
+  /* 6805.vhd:486:47  */
+  assign n716_o = {n715_o, flagc};
+  /* 6805.vhd:487:34  */
+  assign n717_o = rega[6];
   /* 6805.vhd:488:34  */
+  assign n718_o = rega[7];
+  /* 6805.vhd:489:27  */
+  assign n720_o = n716_o == 8'b00000000;
+  /* 6805.vhd:489:19  */
+  assign n723_o = n720_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:494:34  */
   assign n725_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:478:17  */
+  /* 6805.vhd:484:17  */
   assign n727_o = datain == 8'b01001001;
-  /* 6805.vhd:491:35  */
+  /* 6805.vhd:497:35  */
   assign n729_o = rega - 8'b00000001;
-  /* 6805.vhd:492:35  */
+  /* 6805.vhd:498:35  */
   assign n731_o = rega - 8'b00000001;
-  /* 6805.vhd:493:34  */
-  assign n732_o = n731_o[7];
-  /* 6805.vhd:494:27  */
-  assign n734_o = n731_o == 8'b00000000;
-  /* 6805.vhd:494:19  */
-  assign n737_o = n734_o ? 1'b1 : 1'b0;
   /* 6805.vhd:499:34  */
+  assign n732_o = n731_o[7];
+  /* 6805.vhd:500:27  */
+  assign n734_o = n731_o == 8'b00000000;
+  /* 6805.vhd:500:19  */
+  assign n737_o = n734_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:505:34  */
   assign n739_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:490:17  */
+  /* 6805.vhd:496:17  */
   assign n741_o = datain == 8'b01001010;
-  /* 6805.vhd:502:35  */
+  /* 6805.vhd:508:35  */
   assign n743_o = rega + 8'b00000001;
-  /* 6805.vhd:503:35  */
+  /* 6805.vhd:509:35  */
   assign n745_o = rega + 8'b00000001;
-  /* 6805.vhd:504:34  */
-  assign n746_o = n745_o[7];
-  /* 6805.vhd:505:27  */
-  assign n748_o = n745_o == 8'b00000000;
-  /* 6805.vhd:505:19  */
-  assign n751_o = n748_o ? 1'b1 : 1'b0;
   /* 6805.vhd:510:34  */
+  assign n746_o = n745_o[7];
+  /* 6805.vhd:511:27  */
+  assign n748_o = n745_o == 8'b00000000;
+  /* 6805.vhd:511:19  */
+  assign n751_o = n748_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:516:34  */
   assign n753_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:501:17  */
+  /* 6805.vhd:507:17  */
   assign n755_o = datain == 8'b01001100;
-  /* 6805.vhd:513:34  */
-  assign n756_o = rega[7];
-  /* 6805.vhd:514:27  */
-  assign n758_o = rega == 8'b00000000;
-  /* 6805.vhd:514:19  */
-  assign n761_o = n758_o ? 1'b1 : 1'b0;
   /* 6805.vhd:519:34  */
-  assign n763_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:512:17  */
-  assign n765_o = datain == 8'b01001101;
+  assign n756_o = rega[7];
+  /* 6805.vhd:520:27  */
+  assign n758_o = rega == 8'b00000000;
+  /* 6805.vhd:520:19  */
+  assign n761_o = n758_o ? 1'b1 : 1'b0;
   /* 6805.vhd:525:34  */
+  assign n763_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:518:17  */
+  assign n765_o = datain == 8'b01001101;
+  /* 6805.vhd:531:34  */
   assign n767_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:521:17  */
-  assign n769_o = datain == 8'b01001111;
-  /* 6805.vhd:528:33  */
-  assign n771_o = 8'b00000000 - regx;
-  /* 6805.vhd:529:33  */
-  assign n773_o = 8'b00000000 - regx;
-  /* 6805.vhd:530:34  */
-  assign n774_o = n773_o[7];
-  /* 6805.vhd:531:27  */
-  assign n776_o = n773_o == 8'b00000000;
-  /* 6805.vhd:531:19  */
-  assign n779_o = n776_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:531:19  */
-  assign n782_o = n776_o ? 1'b0 : 1'b1;
-  /* 6805.vhd:538:34  */
-  assign n784_o = regpc + 16'b0000000000000001;
   /* 6805.vhd:527:17  */
-  assign n786_o = datain == 8'b01010000;
-  /* 6805.vhd:541:32  */
-  assign n788_o = regx ^ 8'b11111111;
-  /* 6805.vhd:542:32  */
-  assign n790_o = regx ^ 8'b11111111;
+  assign n769_o = datain == 8'b01001111;
+  /* 6805.vhd:534:33  */
+  assign n771_o = 8'b00000000 - regx;
+  /* 6805.vhd:535:33  */
+  assign n773_o = 8'b00000000 - regx;
+  /* 6805.vhd:536:34  */
+  assign n774_o = n773_o[7];
+  /* 6805.vhd:537:27  */
+  assign n776_o = n773_o == 8'b00000000;
+  /* 6805.vhd:537:19  */
+  assign n779_o = n776_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:537:19  */
+  assign n782_o = n776_o ? 1'b0 : 1'b1;
   /* 6805.vhd:544:34  */
-  assign n791_o = n790_o[7];
-  /* 6805.vhd:545:27  */
-  assign n793_o = n790_o == 8'b00000000;
-  /* 6805.vhd:545:19  */
-  assign n796_o = n793_o ? 1'b1 : 1'b0;
+  assign n784_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:533:17  */
+  assign n786_o = datain == 8'b01010000;
+  /* 6805.vhd:547:32  */
+  assign n788_o = regx ^ 8'b11111111;
+  /* 6805.vhd:548:32  */
+  assign n790_o = regx ^ 8'b11111111;
   /* 6805.vhd:550:34  */
-  assign n798_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:540:17  */
-  assign n800_o = datain == 8'b01010011;
-  /* 6805.vhd:553:37  */
-  assign n801_o = regx[7:1];
-  /* 6805.vhd:553:31  */
-  assign n803_o = {1'b0, n801_o};
-  /* 6805.vhd:554:37  */
-  assign n804_o = regx[7:1];
-  /* 6805.vhd:554:31  */
-  assign n806_o = {1'b0, n804_o};
+  assign n791_o = n790_o[7];
+  /* 6805.vhd:551:27  */
+  assign n793_o = n790_o == 8'b00000000;
+  /* 6805.vhd:551:19  */
+  assign n796_o = n793_o ? 1'b1 : 1'b0;
   /* 6805.vhd:556:34  */
-  assign n807_o = regx[0];
-  /* 6805.vhd:557:27  */
-  assign n809_o = n806_o == 8'b00000000;
-  /* 6805.vhd:557:19  */
-  assign n812_o = n809_o ? 1'b1 : 1'b0;
+  assign n798_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:546:17  */
+  assign n800_o = datain == 8'b01010011;
+  /* 6805.vhd:559:37  */
+  assign n801_o = regx[7:1];
+  /* 6805.vhd:559:31  */
+  assign n803_o = {1'b0, n801_o};
+  /* 6805.vhd:560:37  */
+  assign n804_o = regx[7:1];
+  /* 6805.vhd:560:31  */
+  assign n806_o = {1'b0, n804_o};
   /* 6805.vhd:562:34  */
-  assign n814_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:552:17  */
-  assign n816_o = datain == 8'b01010100;
-  /* 6805.vhd:565:39  */
-  assign n817_o = regx[7:1];
-  /* 6805.vhd:565:33  */
-  assign n818_o = {flagc, n817_o};
-  /* 6805.vhd:566:39  */
-  assign n819_o = regx[7:1];
-  /* 6805.vhd:566:33  */
-  assign n820_o = {flagc, n819_o};
+  assign n807_o = regx[0];
+  /* 6805.vhd:563:27  */
+  assign n809_o = n806_o == 8'b00000000;
+  /* 6805.vhd:563:19  */
+  assign n812_o = n809_o ? 1'b1 : 1'b0;
   /* 6805.vhd:568:34  */
-  assign n821_o = regx[0];
-  /* 6805.vhd:569:27  */
-  assign n823_o = n820_o == 8'b00000000;
-  /* 6805.vhd:569:19  */
-  assign n826_o = n823_o ? 1'b1 : 1'b0;
+  assign n814_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:558:17  */
+  assign n816_o = datain == 8'b01010100;
+  /* 6805.vhd:571:39  */
+  assign n817_o = regx[7:1];
+  /* 6805.vhd:571:33  */
+  assign n818_o = {flagc, n817_o};
+  /* 6805.vhd:572:39  */
+  assign n819_o = regx[7:1];
+  /* 6805.vhd:572:33  */
+  assign n820_o = {flagc, n819_o};
   /* 6805.vhd:574:34  */
-  assign n828_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:564:17  */
-  assign n830_o = datain == 8'b01010110;
-  /* 6805.vhd:577:31  */
-  assign n831_o = regx[7];
-  /* 6805.vhd:577:41  */
-  assign n832_o = regx[7:1];
-  /* 6805.vhd:577:35  */
-  assign n833_o = {n831_o, n832_o};
-  /* 6805.vhd:578:31  */
-  assign n834_o = regx[7];
-  /* 6805.vhd:578:41  */
-  assign n835_o = regx[7:1];
-  /* 6805.vhd:578:35  */
-  assign n836_o = {n834_o, n835_o};
-  /* 6805.vhd:579:34  */
-  assign n837_o = regx[7];
+  assign n821_o = regx[0];
+  /* 6805.vhd:575:27  */
+  assign n823_o = n820_o == 8'b00000000;
+  /* 6805.vhd:575:19  */
+  assign n826_o = n823_o ? 1'b1 : 1'b0;
   /* 6805.vhd:580:34  */
-  assign n838_o = regx[0];
-  /* 6805.vhd:581:27  */
-  assign n840_o = n836_o == 8'b00000000;
-  /* 6805.vhd:581:19  */
-  assign n843_o = n840_o ? 1'b1 : 1'b0;
+  assign n828_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:570:17  */
+  assign n830_o = datain == 8'b01010110;
+  /* 6805.vhd:583:31  */
+  assign n831_o = regx[7];
+  /* 6805.vhd:583:41  */
+  assign n832_o = regx[7:1];
+  /* 6805.vhd:583:35  */
+  assign n833_o = {n831_o, n832_o};
+  /* 6805.vhd:584:31  */
+  assign n834_o = regx[7];
+  /* 6805.vhd:584:41  */
+  assign n835_o = regx[7:1];
+  /* 6805.vhd:584:35  */
+  assign n836_o = {n834_o, n835_o};
+  /* 6805.vhd:585:34  */
+  assign n837_o = regx[7];
   /* 6805.vhd:586:34  */
-  assign n845_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:576:17  */
-  assign n847_o = datain == 8'b01010111;
-  /* 6805.vhd:589:31  */
-  assign n848_o = regx[6:0];
-  /* 6805.vhd:589:44  */
-  assign n850_o = {n848_o, 1'b0};
-  /* 6805.vhd:590:31  */
-  assign n851_o = regx[6:0];
-  /* 6805.vhd:590:44  */
-  assign n853_o = {n851_o, 1'b0};
-  /* 6805.vhd:591:34  */
-  assign n854_o = regx[6];
+  assign n838_o = regx[0];
+  /* 6805.vhd:587:27  */
+  assign n840_o = n836_o == 8'b00000000;
+  /* 6805.vhd:587:19  */
+  assign n843_o = n840_o ? 1'b1 : 1'b0;
   /* 6805.vhd:592:34  */
-  assign n855_o = regx[7];
-  /* 6805.vhd:593:27  */
-  assign n857_o = n853_o == 8'b00000000;
-  /* 6805.vhd:593:19  */
-  assign n860_o = n857_o ? 1'b1 : 1'b0;
+  assign n845_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:582:17  */
+  assign n847_o = datain == 8'b01010111;
+  /* 6805.vhd:595:31  */
+  assign n848_o = regx[6:0];
+  /* 6805.vhd:595:44  */
+  assign n850_o = {n848_o, 1'b0};
+  /* 6805.vhd:596:31  */
+  assign n851_o = regx[6:0];
+  /* 6805.vhd:596:44  */
+  assign n853_o = {n851_o, 1'b0};
+  /* 6805.vhd:597:34  */
+  assign n854_o = regx[6];
   /* 6805.vhd:598:34  */
-  assign n862_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:588:17  */
-  assign n864_o = datain == 8'b01011000;
-  /* 6805.vhd:601:31  */
-  assign n865_o = regx[6:0];
-  /* 6805.vhd:601:44  */
-  assign n866_o = {n865_o, flagc};
-  /* 6805.vhd:602:31  */
-  assign n867_o = regx[6:0];
-  /* 6805.vhd:602:44  */
-  assign n868_o = {n867_o, flagc};
-  /* 6805.vhd:603:34  */
-  assign n869_o = regx[6];
+  assign n855_o = regx[7];
+  /* 6805.vhd:599:27  */
+  assign n857_o = n853_o == 8'b00000000;
+  /* 6805.vhd:599:19  */
+  assign n860_o = n857_o ? 1'b1 : 1'b0;
   /* 6805.vhd:604:34  */
-  assign n870_o = regx[7];
-  /* 6805.vhd:605:27  */
-  assign n872_o = n868_o == 8'b00000000;
-  /* 6805.vhd:605:19  */
-  assign n875_o = n872_o ? 1'b1 : 1'b0;
+  assign n862_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:594:17  */
+  assign n864_o = datain == 8'b01011000;
+  /* 6805.vhd:607:31  */
+  assign n865_o = regx[6:0];
+  /* 6805.vhd:607:44  */
+  assign n866_o = {n865_o, flagc};
+  /* 6805.vhd:608:31  */
+  assign n867_o = regx[6:0];
+  /* 6805.vhd:608:44  */
+  assign n868_o = {n867_o, flagc};
+  /* 6805.vhd:609:34  */
+  assign n869_o = regx[6];
   /* 6805.vhd:610:34  */
+  assign n870_o = regx[7];
+  /* 6805.vhd:611:27  */
+  assign n872_o = n868_o == 8'b00000000;
+  /* 6805.vhd:611:19  */
+  assign n875_o = n872_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:616:34  */
   assign n877_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:600:17  */
+  /* 6805.vhd:606:17  */
   assign n879_o = datain == 8'b01011001;
-  /* 6805.vhd:613:44  */
+  /* 6805.vhd:619:44  */
   assign n881_o = regx - 8'b00000001;
-  /* 6805.vhd:614:44  */
+  /* 6805.vhd:620:44  */
   assign n883_o = regx - 8'b00000001;
-  /* 6805.vhd:615:34  */
-  assign n884_o = n883_o[7];
-  /* 6805.vhd:616:27  */
-  assign n886_o = n883_o == 8'b00000000;
-  /* 6805.vhd:616:19  */
-  assign n889_o = n886_o ? 1'b1 : 1'b0;
   /* 6805.vhd:621:34  */
+  assign n884_o = n883_o[7];
+  /* 6805.vhd:622:27  */
+  assign n886_o = n883_o == 8'b00000000;
+  /* 6805.vhd:622:19  */
+  assign n889_o = n886_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:627:34  */
   assign n891_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:612:17  */
+  /* 6805.vhd:618:17  */
   assign n893_o = datain == 8'b01011010;
-  /* 6805.vhd:624:44  */
+  /* 6805.vhd:630:44  */
   assign n895_o = regx + 8'b00000001;
-  /* 6805.vhd:625:44  */
+  /* 6805.vhd:631:44  */
   assign n897_o = regx + 8'b00000001;
-  /* 6805.vhd:626:34  */
-  assign n898_o = n897_o[7];
-  /* 6805.vhd:627:27  */
-  assign n900_o = n897_o == 8'b00000000;
-  /* 6805.vhd:627:19  */
-  assign n903_o = n900_o ? 1'b1 : 1'b0;
   /* 6805.vhd:632:34  */
+  assign n898_o = n897_o[7];
+  /* 6805.vhd:633:27  */
+  assign n900_o = n897_o == 8'b00000000;
+  /* 6805.vhd:633:19  */
+  assign n903_o = n900_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:638:34  */
   assign n905_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:623:17  */
+  /* 6805.vhd:629:17  */
   assign n907_o = datain == 8'b01011100;
-  /* 6805.vhd:635:34  */
-  assign n908_o = regx[7];
-  /* 6805.vhd:636:27  */
-  assign n910_o = regx == 8'b00000000;
-  /* 6805.vhd:636:19  */
-  assign n913_o = n910_o ? 1'b1 : 1'b0;
   /* 6805.vhd:641:34  */
-  assign n915_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:634:17  */
-  assign n917_o = datain == 8'b01011101;
+  assign n908_o = regx[7];
+  /* 6805.vhd:642:27  */
+  assign n910_o = regx == 8'b00000000;
+  /* 6805.vhd:642:19  */
+  assign n913_o = n910_o ? 1'b1 : 1'b0;
   /* 6805.vhd:647:34  */
+  assign n915_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:640:17  */
+  assign n917_o = datain == 8'b01011101;
+  /* 6805.vhd:653:34  */
   assign n919_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:643:17  */
-  assign n921_o = datain == 8'b01011111;
-  /* 6805.vhd:652:33  */
-  assign n923_o = {8'b00000000, regx};
-  /* 6805.vhd:653:36  */
-  assign n925_o = regpc + 16'b0000000000000001;
   /* 6805.vhd:649:17  */
-  assign n927_o = datain == 8'b01100000;
-  /* 6805.vhd:649:28  */
-  assign n929_o = datain == 8'b01100011;
-  /* 6805.vhd:649:28  */
-  assign n930_o = n927_o | n929_o;
-  /* 6805.vhd:649:36  */
-  assign n932_o = datain == 8'b01100100;
-  /* 6805.vhd:649:36  */
-  assign n933_o = n930_o | n932_o;
-  /* 6805.vhd:649:44  */
-  assign n935_o = datain == 8'b01100110;
-  /* 6805.vhd:649:44  */
-  assign n936_o = n933_o | n935_o;
-  /* 6805.vhd:649:52  */
-  assign n938_o = datain == 8'b01100111;
-  /* 6805.vhd:649:52  */
-  assign n939_o = n936_o | n938_o;
-  /* 6805.vhd:650:28  */
-  assign n941_o = datain == 8'b01101000;
-  /* 6805.vhd:650:28  */
-  assign n942_o = n939_o | n941_o;
-  /* 6805.vhd:650:36  */
-  assign n944_o = datain == 8'b01101001;
-  /* 6805.vhd:650:36  */
-  assign n945_o = n942_o | n944_o;
-  /* 6805.vhd:650:44  */
-  assign n947_o = datain == 8'b01101010;
-  /* 6805.vhd:650:44  */
-  assign n948_o = n945_o | n947_o;
-  /* 6805.vhd:650:52  */
-  assign n950_o = datain == 8'b01101100;
-  /* 6805.vhd:650:52  */
-  assign n951_o = n948_o | n950_o;
-  /* 6805.vhd:651:28  */
-  assign n953_o = datain == 8'b01101101;
-  /* 6805.vhd:651:28  */
-  assign n954_o = n951_o | n953_o;
-  /* 6805.vhd:651:36  */
-  assign n956_o = datain == 8'b01101111;
-  /* 6805.vhd:651:36  */
-  assign n957_o = n954_o | n956_o;
-  /* 6805.vhd:662:34  */
-  assign n959_o = regpc + 16'b0000000000000001;
+  assign n921_o = datain == 8'b01011111;
+  /* 6805.vhd:658:33  */
+  assign n923_o = {8'b00000000, regx};
+  /* 6805.vhd:659:36  */
+  assign n925_o = regpc + 16'b0000000000000001;
   /* 6805.vhd:655:17  */
+  assign n927_o = datain == 8'b01100000;
+  /* 6805.vhd:655:28  */
+  assign n929_o = datain == 8'b01100011;
+  /* 6805.vhd:655:28  */
+  assign n930_o = n927_o | n929_o;
+  /* 6805.vhd:655:36  */
+  assign n932_o = datain == 8'b01100100;
+  /* 6805.vhd:655:36  */
+  assign n933_o = n930_o | n932_o;
+  /* 6805.vhd:655:44  */
+  assign n935_o = datain == 8'b01100110;
+  /* 6805.vhd:655:44  */
+  assign n936_o = n933_o | n935_o;
+  /* 6805.vhd:655:52  */
+  assign n938_o = datain == 8'b01100111;
+  /* 6805.vhd:655:52  */
+  assign n939_o = n936_o | n938_o;
+  /* 6805.vhd:656:28  */
+  assign n941_o = datain == 8'b01101000;
+  /* 6805.vhd:656:28  */
+  assign n942_o = n939_o | n941_o;
+  /* 6805.vhd:656:36  */
+  assign n944_o = datain == 8'b01101001;
+  /* 6805.vhd:656:36  */
+  assign n945_o = n942_o | n944_o;
+  /* 6805.vhd:656:44  */
+  assign n947_o = datain == 8'b01101010;
+  /* 6805.vhd:656:44  */
+  assign n948_o = n945_o | n947_o;
+  /* 6805.vhd:656:52  */
+  assign n950_o = datain == 8'b01101100;
+  /* 6805.vhd:656:52  */
+  assign n951_o = n948_o | n950_o;
+  /* 6805.vhd:657:28  */
+  assign n953_o = datain == 8'b01101101;
+  /* 6805.vhd:657:28  */
+  assign n954_o = n951_o | n953_o;
+  /* 6805.vhd:657:36  */
+  assign n956_o = datain == 8'b01101111;
+  /* 6805.vhd:657:36  */
+  assign n957_o = n954_o | n956_o;
+  /* 6805.vhd:668:34  */
+  assign n959_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:661:17  */
   assign n961_o = datain == 8'b01111111;
-  /* 6805.vhd:665:36  */
+  /* 6805.vhd:671:36  */
   assign n963_o = regsp + 16'b0000000000000001;
-  /* 6805.vhd:664:17  */
+  /* 6805.vhd:670:17  */
   assign n965_o = datain == 8'b10000000;
-  /* 6805.vhd:664:28  */
+  /* 6805.vhd:670:28  */
   assign n967_o = datain == 8'b10000001;
-  /* 6805.vhd:664:28  */
+  /* 6805.vhd:670:28  */
   assign n968_o = n965_o | n967_o;
-  /* 6805.vhd:669:36  */
+  /* 6805.vhd:675:36  */
   assign n970_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:668:17  */
+  /* 6805.vhd:674:17  */
   assign n972_o = datain == 8'b10000011;
-  /* 6805.vhd:673:36  */
+  /* 6805.vhd:679:36  */
   assign n974_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:672:17  */
-  assign n976_o = datain == 8'b10001110;
-  /* 6805.vhd:676:36  */
-  assign n978_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:675:17  */
-  assign n980_o = datain == 8'b10001111;
-  /* 6805.vhd:680:36  */
-  assign n982_o = regpc + 16'b0000000000000001;
   /* 6805.vhd:678:17  */
+  assign n976_o = datain == 8'b10001110;
+  /* 6805.vhd:682:36  */
+  assign n978_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:681:17  */
+  assign n980_o = datain == 8'b10001111;
+  /* 6805.vhd:686:36  */
+  assign n982_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:684:17  */
   assign n984_o = datain == 8'b10010111;
-  /* 6805.vhd:683:34  */
+  /* 6805.vhd:689:34  */
   assign n985_o = datain[0];
-  /* 6805.vhd:684:36  */
+  /* 6805.vhd:690:36  */
   assign n987_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:682:17  */
+  /* 6805.vhd:688:17  */
   assign n989_o = datain == 8'b10011000;
-  /* 6805.vhd:682:28  */
+  /* 6805.vhd:688:28  */
   assign n991_o = datain == 8'b10011001;
-  /* 6805.vhd:682:28  */
+  /* 6805.vhd:688:28  */
   assign n992_o = n989_o | n991_o;
-  /* 6805.vhd:687:34  */
+  /* 6805.vhd:693:34  */
   assign n993_o = datain[0];
-  /* 6805.vhd:688:36  */
+  /* 6805.vhd:694:36  */
   assign n995_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:686:17  */
+  /* 6805.vhd:692:17  */
   assign n997_o = datain == 8'b10011010;
-  /* 6805.vhd:686:28  */
+  /* 6805.vhd:692:28  */
   assign n999_o = datain == 8'b10011011;
-  /* 6805.vhd:686:28  */
+  /* 6805.vhd:692:28  */
   assign n1000_o = n997_o | n999_o;
-  /* 6805.vhd:692:36  */
+  /* 6805.vhd:698:36  */
   assign n1002_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:690:17  */
+  /* 6805.vhd:696:17  */
   assign n1004_o = datain == 8'b10011100;
-  /* 6805.vhd:702:36  */
+  /* 6805.vhd:708:36  */
   assign n1006_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:694:17  */
+  /* 6805.vhd:700:17  */
   assign n1008_o = datain == 8'b00110001;
-  /* 6805.vhd:694:28  */
+  /* 6805.vhd:700:28  */
   assign n1010_o = datain == 8'b01000001;
-  /* 6805.vhd:694:28  */
+  /* 6805.vhd:700:28  */
   assign n1011_o = n1008_o | n1010_o;
-  /* 6805.vhd:694:36  */
+  /* 6805.vhd:700:36  */
   assign n1013_o = datain == 8'b00110101;
-  /* 6805.vhd:694:36  */
+  /* 6805.vhd:700:36  */
   assign n1014_o = n1011_o | n1013_o;
-  /* 6805.vhd:694:44  */
+  /* 6805.vhd:700:44  */
   assign n1016_o = datain == 8'b00111011;
-  /* 6805.vhd:694:44  */
+  /* 6805.vhd:700:44  */
   assign n1017_o = n1014_o | n1016_o;
-  /* 6805.vhd:694:52  */
+  /* 6805.vhd:700:52  */
   assign n1019_o = datain == 8'b01000101;
-  /* 6805.vhd:694:52  */
+  /* 6805.vhd:700:52  */
   assign n1020_o = n1017_o | n1019_o;
-  /* 6805.vhd:694:60  */
+  /* 6805.vhd:700:60  */
   assign n1022_o = datain == 8'b01001011;
-  /* 6805.vhd:694:60  */
+  /* 6805.vhd:700:60  */
   assign n1023_o = n1020_o | n1022_o;
-  /* 6805.vhd:695:28  */
+  /* 6805.vhd:701:28  */
   assign n1025_o = datain == 8'b01001110;
-  /* 6805.vhd:695:28  */
+  /* 6805.vhd:701:28  */
   assign n1026_o = n1023_o | n1025_o;
-  /* 6805.vhd:695:36  */
+  /* 6805.vhd:701:36  */
   assign n1028_o = datain == 8'b01010001;
-  /* 6805.vhd:695:36  */
+  /* 6805.vhd:701:36  */
   assign n1029_o = n1026_o | n1028_o;
-  /* 6805.vhd:695:44  */
+  /* 6805.vhd:701:44  */
   assign n1031_o = datain == 8'b01010010;
-  /* 6805.vhd:695:44  */
+  /* 6805.vhd:701:44  */
   assign n1032_o = n1029_o | n1031_o;
-  /* 6805.vhd:695:52  */
+  /* 6805.vhd:701:52  */
   assign n1034_o = datain == 8'b01010101;
-  /* 6805.vhd:695:52  */
+  /* 6805.vhd:701:52  */
   assign n1035_o = n1032_o | n1034_o;
-  /* 6805.vhd:695:60  */
+  /* 6805.vhd:701:60  */
   assign n1037_o = datain == 8'b01011011;
-  /* 6805.vhd:695:60  */
+  /* 6805.vhd:701:60  */
   assign n1038_o = n1035_o | n1037_o;
-  /* 6805.vhd:696:28  */
+  /* 6805.vhd:702:28  */
   assign n1040_o = datain == 8'b01011110;
-  /* 6805.vhd:696:28  */
+  /* 6805.vhd:702:28  */
   assign n1041_o = n1038_o | n1040_o;
-  /* 6805.vhd:696:36  */
+  /* 6805.vhd:702:36  */
   assign n1043_o = datain == 8'b01100001;
-  /* 6805.vhd:696:36  */
+  /* 6805.vhd:702:36  */
   assign n1044_o = n1041_o | n1043_o;
-  /* 6805.vhd:696:44  */
+  /* 6805.vhd:702:44  */
   assign n1046_o = datain == 8'b01100010;
-  /* 6805.vhd:696:44  */
+  /* 6805.vhd:702:44  */
   assign n1047_o = n1044_o | n1046_o;
-  /* 6805.vhd:696:52  */
+  /* 6805.vhd:702:52  */
   assign n1049_o = datain == 8'b01100101;
-  /* 6805.vhd:696:52  */
+  /* 6805.vhd:702:52  */
   assign n1050_o = n1047_o | n1049_o;
-  /* 6805.vhd:696:60  */
+  /* 6805.vhd:702:60  */
   assign n1052_o = datain == 8'b01101011;
-  /* 6805.vhd:696:60  */
+  /* 6805.vhd:702:60  */
   assign n1053_o = n1050_o | n1052_o;
-  /* 6805.vhd:697:28  */
+  /* 6805.vhd:703:28  */
   assign n1055_o = datain == 8'b01101110;
-  /* 6805.vhd:697:28  */
+  /* 6805.vhd:703:28  */
   assign n1056_o = n1053_o | n1055_o;
-  /* 6805.vhd:697:36  */
+  /* 6805.vhd:703:36  */
   assign n1058_o = datain == 8'b01110001;
-  /* 6805.vhd:697:36  */
+  /* 6805.vhd:703:36  */
   assign n1059_o = n1056_o | n1058_o;
-  /* 6805.vhd:697:44  */
+  /* 6805.vhd:703:44  */
   assign n1061_o = datain == 8'b01110010;
-  /* 6805.vhd:697:44  */
+  /* 6805.vhd:703:44  */
   assign n1062_o = n1059_o | n1061_o;
-  /* 6805.vhd:697:52  */
+  /* 6805.vhd:703:52  */
   assign n1064_o = datain == 8'b01110101;
-  /* 6805.vhd:697:52  */
+  /* 6805.vhd:703:52  */
   assign n1065_o = n1062_o | n1064_o;
-  /* 6805.vhd:697:60  */
+  /* 6805.vhd:703:60  */
   assign n1067_o = datain == 8'b01111011;
-  /* 6805.vhd:697:60  */
+  /* 6805.vhd:703:60  */
   assign n1068_o = n1065_o | n1067_o;
-  /* 6805.vhd:697:68  */
+  /* 6805.vhd:703:68  */
   assign n1070_o = datain == 8'b01111110;
-  /* 6805.vhd:697:68  */
+  /* 6805.vhd:703:68  */
   assign n1071_o = n1068_o | n1070_o;
-  /* 6805.vhd:697:76  */
+  /* 6805.vhd:703:76  */
   assign n1073_o = datain == 8'b10000100;
-  /* 6805.vhd:697:76  */
+  /* 6805.vhd:703:76  */
   assign n1074_o = n1071_o | n1073_o;
-  /* 6805.vhd:698:28  */
+  /* 6805.vhd:704:28  */
   assign n1076_o = datain == 8'b10000101;
-  /* 6805.vhd:698:28  */
+  /* 6805.vhd:704:28  */
   assign n1077_o = n1074_o | n1076_o;
-  /* 6805.vhd:698:36  */
+  /* 6805.vhd:704:36  */
   assign n1079_o = datain == 8'b10000110;
-  /* 6805.vhd:698:36  */
+  /* 6805.vhd:704:36  */
   assign n1080_o = n1077_o | n1079_o;
-  /* 6805.vhd:698:44  */
+  /* 6805.vhd:704:44  */
   assign n1082_o = datain == 8'b10000111;
-  /* 6805.vhd:698:44  */
+  /* 6805.vhd:704:44  */
   assign n1083_o = n1080_o | n1082_o;
-  /* 6805.vhd:698:52  */
+  /* 6805.vhd:704:52  */
   assign n1085_o = datain == 8'b10001000;
-  /* 6805.vhd:698:52  */
+  /* 6805.vhd:704:52  */
   assign n1086_o = n1083_o | n1085_o;
-  /* 6805.vhd:698:60  */
+  /* 6805.vhd:704:60  */
   assign n1088_o = datain == 8'b10001001;
-  /* 6805.vhd:698:60  */
+  /* 6805.vhd:704:60  */
   assign n1089_o = n1086_o | n1088_o;
-  /* 6805.vhd:699:28  */
+  /* 6805.vhd:705:28  */
   assign n1091_o = datain == 8'b10001010;
-  /* 6805.vhd:699:28  */
+  /* 6805.vhd:705:28  */
   assign n1092_o = n1089_o | n1091_o;
-  /* 6805.vhd:699:36  */
+  /* 6805.vhd:705:36  */
   assign n1094_o = datain == 8'b10001011;
-  /* 6805.vhd:699:36  */
+  /* 6805.vhd:705:36  */
   assign n1095_o = n1092_o | n1094_o;
-  /* 6805.vhd:699:44  */
+  /* 6805.vhd:705:44  */
   assign n1097_o = datain == 8'b10001100;
-  /* 6805.vhd:699:44  */
+  /* 6805.vhd:705:44  */
   assign n1098_o = n1095_o | n1097_o;
-  /* 6805.vhd:699:52  */
+  /* 6805.vhd:705:52  */
   assign n1100_o = datain == 8'b10001101;
-  /* 6805.vhd:699:52  */
+  /* 6805.vhd:705:52  */
   assign n1101_o = n1098_o | n1100_o;
-  /* 6805.vhd:699:60  */
+  /* 6805.vhd:705:60  */
   assign n1103_o = datain == 8'b10010000;
-  /* 6805.vhd:699:60  */
+  /* 6805.vhd:705:60  */
   assign n1104_o = n1101_o | n1103_o;
-  /* 6805.vhd:700:28  */
+  /* 6805.vhd:706:28  */
   assign n1106_o = datain == 8'b10010001;
-  /* 6805.vhd:700:28  */
+  /* 6805.vhd:706:28  */
   assign n1107_o = n1104_o | n1106_o;
-  /* 6805.vhd:700:36  */
-  assign n1109_o = datain == 8'b10010010;
-  /* 6805.vhd:700:36  */
-  assign n1110_o = n1107_o | n1109_o;
-  /* 6805.vhd:700:44  */
-  assign n1112_o = datain == 8'b10010011;
-  /* 6805.vhd:700:44  */
-  assign n1113_o = n1110_o | n1112_o;
-  /* 6805.vhd:700:52  */
-  assign n1115_o = datain == 8'b10010100;
-  /* 6805.vhd:700:52  */
-  assign n1116_o = n1113_o | n1115_o;
-  /* 6805.vhd:700:60  */
-  assign n1118_o = datain == 8'b10010101;
-  /* 6805.vhd:700:60  */
-  assign n1119_o = n1116_o | n1118_o;
-  /* 6805.vhd:700:68  */
-  assign n1121_o = datain == 8'b10011101;
-  /* 6805.vhd:700:68  */
-  assign n1122_o = n1119_o | n1121_o;
-  /* 6805.vhd:700:76  */
-  assign n1124_o = datain == 8'b10011110;
-  /* 6805.vhd:700:76  */
-  assign n1125_o = n1122_o | n1124_o;
-  /* 6805.vhd:700:84  */
-  assign n1127_o = datain == 8'b10100111;
-  /* 6805.vhd:700:84  */
-  assign n1128_o = n1125_o | n1127_o;
-  /* 6805.vhd:701:28  */
-  assign n1130_o = datain == 8'b10101100;
-  /* 6805.vhd:701:28  */
-  assign n1131_o = n1128_o | n1130_o;
-  /* 6805.vhd:701:36  */
-  assign n1133_o = datain == 8'b10101111;
-  /* 6805.vhd:701:36  */
-  assign n1134_o = n1131_o | n1133_o;
   /* 6805.vhd:706:36  */
+  assign n1109_o = datain == 8'b10010010;
+  /* 6805.vhd:706:36  */
+  assign n1110_o = n1107_o | n1109_o;
+  /* 6805.vhd:706:44  */
+  assign n1112_o = datain == 8'b10010011;
+  /* 6805.vhd:706:44  */
+  assign n1113_o = n1110_o | n1112_o;
+  /* 6805.vhd:706:52  */
+  assign n1115_o = datain == 8'b10010100;
+  /* 6805.vhd:706:52  */
+  assign n1116_o = n1113_o | n1115_o;
+  /* 6805.vhd:706:60  */
+  assign n1118_o = datain == 8'b10010101;
+  /* 6805.vhd:706:60  */
+  assign n1119_o = n1116_o | n1118_o;
+  /* 6805.vhd:706:68  */
+  assign n1121_o = datain == 8'b10011101;
+  /* 6805.vhd:706:68  */
+  assign n1122_o = n1119_o | n1121_o;
+  /* 6805.vhd:706:76  */
+  assign n1124_o = datain == 8'b10011110;
+  /* 6805.vhd:706:76  */
+  assign n1125_o = n1122_o | n1124_o;
+  /* 6805.vhd:706:84  */
+  assign n1127_o = datain == 8'b10100111;
+  /* 6805.vhd:706:84  */
+  assign n1128_o = n1125_o | n1127_o;
+  /* 6805.vhd:707:28  */
+  assign n1130_o = datain == 8'b10101100;
+  /* 6805.vhd:707:28  */
+  assign n1131_o = n1128_o | n1130_o;
+  /* 6805.vhd:707:36  */
+  assign n1133_o = datain == 8'b10101111;
+  /* 6805.vhd:707:36  */
+  assign n1134_o = n1131_o | n1133_o;
+  /* 6805.vhd:712:36  */
   assign n1136_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:704:17  */
+  /* 6805.vhd:710:17  */
   assign n1138_o = datain == 8'b10011111;
-  /* 6805.vhd:709:36  */
+  /* 6805.vhd:715:36  */
   assign n1140_o = regpc + 16'b0000000000000010;
-  /* 6805.vhd:710:36  */
+  /* 6805.vhd:716:36  */
   assign n1142_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:708:17  */
+  /* 6805.vhd:714:17  */
   assign n1144_o = datain == 8'b10101101;
-  /* 6805.vhd:708:28  */
+  /* 6805.vhd:714:28  */
   assign n1146_o = datain == 8'b10111101;
-  /* 6805.vhd:708:28  */
+  /* 6805.vhd:714:28  */
   assign n1147_o = n1144_o | n1146_o;
-  /* 6805.vhd:708:36  */
-  assign n1149_o = datain == 8'b11101101;
-  /* 6805.vhd:708:36  */
-  assign n1150_o = n1147_o | n1149_o;
-  /* 6805.vhd:713:36  */
-  assign n1152_o = regpc + 16'b0000000000000011;
   /* 6805.vhd:714:36  */
+  assign n1149_o = datain == 8'b11101101;
+  /* 6805.vhd:714:36  */
+  assign n1150_o = n1147_o | n1149_o;
+  /* 6805.vhd:719:36  */
+  assign n1152_o = regpc + 16'b0000000000000011;
+  /* 6805.vhd:720:36  */
   assign n1154_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:712:17  */
+  /* 6805.vhd:718:17  */
   assign n1156_o = datain == 8'b11001101;
-  /* 6805.vhd:712:28  */
+  /* 6805.vhd:718:28  */
   assign n1158_o = datain == 8'b11011101;
-  /* 6805.vhd:712:28  */
+  /* 6805.vhd:718:28  */
   assign n1159_o = n1156_o | n1158_o;
-  /* 6805.vhd:717:36  */
+  /* 6805.vhd:723:36  */
   assign n1161_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:721:36  */
+  /* 6805.vhd:727:36  */
   assign n1163_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:716:17  */
+  /* 6805.vhd:722:17  */
   assign n1165_o = datain == 8'b11111101;
   assign n1166_o = {n1165_o, n1159_o, n1150_o, n1138_o, n1134_o, n1004_o, n1000_o, n992_o, n984_o, n980_o, n976_o, n972_o, n968_o, n961_o, n957_o, n921_o, n917_o, n907_o, n893_o, n879_o, n864_o, n847_o, n830_o, n816_o, n800_o, n786_o, n769_o, n765_o, n755_o, n741_o, n727_o, n712_o, n695_o, n678_o, n664_o, n648_o, n634_o, n628_o, n611_o, n601_o, n591_o, n587_o, n550_o, n504_o, n467_o, n436_o, n297_o, n122_o};
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1171_o = 1'b0;
-      48'b010000000000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b001000000000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000100000000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000010000000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000001000000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000100000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000010000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000001000000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000100000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000010000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000001000000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000100000000000000000000000000000000000: n1171_o = n3790_q;
+      48'b010000000000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b001000000000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000100000000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000010000000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000001000000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000100000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000010000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000001000000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000100000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000010000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000001000000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000100000000000000000000000000000000000: n1171_o = n3828_q;
       48'b000000000000010000000000000000000000000000000000: n1171_o = 1'b0;
-      48'b000000000000001000000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000100000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000010000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000001000000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000100000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000010000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000001000000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000100000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000010000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000001000000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000100000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000010000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000001000000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000100000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000010000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000001000000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000100000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000010000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000001000000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000100000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000010000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000001000000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000100000000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000010000000000: n1171_o = n3790_q;
+      48'b000000000000001000000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000100000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000010000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000001000000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000100000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000010000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000001000000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000100000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000010000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000001000000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000100000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000010000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000001000000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000100000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000010000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000001000000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000100000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000010000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000001000000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000100000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000010000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000001000000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000100000000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000010000000000: n1171_o = n3828_q;
       48'b000000000000000000000000000000000000001000000000: n1171_o = 1'b0;
       48'b000000000000000000000000000000000000000100000000: n1171_o = 1'b0;
-      48'b000000000000000000000000000000000000000010000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000000001000000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000000000100000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000000000010000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000000000001000: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000000000000100: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000000000000010: n1171_o = n3790_q;
-      48'b000000000000000000000000000000000000000000000001: n1171_o = n3790_q;
-      default: n1171_o = n3790_q;
+      48'b000000000000000000000000000000000000000010000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000000001000000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000000000100000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000000000010000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000000000001000: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000000000000100: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000000000000010: n1171_o = n3828_q;
+      48'b000000000000000000000000000000000000000000000001: n1171_o = n3828_q;
+      default: n1171_o = n3828_q;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1173_o = rega;
@@ -4724,7 +4744,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1173_o = rega;
       default: n1173_o = rega;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1175_o = regx;
@@ -4777,7 +4797,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1175_o = regx;
       default: n1175_o = regx;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1177_o = regsp;
@@ -4830,7 +4850,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1177_o = n120_o;
       default: n1177_o = regsp;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1178_o = n1163_o;
@@ -4883,7 +4903,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1178_o = regpc;
       default: n1178_o = regpc;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1180_o = flagh;
@@ -4936,7 +4956,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1180_o = flagh;
       default: n1180_o = flagh;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1181_o = flagi;
@@ -4989,7 +5009,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1181_o = flagi;
       default: n1181_o = flagi;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1187_o = flagn;
@@ -5042,7 +5062,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1187_o = flagn;
       default: n1187_o = flagn;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1191_o = flagz;
@@ -5095,7 +5115,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1191_o = flagz;
       default: n1191_o = flagz;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1195_o = flagc;
@@ -5148,7 +5168,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1195_o = flagc;
       default: n1195_o = flagc;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1197_o = help;
@@ -5201,7 +5221,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1197_o = help;
       default: n1197_o = help;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1199_o = n1161_o;
@@ -5254,7 +5274,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1199_o = temp;
       default: n1199_o = temp;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1249_o = 4'b0100;
@@ -5307,7 +5327,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1249_o = 4'b0011;
       default: n1249_o = 4'b0000;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1259_o = 3'b001;
@@ -5360,7 +5380,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1259_o = 3'b001;
       default: n1259_o = addrmux;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1264_o = 4'b0111;
@@ -5413,7 +5433,7 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1264_o = datamux;
       default: n1264_o = datamux;
     endcase
-  /* 6805.vhd:314:15  */
+  /* 6805.vhd:320:15  */
   always @*
     case (n1166_o)
       48'b100000000000000000000000000000000000000000000000: n1266_o = trace_i;
@@ -5466,683 +5486,683 @@ module UR6805
       48'b000000000000000000000000000000000000000000000001: n1266_o = 1'b1;
       default: n1266_o = trace_i;
     endcase
-  /* 6805.vhd:308:13  */
-  assign n1268_o = n118_o ? n3790_q : n1171_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
+  assign n1268_o = n118_o ? n3828_q : n1171_o;
+  /* 6805.vhd:314:13  */
   assign n1269_o = n118_o ? rega : n1173_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1270_o = n118_o ? regx : n1175_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1271_o = n118_o ? regsp : n1177_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1272_o = n118_o ? regpc : n1178_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1273_o = n118_o ? flagh : n1180_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1274_o = n118_o ? flagi : n1181_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1275_o = n118_o ? flagn : n1187_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1276_o = n118_o ? flagz : n1191_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1277_o = n118_o ? flagc : n1195_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1278_o = n118_o ? help : n1197_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1279_o = n118_o ? temp : n1199_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1281_o = n118_o ? 4'b0011 : n1249_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1283_o = n118_o ? 3'b001 : n1259_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1284_o = n118_o ? datamux : n1264_o;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1286_o = n118_o ? 8'b10000011 : datain;
-  /* 6805.vhd:308:13  */
+  /* 6805.vhd:314:13  */
   assign n1287_o = n118_o ? trace_i : n1266_o;
-  /* 6805.vhd:303:13  */
-  assign n1289_o = trace ? n3790_q : n1268_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
+  assign n1289_o = trace ? n3828_q : n1268_o;
+  /* 6805.vhd:309:13  */
   assign n1290_o = trace ? rega : n1269_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1291_o = trace ? regx : n1270_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1292_o = trace ? regsp : n1271_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1293_o = trace ? regpc : n1272_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1294_o = trace ? flagh : n1273_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1295_o = trace ? flagi : n1274_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1296_o = trace ? flagn : n1275_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1297_o = trace ? flagz : n1276_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1298_o = trace ? flagc : n1277_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1299_o = trace ? help : n1278_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1300_o = trace ? temp : n1279_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1302_o = trace ? 4'b0011 : n1281_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1304_o = trace ? 3'b001 : n1283_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1305_o = trace ? datamux : n1284_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1307_o = trace ? 8'b10000011 : n1286_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1308_o = trace ? trace_i : n1287_o;
-  /* 6805.vhd:303:13  */
+  /* 6805.vhd:309:13  */
   assign n1309_o = trace ? datain : traceopcode;
-  /* 6805.vhd:301:11  */
+  /* 6805.vhd:307:11  */
   assign n1312_o = mainfsm == 4'b0010;
-  /* 6805.vhd:741:32  */
+  /* 6805.vhd:747:32  */
   assign n1314_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:732:15  */
+  /* 6805.vhd:738:15  */
   assign n1316_o = opcode == 8'b00000000;
-  /* 6805.vhd:732:26  */
+  /* 6805.vhd:738:26  */
   assign n1318_o = opcode == 8'b00000010;
-  /* 6805.vhd:732:26  */
+  /* 6805.vhd:738:26  */
   assign n1319_o = n1316_o | n1318_o;
-  /* 6805.vhd:732:34  */
+  /* 6805.vhd:738:34  */
   assign n1321_o = opcode == 8'b00000100;
-  /* 6805.vhd:732:34  */
+  /* 6805.vhd:738:34  */
   assign n1322_o = n1319_o | n1321_o;
-  /* 6805.vhd:732:42  */
+  /* 6805.vhd:738:42  */
   assign n1324_o = opcode == 8'b00000110;
-  /* 6805.vhd:732:42  */
+  /* 6805.vhd:738:42  */
   assign n1325_o = n1322_o | n1324_o;
-  /* 6805.vhd:732:50  */
+  /* 6805.vhd:738:50  */
   assign n1327_o = opcode == 8'b00001000;
-  /* 6805.vhd:732:50  */
+  /* 6805.vhd:738:50  */
   assign n1328_o = n1325_o | n1327_o;
-  /* 6805.vhd:732:58  */
+  /* 6805.vhd:738:58  */
   assign n1330_o = opcode == 8'b00001010;
-  /* 6805.vhd:732:58  */
+  /* 6805.vhd:738:58  */
   assign n1331_o = n1328_o | n1330_o;
-  /* 6805.vhd:732:66  */
+  /* 6805.vhd:738:66  */
   assign n1333_o = opcode == 8'b00001100;
-  /* 6805.vhd:732:66  */
+  /* 6805.vhd:738:66  */
   assign n1334_o = n1331_o | n1333_o;
-  /* 6805.vhd:732:74  */
+  /* 6805.vhd:738:74  */
   assign n1336_o = opcode == 8'b00001110;
-  /* 6805.vhd:732:74  */
+  /* 6805.vhd:738:74  */
   assign n1337_o = n1334_o | n1336_o;
-  /* 6805.vhd:732:82  */
+  /* 6805.vhd:738:82  */
   assign n1339_o = opcode == 8'b00000001;
-  /* 6805.vhd:732:82  */
+  /* 6805.vhd:738:82  */
   assign n1340_o = n1337_o | n1339_o;
-  /* 6805.vhd:733:26  */
+  /* 6805.vhd:739:26  */
   assign n1342_o = opcode == 8'b00000011;
-  /* 6805.vhd:733:26  */
+  /* 6805.vhd:739:26  */
   assign n1343_o = n1340_o | n1342_o;
-  /* 6805.vhd:733:34  */
+  /* 6805.vhd:739:34  */
   assign n1345_o = opcode == 8'b00000101;
-  /* 6805.vhd:733:34  */
+  /* 6805.vhd:739:34  */
   assign n1346_o = n1343_o | n1345_o;
-  /* 6805.vhd:733:42  */
+  /* 6805.vhd:739:42  */
   assign n1348_o = opcode == 8'b00000111;
-  /* 6805.vhd:733:42  */
+  /* 6805.vhd:739:42  */
   assign n1349_o = n1346_o | n1348_o;
-  /* 6805.vhd:733:50  */
+  /* 6805.vhd:739:50  */
   assign n1351_o = opcode == 8'b00001001;
-  /* 6805.vhd:733:50  */
+  /* 6805.vhd:739:50  */
   assign n1352_o = n1349_o | n1351_o;
-  /* 6805.vhd:733:58  */
+  /* 6805.vhd:739:58  */
   assign n1354_o = opcode == 8'b00001011;
-  /* 6805.vhd:733:58  */
+  /* 6805.vhd:739:58  */
   assign n1355_o = n1352_o | n1354_o;
-  /* 6805.vhd:733:66  */
+  /* 6805.vhd:739:66  */
   assign n1357_o = opcode == 8'b00001101;
-  /* 6805.vhd:733:66  */
+  /* 6805.vhd:739:66  */
   assign n1358_o = n1355_o | n1357_o;
-  /* 6805.vhd:733:74  */
+  /* 6805.vhd:739:74  */
   assign n1360_o = opcode == 8'b00001111;
-  /* 6805.vhd:733:74  */
+  /* 6805.vhd:739:74  */
   assign n1361_o = n1358_o | n1360_o;
-  /* 6805.vhd:733:82  */
+  /* 6805.vhd:739:82  */
   assign n1363_o = opcode == 8'b00010000;
-  /* 6805.vhd:733:82  */
+  /* 6805.vhd:739:82  */
   assign n1364_o = n1361_o | n1363_o;
-  /* 6805.vhd:734:26  */
+  /* 6805.vhd:740:26  */
   assign n1366_o = opcode == 8'b00010010;
-  /* 6805.vhd:734:26  */
+  /* 6805.vhd:740:26  */
   assign n1367_o = n1364_o | n1366_o;
-  /* 6805.vhd:734:34  */
+  /* 6805.vhd:740:34  */
   assign n1369_o = opcode == 8'b00010100;
-  /* 6805.vhd:734:34  */
+  /* 6805.vhd:740:34  */
   assign n1370_o = n1367_o | n1369_o;
-  /* 6805.vhd:734:42  */
+  /* 6805.vhd:740:42  */
   assign n1372_o = opcode == 8'b00010110;
-  /* 6805.vhd:734:42  */
+  /* 6805.vhd:740:42  */
   assign n1373_o = n1370_o | n1372_o;
-  /* 6805.vhd:734:50  */
+  /* 6805.vhd:740:50  */
   assign n1375_o = opcode == 8'b00011000;
-  /* 6805.vhd:734:50  */
+  /* 6805.vhd:740:50  */
   assign n1376_o = n1373_o | n1375_o;
-  /* 6805.vhd:734:58  */
+  /* 6805.vhd:740:58  */
   assign n1378_o = opcode == 8'b00011010;
-  /* 6805.vhd:734:58  */
+  /* 6805.vhd:740:58  */
   assign n1379_o = n1376_o | n1378_o;
-  /* 6805.vhd:734:66  */
+  /* 6805.vhd:740:66  */
   assign n1381_o = opcode == 8'b00011100;
-  /* 6805.vhd:734:66  */
+  /* 6805.vhd:740:66  */
   assign n1382_o = n1379_o | n1381_o;
-  /* 6805.vhd:734:74  */
+  /* 6805.vhd:740:74  */
   assign n1384_o = opcode == 8'b00011110;
-  /* 6805.vhd:734:74  */
+  /* 6805.vhd:740:74  */
   assign n1385_o = n1382_o | n1384_o;
-  /* 6805.vhd:734:82  */
+  /* 6805.vhd:740:82  */
   assign n1387_o = opcode == 8'b00010001;
-  /* 6805.vhd:734:82  */
+  /* 6805.vhd:740:82  */
   assign n1388_o = n1385_o | n1387_o;
-  /* 6805.vhd:735:26  */
+  /* 6805.vhd:741:26  */
   assign n1390_o = opcode == 8'b00010011;
-  /* 6805.vhd:735:26  */
+  /* 6805.vhd:741:26  */
   assign n1391_o = n1388_o | n1390_o;
-  /* 6805.vhd:735:34  */
+  /* 6805.vhd:741:34  */
   assign n1393_o = opcode == 8'b00010101;
-  /* 6805.vhd:735:34  */
+  /* 6805.vhd:741:34  */
   assign n1394_o = n1391_o | n1393_o;
-  /* 6805.vhd:735:42  */
+  /* 6805.vhd:741:42  */
   assign n1396_o = opcode == 8'b00010111;
-  /* 6805.vhd:735:42  */
+  /* 6805.vhd:741:42  */
   assign n1397_o = n1394_o | n1396_o;
-  /* 6805.vhd:735:50  */
+  /* 6805.vhd:741:50  */
   assign n1399_o = opcode == 8'b00011001;
-  /* 6805.vhd:735:50  */
+  /* 6805.vhd:741:50  */
   assign n1400_o = n1397_o | n1399_o;
-  /* 6805.vhd:735:58  */
+  /* 6805.vhd:741:58  */
   assign n1402_o = opcode == 8'b00011011;
-  /* 6805.vhd:735:58  */
+  /* 6805.vhd:741:58  */
   assign n1403_o = n1400_o | n1402_o;
-  /* 6805.vhd:735:66  */
+  /* 6805.vhd:741:66  */
   assign n1405_o = opcode == 8'b00011101;
-  /* 6805.vhd:735:66  */
+  /* 6805.vhd:741:66  */
   assign n1406_o = n1403_o | n1405_o;
-  /* 6805.vhd:735:74  */
+  /* 6805.vhd:741:74  */
   assign n1408_o = opcode == 8'b00011111;
-  /* 6805.vhd:735:74  */
+  /* 6805.vhd:741:74  */
   assign n1409_o = n1406_o | n1408_o;
-  /* 6805.vhd:735:82  */
+  /* 6805.vhd:741:82  */
   assign n1411_o = opcode == 8'b00110000;
-  /* 6805.vhd:735:82  */
+  /* 6805.vhd:741:82  */
   assign n1412_o = n1409_o | n1411_o;
-  /* 6805.vhd:736:26  */
+  /* 6805.vhd:742:26  */
   assign n1414_o = opcode == 8'b00110011;
-  /* 6805.vhd:736:26  */
+  /* 6805.vhd:742:26  */
   assign n1415_o = n1412_o | n1414_o;
-  /* 6805.vhd:736:34  */
+  /* 6805.vhd:742:34  */
   assign n1417_o = opcode == 8'b00110100;
-  /* 6805.vhd:736:34  */
+  /* 6805.vhd:742:34  */
   assign n1418_o = n1415_o | n1417_o;
-  /* 6805.vhd:736:42  */
+  /* 6805.vhd:742:42  */
   assign n1420_o = opcode == 8'b00110110;
-  /* 6805.vhd:736:42  */
+  /* 6805.vhd:742:42  */
   assign n1421_o = n1418_o | n1420_o;
-  /* 6805.vhd:736:50  */
+  /* 6805.vhd:742:50  */
   assign n1423_o = opcode == 8'b00110111;
-  /* 6805.vhd:736:50  */
+  /* 6805.vhd:742:50  */
   assign n1424_o = n1421_o | n1423_o;
-  /* 6805.vhd:737:26  */
+  /* 6805.vhd:743:26  */
   assign n1426_o = opcode == 8'b00111000;
-  /* 6805.vhd:737:26  */
+  /* 6805.vhd:743:26  */
   assign n1427_o = n1424_o | n1426_o;
-  /* 6805.vhd:737:34  */
+  /* 6805.vhd:743:34  */
   assign n1429_o = opcode == 8'b00111001;
-  /* 6805.vhd:737:34  */
+  /* 6805.vhd:743:34  */
   assign n1430_o = n1427_o | n1429_o;
-  /* 6805.vhd:737:42  */
+  /* 6805.vhd:743:42  */
   assign n1432_o = opcode == 8'b00111010;
-  /* 6805.vhd:737:42  */
+  /* 6805.vhd:743:42  */
   assign n1433_o = n1430_o | n1432_o;
-  /* 6805.vhd:737:50  */
+  /* 6805.vhd:743:50  */
   assign n1435_o = opcode == 8'b00111100;
-  /* 6805.vhd:737:50  */
+  /* 6805.vhd:743:50  */
   assign n1436_o = n1433_o | n1435_o;
-  /* 6805.vhd:737:58  */
+  /* 6805.vhd:743:58  */
   assign n1438_o = opcode == 8'b00111101;
-  /* 6805.vhd:737:58  */
+  /* 6805.vhd:743:58  */
   assign n1439_o = n1436_o | n1438_o;
-  /* 6805.vhd:752:32  */
+  /* 6805.vhd:758:32  */
   assign n1441_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:743:15  */
+  /* 6805.vhd:749:15  */
   assign n1443_o = opcode == 8'b11000000;
-  /* 6805.vhd:743:26  */
+  /* 6805.vhd:749:26  */
   assign n1445_o = opcode == 8'b11000001;
-  /* 6805.vhd:743:26  */
+  /* 6805.vhd:749:26  */
   assign n1446_o = n1443_o | n1445_o;
-  /* 6805.vhd:743:34  */
+  /* 6805.vhd:749:34  */
   assign n1448_o = opcode == 8'b11000010;
-  /* 6805.vhd:743:34  */
+  /* 6805.vhd:749:34  */
   assign n1449_o = n1446_o | n1448_o;
-  /* 6805.vhd:743:42  */
+  /* 6805.vhd:749:42  */
   assign n1451_o = opcode == 8'b11000011;
-  /* 6805.vhd:743:42  */
+  /* 6805.vhd:749:42  */
   assign n1452_o = n1449_o | n1451_o;
-  /* 6805.vhd:743:50  */
+  /* 6805.vhd:749:50  */
   assign n1454_o = opcode == 8'b11000100;
-  /* 6805.vhd:743:50  */
+  /* 6805.vhd:749:50  */
   assign n1455_o = n1452_o | n1454_o;
-  /* 6805.vhd:744:26  */
+  /* 6805.vhd:750:26  */
   assign n1457_o = opcode == 8'b11000101;
-  /* 6805.vhd:744:26  */
+  /* 6805.vhd:750:26  */
   assign n1458_o = n1455_o | n1457_o;
-  /* 6805.vhd:744:34  */
+  /* 6805.vhd:750:34  */
   assign n1460_o = opcode == 8'b11000110;
-  /* 6805.vhd:744:34  */
+  /* 6805.vhd:750:34  */
   assign n1461_o = n1458_o | n1460_o;
-  /* 6805.vhd:744:42  */
+  /* 6805.vhd:750:42  */
   assign n1463_o = opcode == 8'b11000111;
-  /* 6805.vhd:744:42  */
+  /* 6805.vhd:750:42  */
   assign n1464_o = n1461_o | n1463_o;
-  /* 6805.vhd:744:50  */
+  /* 6805.vhd:750:50  */
   assign n1466_o = opcode == 8'b11001000;
-  /* 6805.vhd:744:50  */
+  /* 6805.vhd:750:50  */
   assign n1467_o = n1464_o | n1466_o;
-  /* 6805.vhd:745:26  */
+  /* 6805.vhd:751:26  */
   assign n1469_o = opcode == 8'b11001001;
-  /* 6805.vhd:745:26  */
+  /* 6805.vhd:751:26  */
   assign n1470_o = n1467_o | n1469_o;
-  /* 6805.vhd:745:34  */
+  /* 6805.vhd:751:34  */
   assign n1472_o = opcode == 8'b11001010;
-  /* 6805.vhd:745:34  */
+  /* 6805.vhd:751:34  */
   assign n1473_o = n1470_o | n1472_o;
-  /* 6805.vhd:745:42  */
+  /* 6805.vhd:751:42  */
   assign n1475_o = opcode == 8'b11001011;
-  /* 6805.vhd:745:42  */
+  /* 6805.vhd:751:42  */
   assign n1476_o = n1473_o | n1475_o;
-  /* 6805.vhd:745:50  */
+  /* 6805.vhd:751:50  */
   assign n1478_o = opcode == 8'b11001100;
-  /* 6805.vhd:745:50  */
+  /* 6805.vhd:751:50  */
   assign n1479_o = n1476_o | n1478_o;
-  /* 6805.vhd:746:26  */
+  /* 6805.vhd:752:26  */
   assign n1481_o = opcode == 8'b11001110;
-  /* 6805.vhd:746:26  */
+  /* 6805.vhd:752:26  */
   assign n1482_o = n1479_o | n1481_o;
-  /* 6805.vhd:746:34  */
+  /* 6805.vhd:752:34  */
   assign n1484_o = opcode == 8'b11001111;
-  /* 6805.vhd:746:34  */
+  /* 6805.vhd:752:34  */
   assign n1485_o = n1482_o | n1484_o;
-  /* 6805.vhd:746:42  */
+  /* 6805.vhd:752:42  */
   assign n1487_o = opcode == 8'b11010000;
-  /* 6805.vhd:746:42  */
+  /* 6805.vhd:752:42  */
   assign n1488_o = n1485_o | n1487_o;
-  /* 6805.vhd:747:26  */
+  /* 6805.vhd:753:26  */
   assign n1490_o = opcode == 8'b11010001;
-  /* 6805.vhd:747:26  */
+  /* 6805.vhd:753:26  */
   assign n1491_o = n1488_o | n1490_o;
-  /* 6805.vhd:747:34  */
+  /* 6805.vhd:753:34  */
   assign n1493_o = opcode == 8'b11010010;
-  /* 6805.vhd:747:34  */
+  /* 6805.vhd:753:34  */
   assign n1494_o = n1491_o | n1493_o;
-  /* 6805.vhd:747:42  */
+  /* 6805.vhd:753:42  */
   assign n1496_o = opcode == 8'b11010011;
-  /* 6805.vhd:747:42  */
+  /* 6805.vhd:753:42  */
   assign n1497_o = n1494_o | n1496_o;
-  /* 6805.vhd:747:50  */
+  /* 6805.vhd:753:50  */
   assign n1499_o = opcode == 8'b11010100;
-  /* 6805.vhd:747:50  */
+  /* 6805.vhd:753:50  */
   assign n1500_o = n1497_o | n1499_o;
-  /* 6805.vhd:748:26  */
+  /* 6805.vhd:754:26  */
   assign n1502_o = opcode == 8'b11010101;
-  /* 6805.vhd:748:26  */
+  /* 6805.vhd:754:26  */
   assign n1503_o = n1500_o | n1502_o;
-  /* 6805.vhd:748:34  */
+  /* 6805.vhd:754:34  */
   assign n1505_o = opcode == 8'b11010110;
-  /* 6805.vhd:748:34  */
+  /* 6805.vhd:754:34  */
   assign n1506_o = n1503_o | n1505_o;
-  /* 6805.vhd:748:42  */
+  /* 6805.vhd:754:42  */
   assign n1508_o = opcode == 8'b11010111;
-  /* 6805.vhd:748:42  */
+  /* 6805.vhd:754:42  */
   assign n1509_o = n1506_o | n1508_o;
-  /* 6805.vhd:748:50  */
+  /* 6805.vhd:754:50  */
   assign n1511_o = opcode == 8'b11011000;
-  /* 6805.vhd:748:50  */
+  /* 6805.vhd:754:50  */
   assign n1512_o = n1509_o | n1511_o;
-  /* 6805.vhd:749:26  */
+  /* 6805.vhd:755:26  */
   assign n1514_o = opcode == 8'b11011001;
-  /* 6805.vhd:749:26  */
+  /* 6805.vhd:755:26  */
   assign n1515_o = n1512_o | n1514_o;
-  /* 6805.vhd:749:34  */
+  /* 6805.vhd:755:34  */
   assign n1517_o = opcode == 8'b11011010;
-  /* 6805.vhd:749:34  */
+  /* 6805.vhd:755:34  */
   assign n1518_o = n1515_o | n1517_o;
-  /* 6805.vhd:749:42  */
+  /* 6805.vhd:755:42  */
   assign n1520_o = opcode == 8'b11011011;
-  /* 6805.vhd:749:42  */
+  /* 6805.vhd:755:42  */
   assign n1521_o = n1518_o | n1520_o;
-  /* 6805.vhd:749:50  */
+  /* 6805.vhd:755:50  */
   assign n1523_o = opcode == 8'b11011100;
-  /* 6805.vhd:749:50  */
+  /* 6805.vhd:755:50  */
   assign n1524_o = n1521_o | n1523_o;
-  /* 6805.vhd:750:26  */
+  /* 6805.vhd:756:26  */
   assign n1526_o = opcode == 8'b11011110;
-  /* 6805.vhd:750:26  */
+  /* 6805.vhd:756:26  */
   assign n1527_o = n1524_o | n1526_o;
-  /* 6805.vhd:750:34  */
+  /* 6805.vhd:756:34  */
   assign n1529_o = opcode == 8'b11011111;
-  /* 6805.vhd:750:34  */
+  /* 6805.vhd:756:34  */
   assign n1530_o = n1527_o | n1529_o;
-  /* 6805.vhd:759:32  */
+  /* 6805.vhd:765:32  */
   assign n1532_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:754:15  */
+  /* 6805.vhd:760:15  */
   assign n1534_o = opcode == 8'b10110111;
-  /* 6805.vhd:766:32  */
+  /* 6805.vhd:772:32  */
   assign n1536_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:761:15  */
+  /* 6805.vhd:767:15  */
   assign n1538_o = opcode == 8'b10111111;
-  /* 6805.vhd:774:32  */
+  /* 6805.vhd:780:32  */
   assign n1540_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:768:15  */
+  /* 6805.vhd:774:15  */
   assign n1542_o = opcode == 8'b10110000;
-  /* 6805.vhd:768:26  */
+  /* 6805.vhd:774:26  */
   assign n1544_o = opcode == 8'b10110001;
-  /* 6805.vhd:768:26  */
+  /* 6805.vhd:774:26  */
   assign n1545_o = n1542_o | n1544_o;
-  /* 6805.vhd:768:34  */
+  /* 6805.vhd:774:34  */
   assign n1547_o = opcode == 8'b10110010;
-  /* 6805.vhd:768:34  */
+  /* 6805.vhd:774:34  */
   assign n1548_o = n1545_o | n1547_o;
-  /* 6805.vhd:768:42  */
+  /* 6805.vhd:774:42  */
   assign n1550_o = opcode == 8'b10110011;
-  /* 6805.vhd:768:42  */
+  /* 6805.vhd:774:42  */
   assign n1551_o = n1548_o | n1550_o;
-  /* 6805.vhd:768:50  */
+  /* 6805.vhd:774:50  */
   assign n1553_o = opcode == 8'b10110100;
-  /* 6805.vhd:768:50  */
+  /* 6805.vhd:774:50  */
   assign n1554_o = n1551_o | n1553_o;
-  /* 6805.vhd:769:26  */
+  /* 6805.vhd:775:26  */
   assign n1556_o = opcode == 8'b10110101;
-  /* 6805.vhd:769:26  */
+  /* 6805.vhd:775:26  */
   assign n1557_o = n1554_o | n1556_o;
-  /* 6805.vhd:769:34  */
+  /* 6805.vhd:775:34  */
   assign n1559_o = opcode == 8'b10110110;
-  /* 6805.vhd:769:34  */
+  /* 6805.vhd:775:34  */
   assign n1560_o = n1557_o | n1559_o;
-  /* 6805.vhd:769:42  */
+  /* 6805.vhd:775:42  */
   assign n1562_o = opcode == 8'b10111000;
-  /* 6805.vhd:769:42  */
+  /* 6805.vhd:775:42  */
   assign n1563_o = n1560_o | n1562_o;
-  /* 6805.vhd:770:26  */
+  /* 6805.vhd:776:26  */
   assign n1565_o = opcode == 8'b10111001;
-  /* 6805.vhd:770:26  */
+  /* 6805.vhd:776:26  */
   assign n1566_o = n1563_o | n1565_o;
-  /* 6805.vhd:770:34  */
+  /* 6805.vhd:776:34  */
   assign n1568_o = opcode == 8'b10111010;
-  /* 6805.vhd:770:34  */
+  /* 6805.vhd:776:34  */
   assign n1569_o = n1566_o | n1568_o;
-  /* 6805.vhd:770:42  */
+  /* 6805.vhd:776:42  */
   assign n1571_o = opcode == 8'b10111011;
-  /* 6805.vhd:770:42  */
+  /* 6805.vhd:776:42  */
   assign n1572_o = n1569_o | n1571_o;
-  /* 6805.vhd:770:50  */
+  /* 6805.vhd:776:50  */
   assign n1574_o = opcode == 8'b10111110;
-  /* 6805.vhd:770:50  */
+  /* 6805.vhd:776:50  */
   assign n1575_o = n1572_o | n1574_o;
-  /* 6805.vhd:778:26  */
+  /* 6805.vhd:784:26  */
   assign n1576_o = datain[7];
-  /* 6805.vhd:778:30  */
+  /* 6805.vhd:784:30  */
   assign n1577_o = ~n1576_o;
-  /* 6805.vhd:779:43  */
+  /* 6805.vhd:785:43  */
   assign n1579_o = {8'b00000000, datain};
-  /* 6805.vhd:779:34  */
+  /* 6805.vhd:785:34  */
   assign n1580_o = regpc + n1579_o;
-  /* 6805.vhd:779:53  */
+  /* 6805.vhd:785:53  */
   assign n1582_o = n1580_o + 16'b0000000000000001;
-  /* 6805.vhd:781:43  */
+  /* 6805.vhd:787:43  */
   assign n1584_o = {8'b11111111, datain};
-  /* 6805.vhd:781:34  */
+  /* 6805.vhd:787:34  */
   assign n1585_o = regpc + n1584_o;
-  /* 6805.vhd:781:53  */
+  /* 6805.vhd:787:53  */
   assign n1587_o = n1585_o + 16'b0000000000000001;
-  /* 6805.vhd:778:17  */
+  /* 6805.vhd:784:17  */
   assign n1588_o = n1577_o ? n1582_o : n1587_o;
-  /* 6805.vhd:777:15  */
+  /* 6805.vhd:783:15  */
   assign n1590_o = opcode == 8'b00100000;
-  /* 6805.vhd:785:32  */
+  /* 6805.vhd:791:32  */
   assign n1592_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:784:15  */
+  /* 6805.vhd:790:15  */
   assign n1594_o = opcode == 8'b00100001;
-  /* 6805.vhd:788:27  */
+  /* 6805.vhd:794:27  */
   assign n1595_o = flagc | flagz;
-  /* 6805.vhd:788:45  */
+  /* 6805.vhd:794:45  */
   assign n1596_o = opcode[0];
-  /* 6805.vhd:788:37  */
+  /* 6805.vhd:794:37  */
   assign n1597_o = n1595_o == n1596_o;
-  /* 6805.vhd:789:28  */
+  /* 6805.vhd:795:28  */
   assign n1598_o = datain[7];
-  /* 6805.vhd:789:32  */
+  /* 6805.vhd:795:32  */
   assign n1599_o = ~n1598_o;
-  /* 6805.vhd:790:45  */
+  /* 6805.vhd:796:45  */
   assign n1601_o = {8'b00000000, datain};
-  /* 6805.vhd:790:36  */
+  /* 6805.vhd:796:36  */
   assign n1602_o = regpc + n1601_o;
-  /* 6805.vhd:790:55  */
+  /* 6805.vhd:796:55  */
   assign n1604_o = n1602_o + 16'b0000000000000001;
-  /* 6805.vhd:792:45  */
+  /* 6805.vhd:798:45  */
   assign n1606_o = {8'b11111111, datain};
-  /* 6805.vhd:792:36  */
+  /* 6805.vhd:798:36  */
   assign n1607_o = regpc + n1606_o;
-  /* 6805.vhd:792:55  */
+  /* 6805.vhd:798:55  */
   assign n1609_o = n1607_o + 16'b0000000000000001;
-  /* 6805.vhd:789:19  */
+  /* 6805.vhd:795:19  */
   assign n1610_o = n1599_o ? n1604_o : n1609_o;
-  /* 6805.vhd:795:34  */
+  /* 6805.vhd:801:34  */
   assign n1612_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:788:17  */
+  /* 6805.vhd:794:17  */
   assign n1613_o = n1597_o ? n1610_o : n1612_o;
-  /* 6805.vhd:787:15  */
+  /* 6805.vhd:793:15  */
   assign n1615_o = opcode == 8'b00100010;
-  /* 6805.vhd:787:26  */
+  /* 6805.vhd:793:26  */
   assign n1617_o = opcode == 8'b00100011;
-  /* 6805.vhd:787:26  */
+  /* 6805.vhd:793:26  */
   assign n1618_o = n1615_o | n1617_o;
-  /* 6805.vhd:799:35  */
+  /* 6805.vhd:805:35  */
   assign n1619_o = opcode[0];
-  /* 6805.vhd:799:27  */
+  /* 6805.vhd:805:27  */
   assign n1620_o = flagc == n1619_o;
-  /* 6805.vhd:800:28  */
+  /* 6805.vhd:806:28  */
   assign n1621_o = datain[7];
-  /* 6805.vhd:800:32  */
+  /* 6805.vhd:806:32  */
   assign n1622_o = ~n1621_o;
-  /* 6805.vhd:801:45  */
+  /* 6805.vhd:807:45  */
   assign n1624_o = {8'b00000000, datain};
-  /* 6805.vhd:801:36  */
+  /* 6805.vhd:807:36  */
   assign n1625_o = regpc + n1624_o;
-  /* 6805.vhd:801:55  */
+  /* 6805.vhd:807:55  */
   assign n1627_o = n1625_o + 16'b0000000000000001;
-  /* 6805.vhd:803:45  */
+  /* 6805.vhd:809:45  */
   assign n1629_o = {8'b11111111, datain};
-  /* 6805.vhd:803:36  */
+  /* 6805.vhd:809:36  */
   assign n1630_o = regpc + n1629_o;
-  /* 6805.vhd:803:55  */
+  /* 6805.vhd:809:55  */
   assign n1632_o = n1630_o + 16'b0000000000000001;
-  /* 6805.vhd:800:19  */
+  /* 6805.vhd:806:19  */
   assign n1633_o = n1622_o ? n1627_o : n1632_o;
-  /* 6805.vhd:806:34  */
+  /* 6805.vhd:812:34  */
   assign n1635_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:799:17  */
+  /* 6805.vhd:805:17  */
   assign n1636_o = n1620_o ? n1633_o : n1635_o;
-  /* 6805.vhd:798:15  */
+  /* 6805.vhd:804:15  */
   assign n1638_o = opcode == 8'b00100100;
-  /* 6805.vhd:798:26  */
+  /* 6805.vhd:804:26  */
   assign n1640_o = opcode == 8'b00100101;
-  /* 6805.vhd:798:26  */
+  /* 6805.vhd:804:26  */
   assign n1641_o = n1638_o | n1640_o;
-  /* 6805.vhd:810:35  */
+  /* 6805.vhd:816:35  */
   assign n1642_o = opcode[0];
-  /* 6805.vhd:810:27  */
+  /* 6805.vhd:816:27  */
   assign n1643_o = flagz == n1642_o;
-  /* 6805.vhd:811:28  */
+  /* 6805.vhd:817:28  */
   assign n1644_o = datain[7];
-  /* 6805.vhd:811:32  */
+  /* 6805.vhd:817:32  */
   assign n1645_o = ~n1644_o;
-  /* 6805.vhd:812:45  */
+  /* 6805.vhd:818:45  */
   assign n1647_o = {8'b00000000, datain};
-  /* 6805.vhd:812:36  */
+  /* 6805.vhd:818:36  */
   assign n1648_o = regpc + n1647_o;
-  /* 6805.vhd:812:55  */
+  /* 6805.vhd:818:55  */
   assign n1650_o = n1648_o + 16'b0000000000000001;
-  /* 6805.vhd:814:45  */
+  /* 6805.vhd:820:45  */
   assign n1652_o = {8'b11111111, datain};
-  /* 6805.vhd:814:36  */
+  /* 6805.vhd:820:36  */
   assign n1653_o = regpc + n1652_o;
-  /* 6805.vhd:814:55  */
+  /* 6805.vhd:820:55  */
   assign n1655_o = n1653_o + 16'b0000000000000001;
-  /* 6805.vhd:811:19  */
+  /* 6805.vhd:817:19  */
   assign n1656_o = n1645_o ? n1650_o : n1655_o;
-  /* 6805.vhd:817:34  */
+  /* 6805.vhd:823:34  */
   assign n1658_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:810:17  */
+  /* 6805.vhd:816:17  */
   assign n1659_o = n1643_o ? n1656_o : n1658_o;
-  /* 6805.vhd:809:15  */
+  /* 6805.vhd:815:15  */
   assign n1661_o = opcode == 8'b00100110;
-  /* 6805.vhd:809:26  */
+  /* 6805.vhd:815:26  */
   assign n1663_o = opcode == 8'b00100111;
-  /* 6805.vhd:809:26  */
+  /* 6805.vhd:815:26  */
   assign n1664_o = n1661_o | n1663_o;
-  /* 6805.vhd:821:35  */
+  /* 6805.vhd:827:35  */
   assign n1665_o = opcode[0];
-  /* 6805.vhd:821:27  */
+  /* 6805.vhd:827:27  */
   assign n1666_o = flagh == n1665_o;
-  /* 6805.vhd:822:28  */
+  /* 6805.vhd:828:28  */
   assign n1667_o = datain[7];
-  /* 6805.vhd:822:32  */
+  /* 6805.vhd:828:32  */
   assign n1668_o = ~n1667_o;
-  /* 6805.vhd:823:45  */
+  /* 6805.vhd:829:45  */
   assign n1670_o = {8'b00000000, datain};
-  /* 6805.vhd:823:36  */
+  /* 6805.vhd:829:36  */
   assign n1671_o = regpc + n1670_o;
-  /* 6805.vhd:823:55  */
+  /* 6805.vhd:829:55  */
   assign n1673_o = n1671_o + 16'b0000000000000001;
-  /* 6805.vhd:825:45  */
+  /* 6805.vhd:831:45  */
   assign n1675_o = {8'b11111111, datain};
-  /* 6805.vhd:825:36  */
+  /* 6805.vhd:831:36  */
   assign n1676_o = regpc + n1675_o;
-  /* 6805.vhd:825:55  */
+  /* 6805.vhd:831:55  */
   assign n1678_o = n1676_o + 16'b0000000000000001;
-  /* 6805.vhd:822:19  */
+  /* 6805.vhd:828:19  */
   assign n1679_o = n1668_o ? n1673_o : n1678_o;
-  /* 6805.vhd:828:34  */
+  /* 6805.vhd:834:34  */
   assign n1681_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:821:17  */
+  /* 6805.vhd:827:17  */
   assign n1682_o = n1666_o ? n1679_o : n1681_o;
-  /* 6805.vhd:820:15  */
+  /* 6805.vhd:826:15  */
   assign n1684_o = opcode == 8'b00101000;
-  /* 6805.vhd:820:26  */
+  /* 6805.vhd:826:26  */
   assign n1686_o = opcode == 8'b00101001;
-  /* 6805.vhd:820:26  */
+  /* 6805.vhd:826:26  */
   assign n1687_o = n1684_o | n1686_o;
-  /* 6805.vhd:832:35  */
+  /* 6805.vhd:838:35  */
   assign n1688_o = opcode[0];
-  /* 6805.vhd:832:27  */
+  /* 6805.vhd:838:27  */
   assign n1689_o = flagn == n1688_o;
-  /* 6805.vhd:833:28  */
+  /* 6805.vhd:839:28  */
   assign n1690_o = datain[7];
-  /* 6805.vhd:833:32  */
+  /* 6805.vhd:839:32  */
   assign n1691_o = ~n1690_o;
-  /* 6805.vhd:834:45  */
+  /* 6805.vhd:840:45  */
   assign n1693_o = {8'b00000000, datain};
-  /* 6805.vhd:834:36  */
+  /* 6805.vhd:840:36  */
   assign n1694_o = regpc + n1693_o;
-  /* 6805.vhd:834:55  */
+  /* 6805.vhd:840:55  */
   assign n1696_o = n1694_o + 16'b0000000000000001;
-  /* 6805.vhd:836:45  */
+  /* 6805.vhd:842:45  */
   assign n1698_o = {8'b11111111, datain};
-  /* 6805.vhd:836:36  */
+  /* 6805.vhd:842:36  */
   assign n1699_o = regpc + n1698_o;
-  /* 6805.vhd:836:55  */
+  /* 6805.vhd:842:55  */
   assign n1701_o = n1699_o + 16'b0000000000000001;
-  /* 6805.vhd:833:19  */
+  /* 6805.vhd:839:19  */
   assign n1702_o = n1691_o ? n1696_o : n1701_o;
-  /* 6805.vhd:839:34  */
+  /* 6805.vhd:845:34  */
   assign n1704_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:832:17  */
+  /* 6805.vhd:838:17  */
   assign n1705_o = n1689_o ? n1702_o : n1704_o;
-  /* 6805.vhd:831:15  */
+  /* 6805.vhd:837:15  */
   assign n1707_o = opcode == 8'b00101010;
-  /* 6805.vhd:831:26  */
+  /* 6805.vhd:837:26  */
   assign n1709_o = opcode == 8'b00101011;
-  /* 6805.vhd:831:26  */
+  /* 6805.vhd:837:26  */
   assign n1710_o = n1707_o | n1709_o;
-  /* 6805.vhd:843:35  */
+  /* 6805.vhd:849:35  */
   assign n1711_o = opcode[0];
-  /* 6805.vhd:843:27  */
+  /* 6805.vhd:849:27  */
   assign n1712_o = flagi == n1711_o;
-  /* 6805.vhd:844:28  */
+  /* 6805.vhd:850:28  */
   assign n1713_o = datain[7];
-  /* 6805.vhd:844:32  */
+  /* 6805.vhd:850:32  */
   assign n1714_o = ~n1713_o;
-  /* 6805.vhd:845:45  */
+  /* 6805.vhd:851:45  */
   assign n1716_o = {8'b00000000, datain};
-  /* 6805.vhd:845:36  */
+  /* 6805.vhd:851:36  */
   assign n1717_o = regpc + n1716_o;
-  /* 6805.vhd:845:55  */
+  /* 6805.vhd:851:55  */
   assign n1719_o = n1717_o + 16'b0000000000000001;
-  /* 6805.vhd:847:45  */
+  /* 6805.vhd:853:45  */
   assign n1721_o = {8'b11111111, datain};
-  /* 6805.vhd:847:36  */
+  /* 6805.vhd:853:36  */
   assign n1722_o = regpc + n1721_o;
-  /* 6805.vhd:847:55  */
+  /* 6805.vhd:853:55  */
   assign n1724_o = n1722_o + 16'b0000000000000001;
-  /* 6805.vhd:844:19  */
+  /* 6805.vhd:850:19  */
   assign n1725_o = n1714_o ? n1719_o : n1724_o;
-  /* 6805.vhd:850:34  */
+  /* 6805.vhd:856:34  */
   assign n1727_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:843:17  */
+  /* 6805.vhd:849:17  */
   assign n1728_o = n1712_o ? n1725_o : n1727_o;
-  /* 6805.vhd:842:15  */
+  /* 6805.vhd:848:15  */
   assign n1730_o = opcode == 8'b00101100;
-  /* 6805.vhd:842:26  */
+  /* 6805.vhd:848:26  */
   assign n1732_o = opcode == 8'b00101101;
-  /* 6805.vhd:842:26  */
+  /* 6805.vhd:848:26  */
   assign n1733_o = n1730_o | n1732_o;
-  /* 6805.vhd:854:36  */
+  /* 6805.vhd:860:36  */
   assign n1734_o = opcode[0];
-  /* 6805.vhd:854:28  */
+  /* 6805.vhd:860:28  */
   assign n1735_o = extirq == n1734_o;
-  /* 6805.vhd:855:28  */
+  /* 6805.vhd:861:28  */
   assign n1736_o = datain[7];
-  /* 6805.vhd:855:32  */
+  /* 6805.vhd:861:32  */
   assign n1737_o = ~n1736_o;
-  /* 6805.vhd:856:45  */
+  /* 6805.vhd:862:45  */
   assign n1739_o = {8'b00000000, datain};
-  /* 6805.vhd:856:36  */
+  /* 6805.vhd:862:36  */
   assign n1740_o = regpc + n1739_o;
-  /* 6805.vhd:856:55  */
+  /* 6805.vhd:862:55  */
   assign n1742_o = n1740_o + 16'b0000000000000001;
-  /* 6805.vhd:858:45  */
+  /* 6805.vhd:864:45  */
   assign n1744_o = {8'b11111111, datain};
-  /* 6805.vhd:858:36  */
+  /* 6805.vhd:864:36  */
   assign n1745_o = regpc + n1744_o;
-  /* 6805.vhd:858:55  */
+  /* 6805.vhd:864:55  */
   assign n1747_o = n1745_o + 16'b0000000000000001;
-  /* 6805.vhd:855:19  */
+  /* 6805.vhd:861:19  */
   assign n1748_o = n1737_o ? n1742_o : n1747_o;
-  /* 6805.vhd:861:34  */
+  /* 6805.vhd:867:34  */
   assign n1750_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:854:17  */
+  /* 6805.vhd:860:17  */
   assign n1751_o = n1735_o ? n1748_o : n1750_o;
-  /* 6805.vhd:853:15  */
+  /* 6805.vhd:859:15  */
   assign n1753_o = opcode == 8'b00101110;
-  /* 6805.vhd:853:26  */
+  /* 6805.vhd:859:26  */
   assign n1755_o = opcode == 8'b00101111;
-  /* 6805.vhd:853:26  */
+  /* 6805.vhd:859:26  */
   assign n1756_o = n1753_o | n1755_o;
-  /* 6805.vhd:867:19  */
+  /* 6805.vhd:873:19  */
   assign n1758_o = opcode == 8'b00111111;
-  /* 6805.vhd:870:46  */
+  /* 6805.vhd:876:46  */
   assign n1760_o = {8'b00000000, datain};
-  /* 6805.vhd:870:37  */
+  /* 6805.vhd:876:37  */
   assign n1761_o = temp + n1760_o;
-  /* 6805.vhd:869:19  */
+  /* 6805.vhd:875:19  */
   assign n1763_o = opcode == 8'b01101111;
   assign n1764_o = {n1763_o, n1758_o};
   assign n1765_o = n1761_o[7:0];
-  /* 6805.vhd:866:17  */
+  /* 6805.vhd:872:17  */
   always @*
     case (n1764_o)
       2'b10: n1767_o = n1765_o;
@@ -6151,145 +6171,145 @@ module UR6805
     endcase
   assign n1768_o = n1761_o[15:8];
   assign n1770_o = temp[15:8];
-  /* 6805.vhd:866:17  */
+  /* 6805.vhd:872:17  */
   always @*
     case (n1764_o)
       2'b10: n1771_o = n1768_o;
       2'b01: n1771_o = n1770_o;
       default: n1771_o = 8'b00000000;
     endcase
-  /* 6805.vhd:879:34  */
-  assign n1773_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:864:15  */
-  assign n1775_o = opcode == 8'b00111111;
-  /* 6805.vhd:864:26  */
-  assign n1777_o = opcode == 8'b01101111;
-  /* 6805.vhd:864:26  */
-  assign n1778_o = n1775_o | n1777_o;
-  /* 6805.vhd:884:42  */
-  assign n1780_o = {8'b00000000, datain};
-  /* 6805.vhd:884:33  */
-  assign n1781_o = temp + n1780_o;
   /* 6805.vhd:885:34  */
+  assign n1773_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:870:15  */
+  assign n1775_o = opcode == 8'b00111111;
+  /* 6805.vhd:870:26  */
+  assign n1777_o = opcode == 8'b01101111;
+  /* 6805.vhd:870:26  */
+  assign n1778_o = n1775_o | n1777_o;
+  /* 6805.vhd:890:42  */
+  assign n1780_o = {8'b00000000, datain};
+  /* 6805.vhd:890:33  */
+  assign n1781_o = temp + n1780_o;
+  /* 6805.vhd:891:34  */
   assign n1783_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:881:15  */
+  /* 6805.vhd:887:15  */
   assign n1785_o = opcode == 8'b01100000;
-  /* 6805.vhd:881:26  */
+  /* 6805.vhd:887:26  */
   assign n1787_o = opcode == 8'b01100011;
-  /* 6805.vhd:881:26  */
+  /* 6805.vhd:887:26  */
   assign n1788_o = n1785_o | n1787_o;
-  /* 6805.vhd:881:34  */
+  /* 6805.vhd:887:34  */
   assign n1790_o = opcode == 8'b01100100;
-  /* 6805.vhd:881:34  */
+  /* 6805.vhd:887:34  */
   assign n1791_o = n1788_o | n1790_o;
-  /* 6805.vhd:881:42  */
+  /* 6805.vhd:887:42  */
   assign n1793_o = opcode == 8'b01100110;
-  /* 6805.vhd:881:42  */
+  /* 6805.vhd:887:42  */
   assign n1794_o = n1791_o | n1793_o;
-  /* 6805.vhd:881:50  */
+  /* 6805.vhd:887:50  */
   assign n1796_o = opcode == 8'b01100111;
-  /* 6805.vhd:881:50  */
+  /* 6805.vhd:887:50  */
   assign n1797_o = n1794_o | n1796_o;
-  /* 6805.vhd:882:26  */
+  /* 6805.vhd:888:26  */
   assign n1799_o = opcode == 8'b01101000;
-  /* 6805.vhd:882:26  */
+  /* 6805.vhd:888:26  */
   assign n1800_o = n1797_o | n1799_o;
-  /* 6805.vhd:882:34  */
+  /* 6805.vhd:888:34  */
   assign n1802_o = opcode == 8'b01101001;
-  /* 6805.vhd:882:34  */
+  /* 6805.vhd:888:34  */
   assign n1803_o = n1800_o | n1802_o;
-  /* 6805.vhd:882:42  */
+  /* 6805.vhd:888:42  */
   assign n1805_o = opcode == 8'b01101010;
-  /* 6805.vhd:882:42  */
+  /* 6805.vhd:888:42  */
   assign n1806_o = n1803_o | n1805_o;
-  /* 6805.vhd:882:50  */
+  /* 6805.vhd:888:50  */
   assign n1808_o = opcode == 8'b01101100;
-  /* 6805.vhd:882:50  */
+  /* 6805.vhd:888:50  */
   assign n1809_o = n1806_o | n1808_o;
-  /* 6805.vhd:883:26  */
+  /* 6805.vhd:889:26  */
   assign n1811_o = opcode == 8'b01101101;
-  /* 6805.vhd:883:26  */
+  /* 6805.vhd:889:26  */
   assign n1812_o = n1809_o | n1811_o;
-  /* 6805.vhd:888:15  */
+  /* 6805.vhd:894:15  */
   assign n1814_o = opcode == 8'b01111111;
-  /* 6805.vhd:893:32  */
+  /* 6805.vhd:899:32  */
   assign n1815_o = datain[4];
-  /* 6805.vhd:894:32  */
+  /* 6805.vhd:900:32  */
   assign n1816_o = datain[3];
-  /* 6805.vhd:895:32  */
+  /* 6805.vhd:901:32  */
   assign n1817_o = datain[2];
-  /* 6805.vhd:896:32  */
-  assign n1818_o = datain[1];
-  /* 6805.vhd:897:32  */
-  assign n1819_o = datain[0];
-  /* 6805.vhd:898:32  */
-  assign n1821_o = regsp + 16'b0000000000000001;
-  /* 6805.vhd:892:15  */
-  assign n1823_o = opcode == 8'b10000000;
-  /* 6805.vhd:892:26  */
-  assign n1825_o = opcode == 8'b10000010;
-  /* 6805.vhd:892:26  */
-  assign n1826_o = n1823_o | n1825_o;
   /* 6805.vhd:902:32  */
+  assign n1818_o = datain[1];
+  /* 6805.vhd:903:32  */
+  assign n1819_o = datain[0];
+  /* 6805.vhd:904:32  */
+  assign n1821_o = regsp + 16'b0000000000000001;
+  /* 6805.vhd:898:15  */
+  assign n1823_o = opcode == 8'b10000000;
+  /* 6805.vhd:898:26  */
+  assign n1825_o = opcode == 8'b10000010;
+  /* 6805.vhd:898:26  */
+  assign n1826_o = n1823_o | n1825_o;
+  /* 6805.vhd:908:32  */
   assign n1828_o = regsp + 16'b0000000000000001;
-  /* 6805.vhd:900:15  */
+  /* 6805.vhd:906:15  */
   assign n1830_o = opcode == 8'b10000001;
-  /* 6805.vhd:904:15  */
+  /* 6805.vhd:910:15  */
   assign n1832_o = opcode == 8'b10000011;
-  /* 6805.vhd:909:32  */
+  /* 6805.vhd:915:32  */
   assign n1834_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:908:15  */
+  /* 6805.vhd:914:15  */
   assign n1836_o = opcode == 8'b10101101;
-  /* 6805.vhd:908:26  */
+  /* 6805.vhd:914:26  */
   assign n1838_o = opcode == 8'b10111101;
-  /* 6805.vhd:908:26  */
+  /* 6805.vhd:914:26  */
   assign n1839_o = n1836_o | n1838_o;
-  /* 6805.vhd:908:34  */
+  /* 6805.vhd:914:34  */
   assign n1841_o = opcode == 8'b11101101;
-  /* 6805.vhd:908:34  */
+  /* 6805.vhd:914:34  */
   assign n1842_o = n1839_o | n1841_o;
-  /* 6805.vhd:916:33  */
+  /* 6805.vhd:922:33  */
   assign n1844_o = {8'b00000000, datain};
-  /* 6805.vhd:915:15  */
+  /* 6805.vhd:921:15  */
   assign n1846_o = opcode == 8'b10111100;
-  /* 6805.vhd:920:32  */
+  /* 6805.vhd:926:32  */
   assign n1848_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:918:15  */
+  /* 6805.vhd:924:15  */
   assign n1850_o = opcode == 8'b11001101;
-  /* 6805.vhd:918:26  */
+  /* 6805.vhd:924:26  */
   assign n1852_o = opcode == 8'b11011101;
-  /* 6805.vhd:918:26  */
+  /* 6805.vhd:924:26  */
   assign n1853_o = n1850_o | n1852_o;
   assign n1854_o = {n1853_o, n1846_o, n1842_o, n1832_o, n1830_o, n1826_o, n1814_o, n1812_o, n1778_o, n1756_o, n1733_o, n1710_o, n1687_o, n1664_o, n1641_o, n1618_o, n1594_o, n1590_o, n1575_o, n1538_o, n1534_o, n1530_o, n1439_o};
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
-      23'b10000000000000000000000: n1861_o = n3790_q;
-      23'b01000000000000000000000: n1861_o = n3790_q;
+      23'b10000000000000000000000: n1861_o = n3828_q;
+      23'b01000000000000000000000: n1861_o = n3828_q;
       23'b00100000000000000000000: n1861_o = 1'b0;
       23'b00010000000000000000000: n1861_o = 1'b0;
-      23'b00001000000000000000000: n1861_o = n3790_q;
-      23'b00000100000000000000000: n1861_o = n3790_q;
+      23'b00001000000000000000000: n1861_o = n3828_q;
+      23'b00000100000000000000000: n1861_o = n3828_q;
       23'b00000010000000000000000: n1861_o = 1'b1;
-      23'b00000001000000000000000: n1861_o = n3790_q;
+      23'b00000001000000000000000: n1861_o = n3828_q;
       23'b00000000100000000000000: n1861_o = 1'b0;
-      23'b00000000010000000000000: n1861_o = n3790_q;
-      23'b00000000001000000000000: n1861_o = n3790_q;
-      23'b00000000000100000000000: n1861_o = n3790_q;
-      23'b00000000000010000000000: n1861_o = n3790_q;
-      23'b00000000000001000000000: n1861_o = n3790_q;
-      23'b00000000000000100000000: n1861_o = n3790_q;
-      23'b00000000000000010000000: n1861_o = n3790_q;
-      23'b00000000000000001000000: n1861_o = n3790_q;
-      23'b00000000000000000100000: n1861_o = n3790_q;
-      23'b00000000000000000010000: n1861_o = n3790_q;
+      23'b00000000010000000000000: n1861_o = n3828_q;
+      23'b00000000001000000000000: n1861_o = n3828_q;
+      23'b00000000000100000000000: n1861_o = n3828_q;
+      23'b00000000000010000000000: n1861_o = n3828_q;
+      23'b00000000000001000000000: n1861_o = n3828_q;
+      23'b00000000000000100000000: n1861_o = n3828_q;
+      23'b00000000000000010000000: n1861_o = n3828_q;
+      23'b00000000000000001000000: n1861_o = n3828_q;
+      23'b00000000000000000100000: n1861_o = n3828_q;
+      23'b00000000000000000010000: n1861_o = n3828_q;
       23'b00000000000000000001000: n1861_o = 1'b0;
       23'b00000000000000000000100: n1861_o = 1'b0;
-      23'b00000000000000000000010: n1861_o = n3790_q;
-      23'b00000000000000000000001: n1861_o = n3790_q;
-      default: n1861_o = n3790_q;
+      23'b00000000000000000000010: n1861_o = n3828_q;
+      23'b00000000000000000000001: n1861_o = n3828_q;
+      default: n1861_o = n3828_q;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1862_o = regsp;
@@ -6337,7 +6357,7 @@ module UR6805
   assign n1880_o = n1844_o[7:0];
   assign n1881_o = n1848_o[7:0];
   assign n1882_o = regpc[7:0];
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1883_o = n1881_o;
@@ -6385,7 +6405,7 @@ module UR6805
   assign n1901_o = n1844_o[15:8];
   assign n1902_o = n1848_o[15:8];
   assign n1903_o = regpc[15:8];
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1904_o = n1902_o;
@@ -6413,7 +6433,7 @@ module UR6805
       23'b00000000000000000000001: n1904_o = n1884_o;
       default: n1904_o = n1903_o;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1905_o = flagh;
@@ -6441,7 +6461,7 @@ module UR6805
       23'b00000000000000000000001: n1905_o = flagh;
       default: n1905_o = flagh;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1906_o = flagi;
@@ -6469,7 +6489,7 @@ module UR6805
       23'b00000000000000000000001: n1906_o = flagi;
       default: n1906_o = flagi;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1908_o = flagn;
@@ -6497,7 +6517,7 @@ module UR6805
       23'b00000000000000000000001: n1908_o = flagn;
       default: n1908_o = flagn;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1910_o = flagz;
@@ -6525,7 +6545,7 @@ module UR6805
       23'b00000000000000000000001: n1910_o = flagz;
       default: n1910_o = flagz;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1911_o = flagc;
@@ -6553,7 +6573,7 @@ module UR6805
       23'b00000000000000000000001: n1911_o = flagc;
       default: n1911_o = flagc;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1913_o = help;
@@ -6583,7 +6603,7 @@ module UR6805
     endcase
   assign n1914_o = n1781_o[7:0];
   assign n1915_o = temp[7:0];
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1916_o = n1915_o;
@@ -6613,7 +6633,7 @@ module UR6805
     endcase
   assign n1917_o = n1781_o[15:8];
   assign n1918_o = temp[15:8];
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1919_o = datain;
@@ -6641,7 +6661,7 @@ module UR6805
       23'b00000000000000000000001: n1919_o = n1918_o;
       default: n1919_o = n1918_o;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1944_o = 4'b0100;
@@ -6669,7 +6689,7 @@ module UR6805
       23'b00000000000000000000001: n1944_o = 4'b0100;
       default: n1944_o = 4'b0000;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1953_o = addrmux;
@@ -6697,7 +6717,7 @@ module UR6805
       23'b00000000000000000000001: n1953_o = 3'b011;
       default: n1953_o = addrmux;
     endcase
-  /* 6805.vhd:731:13  */
+  /* 6805.vhd:737:13  */
   always @*
     case (n1854_o)
       23'b10000000000000000000000: n1959_o = datamux;
@@ -6725,170 +6745,170 @@ module UR6805
       23'b00000000000000000000001: n1959_o = datamux;
       default: n1959_o = datamux;
     endcase
-  /* 6805.vhd:730:11  */
+  /* 6805.vhd:736:11  */
   assign n1961_o = mainfsm == 4'b0011;
-  /* 6805.vhd:931:57  */
+  /* 6805.vhd:937:57  */
   assign n1962_o = opcode[3:1];
-  /* 6805.vhd:931:38  */
+  /* 6805.vhd:937:38  */
   assign n1965_o = 3'b111 - n1962_o;
-  /* 6805.vhd:931:28  */
-  assign n1968_o = datain & n3804_o;
-  /* 6805.vhd:931:73  */
+  /* 6805.vhd:937:28  */
+  assign n1968_o = datain & n3842_o;
+  /* 6805.vhd:937:73  */
   assign n1970_o = n1968_o != 8'b00000000;
-  /* 6805.vhd:931:17  */
+  /* 6805.vhd:937:17  */
   assign n1973_o = n1970_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:929:15  */
+  /* 6805.vhd:935:15  */
   assign n1975_o = opcode == 8'b00000000;
-  /* 6805.vhd:929:26  */
+  /* 6805.vhd:935:26  */
   assign n1977_o = opcode == 8'b00000010;
-  /* 6805.vhd:929:26  */
+  /* 6805.vhd:935:26  */
   assign n1978_o = n1975_o | n1977_o;
-  /* 6805.vhd:929:34  */
+  /* 6805.vhd:935:34  */
   assign n1980_o = opcode == 8'b00000100;
-  /* 6805.vhd:929:34  */
+  /* 6805.vhd:935:34  */
   assign n1981_o = n1978_o | n1980_o;
-  /* 6805.vhd:929:42  */
+  /* 6805.vhd:935:42  */
   assign n1983_o = opcode == 8'b00000110;
-  /* 6805.vhd:929:42  */
+  /* 6805.vhd:935:42  */
   assign n1984_o = n1981_o | n1983_o;
-  /* 6805.vhd:929:50  */
+  /* 6805.vhd:935:50  */
   assign n1986_o = opcode == 8'b00001000;
-  /* 6805.vhd:929:50  */
+  /* 6805.vhd:935:50  */
   assign n1987_o = n1984_o | n1986_o;
-  /* 6805.vhd:929:58  */
+  /* 6805.vhd:935:58  */
   assign n1989_o = opcode == 8'b00001010;
-  /* 6805.vhd:929:58  */
+  /* 6805.vhd:935:58  */
   assign n1990_o = n1987_o | n1989_o;
-  /* 6805.vhd:929:66  */
+  /* 6805.vhd:935:66  */
   assign n1992_o = opcode == 8'b00001100;
-  /* 6805.vhd:929:66  */
+  /* 6805.vhd:935:66  */
   assign n1993_o = n1990_o | n1992_o;
-  /* 6805.vhd:929:74  */
+  /* 6805.vhd:935:74  */
   assign n1995_o = opcode == 8'b00001110;
-  /* 6805.vhd:929:74  */
+  /* 6805.vhd:935:74  */
   assign n1996_o = n1993_o | n1995_o;
-  /* 6805.vhd:929:82  */
+  /* 6805.vhd:935:82  */
   assign n1998_o = opcode == 8'b00000001;
-  /* 6805.vhd:929:82  */
+  /* 6805.vhd:935:82  */
   assign n1999_o = n1996_o | n1998_o;
-  /* 6805.vhd:930:26  */
+  /* 6805.vhd:936:26  */
   assign n2001_o = opcode == 8'b00000011;
-  /* 6805.vhd:930:26  */
+  /* 6805.vhd:936:26  */
   assign n2002_o = n1999_o | n2001_o;
-  /* 6805.vhd:930:34  */
+  /* 6805.vhd:936:34  */
   assign n2004_o = opcode == 8'b00000101;
-  /* 6805.vhd:930:34  */
+  /* 6805.vhd:936:34  */
   assign n2005_o = n2002_o | n2004_o;
-  /* 6805.vhd:930:42  */
+  /* 6805.vhd:936:42  */
   assign n2007_o = opcode == 8'b00000111;
-  /* 6805.vhd:930:42  */
+  /* 6805.vhd:936:42  */
   assign n2008_o = n2005_o | n2007_o;
-  /* 6805.vhd:930:50  */
+  /* 6805.vhd:936:50  */
   assign n2010_o = opcode == 8'b00001001;
-  /* 6805.vhd:930:50  */
+  /* 6805.vhd:936:50  */
   assign n2011_o = n2008_o | n2010_o;
-  /* 6805.vhd:930:58  */
+  /* 6805.vhd:936:58  */
   assign n2013_o = opcode == 8'b00001011;
-  /* 6805.vhd:930:58  */
+  /* 6805.vhd:936:58  */
   assign n2014_o = n2011_o | n2013_o;
-  /* 6805.vhd:930:66  */
+  /* 6805.vhd:936:66  */
   assign n2016_o = opcode == 8'b00001101;
-  /* 6805.vhd:930:66  */
+  /* 6805.vhd:936:66  */
   assign n2017_o = n2014_o | n2016_o;
-  /* 6805.vhd:930:74  */
+  /* 6805.vhd:936:74  */
   assign n2019_o = opcode == 8'b00001111;
-  /* 6805.vhd:930:74  */
+  /* 6805.vhd:936:74  */
   assign n2020_o = n2017_o | n2019_o;
-  /* 6805.vhd:942:26  */
+  /* 6805.vhd:948:26  */
   assign n2021_o = opcode[0];
-  /* 6805.vhd:942:30  */
+  /* 6805.vhd:948:30  */
   assign n2022_o = ~n2021_o;
-  /* 6805.vhd:943:63  */
+  /* 6805.vhd:949:63  */
   assign n2023_o = opcode[3:1];
-  /* 6805.vhd:943:44  */
+  /* 6805.vhd:949:44  */
   assign n2026_o = 3'b111 - n2023_o;
-  /* 6805.vhd:943:34  */
-  assign n2029_o = datain | n3818_o;
-  /* 6805.vhd:945:63  */
+  /* 6805.vhd:949:34  */
+  assign n2029_o = datain | n3856_o;
+  /* 6805.vhd:951:63  */
   assign n2030_o = opcode[3:1];
-  /* 6805.vhd:945:44  */
+  /* 6805.vhd:951:44  */
   assign n2033_o = 3'b111 - n2030_o;
-  /* 6805.vhd:945:34  */
-  assign n2036_o = datain & n3832_o;
-  /* 6805.vhd:942:17  */
+  /* 6805.vhd:951:34  */
+  assign n2036_o = datain & n3870_o;
+  /* 6805.vhd:948:17  */
   assign n2037_o = n2022_o ? n2029_o : n2036_o;
-  /* 6805.vhd:938:15  */
+  /* 6805.vhd:944:15  */
   assign n2039_o = opcode == 8'b00010000;
-  /* 6805.vhd:938:26  */
+  /* 6805.vhd:944:26  */
   assign n2041_o = opcode == 8'b00010010;
-  /* 6805.vhd:938:26  */
+  /* 6805.vhd:944:26  */
   assign n2042_o = n2039_o | n2041_o;
-  /* 6805.vhd:938:34  */
+  /* 6805.vhd:944:34  */
   assign n2044_o = opcode == 8'b00010100;
-  /* 6805.vhd:938:34  */
+  /* 6805.vhd:944:34  */
   assign n2045_o = n2042_o | n2044_o;
-  /* 6805.vhd:938:42  */
+  /* 6805.vhd:944:42  */
   assign n2047_o = opcode == 8'b00010110;
-  /* 6805.vhd:938:42  */
+  /* 6805.vhd:944:42  */
   assign n2048_o = n2045_o | n2047_o;
-  /* 6805.vhd:938:50  */
+  /* 6805.vhd:944:50  */
   assign n2050_o = opcode == 8'b00011000;
-  /* 6805.vhd:938:50  */
+  /* 6805.vhd:944:50  */
   assign n2051_o = n2048_o | n2050_o;
-  /* 6805.vhd:938:58  */
+  /* 6805.vhd:944:58  */
   assign n2053_o = opcode == 8'b00011010;
-  /* 6805.vhd:938:58  */
+  /* 6805.vhd:944:58  */
   assign n2054_o = n2051_o | n2053_o;
-  /* 6805.vhd:938:66  */
+  /* 6805.vhd:944:66  */
   assign n2056_o = opcode == 8'b00011100;
-  /* 6805.vhd:938:66  */
+  /* 6805.vhd:944:66  */
   assign n2057_o = n2054_o | n2056_o;
-  /* 6805.vhd:938:74  */
+  /* 6805.vhd:944:74  */
   assign n2059_o = opcode == 8'b00011110;
-  /* 6805.vhd:938:74  */
+  /* 6805.vhd:944:74  */
   assign n2060_o = n2057_o | n2059_o;
-  /* 6805.vhd:938:82  */
+  /* 6805.vhd:944:82  */
   assign n2062_o = opcode == 8'b00010001;
-  /* 6805.vhd:938:82  */
+  /* 6805.vhd:944:82  */
   assign n2063_o = n2060_o | n2062_o;
-  /* 6805.vhd:939:26  */
+  /* 6805.vhd:945:26  */
   assign n2065_o = opcode == 8'b00010011;
-  /* 6805.vhd:939:26  */
+  /* 6805.vhd:945:26  */
   assign n2066_o = n2063_o | n2065_o;
-  /* 6805.vhd:939:34  */
+  /* 6805.vhd:945:34  */
   assign n2068_o = opcode == 8'b00010101;
-  /* 6805.vhd:939:34  */
+  /* 6805.vhd:945:34  */
   assign n2069_o = n2066_o | n2068_o;
-  /* 6805.vhd:939:42  */
+  /* 6805.vhd:945:42  */
   assign n2071_o = opcode == 8'b00010111;
-  /* 6805.vhd:939:42  */
+  /* 6805.vhd:945:42  */
   assign n2072_o = n2069_o | n2071_o;
-  /* 6805.vhd:939:50  */
+  /* 6805.vhd:945:50  */
   assign n2074_o = opcode == 8'b00011001;
-  /* 6805.vhd:939:50  */
+  /* 6805.vhd:945:50  */
   assign n2075_o = n2072_o | n2074_o;
-  /* 6805.vhd:939:58  */
+  /* 6805.vhd:945:58  */
   assign n2077_o = opcode == 8'b00011011;
-  /* 6805.vhd:939:58  */
+  /* 6805.vhd:945:58  */
   assign n2078_o = n2075_o | n2077_o;
-  /* 6805.vhd:939:66  */
+  /* 6805.vhd:945:66  */
   assign n2080_o = opcode == 8'b00011101;
-  /* 6805.vhd:939:66  */
+  /* 6805.vhd:945:66  */
   assign n2081_o = n2078_o | n2080_o;
-  /* 6805.vhd:939:74  */
+  /* 6805.vhd:945:74  */
   assign n2083_o = opcode == 8'b00011111;
-  /* 6805.vhd:939:74  */
+  /* 6805.vhd:945:74  */
   assign n2084_o = n2081_o | n2083_o;
-  /* 6805.vhd:961:28  */
+  /* 6805.vhd:967:28  */
   assign n2085_o = opcode[7:4];
-  /* 6805.vhd:962:19  */
+  /* 6805.vhd:968:19  */
   assign n2087_o = n2085_o == 4'b1100;
-  /* 6805.vhd:964:19  */
+  /* 6805.vhd:970:19  */
   assign n2089_o = n2085_o == 4'b1101;
-  /* 6805.vhd:966:19  */
+  /* 6805.vhd:972:19  */
   assign n2091_o = n2085_o == 4'b1110;
   assign n2092_o = {n2091_o, n2089_o, n2087_o};
-  /* 6805.vhd:961:17  */
+  /* 6805.vhd:967:17  */
   always @*
     case (n2092_o)
       3'b100: n2096_o = 3'b110;
@@ -6896,518 +6916,518 @@ module UR6805
       3'b001: n2096_o = 3'b011;
       default: n2096_o = addrmux;
     endcase
-  /* 6805.vhd:971:32  */
+  /* 6805.vhd:977:32  */
   assign n2098_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:948:15  */
+  /* 6805.vhd:954:15  */
   assign n2100_o = opcode == 8'b11000000;
-  /* 6805.vhd:948:26  */
+  /* 6805.vhd:954:26  */
   assign n2102_o = opcode == 8'b11000001;
-  /* 6805.vhd:948:26  */
+  /* 6805.vhd:954:26  */
   assign n2103_o = n2100_o | n2102_o;
-  /* 6805.vhd:948:34  */
+  /* 6805.vhd:954:34  */
   assign n2105_o = opcode == 8'b11000010;
-  /* 6805.vhd:948:34  */
+  /* 6805.vhd:954:34  */
   assign n2106_o = n2103_o | n2105_o;
-  /* 6805.vhd:948:42  */
+  /* 6805.vhd:954:42  */
   assign n2108_o = opcode == 8'b11000011;
-  /* 6805.vhd:948:42  */
+  /* 6805.vhd:954:42  */
   assign n2109_o = n2106_o | n2108_o;
-  /* 6805.vhd:948:50  */
+  /* 6805.vhd:954:50  */
   assign n2111_o = opcode == 8'b11000100;
-  /* 6805.vhd:948:50  */
+  /* 6805.vhd:954:50  */
   assign n2112_o = n2109_o | n2111_o;
-  /* 6805.vhd:949:26  */
+  /* 6805.vhd:955:26  */
   assign n2114_o = opcode == 8'b11000101;
-  /* 6805.vhd:949:26  */
+  /* 6805.vhd:955:26  */
   assign n2115_o = n2112_o | n2114_o;
-  /* 6805.vhd:949:34  */
+  /* 6805.vhd:955:34  */
   assign n2117_o = opcode == 8'b11000110;
-  /* 6805.vhd:949:34  */
+  /* 6805.vhd:955:34  */
   assign n2118_o = n2115_o | n2117_o;
-  /* 6805.vhd:949:42  */
+  /* 6805.vhd:955:42  */
   assign n2120_o = opcode == 8'b11001000;
-  /* 6805.vhd:949:42  */
+  /* 6805.vhd:955:42  */
   assign n2121_o = n2118_o | n2120_o;
-  /* 6805.vhd:950:26  */
+  /* 6805.vhd:956:26  */
   assign n2123_o = opcode == 8'b11001001;
-  /* 6805.vhd:950:26  */
+  /* 6805.vhd:956:26  */
   assign n2124_o = n2121_o | n2123_o;
-  /* 6805.vhd:950:34  */
+  /* 6805.vhd:956:34  */
   assign n2126_o = opcode == 8'b11001010;
-  /* 6805.vhd:950:34  */
+  /* 6805.vhd:956:34  */
   assign n2127_o = n2124_o | n2126_o;
-  /* 6805.vhd:950:42  */
+  /* 6805.vhd:956:42  */
   assign n2129_o = opcode == 8'b11001011;
-  /* 6805.vhd:950:42  */
+  /* 6805.vhd:956:42  */
   assign n2130_o = n2127_o | n2129_o;
-  /* 6805.vhd:950:50  */
+  /* 6805.vhd:956:50  */
   assign n2132_o = opcode == 8'b11001110;
-  /* 6805.vhd:950:50  */
+  /* 6805.vhd:956:50  */
   assign n2133_o = n2130_o | n2132_o;
-  /* 6805.vhd:951:26  */
+  /* 6805.vhd:957:26  */
   assign n2135_o = opcode == 8'b11010000;
-  /* 6805.vhd:951:26  */
+  /* 6805.vhd:957:26  */
   assign n2136_o = n2133_o | n2135_o;
-  /* 6805.vhd:952:26  */
+  /* 6805.vhd:958:26  */
   assign n2138_o = opcode == 8'b11010001;
-  /* 6805.vhd:952:26  */
+  /* 6805.vhd:958:26  */
   assign n2139_o = n2136_o | n2138_o;
-  /* 6805.vhd:952:34  */
+  /* 6805.vhd:958:34  */
   assign n2141_o = opcode == 8'b11010010;
-  /* 6805.vhd:952:34  */
+  /* 6805.vhd:958:34  */
   assign n2142_o = n2139_o | n2141_o;
-  /* 6805.vhd:952:42  */
+  /* 6805.vhd:958:42  */
   assign n2144_o = opcode == 8'b11010011;
-  /* 6805.vhd:952:42  */
+  /* 6805.vhd:958:42  */
   assign n2145_o = n2142_o | n2144_o;
-  /* 6805.vhd:952:50  */
+  /* 6805.vhd:958:50  */
   assign n2147_o = opcode == 8'b11010100;
-  /* 6805.vhd:952:50  */
+  /* 6805.vhd:958:50  */
   assign n2148_o = n2145_o | n2147_o;
-  /* 6805.vhd:953:26  */
+  /* 6805.vhd:959:26  */
   assign n2150_o = opcode == 8'b11010101;
-  /* 6805.vhd:953:26  */
+  /* 6805.vhd:959:26  */
   assign n2151_o = n2148_o | n2150_o;
-  /* 6805.vhd:953:34  */
+  /* 6805.vhd:959:34  */
   assign n2153_o = opcode == 8'b11010110;
-  /* 6805.vhd:953:34  */
+  /* 6805.vhd:959:34  */
   assign n2154_o = n2151_o | n2153_o;
-  /* 6805.vhd:953:42  */
+  /* 6805.vhd:959:42  */
   assign n2156_o = opcode == 8'b11011000;
-  /* 6805.vhd:953:42  */
+  /* 6805.vhd:959:42  */
   assign n2157_o = n2154_o | n2156_o;
-  /* 6805.vhd:954:26  */
+  /* 6805.vhd:960:26  */
   assign n2159_o = opcode == 8'b11011001;
-  /* 6805.vhd:954:26  */
+  /* 6805.vhd:960:26  */
   assign n2160_o = n2157_o | n2159_o;
-  /* 6805.vhd:954:34  */
+  /* 6805.vhd:960:34  */
   assign n2162_o = opcode == 8'b11011010;
-  /* 6805.vhd:954:34  */
+  /* 6805.vhd:960:34  */
   assign n2163_o = n2160_o | n2162_o;
-  /* 6805.vhd:954:42  */
+  /* 6805.vhd:960:42  */
   assign n2165_o = opcode == 8'b11011011;
-  /* 6805.vhd:954:42  */
+  /* 6805.vhd:960:42  */
   assign n2166_o = n2163_o | n2165_o;
-  /* 6805.vhd:954:50  */
+  /* 6805.vhd:960:50  */
   assign n2168_o = opcode == 8'b11011110;
-  /* 6805.vhd:954:50  */
+  /* 6805.vhd:960:50  */
   assign n2169_o = n2166_o | n2168_o;
-  /* 6805.vhd:955:26  */
+  /* 6805.vhd:961:26  */
   assign n2171_o = opcode == 8'b11100000;
-  /* 6805.vhd:955:26  */
+  /* 6805.vhd:961:26  */
   assign n2172_o = n2169_o | n2171_o;
-  /* 6805.vhd:956:26  */
+  /* 6805.vhd:962:26  */
   assign n2174_o = opcode == 8'b11100001;
-  /* 6805.vhd:956:26  */
+  /* 6805.vhd:962:26  */
   assign n2175_o = n2172_o | n2174_o;
-  /* 6805.vhd:956:34  */
+  /* 6805.vhd:962:34  */
   assign n2177_o = opcode == 8'b11100010;
-  /* 6805.vhd:956:34  */
+  /* 6805.vhd:962:34  */
   assign n2178_o = n2175_o | n2177_o;
-  /* 6805.vhd:956:42  */
+  /* 6805.vhd:962:42  */
   assign n2180_o = opcode == 8'b11100011;
-  /* 6805.vhd:956:42  */
+  /* 6805.vhd:962:42  */
   assign n2181_o = n2178_o | n2180_o;
-  /* 6805.vhd:956:50  */
+  /* 6805.vhd:962:50  */
   assign n2183_o = opcode == 8'b11100100;
-  /* 6805.vhd:956:50  */
+  /* 6805.vhd:962:50  */
   assign n2184_o = n2181_o | n2183_o;
-  /* 6805.vhd:957:26  */
+  /* 6805.vhd:963:26  */
   assign n2186_o = opcode == 8'b11100101;
-  /* 6805.vhd:957:26  */
+  /* 6805.vhd:963:26  */
   assign n2187_o = n2184_o | n2186_o;
-  /* 6805.vhd:957:34  */
+  /* 6805.vhd:963:34  */
   assign n2189_o = opcode == 8'b11100110;
-  /* 6805.vhd:957:34  */
+  /* 6805.vhd:963:34  */
   assign n2190_o = n2187_o | n2189_o;
-  /* 6805.vhd:957:42  */
+  /* 6805.vhd:963:42  */
   assign n2192_o = opcode == 8'b11101000;
-  /* 6805.vhd:957:42  */
+  /* 6805.vhd:963:42  */
   assign n2193_o = n2190_o | n2192_o;
-  /* 6805.vhd:958:26  */
+  /* 6805.vhd:964:26  */
   assign n2195_o = opcode == 8'b11101001;
-  /* 6805.vhd:958:26  */
+  /* 6805.vhd:964:26  */
   assign n2196_o = n2193_o | n2195_o;
-  /* 6805.vhd:958:34  */
+  /* 6805.vhd:964:34  */
   assign n2198_o = opcode == 8'b11101010;
-  /* 6805.vhd:958:34  */
+  /* 6805.vhd:964:34  */
   assign n2199_o = n2196_o | n2198_o;
-  /* 6805.vhd:958:42  */
+  /* 6805.vhd:964:42  */
   assign n2201_o = opcode == 8'b11101011;
-  /* 6805.vhd:958:42  */
+  /* 6805.vhd:964:42  */
   assign n2202_o = n2199_o | n2201_o;
-  /* 6805.vhd:958:50  */
+  /* 6805.vhd:964:50  */
   assign n2204_o = opcode == 8'b11101110;
-  /* 6805.vhd:958:50  */
+  /* 6805.vhd:964:50  */
   assign n2205_o = n2202_o | n2204_o;
-  /* 6805.vhd:974:30  */
+  /* 6805.vhd:980:30  */
   assign n2206_o = temp[15:8];
-  /* 6805.vhd:974:44  */
+  /* 6805.vhd:980:44  */
   assign n2207_o = {n2206_o, datain};
-  /* 6805.vhd:973:15  */
-  assign n2209_o = opcode == 8'b11001100;
-  /* 6805.vhd:977:31  */
-  assign n2210_o = temp[15:8];
-  /* 6805.vhd:977:45  */
-  assign n2211_o = {n2210_o, datain};
-  /* 6805.vhd:977:64  */
-  assign n2213_o = {8'b00000000, regx};
-  /* 6805.vhd:977:55  */
-  assign n2214_o = n2211_o + n2213_o;
-  /* 6805.vhd:976:15  */
-  assign n2216_o = opcode == 8'b11011100;
-  /* 6805.vhd:980:33  */
-  assign n2218_o = {8'b00000000, datain};
-  /* 6805.vhd:980:52  */
-  assign n2220_o = {8'b00000000, regx};
-  /* 6805.vhd:980:43  */
-  assign n2221_o = n2218_o + n2220_o;
   /* 6805.vhd:979:15  */
-  assign n2223_o = opcode == 8'b11101100;
-  /* 6805.vhd:984:30  */
-  assign n2224_o = rega[7];
-  /* 6805.vhd:985:25  */
-  assign n2226_o = rega == 8'b00000000;
-  /* 6805.vhd:985:17  */
-  assign n2229_o = n2226_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:993:32  */
-  assign n2231_o = regpc + 16'b0000000000000001;
+  assign n2209_o = opcode == 8'b11001100;
+  /* 6805.vhd:983:31  */
+  assign n2210_o = temp[15:8];
+  /* 6805.vhd:983:45  */
+  assign n2211_o = {n2210_o, datain};
+  /* 6805.vhd:983:64  */
+  assign n2213_o = {8'b00000000, regx};
+  /* 6805.vhd:983:55  */
+  assign n2214_o = n2211_o + n2213_o;
   /* 6805.vhd:982:15  */
+  assign n2216_o = opcode == 8'b11011100;
+  /* 6805.vhd:986:33  */
+  assign n2218_o = {8'b00000000, datain};
+  /* 6805.vhd:986:52  */
+  assign n2220_o = {8'b00000000, regx};
+  /* 6805.vhd:986:43  */
+  assign n2221_o = n2218_o + n2220_o;
+  /* 6805.vhd:985:15  */
+  assign n2223_o = opcode == 8'b11101100;
+  /* 6805.vhd:990:30  */
+  assign n2224_o = rega[7];
+  /* 6805.vhd:991:25  */
+  assign n2226_o = rega == 8'b00000000;
+  /* 6805.vhd:991:17  */
+  assign n2229_o = n2226_o ? 1'b1 : 1'b0;
+  /* 6805.vhd:999:32  */
+  assign n2231_o = regpc + 16'b0000000000000001;
+  /* 6805.vhd:988:15  */
   assign n2233_o = opcode == 8'b11000111;
-  /* 6805.vhd:997:30  */
+  /* 6805.vhd:1003:30  */
   assign n2234_o = rega[7];
-  /* 6805.vhd:998:25  */
+  /* 6805.vhd:1004:25  */
   assign n2236_o = rega == 8'b00000000;
-  /* 6805.vhd:998:17  */
+  /* 6805.vhd:1004:17  */
   assign n2239_o = n2236_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1006:32  */
+  /* 6805.vhd:1012:32  */
   assign n2241_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:995:15  */
+  /* 6805.vhd:1001:15  */
   assign n2243_o = opcode == 8'b11010111;
-  /* 6805.vhd:1010:30  */
+  /* 6805.vhd:1016:30  */
   assign n2244_o = rega[7];
-  /* 6805.vhd:1011:25  */
+  /* 6805.vhd:1017:25  */
   assign n2246_o = rega == 8'b00000000;
-  /* 6805.vhd:1011:17  */
+  /* 6805.vhd:1017:17  */
   assign n2249_o = n2246_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1019:32  */
+  /* 6805.vhd:1025:32  */
   assign n2251_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1008:15  */
+  /* 6805.vhd:1014:15  */
   assign n2253_o = opcode == 8'b11100111;
-  /* 6805.vhd:1023:30  */
+  /* 6805.vhd:1029:30  */
   assign n2254_o = regx[7];
-  /* 6805.vhd:1024:25  */
+  /* 6805.vhd:1030:25  */
   assign n2256_o = regx == 8'b00000000;
-  /* 6805.vhd:1024:17  */
+  /* 6805.vhd:1030:17  */
   assign n2259_o = n2256_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1032:32  */
+  /* 6805.vhd:1038:32  */
   assign n2261_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1021:15  */
+  /* 6805.vhd:1027:15  */
   assign n2263_o = opcode == 8'b11001111;
-  /* 6805.vhd:1036:30  */
+  /* 6805.vhd:1042:30  */
   assign n2264_o = regx[7];
-  /* 6805.vhd:1037:25  */
+  /* 6805.vhd:1043:25  */
   assign n2266_o = regx == 8'b00000000;
-  /* 6805.vhd:1037:17  */
+  /* 6805.vhd:1043:17  */
   assign n2269_o = n2266_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1045:32  */
+  /* 6805.vhd:1051:32  */
   assign n2271_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1034:15  */
+  /* 6805.vhd:1040:15  */
   assign n2273_o = opcode == 8'b11011111;
-  /* 6805.vhd:1049:30  */
+  /* 6805.vhd:1055:30  */
   assign n2274_o = regx[7];
-  /* 6805.vhd:1050:25  */
+  /* 6805.vhd:1056:25  */
   assign n2276_o = regx == 8'b00000000;
-  /* 6805.vhd:1050:17  */
+  /* 6805.vhd:1056:17  */
   assign n2279_o = n2276_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1058:32  */
+  /* 6805.vhd:1064:32  */
   assign n2281_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1047:15  */
+  /* 6805.vhd:1053:15  */
   assign n2283_o = opcode == 8'b11101111;
-  /* 6805.vhd:1063:34  */
+  /* 6805.vhd:1069:34  */
   assign n2285_o = 8'b00000000 - datain;
-  /* 6805.vhd:1064:34  */
+  /* 6805.vhd:1070:34  */
   assign n2287_o = 8'b00000000 - datain;
-  /* 6805.vhd:1065:32  */
+  /* 6805.vhd:1071:32  */
   assign n2288_o = n2287_o[7];
-  /* 6805.vhd:1066:25  */
+  /* 6805.vhd:1072:25  */
   assign n2290_o = n2287_o == 8'b00000000;
-  /* 6805.vhd:1066:17  */
+  /* 6805.vhd:1072:17  */
   assign n2293_o = n2290_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1066:17  */
+  /* 6805.vhd:1072:17  */
   assign n2296_o = n2290_o ? 1'b0 : 1'b1;
-  /* 6805.vhd:1060:15  */
+  /* 6805.vhd:1066:15  */
   assign n2298_o = opcode == 8'b00110000;
-  /* 6805.vhd:1060:26  */
+  /* 6805.vhd:1066:26  */
   assign n2300_o = opcode == 8'b01100000;
-  /* 6805.vhd:1060:26  */
+  /* 6805.vhd:1066:26  */
   assign n2301_o = n2298_o | n2300_o;
-  /* 6805.vhd:1060:34  */
+  /* 6805.vhd:1066:34  */
   assign n2303_o = opcode == 8'b01110000;
-  /* 6805.vhd:1060:34  */
+  /* 6805.vhd:1066:34  */
   assign n2304_o = n2301_o | n2303_o;
-  /* 6805.vhd:1077:35  */
+  /* 6805.vhd:1083:35  */
   assign n2306_o = datain ^ 8'b11111111;
-  /* 6805.vhd:1078:35  */
+  /* 6805.vhd:1084:35  */
   assign n2308_o = datain ^ 8'b11111111;
-  /* 6805.vhd:1080:32  */
+  /* 6805.vhd:1086:32  */
   assign n2309_o = n2308_o[7];
-  /* 6805.vhd:1081:25  */
+  /* 6805.vhd:1087:25  */
   assign n2311_o = n2308_o == 8'b00000000;
-  /* 6805.vhd:1081:17  */
+  /* 6805.vhd:1087:17  */
   assign n2314_o = n2311_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1074:15  */
+  /* 6805.vhd:1080:15  */
   assign n2316_o = opcode == 8'b00110011;
-  /* 6805.vhd:1074:26  */
+  /* 6805.vhd:1080:26  */
   assign n2318_o = opcode == 8'b01100011;
-  /* 6805.vhd:1074:26  */
+  /* 6805.vhd:1080:26  */
   assign n2319_o = n2316_o | n2318_o;
-  /* 6805.vhd:1074:34  */
+  /* 6805.vhd:1080:34  */
   assign n2321_o = opcode == 8'b01110011;
-  /* 6805.vhd:1074:34  */
+  /* 6805.vhd:1080:34  */
   assign n2322_o = n2319_o | n2321_o;
-  /* 6805.vhd:1090:40  */
+  /* 6805.vhd:1096:40  */
   assign n2323_o = datain[7:1];
-  /* 6805.vhd:1090:32  */
+  /* 6805.vhd:1096:32  */
   assign n2325_o = {1'b0, n2323_o};
-  /* 6805.vhd:1091:40  */
+  /* 6805.vhd:1097:40  */
   assign n2326_o = datain[7:1];
-  /* 6805.vhd:1091:32  */
+  /* 6805.vhd:1097:32  */
   assign n2328_o = {1'b0, n2326_o};
-  /* 6805.vhd:1093:34  */
+  /* 6805.vhd:1099:34  */
   assign n2329_o = datain[0];
-  /* 6805.vhd:1094:25  */
+  /* 6805.vhd:1100:25  */
   assign n2331_o = n2328_o == 8'b00000000;
-  /* 6805.vhd:1094:17  */
+  /* 6805.vhd:1100:17  */
   assign n2334_o = n2331_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1087:15  */
+  /* 6805.vhd:1093:15  */
   assign n2336_o = opcode == 8'b00110100;
-  /* 6805.vhd:1087:26  */
+  /* 6805.vhd:1093:26  */
   assign n2338_o = opcode == 8'b01100100;
-  /* 6805.vhd:1087:26  */
+  /* 6805.vhd:1093:26  */
   assign n2339_o = n2336_o | n2338_o;
-  /* 6805.vhd:1087:34  */
+  /* 6805.vhd:1093:34  */
   assign n2341_o = opcode == 8'b01110100;
-  /* 6805.vhd:1087:34  */
+  /* 6805.vhd:1093:34  */
   assign n2342_o = n2339_o | n2341_o;
-  /* 6805.vhd:1103:42  */
+  /* 6805.vhd:1109:42  */
   assign n2343_o = datain[7:1];
-  /* 6805.vhd:1103:34  */
+  /* 6805.vhd:1109:34  */
   assign n2344_o = {flagc, n2343_o};
-  /* 6805.vhd:1104:42  */
+  /* 6805.vhd:1110:42  */
   assign n2345_o = datain[7:1];
-  /* 6805.vhd:1104:34  */
+  /* 6805.vhd:1110:34  */
   assign n2346_o = {flagc, n2345_o};
-  /* 6805.vhd:1106:34  */
+  /* 6805.vhd:1112:34  */
   assign n2347_o = datain[0];
-  /* 6805.vhd:1107:25  */
+  /* 6805.vhd:1113:25  */
   assign n2349_o = n2346_o == 8'b00000000;
-  /* 6805.vhd:1107:17  */
+  /* 6805.vhd:1113:17  */
   assign n2352_o = n2349_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1100:15  */
+  /* 6805.vhd:1106:15  */
   assign n2354_o = opcode == 8'b00110110;
-  /* 6805.vhd:1100:26  */
+  /* 6805.vhd:1106:26  */
   assign n2356_o = opcode == 8'b01100110;
-  /* 6805.vhd:1100:26  */
+  /* 6805.vhd:1106:26  */
   assign n2357_o = n2354_o | n2356_o;
-  /* 6805.vhd:1100:34  */
+  /* 6805.vhd:1106:34  */
   assign n2359_o = opcode == 8'b01110110;
-  /* 6805.vhd:1100:34  */
+  /* 6805.vhd:1106:34  */
   assign n2360_o = n2357_o | n2359_o;
-  /* 6805.vhd:1116:34  */
+  /* 6805.vhd:1122:34  */
   assign n2361_o = datain[7];
-  /* 6805.vhd:1116:46  */
+  /* 6805.vhd:1122:46  */
   assign n2362_o = datain[7:1];
-  /* 6805.vhd:1116:38  */
+  /* 6805.vhd:1122:38  */
   assign n2363_o = {n2361_o, n2362_o};
-  /* 6805.vhd:1117:34  */
+  /* 6805.vhd:1123:34  */
   assign n2364_o = datain[7];
-  /* 6805.vhd:1117:46  */
+  /* 6805.vhd:1123:46  */
   assign n2365_o = datain[7:1];
-  /* 6805.vhd:1117:38  */
+  /* 6805.vhd:1123:38  */
   assign n2366_o = {n2364_o, n2365_o};
-  /* 6805.vhd:1118:34  */
+  /* 6805.vhd:1124:34  */
   assign n2367_o = datain[7];
-  /* 6805.vhd:1119:34  */
+  /* 6805.vhd:1125:34  */
   assign n2368_o = datain[0];
-  /* 6805.vhd:1120:25  */
+  /* 6805.vhd:1126:25  */
   assign n2370_o = n2366_o == 8'b00000000;
-  /* 6805.vhd:1120:17  */
+  /* 6805.vhd:1126:17  */
   assign n2373_o = n2370_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1113:15  */
+  /* 6805.vhd:1119:15  */
   assign n2375_o = opcode == 8'b00110111;
-  /* 6805.vhd:1113:26  */
+  /* 6805.vhd:1119:26  */
   assign n2377_o = opcode == 8'b01100111;
-  /* 6805.vhd:1113:26  */
+  /* 6805.vhd:1119:26  */
   assign n2378_o = n2375_o | n2377_o;
-  /* 6805.vhd:1113:34  */
+  /* 6805.vhd:1119:34  */
   assign n2380_o = opcode == 8'b01110111;
-  /* 6805.vhd:1113:34  */
+  /* 6805.vhd:1119:34  */
   assign n2381_o = n2378_o | n2380_o;
-  /* 6805.vhd:1129:34  */
+  /* 6805.vhd:1135:34  */
   assign n2382_o = datain[6:0];
-  /* 6805.vhd:1129:47  */
+  /* 6805.vhd:1135:47  */
   assign n2384_o = {n2382_o, 1'b0};
-  /* 6805.vhd:1130:34  */
+  /* 6805.vhd:1136:34  */
   assign n2385_o = datain[6:0];
-  /* 6805.vhd:1130:47  */
+  /* 6805.vhd:1136:47  */
   assign n2387_o = {n2385_o, 1'b0};
-  /* 6805.vhd:1131:34  */
+  /* 6805.vhd:1137:34  */
   assign n2388_o = datain[6];
-  /* 6805.vhd:1132:34  */
+  /* 6805.vhd:1138:34  */
   assign n2389_o = datain[7];
-  /* 6805.vhd:1133:25  */
+  /* 6805.vhd:1139:25  */
   assign n2391_o = n2387_o == 8'b00000000;
-  /* 6805.vhd:1133:17  */
+  /* 6805.vhd:1139:17  */
   assign n2394_o = n2391_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1126:15  */
+  /* 6805.vhd:1132:15  */
   assign n2396_o = opcode == 8'b00111000;
-  /* 6805.vhd:1126:26  */
+  /* 6805.vhd:1132:26  */
   assign n2398_o = opcode == 8'b01101000;
-  /* 6805.vhd:1126:26  */
+  /* 6805.vhd:1132:26  */
   assign n2399_o = n2396_o | n2398_o;
-  /* 6805.vhd:1126:34  */
+  /* 6805.vhd:1132:34  */
   assign n2401_o = opcode == 8'b01111000;
-  /* 6805.vhd:1126:34  */
+  /* 6805.vhd:1132:34  */
   assign n2402_o = n2399_o | n2401_o;
-  /* 6805.vhd:1142:34  */
+  /* 6805.vhd:1148:34  */
   assign n2403_o = datain[6:0];
-  /* 6805.vhd:1142:47  */
+  /* 6805.vhd:1148:47  */
   assign n2404_o = {n2403_o, flagc};
-  /* 6805.vhd:1143:34  */
+  /* 6805.vhd:1149:34  */
   assign n2405_o = datain[6:0];
-  /* 6805.vhd:1143:47  */
+  /* 6805.vhd:1149:47  */
   assign n2406_o = {n2405_o, flagc};
-  /* 6805.vhd:1144:34  */
+  /* 6805.vhd:1150:34  */
   assign n2407_o = datain[6];
-  /* 6805.vhd:1145:34  */
+  /* 6805.vhd:1151:34  */
   assign n2408_o = datain[7];
-  /* 6805.vhd:1146:25  */
+  /* 6805.vhd:1152:25  */
   assign n2410_o = n2406_o == 8'b00000000;
-  /* 6805.vhd:1146:17  */
+  /* 6805.vhd:1152:17  */
   assign n2413_o = n2410_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1139:15  */
+  /* 6805.vhd:1145:15  */
   assign n2415_o = opcode == 8'b00111001;
-  /* 6805.vhd:1139:26  */
+  /* 6805.vhd:1145:26  */
   assign n2417_o = opcode == 8'b01101001;
-  /* 6805.vhd:1139:26  */
+  /* 6805.vhd:1145:26  */
   assign n2418_o = n2415_o | n2417_o;
-  /* 6805.vhd:1139:34  */
+  /* 6805.vhd:1145:34  */
   assign n2420_o = opcode == 8'b01111001;
-  /* 6805.vhd:1139:34  */
+  /* 6805.vhd:1145:34  */
   assign n2421_o = n2418_o | n2420_o;
-  /* 6805.vhd:1155:35  */
+  /* 6805.vhd:1161:35  */
   assign n2423_o = datain - 8'b00000001;
-  /* 6805.vhd:1156:35  */
+  /* 6805.vhd:1162:35  */
   assign n2425_o = datain - 8'b00000001;
-  /* 6805.vhd:1157:32  */
+  /* 6805.vhd:1163:32  */
   assign n2426_o = n2425_o[7];
-  /* 6805.vhd:1158:25  */
+  /* 6805.vhd:1164:25  */
   assign n2428_o = n2425_o == 8'b00000000;
-  /* 6805.vhd:1158:17  */
+  /* 6805.vhd:1164:17  */
   assign n2431_o = n2428_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1152:15  */
+  /* 6805.vhd:1158:15  */
   assign n2433_o = opcode == 8'b00111010;
-  /* 6805.vhd:1152:26  */
+  /* 6805.vhd:1158:26  */
   assign n2435_o = opcode == 8'b01101010;
-  /* 6805.vhd:1152:26  */
+  /* 6805.vhd:1158:26  */
   assign n2436_o = n2433_o | n2435_o;
-  /* 6805.vhd:1152:34  */
+  /* 6805.vhd:1158:34  */
   assign n2438_o = opcode == 8'b01111010;
-  /* 6805.vhd:1152:34  */
+  /* 6805.vhd:1158:34  */
   assign n2439_o = n2436_o | n2438_o;
-  /* 6805.vhd:1167:35  */
+  /* 6805.vhd:1173:35  */
   assign n2441_o = datain + 8'b00000001;
-  /* 6805.vhd:1168:35  */
+  /* 6805.vhd:1174:35  */
   assign n2443_o = datain + 8'b00000001;
-  /* 6805.vhd:1169:32  */
+  /* 6805.vhd:1175:32  */
   assign n2444_o = n2443_o[7];
-  /* 6805.vhd:1170:25  */
+  /* 6805.vhd:1176:25  */
   assign n2446_o = n2443_o == 8'b00000000;
-  /* 6805.vhd:1170:17  */
+  /* 6805.vhd:1176:17  */
   assign n2449_o = n2446_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1164:15  */
+  /* 6805.vhd:1170:15  */
   assign n2451_o = opcode == 8'b00111100;
-  /* 6805.vhd:1164:26  */
+  /* 6805.vhd:1170:26  */
   assign n2453_o = opcode == 8'b01101100;
-  /* 6805.vhd:1164:26  */
+  /* 6805.vhd:1170:26  */
   assign n2454_o = n2451_o | n2453_o;
-  /* 6805.vhd:1164:34  */
+  /* 6805.vhd:1170:34  */
   assign n2456_o = opcode == 8'b01111100;
-  /* 6805.vhd:1164:34  */
+  /* 6805.vhd:1170:34  */
   assign n2457_o = n2454_o | n2456_o;
-  /* 6805.vhd:1177:34  */
+  /* 6805.vhd:1183:34  */
   assign n2458_o = datain[7];
-  /* 6805.vhd:1178:27  */
+  /* 6805.vhd:1184:27  */
   assign n2460_o = datain == 8'b00000000;
-  /* 6805.vhd:1178:17  */
+  /* 6805.vhd:1184:17  */
   assign n2463_o = n2460_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1176:15  */
+  /* 6805.vhd:1182:15  */
   assign n2465_o = opcode == 8'b00111101;
-  /* 6805.vhd:1176:26  */
+  /* 6805.vhd:1182:26  */
   assign n2467_o = opcode == 8'b01101101;
-  /* 6805.vhd:1176:26  */
+  /* 6805.vhd:1182:26  */
   assign n2468_o = n2465_o | n2467_o;
-  /* 6805.vhd:1176:34  */
+  /* 6805.vhd:1182:34  */
   assign n2470_o = opcode == 8'b01111101;
-  /* 6805.vhd:1176:34  */
+  /* 6805.vhd:1182:34  */
   assign n2471_o = n2468_o | n2470_o;
-  /* 6805.vhd:1185:15  */
+  /* 6805.vhd:1191:15  */
   assign n2473_o = opcode == 8'b00111111;
-  /* 6805.vhd:1185:26  */
+  /* 6805.vhd:1191:26  */
   assign n2475_o = opcode == 8'b01101111;
-  /* 6805.vhd:1185:26  */
+  /* 6805.vhd:1191:26  */
   assign n2476_o = n2473_o | n2475_o;
-  /* 6805.vhd:1191:32  */
+  /* 6805.vhd:1197:32  */
   assign n2478_o = regsp + 16'b0000000000000001;
-  /* 6805.vhd:1189:15  */
+  /* 6805.vhd:1195:15  */
   assign n2480_o = opcode == 8'b10000000;
-  /* 6805.vhd:1189:26  */
+  /* 6805.vhd:1195:26  */
   assign n2482_o = opcode == 8'b10000010;
-  /* 6805.vhd:1189:26  */
+  /* 6805.vhd:1195:26  */
   assign n2483_o = n2480_o | n2482_o;
-  /* 6805.vhd:1193:15  */
+  /* 6805.vhd:1199:15  */
   assign n2485_o = opcode == 8'b10000001;
-  /* 6805.vhd:1198:32  */
+  /* 6805.vhd:1204:32  */
   assign n2487_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1197:15  */
+  /* 6805.vhd:1203:15  */
   assign n2489_o = opcode == 8'b10000011;
-  /* 6805.vhd:1202:32  */
+  /* 6805.vhd:1208:32  */
   assign n2491_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1201:15  */
+  /* 6805.vhd:1207:15  */
   assign n2493_o = opcode == 8'b10101101;
-  /* 6805.vhd:1201:26  */
+  /* 6805.vhd:1207:26  */
   assign n2495_o = opcode == 8'b10111101;
-  /* 6805.vhd:1201:26  */
+  /* 6805.vhd:1207:26  */
   assign n2496_o = n2493_o | n2495_o;
-  /* 6805.vhd:1201:34  */
+  /* 6805.vhd:1207:34  */
   assign n2498_o = opcode == 8'b11101101;
-  /* 6805.vhd:1201:34  */
+  /* 6805.vhd:1207:34  */
   assign n2499_o = n2496_o | n2498_o;
-  /* 6805.vhd:1206:32  */
+  /* 6805.vhd:1212:32  */
   assign n2501_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1205:15  */
+  /* 6805.vhd:1211:15  */
   assign n2503_o = opcode == 8'b11111101;
-  /* 6805.vhd:1212:34  */
+  /* 6805.vhd:1218:34  */
   assign n2505_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1209:15  */
+  /* 6805.vhd:1215:15  */
   assign n2507_o = opcode == 8'b11001101;
-  /* 6805.vhd:1209:26  */
+  /* 6805.vhd:1215:26  */
   assign n2509_o = opcode == 8'b11011101;
-  /* 6805.vhd:1209:26  */
+  /* 6805.vhd:1215:26  */
   assign n2510_o = n2507_o | n2509_o;
   assign n2511_o = {n2510_o, n2503_o, n2499_o, n2489_o, n2485_o, n2483_o, n2476_o, n2471_o, n2457_o, n2439_o, n2421_o, n2402_o, n2381_o, n2360_o, n2342_o, n2322_o, n2304_o, n2283_o, n2273_o, n2263_o, n2253_o, n2243_o, n2233_o, n2223_o, n2216_o, n2209_o, n2205_o, n2084_o, n2020_o};
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2530_o = 1'b0;
-      29'b01000000000000000000000000000: n2530_o = n3790_q;
-      29'b00100000000000000000000000000: n2530_o = n3790_q;
-      29'b00010000000000000000000000000: n2530_o = n3790_q;
-      29'b00001000000000000000000000000: n2530_o = n3790_q;
-      29'b00000100000000000000000000000: n2530_o = n3790_q;
+      29'b01000000000000000000000000000: n2530_o = n3828_q;
+      29'b00100000000000000000000000000: n2530_o = n3828_q;
+      29'b00010000000000000000000000000: n2530_o = n3828_q;
+      29'b00001000000000000000000000000: n2530_o = n3828_q;
+      29'b00000100000000000000000000000: n2530_o = n3828_q;
       29'b00000010000000000000000000000: n2530_o = 1'b1;
-      29'b00000001000000000000000000000: n2530_o = n3790_q;
+      29'b00000001000000000000000000000: n2530_o = n3828_q;
       29'b00000000100000000000000000000: n2530_o = 1'b0;
       29'b00000000010000000000000000000: n2530_o = 1'b0;
       29'b00000000001000000000000000000: n2530_o = 1'b0;
@@ -7423,15 +7443,15 @@ module UR6805
       29'b00000000000000000000100000000: n2530_o = 1'b0;
       29'b00000000000000000000010000000: n2530_o = 1'b0;
       29'b00000000000000000000001000000: n2530_o = 1'b0;
-      29'b00000000000000000000000100000: n2530_o = n3790_q;
-      29'b00000000000000000000000010000: n2530_o = n3790_q;
-      29'b00000000000000000000000001000: n2530_o = n3790_q;
-      29'b00000000000000000000000000100: n2530_o = n3790_q;
+      29'b00000000000000000000000100000: n2530_o = n3828_q;
+      29'b00000000000000000000000010000: n2530_o = n3828_q;
+      29'b00000000000000000000000001000: n2530_o = n3828_q;
+      29'b00000000000000000000000000100: n2530_o = n3828_q;
       29'b00000000000000000000000000010: n2530_o = 1'b0;
-      29'b00000000000000000000000000001: n2530_o = n3790_q;
-      default: n2530_o = n3790_q;
+      29'b00000000000000000000000000001: n2530_o = n3828_q;
+      default: n2530_o = n3828_q;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2531_o = rega;
@@ -7465,7 +7485,7 @@ module UR6805
       29'b00000000000000000000000000001: n2531_o = rega;
       default: n2531_o = rega;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2532_o = regsp;
@@ -7511,7 +7531,7 @@ module UR6805
   assign n2542_o = n2281_o[7:0];
   assign n2543_o = n2505_o[7:0];
   assign n2544_o = regpc[7:0];
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2545_o = n2543_o;
@@ -7557,7 +7577,7 @@ module UR6805
   assign n2555_o = n2281_o[15:8];
   assign n2556_o = n2505_o[15:8];
   assign n2557_o = regpc[15:8];
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2558_o = n2556_o;
@@ -7591,7 +7611,7 @@ module UR6805
       29'b00000000000000000000000000001: n2558_o = n2557_o;
       default: n2558_o = n2557_o;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2560_o = flagn;
@@ -7625,7 +7645,7 @@ module UR6805
       29'b00000000000000000000000000001: n2560_o = flagn;
       default: n2560_o = flagn;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2561_o = flagz;
@@ -7659,7 +7679,7 @@ module UR6805
       29'b00000000000000000000000000001: n2561_o = flagz;
       default: n2561_o = flagz;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2563_o = flagc;
@@ -7693,7 +7713,7 @@ module UR6805
       29'b00000000000000000000000000001: n2563_o = n1973_o;
       default: n2563_o = flagc;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2564_o = help;
@@ -7728,7 +7748,7 @@ module UR6805
       default: n2564_o = help;
     endcase
   assign n2565_o = temp[7:0];
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2566_o = datain;
@@ -7762,7 +7782,7 @@ module UR6805
       29'b00000000000000000000000000001: n2566_o = n2565_o;
       default: n2566_o = n2565_o;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2597_o = 4'b0101;
@@ -7796,7 +7816,7 @@ module UR6805
       29'b00000000000000000000000000001: n2597_o = 4'b0101;
       default: n2597_o = 4'b0000;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2609_o = 3'b001;
@@ -7830,7 +7850,7 @@ module UR6805
       29'b00000000000000000000000000001: n2609_o = 3'b000;
       default: n2609_o = addrmux;
     endcase
-  /* 6805.vhd:928:13  */
+  /* 6805.vhd:934:13  */
   always @*
     case (n2511_o)
       29'b10000000000000000000000000000: n2630_o = 4'b0101;
@@ -7864,1060 +7884,1060 @@ module UR6805
       29'b00000000000000000000000000001: n2630_o = datamux;
       default: n2630_o = datamux;
     endcase
-  /* 6805.vhd:927:11  */
+  /* 6805.vhd:933:11  */
   assign n2633_o = mainfsm == 4'b0100;
-  /* 6805.vhd:1225:27  */
+  /* 6805.vhd:1231:27  */
   assign n2634_o = opcode[0];
-  /* 6805.vhd:1225:31  */
+  /* 6805.vhd:1231:31  */
   assign n2635_o = n2634_o ^ flagc;
-  /* 6805.vhd:1226:28  */
+  /* 6805.vhd:1232:28  */
   assign n2636_o = datain[7];
-  /* 6805.vhd:1226:32  */
+  /* 6805.vhd:1232:32  */
   assign n2637_o = ~n2636_o;
-  /* 6805.vhd:1227:45  */
+  /* 6805.vhd:1233:45  */
   assign n2639_o = {8'b00000000, datain};
-  /* 6805.vhd:1227:36  */
+  /* 6805.vhd:1233:36  */
   assign n2640_o = regpc + n2639_o;
-  /* 6805.vhd:1227:55  */
+  /* 6805.vhd:1233:55  */
   assign n2642_o = n2640_o + 16'b0000000000000001;
-  /* 6805.vhd:1229:45  */
+  /* 6805.vhd:1235:45  */
   assign n2644_o = {8'b11111111, datain};
-  /* 6805.vhd:1229:36  */
+  /* 6805.vhd:1235:36  */
   assign n2645_o = regpc + n2644_o;
-  /* 6805.vhd:1229:55  */
+  /* 6805.vhd:1235:55  */
   assign n2647_o = n2645_o + 16'b0000000000000001;
-  /* 6805.vhd:1226:19  */
+  /* 6805.vhd:1232:19  */
   assign n2648_o = n2637_o ? n2642_o : n2647_o;
-  /* 6805.vhd:1232:34  */
+  /* 6805.vhd:1238:34  */
   assign n2650_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1225:17  */
+  /* 6805.vhd:1231:17  */
   assign n2651_o = n2635_o ? n2648_o : n2650_o;
-  /* 6805.vhd:1223:15  */
+  /* 6805.vhd:1229:15  */
   assign n2653_o = opcode == 8'b00000000;
-  /* 6805.vhd:1223:26  */
+  /* 6805.vhd:1229:26  */
   assign n2655_o = opcode == 8'b00000010;
-  /* 6805.vhd:1223:26  */
+  /* 6805.vhd:1229:26  */
   assign n2656_o = n2653_o | n2655_o;
-  /* 6805.vhd:1223:34  */
+  /* 6805.vhd:1229:34  */
   assign n2658_o = opcode == 8'b00000100;
-  /* 6805.vhd:1223:34  */
+  /* 6805.vhd:1229:34  */
   assign n2659_o = n2656_o | n2658_o;
-  /* 6805.vhd:1223:42  */
+  /* 6805.vhd:1229:42  */
   assign n2661_o = opcode == 8'b00000110;
-  /* 6805.vhd:1223:42  */
+  /* 6805.vhd:1229:42  */
   assign n2662_o = n2659_o | n2661_o;
-  /* 6805.vhd:1223:50  */
+  /* 6805.vhd:1229:50  */
   assign n2664_o = opcode == 8'b00001000;
-  /* 6805.vhd:1223:50  */
+  /* 6805.vhd:1229:50  */
   assign n2665_o = n2662_o | n2664_o;
-  /* 6805.vhd:1223:58  */
+  /* 6805.vhd:1229:58  */
   assign n2667_o = opcode == 8'b00001010;
-  /* 6805.vhd:1223:58  */
+  /* 6805.vhd:1229:58  */
   assign n2668_o = n2665_o | n2667_o;
-  /* 6805.vhd:1223:66  */
+  /* 6805.vhd:1229:66  */
   assign n2670_o = opcode == 8'b00001100;
-  /* 6805.vhd:1223:66  */
+  /* 6805.vhd:1229:66  */
   assign n2671_o = n2668_o | n2670_o;
-  /* 6805.vhd:1223:74  */
+  /* 6805.vhd:1229:74  */
   assign n2673_o = opcode == 8'b00001110;
-  /* 6805.vhd:1223:74  */
+  /* 6805.vhd:1229:74  */
   assign n2674_o = n2671_o | n2673_o;
-  /* 6805.vhd:1223:82  */
+  /* 6805.vhd:1229:82  */
   assign n2676_o = opcode == 8'b00000001;
-  /* 6805.vhd:1223:82  */
+  /* 6805.vhd:1229:82  */
   assign n2677_o = n2674_o | n2676_o;
-  /* 6805.vhd:1224:26  */
+  /* 6805.vhd:1230:26  */
   assign n2679_o = opcode == 8'b00000011;
-  /* 6805.vhd:1224:26  */
+  /* 6805.vhd:1230:26  */
   assign n2680_o = n2677_o | n2679_o;
-  /* 6805.vhd:1224:34  */
+  /* 6805.vhd:1230:34  */
   assign n2682_o = opcode == 8'b00000101;
-  /* 6805.vhd:1224:34  */
+  /* 6805.vhd:1230:34  */
   assign n2683_o = n2680_o | n2682_o;
-  /* 6805.vhd:1224:42  */
+  /* 6805.vhd:1230:42  */
   assign n2685_o = opcode == 8'b00000111;
-  /* 6805.vhd:1224:42  */
+  /* 6805.vhd:1230:42  */
   assign n2686_o = n2683_o | n2685_o;
-  /* 6805.vhd:1224:50  */
+  /* 6805.vhd:1230:50  */
   assign n2688_o = opcode == 8'b00001001;
-  /* 6805.vhd:1224:50  */
+  /* 6805.vhd:1230:50  */
   assign n2689_o = n2686_o | n2688_o;
-  /* 6805.vhd:1224:58  */
+  /* 6805.vhd:1230:58  */
   assign n2691_o = opcode == 8'b00001011;
-  /* 6805.vhd:1224:58  */
+  /* 6805.vhd:1230:58  */
   assign n2692_o = n2689_o | n2691_o;
-  /* 6805.vhd:1224:66  */
+  /* 6805.vhd:1230:66  */
   assign n2694_o = opcode == 8'b00001101;
-  /* 6805.vhd:1224:66  */
+  /* 6805.vhd:1230:66  */
   assign n2695_o = n2692_o | n2694_o;
-  /* 6805.vhd:1224:74  */
+  /* 6805.vhd:1230:74  */
   assign n2697_o = opcode == 8'b00001111;
-  /* 6805.vhd:1224:74  */
+  /* 6805.vhd:1230:74  */
   assign n2698_o = n2695_o | n2697_o;
-  /* 6805.vhd:1236:15  */
+  /* 6805.vhd:1242:15  */
   assign n2700_o = opcode == 8'b00010000;
-  /* 6805.vhd:1236:26  */
+  /* 6805.vhd:1242:26  */
   assign n2702_o = opcode == 8'b00010010;
-  /* 6805.vhd:1236:26  */
+  /* 6805.vhd:1242:26  */
   assign n2703_o = n2700_o | n2702_o;
-  /* 6805.vhd:1236:34  */
+  /* 6805.vhd:1242:34  */
   assign n2705_o = opcode == 8'b00010100;
-  /* 6805.vhd:1236:34  */
+  /* 6805.vhd:1242:34  */
   assign n2706_o = n2703_o | n2705_o;
-  /* 6805.vhd:1236:42  */
+  /* 6805.vhd:1242:42  */
   assign n2708_o = opcode == 8'b00010110;
-  /* 6805.vhd:1236:42  */
+  /* 6805.vhd:1242:42  */
   assign n2709_o = n2706_o | n2708_o;
-  /* 6805.vhd:1236:50  */
+  /* 6805.vhd:1242:50  */
   assign n2711_o = opcode == 8'b00011000;
-  /* 6805.vhd:1236:50  */
+  /* 6805.vhd:1242:50  */
   assign n2712_o = n2709_o | n2711_o;
-  /* 6805.vhd:1236:58  */
+  /* 6805.vhd:1242:58  */
   assign n2714_o = opcode == 8'b00011010;
-  /* 6805.vhd:1236:58  */
+  /* 6805.vhd:1242:58  */
   assign n2715_o = n2712_o | n2714_o;
-  /* 6805.vhd:1236:66  */
+  /* 6805.vhd:1242:66  */
   assign n2717_o = opcode == 8'b00011100;
-  /* 6805.vhd:1236:66  */
+  /* 6805.vhd:1242:66  */
   assign n2718_o = n2715_o | n2717_o;
-  /* 6805.vhd:1236:74  */
+  /* 6805.vhd:1242:74  */
   assign n2720_o = opcode == 8'b00011110;
-  /* 6805.vhd:1236:74  */
+  /* 6805.vhd:1242:74  */
   assign n2721_o = n2718_o | n2720_o;
-  /* 6805.vhd:1236:82  */
+  /* 6805.vhd:1242:82  */
   assign n2723_o = opcode == 8'b00010001;
-  /* 6805.vhd:1236:82  */
+  /* 6805.vhd:1242:82  */
   assign n2724_o = n2721_o | n2723_o;
-  /* 6805.vhd:1237:26  */
+  /* 6805.vhd:1243:26  */
   assign n2726_o = opcode == 8'b00010011;
-  /* 6805.vhd:1237:26  */
+  /* 6805.vhd:1243:26  */
   assign n2727_o = n2724_o | n2726_o;
-  /* 6805.vhd:1237:34  */
+  /* 6805.vhd:1243:34  */
   assign n2729_o = opcode == 8'b00010101;
-  /* 6805.vhd:1237:34  */
+  /* 6805.vhd:1243:34  */
   assign n2730_o = n2727_o | n2729_o;
-  /* 6805.vhd:1237:42  */
+  /* 6805.vhd:1243:42  */
   assign n2732_o = opcode == 8'b00010111;
-  /* 6805.vhd:1237:42  */
+  /* 6805.vhd:1243:42  */
   assign n2733_o = n2730_o | n2732_o;
-  /* 6805.vhd:1237:50  */
+  /* 6805.vhd:1243:50  */
   assign n2735_o = opcode == 8'b00011001;
-  /* 6805.vhd:1237:50  */
+  /* 6805.vhd:1243:50  */
   assign n2736_o = n2733_o | n2735_o;
-  /* 6805.vhd:1237:58  */
+  /* 6805.vhd:1243:58  */
   assign n2738_o = opcode == 8'b00011011;
-  /* 6805.vhd:1237:58  */
+  /* 6805.vhd:1243:58  */
   assign n2739_o = n2736_o | n2738_o;
-  /* 6805.vhd:1237:66  */
+  /* 6805.vhd:1243:66  */
   assign n2741_o = opcode == 8'b00011101;
-  /* 6805.vhd:1237:66  */
+  /* 6805.vhd:1243:66  */
   assign n2742_o = n2739_o | n2741_o;
-  /* 6805.vhd:1237:74  */
+  /* 6805.vhd:1243:74  */
   assign n2744_o = opcode == 8'b00011111;
-  /* 6805.vhd:1237:74  */
+  /* 6805.vhd:1243:74  */
   assign n2745_o = n2742_o | n2744_o;
-  /* 6805.vhd:1237:82  */
+  /* 6805.vhd:1243:82  */
   assign n2747_o = opcode == 8'b00110000;
-  /* 6805.vhd:1237:82  */
+  /* 6805.vhd:1243:82  */
   assign n2748_o = n2745_o | n2747_o;
-  /* 6805.vhd:1238:26  */
+  /* 6805.vhd:1244:26  */
   assign n2750_o = opcode == 8'b00110011;
-  /* 6805.vhd:1238:26  */
+  /* 6805.vhd:1244:26  */
   assign n2751_o = n2748_o | n2750_o;
-  /* 6805.vhd:1238:34  */
+  /* 6805.vhd:1244:34  */
   assign n2753_o = opcode == 8'b00110100;
-  /* 6805.vhd:1238:34  */
+  /* 6805.vhd:1244:34  */
   assign n2754_o = n2751_o | n2753_o;
-  /* 6805.vhd:1238:42  */
+  /* 6805.vhd:1244:42  */
   assign n2756_o = opcode == 8'b00110110;
-  /* 6805.vhd:1238:42  */
+  /* 6805.vhd:1244:42  */
   assign n2757_o = n2754_o | n2756_o;
-  /* 6805.vhd:1238:50  */
+  /* 6805.vhd:1244:50  */
   assign n2759_o = opcode == 8'b00110111;
-  /* 6805.vhd:1238:50  */
+  /* 6805.vhd:1244:50  */
   assign n2760_o = n2757_o | n2759_o;
-  /* 6805.vhd:1239:26  */
+  /* 6805.vhd:1245:26  */
   assign n2762_o = opcode == 8'b00111000;
-  /* 6805.vhd:1239:26  */
+  /* 6805.vhd:1245:26  */
   assign n2763_o = n2760_o | n2762_o;
-  /* 6805.vhd:1239:34  */
+  /* 6805.vhd:1245:34  */
   assign n2765_o = opcode == 8'b00111001;
-  /* 6805.vhd:1239:34  */
+  /* 6805.vhd:1245:34  */
   assign n2766_o = n2763_o | n2765_o;
-  /* 6805.vhd:1239:42  */
+  /* 6805.vhd:1245:42  */
   assign n2768_o = opcode == 8'b00111010;
-  /* 6805.vhd:1239:42  */
+  /* 6805.vhd:1245:42  */
   assign n2769_o = n2766_o | n2768_o;
-  /* 6805.vhd:1239:50  */
+  /* 6805.vhd:1245:50  */
   assign n2771_o = opcode == 8'b00111100;
-  /* 6805.vhd:1239:50  */
+  /* 6805.vhd:1245:50  */
   assign n2772_o = n2769_o | n2771_o;
-  /* 6805.vhd:1239:58  */
+  /* 6805.vhd:1245:58  */
   assign n2774_o = opcode == 8'b01100000;
-  /* 6805.vhd:1239:58  */
+  /* 6805.vhd:1245:58  */
   assign n2775_o = n2772_o | n2774_o;
-  /* 6805.vhd:1240:26  */
+  /* 6805.vhd:1246:26  */
   assign n2777_o = opcode == 8'b01100011;
-  /* 6805.vhd:1240:26  */
+  /* 6805.vhd:1246:26  */
   assign n2778_o = n2775_o | n2777_o;
-  /* 6805.vhd:1240:34  */
+  /* 6805.vhd:1246:34  */
   assign n2780_o = opcode == 8'b01100100;
-  /* 6805.vhd:1240:34  */
+  /* 6805.vhd:1246:34  */
   assign n2781_o = n2778_o | n2780_o;
-  /* 6805.vhd:1240:42  */
+  /* 6805.vhd:1246:42  */
   assign n2783_o = opcode == 8'b01100110;
-  /* 6805.vhd:1240:42  */
+  /* 6805.vhd:1246:42  */
   assign n2784_o = n2781_o | n2783_o;
-  /* 6805.vhd:1240:50  */
+  /* 6805.vhd:1246:50  */
   assign n2786_o = opcode == 8'b01100111;
-  /* 6805.vhd:1240:50  */
+  /* 6805.vhd:1246:50  */
   assign n2787_o = n2784_o | n2786_o;
-  /* 6805.vhd:1240:58  */
+  /* 6805.vhd:1246:58  */
   assign n2789_o = opcode == 8'b01101000;
-  /* 6805.vhd:1240:58  */
+  /* 6805.vhd:1246:58  */
   assign n2790_o = n2787_o | n2789_o;
-  /* 6805.vhd:1241:26  */
+  /* 6805.vhd:1247:26  */
   assign n2792_o = opcode == 8'b01101001;
-  /* 6805.vhd:1241:26  */
+  /* 6805.vhd:1247:26  */
   assign n2793_o = n2790_o | n2792_o;
-  /* 6805.vhd:1241:34  */
+  /* 6805.vhd:1247:34  */
   assign n2795_o = opcode == 8'b01101010;
-  /* 6805.vhd:1241:34  */
+  /* 6805.vhd:1247:34  */
   assign n2796_o = n2793_o | n2795_o;
-  /* 6805.vhd:1241:42  */
+  /* 6805.vhd:1247:42  */
   assign n2798_o = opcode == 8'b01101100;
-  /* 6805.vhd:1241:42  */
+  /* 6805.vhd:1247:42  */
   assign n2799_o = n2796_o | n2798_o;
-  /* 6805.vhd:1241:50  */
+  /* 6805.vhd:1247:50  */
   assign n2801_o = opcode == 8'b01110000;
-  /* 6805.vhd:1241:50  */
+  /* 6805.vhd:1247:50  */
   assign n2802_o = n2799_o | n2801_o;
-  /* 6805.vhd:1242:26  */
+  /* 6805.vhd:1248:26  */
   assign n2804_o = opcode == 8'b01110011;
-  /* 6805.vhd:1242:26  */
+  /* 6805.vhd:1248:26  */
   assign n2805_o = n2802_o | n2804_o;
-  /* 6805.vhd:1242:34  */
+  /* 6805.vhd:1248:34  */
   assign n2807_o = opcode == 8'b01110100;
-  /* 6805.vhd:1242:34  */
+  /* 6805.vhd:1248:34  */
   assign n2808_o = n2805_o | n2807_o;
-  /* 6805.vhd:1242:42  */
+  /* 6805.vhd:1248:42  */
   assign n2810_o = opcode == 8'b01110110;
-  /* 6805.vhd:1242:42  */
+  /* 6805.vhd:1248:42  */
   assign n2811_o = n2808_o | n2810_o;
-  /* 6805.vhd:1242:50  */
+  /* 6805.vhd:1248:50  */
   assign n2813_o = opcode == 8'b01110111;
-  /* 6805.vhd:1242:50  */
+  /* 6805.vhd:1248:50  */
   assign n2814_o = n2811_o | n2813_o;
-  /* 6805.vhd:1242:58  */
+  /* 6805.vhd:1248:58  */
   assign n2816_o = opcode == 8'b01111000;
-  /* 6805.vhd:1242:58  */
+  /* 6805.vhd:1248:58  */
   assign n2817_o = n2814_o | n2816_o;
-  /* 6805.vhd:1242:66  */
+  /* 6805.vhd:1248:66  */
   assign n2819_o = opcode == 8'b01111001;
-  /* 6805.vhd:1242:66  */
+  /* 6805.vhd:1248:66  */
   assign n2820_o = n2817_o | n2819_o;
-  /* 6805.vhd:1242:74  */
+  /* 6805.vhd:1248:74  */
   assign n2822_o = opcode == 8'b01111010;
-  /* 6805.vhd:1242:74  */
+  /* 6805.vhd:1248:74  */
   assign n2823_o = n2820_o | n2822_o;
-  /* 6805.vhd:1243:26  */
+  /* 6805.vhd:1249:26  */
   assign n2825_o = opcode == 8'b01111100;
-  /* 6805.vhd:1243:26  */
+  /* 6805.vhd:1249:26  */
   assign n2826_o = n2823_o | n2825_o;
-  /* 6805.vhd:1243:34  */
+  /* 6805.vhd:1249:34  */
   assign n2828_o = opcode == 8'b10110111;
-  /* 6805.vhd:1243:34  */
+  /* 6805.vhd:1249:34  */
   assign n2829_o = n2826_o | n2828_o;
-  /* 6805.vhd:1244:26  */
+  /* 6805.vhd:1250:26  */
   assign n2831_o = opcode == 8'b10111111;
-  /* 6805.vhd:1244:26  */
+  /* 6805.vhd:1250:26  */
   assign n2832_o = n2829_o | n2831_o;
-  /* 6805.vhd:1244:34  */
+  /* 6805.vhd:1250:34  */
   assign n2834_o = opcode == 8'b11000111;
-  /* 6805.vhd:1244:34  */
+  /* 6805.vhd:1250:34  */
   assign n2835_o = n2832_o | n2834_o;
-  /* 6805.vhd:1244:42  */
+  /* 6805.vhd:1250:42  */
   assign n2837_o = opcode == 8'b11001111;
-  /* 6805.vhd:1244:42  */
+  /* 6805.vhd:1250:42  */
   assign n2838_o = n2835_o | n2837_o;
-  /* 6805.vhd:1244:50  */
+  /* 6805.vhd:1250:50  */
   assign n2840_o = opcode == 8'b11010111;
-  /* 6805.vhd:1244:50  */
+  /* 6805.vhd:1250:50  */
   assign n2841_o = n2838_o | n2840_o;
-  /* 6805.vhd:1245:26  */
+  /* 6805.vhd:1251:26  */
   assign n2843_o = opcode == 8'b11011111;
-  /* 6805.vhd:1245:26  */
+  /* 6805.vhd:1251:26  */
   assign n2844_o = n2841_o | n2843_o;
-  /* 6805.vhd:1245:34  */
+  /* 6805.vhd:1251:34  */
   assign n2846_o = opcode == 8'b11100111;
-  /* 6805.vhd:1245:34  */
+  /* 6805.vhd:1251:34  */
   assign n2847_o = n2844_o | n2846_o;
-  /* 6805.vhd:1245:42  */
+  /* 6805.vhd:1251:42  */
   assign n2849_o = opcode == 8'b11101111;
-  /* 6805.vhd:1245:42  */
+  /* 6805.vhd:1251:42  */
   assign n2850_o = n2847_o | n2849_o;
-  /* 6805.vhd:1245:50  */
+  /* 6805.vhd:1251:50  */
   assign n2852_o = opcode == 8'b11110111;
-  /* 6805.vhd:1245:50  */
+  /* 6805.vhd:1251:50  */
   assign n2853_o = n2850_o | n2852_o;
-  /* 6805.vhd:1246:26  */
+  /* 6805.vhd:1252:26  */
   assign n2855_o = opcode == 8'b11111111;
-  /* 6805.vhd:1246:26  */
+  /* 6805.vhd:1252:26  */
   assign n2856_o = n2853_o | n2855_o;
-  /* 6805.vhd:1252:32  */
+  /* 6805.vhd:1258:32  */
   assign n2858_o = regsp + 16'b0000000000000001;
-  /* 6805.vhd:1250:15  */
+  /* 6805.vhd:1256:15  */
   assign n2860_o = opcode == 8'b10000000;
-  /* 6805.vhd:1250:26  */
+  /* 6805.vhd:1256:26  */
   assign n2862_o = opcode == 8'b10000010;
-  /* 6805.vhd:1250:26  */
+  /* 6805.vhd:1256:26  */
   assign n2863_o = n2860_o | n2862_o;
-  /* 6805.vhd:1255:32  */
+  /* 6805.vhd:1261:32  */
   assign n2865_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1254:15  */
+  /* 6805.vhd:1260:15  */
   assign n2870_o = opcode == 8'b10000011;
-  /* 6805.vhd:1268:30  */
+  /* 6805.vhd:1274:30  */
   assign n2871_o = rega - datain;
-  /* 6805.vhd:1269:30  */
+  /* 6805.vhd:1275:30  */
   assign n2872_o = rega - datain;
-  /* 6805.vhd:1270:30  */
+  /* 6805.vhd:1276:30  */
   assign n2873_o = n2872_o[7];
-  /* 6805.vhd:1271:25  */
+  /* 6805.vhd:1277:25  */
   assign n2875_o = n2872_o == 8'b00000000;
-  /* 6805.vhd:1271:17  */
+  /* 6805.vhd:1277:17  */
   assign n2878_o = n2875_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1276:36  */
+  /* 6805.vhd:1282:36  */
   assign n2879_o = rega[7];
-  /* 6805.vhd:1276:28  */
+  /* 6805.vhd:1282:28  */
   assign n2880_o = ~n2879_o;
-  /* 6805.vhd:1276:51  */
+  /* 6805.vhd:1282:51  */
   assign n2881_o = datain[7];
-  /* 6805.vhd:1276:41  */
+  /* 6805.vhd:1282:41  */
   assign n2882_o = n2880_o & n2881_o;
-  /* 6805.vhd:1277:33  */
+  /* 6805.vhd:1283:33  */
   assign n2883_o = datain[7];
-  /* 6805.vhd:1277:45  */
+  /* 6805.vhd:1283:45  */
   assign n2884_o = n2872_o[7];
-  /* 6805.vhd:1277:37  */
+  /* 6805.vhd:1283:37  */
   assign n2885_o = n2883_o & n2884_o;
-  /* 6805.vhd:1276:56  */
+  /* 6805.vhd:1282:56  */
   assign n2886_o = n2882_o | n2885_o;
-  /* 6805.vhd:1278:31  */
+  /* 6805.vhd:1284:31  */
   assign n2887_o = n2872_o[7];
-  /* 6805.vhd:1278:48  */
+  /* 6805.vhd:1284:48  */
   assign n2888_o = rega[7];
-  /* 6805.vhd:1278:40  */
+  /* 6805.vhd:1284:40  */
   assign n2889_o = ~n2888_o;
-  /* 6805.vhd:1278:35  */
+  /* 6805.vhd:1284:35  */
   assign n2890_o = n2887_o & n2889_o;
-  /* 6805.vhd:1277:50  */
+  /* 6805.vhd:1283:50  */
   assign n2891_o = n2886_o | n2890_o;
-  /* 6805.vhd:1279:27  */
+  /* 6805.vhd:1285:27  */
   assign n2893_o = opcode == 8'b10100000;
-  /* 6805.vhd:1280:34  */
+  /* 6805.vhd:1286:34  */
   assign n2895_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1279:17  */
+  /* 6805.vhd:1285:17  */
   assign n2896_o = n2893_o ? n2895_o : regpc;
-  /* 6805.vhd:1266:15  */
+  /* 6805.vhd:1272:15  */
   assign n2898_o = opcode == 8'b10100000;
-  /* 6805.vhd:1266:26  */
+  /* 6805.vhd:1272:26  */
   assign n2900_o = opcode == 8'b10110000;
-  /* 6805.vhd:1266:26  */
+  /* 6805.vhd:1272:26  */
   assign n2901_o = n2898_o | n2900_o;
-  /* 6805.vhd:1266:34  */
+  /* 6805.vhd:1272:34  */
   assign n2903_o = opcode == 8'b11000000;
-  /* 6805.vhd:1266:34  */
+  /* 6805.vhd:1272:34  */
   assign n2904_o = n2901_o | n2903_o;
-  /* 6805.vhd:1266:42  */
+  /* 6805.vhd:1272:42  */
   assign n2906_o = opcode == 8'b11010000;
-  /* 6805.vhd:1266:42  */
+  /* 6805.vhd:1272:42  */
   assign n2907_o = n2904_o | n2906_o;
-  /* 6805.vhd:1266:50  */
+  /* 6805.vhd:1272:50  */
   assign n2909_o = opcode == 8'b11100000;
-  /* 6805.vhd:1266:50  */
+  /* 6805.vhd:1272:50  */
   assign n2910_o = n2907_o | n2909_o;
-  /* 6805.vhd:1266:58  */
+  /* 6805.vhd:1272:58  */
   assign n2912_o = opcode == 8'b11110000;
-  /* 6805.vhd:1266:58  */
+  /* 6805.vhd:1272:58  */
   assign n2913_o = n2910_o | n2912_o;
-  /* 6805.vhd:1285:30  */
+  /* 6805.vhd:1291:30  */
   assign n2914_o = rega - datain;
-  /* 6805.vhd:1286:30  */
+  /* 6805.vhd:1292:30  */
   assign n2915_o = n2914_o[7];
-  /* 6805.vhd:1287:25  */
+  /* 6805.vhd:1293:25  */
   assign n2917_o = n2914_o == 8'b00000000;
-  /* 6805.vhd:1287:17  */
+  /* 6805.vhd:1293:17  */
   assign n2920_o = n2917_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1292:36  */
+  /* 6805.vhd:1298:36  */
   assign n2921_o = rega[7];
-  /* 6805.vhd:1292:28  */
+  /* 6805.vhd:1298:28  */
   assign n2922_o = ~n2921_o;
-  /* 6805.vhd:1292:51  */
+  /* 6805.vhd:1298:51  */
   assign n2923_o = datain[7];
-  /* 6805.vhd:1292:41  */
+  /* 6805.vhd:1298:41  */
   assign n2924_o = n2922_o & n2923_o;
-  /* 6805.vhd:1293:33  */
+  /* 6805.vhd:1299:33  */
   assign n2925_o = datain[7];
-  /* 6805.vhd:1293:45  */
+  /* 6805.vhd:1299:45  */
   assign n2926_o = n2914_o[7];
-  /* 6805.vhd:1293:37  */
+  /* 6805.vhd:1299:37  */
   assign n2927_o = n2925_o & n2926_o;
-  /* 6805.vhd:1292:56  */
+  /* 6805.vhd:1298:56  */
   assign n2928_o = n2924_o | n2927_o;
-  /* 6805.vhd:1294:31  */
+  /* 6805.vhd:1300:31  */
   assign n2929_o = n2914_o[7];
-  /* 6805.vhd:1294:48  */
+  /* 6805.vhd:1300:48  */
   assign n2930_o = rega[7];
-  /* 6805.vhd:1294:40  */
+  /* 6805.vhd:1300:40  */
   assign n2931_o = ~n2930_o;
-  /* 6805.vhd:1294:35  */
+  /* 6805.vhd:1300:35  */
   assign n2932_o = n2929_o & n2931_o;
-  /* 6805.vhd:1293:50  */
+  /* 6805.vhd:1299:50  */
   assign n2933_o = n2928_o | n2932_o;
-  /* 6805.vhd:1295:27  */
+  /* 6805.vhd:1301:27  */
   assign n2935_o = opcode == 8'b10100001;
-  /* 6805.vhd:1296:34  */
+  /* 6805.vhd:1302:34  */
   assign n2937_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1295:17  */
+  /* 6805.vhd:1301:17  */
   assign n2938_o = n2935_o ? n2937_o : regpc;
-  /* 6805.vhd:1283:15  */
+  /* 6805.vhd:1289:15  */
   assign n2940_o = opcode == 8'b10100001;
-  /* 6805.vhd:1283:26  */
+  /* 6805.vhd:1289:26  */
   assign n2942_o = opcode == 8'b10110001;
-  /* 6805.vhd:1283:26  */
+  /* 6805.vhd:1289:26  */
   assign n2943_o = n2940_o | n2942_o;
-  /* 6805.vhd:1283:34  */
+  /* 6805.vhd:1289:34  */
   assign n2945_o = opcode == 8'b11000001;
-  /* 6805.vhd:1283:34  */
+  /* 6805.vhd:1289:34  */
   assign n2946_o = n2943_o | n2945_o;
-  /* 6805.vhd:1283:42  */
+  /* 6805.vhd:1289:42  */
   assign n2948_o = opcode == 8'b11010001;
-  /* 6805.vhd:1283:42  */
+  /* 6805.vhd:1289:42  */
   assign n2949_o = n2946_o | n2948_o;
-  /* 6805.vhd:1283:50  */
+  /* 6805.vhd:1289:50  */
   assign n2951_o = opcode == 8'b11100001;
-  /* 6805.vhd:1283:50  */
+  /* 6805.vhd:1289:50  */
   assign n2952_o = n2949_o | n2951_o;
-  /* 6805.vhd:1283:58  */
+  /* 6805.vhd:1289:58  */
   assign n2954_o = opcode == 8'b11110001;
-  /* 6805.vhd:1283:58  */
+  /* 6805.vhd:1289:58  */
   assign n2955_o = n2952_o | n2954_o;
-  /* 6805.vhd:1301:30  */
+  /* 6805.vhd:1307:30  */
   assign n2956_o = rega - datain;
-  /* 6805.vhd:1301:52  */
+  /* 6805.vhd:1307:52  */
   assign n2958_o = {7'b0000000, flagc};
-  /* 6805.vhd:1301:39  */
+  /* 6805.vhd:1307:39  */
   assign n2959_o = n2956_o - n2958_o;
-  /* 6805.vhd:1302:30  */
+  /* 6805.vhd:1308:30  */
   assign n2960_o = rega - datain;
-  /* 6805.vhd:1302:52  */
+  /* 6805.vhd:1308:52  */
   assign n2962_o = {7'b0000000, flagc};
-  /* 6805.vhd:1302:39  */
+  /* 6805.vhd:1308:39  */
   assign n2963_o = n2960_o - n2962_o;
-  /* 6805.vhd:1303:30  */
+  /* 6805.vhd:1309:30  */
   assign n2964_o = n2963_o[7];
-  /* 6805.vhd:1304:25  */
+  /* 6805.vhd:1310:25  */
   assign n2966_o = n2963_o == 8'b00000000;
-  /* 6805.vhd:1304:17  */
+  /* 6805.vhd:1310:17  */
   assign n2969_o = n2966_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1309:36  */
+  /* 6805.vhd:1315:36  */
   assign n2970_o = rega[7];
-  /* 6805.vhd:1309:28  */
+  /* 6805.vhd:1315:28  */
   assign n2971_o = ~n2970_o;
-  /* 6805.vhd:1309:51  */
+  /* 6805.vhd:1315:51  */
   assign n2972_o = datain[7];
-  /* 6805.vhd:1309:41  */
+  /* 6805.vhd:1315:41  */
   assign n2973_o = n2971_o & n2972_o;
-  /* 6805.vhd:1310:33  */
+  /* 6805.vhd:1316:33  */
   assign n2974_o = datain[7];
-  /* 6805.vhd:1310:45  */
+  /* 6805.vhd:1316:45  */
   assign n2975_o = n2963_o[7];
-  /* 6805.vhd:1310:37  */
+  /* 6805.vhd:1316:37  */
   assign n2976_o = n2974_o & n2975_o;
-  /* 6805.vhd:1309:56  */
+  /* 6805.vhd:1315:56  */
   assign n2977_o = n2973_o | n2976_o;
-  /* 6805.vhd:1311:31  */
+  /* 6805.vhd:1317:31  */
   assign n2978_o = n2963_o[7];
-  /* 6805.vhd:1311:48  */
+  /* 6805.vhd:1317:48  */
   assign n2979_o = rega[7];
-  /* 6805.vhd:1311:40  */
+  /* 6805.vhd:1317:40  */
   assign n2980_o = ~n2979_o;
-  /* 6805.vhd:1311:35  */
+  /* 6805.vhd:1317:35  */
   assign n2981_o = n2978_o & n2980_o;
-  /* 6805.vhd:1310:50  */
+  /* 6805.vhd:1316:50  */
   assign n2982_o = n2977_o | n2981_o;
-  /* 6805.vhd:1312:27  */
+  /* 6805.vhd:1318:27  */
   assign n2984_o = opcode == 8'b10100010;
-  /* 6805.vhd:1313:34  */
+  /* 6805.vhd:1319:34  */
   assign n2986_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1312:17  */
+  /* 6805.vhd:1318:17  */
   assign n2987_o = n2984_o ? n2986_o : regpc;
-  /* 6805.vhd:1299:15  */
+  /* 6805.vhd:1305:15  */
   assign n2989_o = opcode == 8'b10100010;
-  /* 6805.vhd:1299:26  */
+  /* 6805.vhd:1305:26  */
   assign n2991_o = opcode == 8'b10110010;
-  /* 6805.vhd:1299:26  */
+  /* 6805.vhd:1305:26  */
   assign n2992_o = n2989_o | n2991_o;
-  /* 6805.vhd:1299:34  */
+  /* 6805.vhd:1305:34  */
   assign n2994_o = opcode == 8'b11000010;
-  /* 6805.vhd:1299:34  */
+  /* 6805.vhd:1305:34  */
   assign n2995_o = n2992_o | n2994_o;
-  /* 6805.vhd:1299:42  */
+  /* 6805.vhd:1305:42  */
   assign n2997_o = opcode == 8'b11010010;
-  /* 6805.vhd:1299:42  */
+  /* 6805.vhd:1305:42  */
   assign n2998_o = n2995_o | n2997_o;
-  /* 6805.vhd:1299:50  */
+  /* 6805.vhd:1305:50  */
   assign n3000_o = opcode == 8'b11100010;
-  /* 6805.vhd:1299:50  */
+  /* 6805.vhd:1305:50  */
   assign n3001_o = n2998_o | n3000_o;
-  /* 6805.vhd:1299:58  */
+  /* 6805.vhd:1305:58  */
   assign n3003_o = opcode == 8'b11110010;
-  /* 6805.vhd:1299:58  */
+  /* 6805.vhd:1305:58  */
   assign n3004_o = n3001_o | n3003_o;
-  /* 6805.vhd:1318:30  */
+  /* 6805.vhd:1324:30  */
   assign n3005_o = regx - datain;
-  /* 6805.vhd:1319:30  */
+  /* 6805.vhd:1325:30  */
   assign n3006_o = n3005_o[7];
-  /* 6805.vhd:1320:25  */
+  /* 6805.vhd:1326:25  */
   assign n3008_o = n3005_o == 8'b00000000;
-  /* 6805.vhd:1320:17  */
+  /* 6805.vhd:1326:17  */
   assign n3011_o = n3008_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1325:36  */
+  /* 6805.vhd:1331:36  */
   assign n3012_o = regx[7];
-  /* 6805.vhd:1325:28  */
+  /* 6805.vhd:1331:28  */
   assign n3013_o = ~n3012_o;
-  /* 6805.vhd:1325:51  */
+  /* 6805.vhd:1331:51  */
   assign n3014_o = datain[7];
-  /* 6805.vhd:1325:41  */
+  /* 6805.vhd:1331:41  */
   assign n3015_o = n3013_o & n3014_o;
-  /* 6805.vhd:1326:33  */
+  /* 6805.vhd:1332:33  */
   assign n3016_o = datain[7];
-  /* 6805.vhd:1326:45  */
+  /* 6805.vhd:1332:45  */
   assign n3017_o = n3005_o[7];
-  /* 6805.vhd:1326:37  */
+  /* 6805.vhd:1332:37  */
   assign n3018_o = n3016_o & n3017_o;
-  /* 6805.vhd:1325:56  */
+  /* 6805.vhd:1331:56  */
   assign n3019_o = n3015_o | n3018_o;
-  /* 6805.vhd:1327:31  */
+  /* 6805.vhd:1333:31  */
   assign n3020_o = n3005_o[7];
-  /* 6805.vhd:1327:48  */
+  /* 6805.vhd:1333:48  */
   assign n3021_o = regx[7];
-  /* 6805.vhd:1327:40  */
+  /* 6805.vhd:1333:40  */
   assign n3022_o = ~n3021_o;
-  /* 6805.vhd:1327:35  */
+  /* 6805.vhd:1333:35  */
   assign n3023_o = n3020_o & n3022_o;
-  /* 6805.vhd:1326:50  */
+  /* 6805.vhd:1332:50  */
   assign n3024_o = n3019_o | n3023_o;
-  /* 6805.vhd:1328:27  */
+  /* 6805.vhd:1334:27  */
   assign n3026_o = opcode == 8'b10100011;
-  /* 6805.vhd:1329:34  */
+  /* 6805.vhd:1335:34  */
   assign n3028_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1328:17  */
+  /* 6805.vhd:1334:17  */
   assign n3029_o = n3026_o ? n3028_o : regpc;
-  /* 6805.vhd:1316:15  */
+  /* 6805.vhd:1322:15  */
   assign n3031_o = opcode == 8'b10100011;
-  /* 6805.vhd:1316:26  */
+  /* 6805.vhd:1322:26  */
   assign n3033_o = opcode == 8'b10110011;
-  /* 6805.vhd:1316:26  */
+  /* 6805.vhd:1322:26  */
   assign n3034_o = n3031_o | n3033_o;
-  /* 6805.vhd:1316:34  */
+  /* 6805.vhd:1322:34  */
   assign n3036_o = opcode == 8'b11000011;
-  /* 6805.vhd:1316:34  */
+  /* 6805.vhd:1322:34  */
   assign n3037_o = n3034_o | n3036_o;
-  /* 6805.vhd:1316:42  */
+  /* 6805.vhd:1322:42  */
   assign n3039_o = opcode == 8'b11010011;
-  /* 6805.vhd:1316:42  */
+  /* 6805.vhd:1322:42  */
   assign n3040_o = n3037_o | n3039_o;
-  /* 6805.vhd:1316:50  */
+  /* 6805.vhd:1322:50  */
   assign n3042_o = opcode == 8'b11100011;
-  /* 6805.vhd:1316:50  */
+  /* 6805.vhd:1322:50  */
   assign n3043_o = n3040_o | n3042_o;
-  /* 6805.vhd:1316:58  */
+  /* 6805.vhd:1322:58  */
   assign n3045_o = opcode == 8'b11110011;
-  /* 6805.vhd:1316:58  */
+  /* 6805.vhd:1322:58  */
   assign n3046_o = n3043_o | n3045_o;
-  /* 6805.vhd:1334:30  */
+  /* 6805.vhd:1340:30  */
   assign n3047_o = rega & datain;
-  /* 6805.vhd:1335:30  */
+  /* 6805.vhd:1341:30  */
   assign n3048_o = rega & datain;
-  /* 6805.vhd:1336:30  */
+  /* 6805.vhd:1342:30  */
   assign n3049_o = n3048_o[7];
-  /* 6805.vhd:1337:25  */
+  /* 6805.vhd:1343:25  */
   assign n3051_o = n3048_o == 8'b00000000;
-  /* 6805.vhd:1337:17  */
+  /* 6805.vhd:1343:17  */
   assign n3054_o = n3051_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1342:27  */
+  /* 6805.vhd:1348:27  */
   assign n3056_o = opcode == 8'b10100100;
-  /* 6805.vhd:1343:34  */
+  /* 6805.vhd:1349:34  */
   assign n3058_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1342:17  */
+  /* 6805.vhd:1348:17  */
   assign n3059_o = n3056_o ? n3058_o : regpc;
-  /* 6805.vhd:1332:15  */
+  /* 6805.vhd:1338:15  */
   assign n3061_o = opcode == 8'b10100100;
-  /* 6805.vhd:1332:26  */
+  /* 6805.vhd:1338:26  */
   assign n3063_o = opcode == 8'b10110100;
-  /* 6805.vhd:1332:26  */
+  /* 6805.vhd:1338:26  */
   assign n3064_o = n3061_o | n3063_o;
-  /* 6805.vhd:1332:34  */
+  /* 6805.vhd:1338:34  */
   assign n3066_o = opcode == 8'b11000100;
-  /* 6805.vhd:1332:34  */
+  /* 6805.vhd:1338:34  */
   assign n3067_o = n3064_o | n3066_o;
-  /* 6805.vhd:1332:42  */
+  /* 6805.vhd:1338:42  */
   assign n3069_o = opcode == 8'b11010100;
-  /* 6805.vhd:1332:42  */
+  /* 6805.vhd:1338:42  */
   assign n3070_o = n3067_o | n3069_o;
-  /* 6805.vhd:1332:50  */
+  /* 6805.vhd:1338:50  */
   assign n3072_o = opcode == 8'b11100100;
-  /* 6805.vhd:1332:50  */
+  /* 6805.vhd:1338:50  */
   assign n3073_o = n3070_o | n3072_o;
-  /* 6805.vhd:1332:58  */
+  /* 6805.vhd:1338:58  */
   assign n3075_o = opcode == 8'b11110100;
-  /* 6805.vhd:1332:58  */
+  /* 6805.vhd:1338:58  */
   assign n3076_o = n3073_o | n3075_o;
-  /* 6805.vhd:1348:30  */
+  /* 6805.vhd:1354:30  */
   assign n3077_o = rega & datain;
-  /* 6805.vhd:1349:30  */
+  /* 6805.vhd:1355:30  */
   assign n3078_o = n3077_o[7];
-  /* 6805.vhd:1350:25  */
+  /* 6805.vhd:1356:25  */
   assign n3080_o = n3077_o == 8'b00000000;
-  /* 6805.vhd:1350:17  */
+  /* 6805.vhd:1356:17  */
   assign n3083_o = n3080_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1355:27  */
+  /* 6805.vhd:1361:27  */
   assign n3085_o = opcode == 8'b10100101;
-  /* 6805.vhd:1356:34  */
+  /* 6805.vhd:1362:34  */
   assign n3087_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1355:17  */
+  /* 6805.vhd:1361:17  */
   assign n3088_o = n3085_o ? n3087_o : regpc;
-  /* 6805.vhd:1346:15  */
+  /* 6805.vhd:1352:15  */
   assign n3090_o = opcode == 8'b10100101;
-  /* 6805.vhd:1346:26  */
+  /* 6805.vhd:1352:26  */
   assign n3092_o = opcode == 8'b10110101;
-  /* 6805.vhd:1346:26  */
+  /* 6805.vhd:1352:26  */
   assign n3093_o = n3090_o | n3092_o;
-  /* 6805.vhd:1346:34  */
+  /* 6805.vhd:1352:34  */
   assign n3095_o = opcode == 8'b11000101;
-  /* 6805.vhd:1346:34  */
+  /* 6805.vhd:1352:34  */
   assign n3096_o = n3093_o | n3095_o;
-  /* 6805.vhd:1346:42  */
+  /* 6805.vhd:1352:42  */
   assign n3098_o = opcode == 8'b11010101;
-  /* 6805.vhd:1346:42  */
+  /* 6805.vhd:1352:42  */
   assign n3099_o = n3096_o | n3098_o;
-  /* 6805.vhd:1346:50  */
+  /* 6805.vhd:1352:50  */
   assign n3101_o = opcode == 8'b11100101;
-  /* 6805.vhd:1346:50  */
+  /* 6805.vhd:1352:50  */
   assign n3102_o = n3099_o | n3101_o;
-  /* 6805.vhd:1346:58  */
+  /* 6805.vhd:1352:58  */
   assign n3104_o = opcode == 8'b11110101;
-  /* 6805.vhd:1346:58  */
+  /* 6805.vhd:1352:58  */
   assign n3105_o = n3102_o | n3104_o;
-  /* 6805.vhd:1362:32  */
+  /* 6805.vhd:1368:32  */
   assign n3106_o = datain[7];
-  /* 6805.vhd:1363:27  */
+  /* 6805.vhd:1369:27  */
   assign n3108_o = datain == 8'b00000000;
-  /* 6805.vhd:1363:17  */
+  /* 6805.vhd:1369:17  */
   assign n3111_o = n3108_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1368:27  */
+  /* 6805.vhd:1374:27  */
   assign n3113_o = opcode == 8'b10100110;
-  /* 6805.vhd:1369:34  */
+  /* 6805.vhd:1375:34  */
   assign n3115_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1368:17  */
+  /* 6805.vhd:1374:17  */
   assign n3116_o = n3113_o ? n3115_o : regpc;
-  /* 6805.vhd:1359:15  */
+  /* 6805.vhd:1365:15  */
   assign n3118_o = opcode == 8'b10100110;
-  /* 6805.vhd:1359:26  */
+  /* 6805.vhd:1365:26  */
   assign n3120_o = opcode == 8'b10110110;
-  /* 6805.vhd:1359:26  */
+  /* 6805.vhd:1365:26  */
   assign n3121_o = n3118_o | n3120_o;
-  /* 6805.vhd:1359:34  */
+  /* 6805.vhd:1365:34  */
   assign n3123_o = opcode == 8'b11000110;
-  /* 6805.vhd:1359:34  */
+  /* 6805.vhd:1365:34  */
   assign n3124_o = n3121_o | n3123_o;
-  /* 6805.vhd:1359:42  */
+  /* 6805.vhd:1365:42  */
   assign n3126_o = opcode == 8'b11010110;
-  /* 6805.vhd:1359:42  */
+  /* 6805.vhd:1365:42  */
   assign n3127_o = n3124_o | n3126_o;
-  /* 6805.vhd:1359:50  */
+  /* 6805.vhd:1365:50  */
   assign n3129_o = opcode == 8'b11100110;
-  /* 6805.vhd:1359:50  */
+  /* 6805.vhd:1365:50  */
   assign n3130_o = n3127_o | n3129_o;
-  /* 6805.vhd:1359:58  */
+  /* 6805.vhd:1365:58  */
   assign n3132_o = opcode == 8'b11110110;
-  /* 6805.vhd:1359:58  */
+  /* 6805.vhd:1365:58  */
   assign n3133_o = n3130_o | n3132_o;
-  /* 6805.vhd:1374:30  */
+  /* 6805.vhd:1380:30  */
   assign n3134_o = rega ^ datain;
-  /* 6805.vhd:1375:30  */
+  /* 6805.vhd:1381:30  */
   assign n3135_o = rega ^ datain;
-  /* 6805.vhd:1376:30  */
+  /* 6805.vhd:1382:30  */
   assign n3136_o = n3135_o[7];
-  /* 6805.vhd:1377:25  */
+  /* 6805.vhd:1383:25  */
   assign n3138_o = n3135_o == 8'b00000000;
-  /* 6805.vhd:1377:17  */
+  /* 6805.vhd:1383:17  */
   assign n3141_o = n3138_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1382:27  */
+  /* 6805.vhd:1388:27  */
   assign n3143_o = opcode == 8'b10101000;
-  /* 6805.vhd:1383:34  */
+  /* 6805.vhd:1389:34  */
   assign n3145_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1382:17  */
+  /* 6805.vhd:1388:17  */
   assign n3146_o = n3143_o ? n3145_o : regpc;
-  /* 6805.vhd:1372:15  */
+  /* 6805.vhd:1378:15  */
   assign n3148_o = opcode == 8'b10101000;
-  /* 6805.vhd:1372:26  */
+  /* 6805.vhd:1378:26  */
   assign n3150_o = opcode == 8'b10111000;
-  /* 6805.vhd:1372:26  */
+  /* 6805.vhd:1378:26  */
   assign n3151_o = n3148_o | n3150_o;
-  /* 6805.vhd:1372:34  */
+  /* 6805.vhd:1378:34  */
   assign n3153_o = opcode == 8'b11001000;
-  /* 6805.vhd:1372:34  */
+  /* 6805.vhd:1378:34  */
   assign n3154_o = n3151_o | n3153_o;
-  /* 6805.vhd:1372:42  */
+  /* 6805.vhd:1378:42  */
   assign n3156_o = opcode == 8'b11011000;
-  /* 6805.vhd:1372:42  */
+  /* 6805.vhd:1378:42  */
   assign n3157_o = n3154_o | n3156_o;
-  /* 6805.vhd:1372:50  */
+  /* 6805.vhd:1378:50  */
   assign n3159_o = opcode == 8'b11101000;
-  /* 6805.vhd:1372:50  */
+  /* 6805.vhd:1378:50  */
   assign n3160_o = n3157_o | n3159_o;
-  /* 6805.vhd:1372:58  */
+  /* 6805.vhd:1378:58  */
   assign n3162_o = opcode == 8'b11111000;
-  /* 6805.vhd:1372:58  */
+  /* 6805.vhd:1378:58  */
   assign n3163_o = n3160_o | n3162_o;
-  /* 6805.vhd:1388:30  */
+  /* 6805.vhd:1394:30  */
   assign n3164_o = rega + datain;
-  /* 6805.vhd:1388:52  */
+  /* 6805.vhd:1394:52  */
   assign n3166_o = {7'b0000000, flagc};
-  /* 6805.vhd:1388:39  */
+  /* 6805.vhd:1394:39  */
   assign n3167_o = n3164_o + n3166_o;
-  /* 6805.vhd:1389:30  */
+  /* 6805.vhd:1395:30  */
   assign n3168_o = rega + datain;
-  /* 6805.vhd:1389:52  */
+  /* 6805.vhd:1395:52  */
   assign n3170_o = {7'b0000000, flagc};
-  /* 6805.vhd:1389:39  */
+  /* 6805.vhd:1395:39  */
   assign n3171_o = n3168_o + n3170_o;
-  /* 6805.vhd:1390:30  */
+  /* 6805.vhd:1396:30  */
   assign n3172_o = n3171_o[7];
-  /* 6805.vhd:1391:25  */
+  /* 6805.vhd:1397:25  */
   assign n3174_o = n3171_o == 8'b00000000;
-  /* 6805.vhd:1391:17  */
+  /* 6805.vhd:1397:17  */
   assign n3177_o = n3174_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1396:31  */
+  /* 6805.vhd:1402:31  */
   assign n3178_o = rega[3];
-  /* 6805.vhd:1396:45  */
+  /* 6805.vhd:1402:45  */
   assign n3179_o = datain[3];
-  /* 6805.vhd:1396:35  */
+  /* 6805.vhd:1402:35  */
   assign n3180_o = n3178_o & n3179_o;
-  /* 6805.vhd:1397:33  */
+  /* 6805.vhd:1403:33  */
   assign n3181_o = datain[3];
-  /* 6805.vhd:1397:50  */
+  /* 6805.vhd:1403:50  */
   assign n3182_o = n3171_o[3];
-  /* 6805.vhd:1397:42  */
+  /* 6805.vhd:1403:42  */
   assign n3183_o = ~n3182_o;
-  /* 6805.vhd:1397:37  */
+  /* 6805.vhd:1403:37  */
   assign n3184_o = n3181_o & n3183_o;
-  /* 6805.vhd:1396:50  */
+  /* 6805.vhd:1402:50  */
   assign n3185_o = n3180_o | n3184_o;
-  /* 6805.vhd:1398:36  */
+  /* 6805.vhd:1404:36  */
   assign n3186_o = n3171_o[3];
-  /* 6805.vhd:1398:28  */
+  /* 6805.vhd:1404:28  */
   assign n3187_o = ~n3186_o;
-  /* 6805.vhd:1398:49  */
+  /* 6805.vhd:1404:49  */
   assign n3188_o = rega[3];
-  /* 6805.vhd:1398:41  */
+  /* 6805.vhd:1404:41  */
   assign n3189_o = n3187_o & n3188_o;
-  /* 6805.vhd:1397:56  */
+  /* 6805.vhd:1403:56  */
   assign n3190_o = n3185_o | n3189_o;
-  /* 6805.vhd:1399:31  */
+  /* 6805.vhd:1405:31  */
   assign n3191_o = rega[7];
-  /* 6805.vhd:1399:45  */
+  /* 6805.vhd:1405:45  */
   assign n3192_o = datain[7];
-  /* 6805.vhd:1399:35  */
+  /* 6805.vhd:1405:35  */
   assign n3193_o = n3191_o & n3192_o;
-  /* 6805.vhd:1400:33  */
+  /* 6805.vhd:1406:33  */
   assign n3194_o = datain[7];
-  /* 6805.vhd:1400:50  */
+  /* 6805.vhd:1406:50  */
   assign n3195_o = n3171_o[7];
-  /* 6805.vhd:1400:42  */
+  /* 6805.vhd:1406:42  */
   assign n3196_o = ~n3195_o;
-  /* 6805.vhd:1400:37  */
+  /* 6805.vhd:1406:37  */
   assign n3197_o = n3194_o & n3196_o;
-  /* 6805.vhd:1399:50  */
+  /* 6805.vhd:1405:50  */
   assign n3198_o = n3193_o | n3197_o;
-  /* 6805.vhd:1401:36  */
+  /* 6805.vhd:1407:36  */
   assign n3199_o = n3171_o[7];
-  /* 6805.vhd:1401:28  */
+  /* 6805.vhd:1407:28  */
   assign n3200_o = ~n3199_o;
-  /* 6805.vhd:1401:49  */
+  /* 6805.vhd:1407:49  */
   assign n3201_o = rega[7];
-  /* 6805.vhd:1401:41  */
+  /* 6805.vhd:1407:41  */
   assign n3202_o = n3200_o & n3201_o;
-  /* 6805.vhd:1400:56  */
+  /* 6805.vhd:1406:56  */
   assign n3203_o = n3198_o | n3202_o;
-  /* 6805.vhd:1402:27  */
+  /* 6805.vhd:1408:27  */
   assign n3205_o = opcode == 8'b10101001;
-  /* 6805.vhd:1403:34  */
+  /* 6805.vhd:1409:34  */
   assign n3207_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1402:17  */
+  /* 6805.vhd:1408:17  */
   assign n3208_o = n3205_o ? n3207_o : regpc;
-  /* 6805.vhd:1386:15  */
+  /* 6805.vhd:1392:15  */
   assign n3210_o = opcode == 8'b10101001;
-  /* 6805.vhd:1386:26  */
+  /* 6805.vhd:1392:26  */
   assign n3212_o = opcode == 8'b10111001;
-  /* 6805.vhd:1386:26  */
+  /* 6805.vhd:1392:26  */
   assign n3213_o = n3210_o | n3212_o;
-  /* 6805.vhd:1386:34  */
+  /* 6805.vhd:1392:34  */
   assign n3215_o = opcode == 8'b11001001;
-  /* 6805.vhd:1386:34  */
+  /* 6805.vhd:1392:34  */
   assign n3216_o = n3213_o | n3215_o;
-  /* 6805.vhd:1386:42  */
+  /* 6805.vhd:1392:42  */
   assign n3218_o = opcode == 8'b11011001;
-  /* 6805.vhd:1386:42  */
+  /* 6805.vhd:1392:42  */
   assign n3219_o = n3216_o | n3218_o;
-  /* 6805.vhd:1386:50  */
+  /* 6805.vhd:1392:50  */
   assign n3221_o = opcode == 8'b11101001;
-  /* 6805.vhd:1386:50  */
+  /* 6805.vhd:1392:50  */
   assign n3222_o = n3219_o | n3221_o;
-  /* 6805.vhd:1386:58  */
+  /* 6805.vhd:1392:58  */
   assign n3224_o = opcode == 8'b11111001;
-  /* 6805.vhd:1386:58  */
+  /* 6805.vhd:1392:58  */
   assign n3225_o = n3222_o | n3224_o;
-  /* 6805.vhd:1408:30  */
+  /* 6805.vhd:1414:30  */
   assign n3226_o = rega | datain;
-  /* 6805.vhd:1409:30  */
+  /* 6805.vhd:1415:30  */
   assign n3227_o = rega | datain;
-  /* 6805.vhd:1410:30  */
+  /* 6805.vhd:1416:30  */
   assign n3228_o = n3227_o[7];
-  /* 6805.vhd:1411:25  */
+  /* 6805.vhd:1417:25  */
   assign n3230_o = n3227_o == 8'b00000000;
-  /* 6805.vhd:1411:17  */
+  /* 6805.vhd:1417:17  */
   assign n3233_o = n3230_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1416:27  */
+  /* 6805.vhd:1422:27  */
   assign n3235_o = opcode == 8'b10101010;
-  /* 6805.vhd:1417:34  */
+  /* 6805.vhd:1423:34  */
   assign n3237_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1416:17  */
+  /* 6805.vhd:1422:17  */
   assign n3238_o = n3235_o ? n3237_o : regpc;
-  /* 6805.vhd:1406:15  */
+  /* 6805.vhd:1412:15  */
   assign n3240_o = opcode == 8'b10101010;
-  /* 6805.vhd:1406:26  */
+  /* 6805.vhd:1412:26  */
   assign n3242_o = opcode == 8'b10111010;
-  /* 6805.vhd:1406:26  */
+  /* 6805.vhd:1412:26  */
   assign n3243_o = n3240_o | n3242_o;
-  /* 6805.vhd:1406:34  */
+  /* 6805.vhd:1412:34  */
   assign n3245_o = opcode == 8'b11001010;
-  /* 6805.vhd:1406:34  */
+  /* 6805.vhd:1412:34  */
   assign n3246_o = n3243_o | n3245_o;
-  /* 6805.vhd:1406:42  */
+  /* 6805.vhd:1412:42  */
   assign n3248_o = opcode == 8'b11011010;
-  /* 6805.vhd:1406:42  */
+  /* 6805.vhd:1412:42  */
   assign n3249_o = n3246_o | n3248_o;
-  /* 6805.vhd:1406:50  */
+  /* 6805.vhd:1412:50  */
   assign n3251_o = opcode == 8'b11101010;
-  /* 6805.vhd:1406:50  */
+  /* 6805.vhd:1412:50  */
   assign n3252_o = n3249_o | n3251_o;
-  /* 6805.vhd:1406:58  */
+  /* 6805.vhd:1412:58  */
   assign n3254_o = opcode == 8'b11111010;
-  /* 6805.vhd:1406:58  */
+  /* 6805.vhd:1412:58  */
   assign n3255_o = n3252_o | n3254_o;
-  /* 6805.vhd:1422:30  */
+  /* 6805.vhd:1428:30  */
   assign n3256_o = rega + datain;
-  /* 6805.vhd:1423:30  */
+  /* 6805.vhd:1429:30  */
   assign n3257_o = rega + datain;
-  /* 6805.vhd:1424:30  */
+  /* 6805.vhd:1430:30  */
   assign n3258_o = n3257_o[7];
-  /* 6805.vhd:1425:25  */
+  /* 6805.vhd:1431:25  */
   assign n3260_o = n3257_o == 8'b00000000;
-  /* 6805.vhd:1425:17  */
+  /* 6805.vhd:1431:17  */
   assign n3263_o = n3260_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1430:31  */
+  /* 6805.vhd:1436:31  */
   assign n3264_o = rega[3];
-  /* 6805.vhd:1430:45  */
+  /* 6805.vhd:1436:45  */
   assign n3265_o = datain[3];
-  /* 6805.vhd:1430:35  */
+  /* 6805.vhd:1436:35  */
   assign n3266_o = n3264_o & n3265_o;
-  /* 6805.vhd:1431:33  */
+  /* 6805.vhd:1437:33  */
   assign n3267_o = datain[3];
-  /* 6805.vhd:1431:50  */
+  /* 6805.vhd:1437:50  */
   assign n3268_o = n3257_o[3];
-  /* 6805.vhd:1431:42  */
+  /* 6805.vhd:1437:42  */
   assign n3269_o = ~n3268_o;
-  /* 6805.vhd:1431:37  */
+  /* 6805.vhd:1437:37  */
   assign n3270_o = n3267_o & n3269_o;
-  /* 6805.vhd:1430:50  */
+  /* 6805.vhd:1436:50  */
   assign n3271_o = n3266_o | n3270_o;
-  /* 6805.vhd:1432:36  */
+  /* 6805.vhd:1438:36  */
   assign n3272_o = n3257_o[3];
-  /* 6805.vhd:1432:28  */
+  /* 6805.vhd:1438:28  */
   assign n3273_o = ~n3272_o;
-  /* 6805.vhd:1432:49  */
+  /* 6805.vhd:1438:49  */
   assign n3274_o = rega[3];
-  /* 6805.vhd:1432:41  */
+  /* 6805.vhd:1438:41  */
   assign n3275_o = n3273_o & n3274_o;
-  /* 6805.vhd:1431:56  */
+  /* 6805.vhd:1437:56  */
   assign n3276_o = n3271_o | n3275_o;
-  /* 6805.vhd:1433:31  */
+  /* 6805.vhd:1439:31  */
   assign n3277_o = rega[7];
-  /* 6805.vhd:1433:45  */
+  /* 6805.vhd:1439:45  */
   assign n3278_o = datain[7];
-  /* 6805.vhd:1433:35  */
+  /* 6805.vhd:1439:35  */
   assign n3279_o = n3277_o & n3278_o;
-  /* 6805.vhd:1434:33  */
+  /* 6805.vhd:1440:33  */
   assign n3280_o = datain[7];
-  /* 6805.vhd:1434:50  */
+  /* 6805.vhd:1440:50  */
   assign n3281_o = n3257_o[7];
-  /* 6805.vhd:1434:42  */
+  /* 6805.vhd:1440:42  */
   assign n3282_o = ~n3281_o;
-  /* 6805.vhd:1434:37  */
+  /* 6805.vhd:1440:37  */
   assign n3283_o = n3280_o & n3282_o;
-  /* 6805.vhd:1433:50  */
+  /* 6805.vhd:1439:50  */
   assign n3284_o = n3279_o | n3283_o;
-  /* 6805.vhd:1435:36  */
+  /* 6805.vhd:1441:36  */
   assign n3285_o = n3257_o[7];
-  /* 6805.vhd:1435:28  */
+  /* 6805.vhd:1441:28  */
   assign n3286_o = ~n3285_o;
-  /* 6805.vhd:1435:49  */
+  /* 6805.vhd:1441:49  */
   assign n3287_o = rega[7];
-  /* 6805.vhd:1435:41  */
+  /* 6805.vhd:1441:41  */
   assign n3288_o = n3286_o & n3287_o;
-  /* 6805.vhd:1434:56  */
+  /* 6805.vhd:1440:56  */
   assign n3289_o = n3284_o | n3288_o;
-  /* 6805.vhd:1436:27  */
+  /* 6805.vhd:1442:27  */
   assign n3291_o = opcode == 8'b10101011;
-  /* 6805.vhd:1437:34  */
+  /* 6805.vhd:1443:34  */
   assign n3293_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1436:17  */
+  /* 6805.vhd:1442:17  */
   assign n3294_o = n3291_o ? n3293_o : regpc;
-  /* 6805.vhd:1420:15  */
+  /* 6805.vhd:1426:15  */
   assign n3296_o = opcode == 8'b10101011;
-  /* 6805.vhd:1420:26  */
+  /* 6805.vhd:1426:26  */
   assign n3298_o = opcode == 8'b10111011;
-  /* 6805.vhd:1420:26  */
+  /* 6805.vhd:1426:26  */
   assign n3299_o = n3296_o | n3298_o;
-  /* 6805.vhd:1420:34  */
+  /* 6805.vhd:1426:34  */
   assign n3301_o = opcode == 8'b11001011;
-  /* 6805.vhd:1420:34  */
+  /* 6805.vhd:1426:34  */
   assign n3302_o = n3299_o | n3301_o;
-  /* 6805.vhd:1420:42  */
+  /* 6805.vhd:1426:42  */
   assign n3304_o = opcode == 8'b11011011;
-  /* 6805.vhd:1420:42  */
+  /* 6805.vhd:1426:42  */
   assign n3305_o = n3302_o | n3304_o;
-  /* 6805.vhd:1420:50  */
+  /* 6805.vhd:1426:50  */
   assign n3307_o = opcode == 8'b11101011;
-  /* 6805.vhd:1420:50  */
+  /* 6805.vhd:1426:50  */
   assign n3308_o = n3305_o | n3307_o;
-  /* 6805.vhd:1420:58  */
+  /* 6805.vhd:1426:58  */
   assign n3310_o = opcode == 8'b11111011;
-  /* 6805.vhd:1420:58  */
+  /* 6805.vhd:1426:58  */
   assign n3311_o = n3308_o | n3310_o;
-  /* 6805.vhd:1443:32  */
+  /* 6805.vhd:1449:32  */
   assign n3312_o = datain[7];
-  /* 6805.vhd:1444:27  */
+  /* 6805.vhd:1450:27  */
   assign n3314_o = datain == 8'b00000000;
-  /* 6805.vhd:1444:17  */
+  /* 6805.vhd:1450:17  */
   assign n3317_o = n3314_o ? 1'b1 : 1'b0;
-  /* 6805.vhd:1449:27  */
+  /* 6805.vhd:1455:27  */
   assign n3319_o = opcode == 8'b10101110;
-  /* 6805.vhd:1450:34  */
+  /* 6805.vhd:1456:34  */
   assign n3321_o = regpc + 16'b0000000000000001;
-  /* 6805.vhd:1449:17  */
+  /* 6805.vhd:1455:17  */
   assign n3322_o = n3319_o ? n3321_o : regpc;
-  /* 6805.vhd:1440:15  */
+  /* 6805.vhd:1446:15  */
   assign n3324_o = opcode == 8'b10101110;
-  /* 6805.vhd:1440:26  */
+  /* 6805.vhd:1446:26  */
   assign n3326_o = opcode == 8'b10111110;
-  /* 6805.vhd:1440:26  */
+  /* 6805.vhd:1446:26  */
   assign n3327_o = n3324_o | n3326_o;
-  /* 6805.vhd:1440:34  */
+  /* 6805.vhd:1446:34  */
   assign n3329_o = opcode == 8'b11001110;
-  /* 6805.vhd:1440:34  */
+  /* 6805.vhd:1446:34  */
   assign n3330_o = n3327_o | n3329_o;
-  /* 6805.vhd:1440:42  */
+  /* 6805.vhd:1446:42  */
   assign n3332_o = opcode == 8'b11011110;
-  /* 6805.vhd:1440:42  */
+  /* 6805.vhd:1446:42  */
   assign n3333_o = n3330_o | n3332_o;
-  /* 6805.vhd:1440:50  */
+  /* 6805.vhd:1446:50  */
   assign n3335_o = opcode == 8'b11101110;
-  /* 6805.vhd:1440:50  */
+  /* 6805.vhd:1446:50  */
   assign n3336_o = n3333_o | n3335_o;
-  /* 6805.vhd:1440:58  */
+  /* 6805.vhd:1446:58  */
   assign n3338_o = opcode == 8'b11111110;
-  /* 6805.vhd:1440:58  */
+  /* 6805.vhd:1446:58  */
   assign n3339_o = n3336_o | n3338_o;
-  /* 6805.vhd:1456:24  */
+  /* 6805.vhd:1462:24  */
   assign n3340_o = help[7];
-  /* 6805.vhd:1456:28  */
+  /* 6805.vhd:1462:28  */
   assign n3341_o = ~n3340_o;
-  /* 6805.vhd:1457:43  */
+  /* 6805.vhd:1463:43  */
   assign n3343_o = {8'b00000000, help};
-  /* 6805.vhd:1457:34  */
+  /* 6805.vhd:1463:34  */
   assign n3344_o = regpc + n3343_o;
-  /* 6805.vhd:1459:43  */
+  /* 6805.vhd:1465:43  */
   assign n3346_o = {8'b11111111, help};
-  /* 6805.vhd:1459:34  */
+  /* 6805.vhd:1465:34  */
   assign n3347_o = regpc + n3346_o;
-  /* 6805.vhd:1456:17  */
+  /* 6805.vhd:1462:17  */
   assign n3348_o = n3341_o ? n3344_o : n3347_o;
-  /* 6805.vhd:1461:32  */
-  assign n3350_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1453:15  */
-  assign n3352_o = opcode == 8'b10101101;
-  /* 6805.vhd:1466:32  */
-  assign n3354_o = {8'b00000000, help};
   /* 6805.vhd:1467:32  */
+  assign n3350_o = regsp - 16'b0000000000000001;
+  /* 6805.vhd:1459:15  */
+  assign n3352_o = opcode == 8'b10101101;
+  /* 6805.vhd:1472:32  */
+  assign n3354_o = {8'b00000000, help};
+  /* 6805.vhd:1473:32  */
   assign n3356_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1463:15  */
-  assign n3358_o = opcode == 8'b10111101;
-  /* 6805.vhd:1470:32  */
-  assign n3360_o = regsp - 16'b0000000000000001;
   /* 6805.vhd:1469:15  */
+  assign n3358_o = opcode == 8'b10111101;
+  /* 6805.vhd:1476:32  */
+  assign n3360_o = regsp - 16'b0000000000000001;
+  /* 6805.vhd:1475:15  */
   assign n3362_o = opcode == 8'b11001101;
-  /* 6805.vhd:1469:26  */
+  /* 6805.vhd:1475:26  */
   assign n3364_o = opcode == 8'b11011101;
-  /* 6805.vhd:1469:26  */
+  /* 6805.vhd:1475:26  */
   assign n3365_o = n3362_o | n3364_o;
-  /* 6805.vhd:1476:33  */
-  assign n3367_o = {8'b00000000, help};
-  /* 6805.vhd:1476:50  */
-  assign n3369_o = {8'b00000000, regx};
-  /* 6805.vhd:1476:41  */
-  assign n3370_o = n3367_o + n3369_o;
-  /* 6805.vhd:1477:32  */
-  assign n3372_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1473:15  */
-  assign n3374_o = opcode == 8'b11101101;
   /* 6805.vhd:1482:33  */
-  assign n3376_o = {8'b00000000, regx};
+  assign n3367_o = {8'b00000000, help};
+  /* 6805.vhd:1482:50  */
+  assign n3369_o = {8'b00000000, regx};
+  /* 6805.vhd:1482:41  */
+  assign n3370_o = n3367_o + n3369_o;
   /* 6805.vhd:1483:32  */
-  assign n3378_o = regsp - 16'b0000000000000001;
+  assign n3372_o = regsp - 16'b0000000000000001;
   /* 6805.vhd:1479:15  */
+  assign n3374_o = opcode == 8'b11101101;
+  /* 6805.vhd:1488:33  */
+  assign n3376_o = {8'b00000000, regx};
+  /* 6805.vhd:1489:32  */
+  assign n3378_o = regsp - 16'b0000000000000001;
+  /* 6805.vhd:1485:15  */
   assign n3380_o = opcode == 8'b11111101;
   assign n3381_o = {n3380_o, n3374_o, n3365_o, n3358_o, n3352_o, n3339_o, n3311_o, n3255_o, n3225_o, n3163_o, n3133_o, n3105_o, n3076_o, n3046_o, n3004_o, n2955_o, n2913_o, n2870_o, n2863_o, n2856_o, n2698_o};
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3387_o = 1'b1;
       21'b010000000000000000000: n3387_o = 1'b1;
-      21'b001000000000000000000: n3387_o = n3790_q;
+      21'b001000000000000000000: n3387_o = n3828_q;
       21'b000100000000000000000: n3387_o = 1'b1;
       21'b000010000000000000000: n3387_o = 1'b1;
-      21'b000001000000000000000: n3387_o = n3790_q;
-      21'b000000100000000000000: n3387_o = n3790_q;
-      21'b000000010000000000000: n3387_o = n3790_q;
-      21'b000000001000000000000: n3387_o = n3790_q;
-      21'b000000000100000000000: n3387_o = n3790_q;
-      21'b000000000010000000000: n3387_o = n3790_q;
-      21'b000000000001000000000: n3387_o = n3790_q;
-      21'b000000000000100000000: n3387_o = n3790_q;
-      21'b000000000000010000000: n3387_o = n3790_q;
-      21'b000000000000001000000: n3387_o = n3790_q;
-      21'b000000000000000100000: n3387_o = n3790_q;
-      21'b000000000000000010000: n3387_o = n3790_q;
-      21'b000000000000000001000: n3387_o = n3790_q;
-      21'b000000000000000000100: n3387_o = n3790_q;
+      21'b000001000000000000000: n3387_o = n3828_q;
+      21'b000000100000000000000: n3387_o = n3828_q;
+      21'b000000010000000000000: n3387_o = n3828_q;
+      21'b000000001000000000000: n3387_o = n3828_q;
+      21'b000000000100000000000: n3387_o = n3828_q;
+      21'b000000000010000000000: n3387_o = n3828_q;
+      21'b000000000001000000000: n3387_o = n3828_q;
+      21'b000000000000100000000: n3387_o = n3828_q;
+      21'b000000000000010000000: n3387_o = n3828_q;
+      21'b000000000000001000000: n3387_o = n3828_q;
+      21'b000000000000000100000: n3387_o = n3828_q;
+      21'b000000000000000010000: n3387_o = n3828_q;
+      21'b000000000000000001000: n3387_o = n3828_q;
+      21'b000000000000000000100: n3387_o = n3828_q;
       21'b000000000000000000010: n3387_o = 1'b1;
-      21'b000000000000000000001: n3387_o = n3790_q;
-      default: n3387_o = n3790_q;
+      21'b000000000000000000001: n3387_o = n3828_q;
+      default: n3387_o = n3828_q;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3388_o = rega;
@@ -8943,7 +8963,7 @@ module UR6805
       21'b000000000000000000001: n3388_o = rega;
       default: n3388_o = rega;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3389_o = regx;
@@ -8969,7 +8989,7 @@ module UR6805
       21'b000000000000000000001: n3389_o = regx;
       default: n3389_o = regx;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3390_o = n3378_o;
@@ -8995,7 +9015,7 @@ module UR6805
       21'b000000000000000000001: n3390_o = regsp;
       default: n3390_o = regsp;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3391_o = n3376_o;
@@ -9021,7 +9041,7 @@ module UR6805
       21'b000000000000000000001: n3391_o = n2651_o;
       default: n3391_o = regpc;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3392_o = flagh;
@@ -9047,7 +9067,7 @@ module UR6805
       21'b000000000000000000001: n3392_o = flagh;
       default: n3392_o = flagh;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3393_o = flagn;
@@ -9073,7 +9093,7 @@ module UR6805
       21'b000000000000000000001: n3393_o = flagn;
       default: n3393_o = flagn;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3394_o = flagz;
@@ -9099,7 +9119,7 @@ module UR6805
       21'b000000000000000000001: n3394_o = flagz;
       default: n3394_o = flagz;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3395_o = flagc;
@@ -9126,7 +9146,7 @@ module UR6805
       default: n3395_o = flagc;
     endcase
   assign n3396_o = help[0];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3397_o = n3396_o;
@@ -9153,7 +9173,7 @@ module UR6805
       default: n3397_o = n3396_o;
     endcase
   assign n3398_o = help[1];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3399_o = n3398_o;
@@ -9180,7 +9200,7 @@ module UR6805
       default: n3399_o = n3398_o;
     endcase
   assign n3400_o = help[2];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3401_o = n3400_o;
@@ -9207,7 +9227,7 @@ module UR6805
       default: n3401_o = n3400_o;
     endcase
   assign n3402_o = help[3];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3403_o = n3402_o;
@@ -9234,7 +9254,7 @@ module UR6805
       default: n3403_o = n3402_o;
     endcase
   assign n3404_o = help[4];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3405_o = n3404_o;
@@ -9261,7 +9281,7 @@ module UR6805
       default: n3405_o = n3404_o;
     endcase
   assign n3406_o = help[5];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3407_o = n3406_o;
@@ -9288,7 +9308,7 @@ module UR6805
       default: n3407_o = n3406_o;
     endcase
   assign n3408_o = help[6];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3409_o = n3408_o;
@@ -9315,7 +9335,7 @@ module UR6805
       default: n3409_o = n3408_o;
     endcase
   assign n3410_o = help[7];
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3411_o = n3410_o;
@@ -9341,7 +9361,7 @@ module UR6805
       21'b000000000000000000001: n3411_o = n3410_o;
       default: n3411_o = n3410_o;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3434_o = 4'b0010;
@@ -9367,7 +9387,7 @@ module UR6805
       21'b000000000000000000001: n3434_o = 4'b0010;
       default: n3434_o = 4'b0000;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3453_o = 3'b000;
@@ -9393,7 +9413,7 @@ module UR6805
       21'b000000000000000000001: n3453_o = 3'b000;
       default: n3453_o = addrmux;
     endcase
-  /* 6805.vhd:1222:13  */
+  /* 6805.vhd:1228:13  */
   always @*
     case (n3381_o)
       21'b100000000000000000000: n3456_o = datamux;
@@ -9419,43 +9439,43 @@ module UR6805
       21'b000000000000000000001: n3456_o = datamux;
       default: n3456_o = datamux;
     endcase
-  /* 6805.vhd:1221:11  */
+  /* 6805.vhd:1227:11  */
   assign n3459_o = mainfsm == 4'b0101;
-  /* 6805.vhd:1494:32  */
+  /* 6805.vhd:1500:32  */
   assign n3461_o = regsp + 16'b0000000000000001;
-  /* 6805.vhd:1492:15  */
+  /* 6805.vhd:1498:15  */
   assign n3463_o = opcode == 8'b10000000;
-  /* 6805.vhd:1492:26  */
+  /* 6805.vhd:1498:26  */
   assign n3465_o = opcode == 8'b10000010;
-  /* 6805.vhd:1492:26  */
+  /* 6805.vhd:1498:26  */
   assign n3466_o = n3463_o | n3465_o;
-  /* 6805.vhd:1497:32  */
-  assign n3468_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1496:15  */
-  assign n3470_o = opcode == 8'b10000011;
   /* 6805.vhd:1503:32  */
-  assign n3472_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1500:15  */
-  assign n3474_o = opcode == 8'b11001101;
+  assign n3468_o = regsp - 16'b0000000000000001;
+  /* 6805.vhd:1502:15  */
+  assign n3470_o = opcode == 8'b10000011;
   /* 6805.vhd:1509:32  */
-  assign n3476_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1510:40  */
-  assign n3478_o = {8'b00000000, regx};
-  /* 6805.vhd:1510:31  */
-  assign n3479_o = temp + n3478_o;
+  assign n3472_o = regsp - 16'b0000000000000001;
   /* 6805.vhd:1506:15  */
+  assign n3474_o = opcode == 8'b11001101;
+  /* 6805.vhd:1515:32  */
+  assign n3476_o = regsp - 16'b0000000000000001;
+  /* 6805.vhd:1516:40  */
+  assign n3478_o = {8'b00000000, regx};
+  /* 6805.vhd:1516:31  */
+  assign n3479_o = temp + n3478_o;
+  /* 6805.vhd:1512:15  */
   assign n3481_o = opcode == 8'b11011101;
   assign n3482_o = {n3481_o, n3474_o, n3470_o, n3466_o};
-  /* 6805.vhd:1491:13  */
+  /* 6805.vhd:1497:13  */
   always @*
     case (n3482_o)
       4'b1000: n3485_o = 1'b1;
       4'b0100: n3485_o = 1'b1;
-      4'b0010: n3485_o = n3790_q;
-      4'b0001: n3485_o = n3790_q;
-      default: n3485_o = n3790_q;
+      4'b0010: n3485_o = n3828_q;
+      4'b0001: n3485_o = n3828_q;
+      default: n3485_o = n3828_q;
     endcase
-  /* 6805.vhd:1491:13  */
+  /* 6805.vhd:1497:13  */
   always @*
     case (n3482_o)
       4'b1000: n3486_o = n3476_o;
@@ -9467,7 +9487,7 @@ module UR6805
   assign n3487_o = temp[7:0];
   assign n3488_o = n3479_o[7:0];
   assign n3489_o = regpc[7:0];
-  /* 6805.vhd:1491:13  */
+  /* 6805.vhd:1497:13  */
   always @*
     case (n3482_o)
       4'b1000: n3490_o = n3488_o;
@@ -9479,7 +9499,7 @@ module UR6805
   assign n3491_o = temp[15:8];
   assign n3492_o = n3479_o[15:8];
   assign n3493_o = regpc[15:8];
-  /* 6805.vhd:1491:13  */
+  /* 6805.vhd:1497:13  */
   always @*
     case (n3482_o)
       4'b1000: n3494_o = n3492_o;
@@ -9488,7 +9508,7 @@ module UR6805
       4'b0001: n3494_o = datain;
       default: n3494_o = n3493_o;
     endcase
-  /* 6805.vhd:1491:13  */
+  /* 6805.vhd:1497:13  */
   always @*
     case (n3482_o)
       4'b1000: n3500_o = 4'b0010;
@@ -9497,7 +9517,7 @@ module UR6805
       4'b0001: n3500_o = 4'b0111;
       default: n3500_o = 4'b0000;
     endcase
-  /* 6805.vhd:1491:13  */
+  /* 6805.vhd:1497:13  */
   always @*
     case (n3482_o)
       4'b1000: n3503_o = 3'b000;
@@ -9506,7 +9526,7 @@ module UR6805
       4'b0001: n3503_o = addrmux;
       default: n3503_o = addrmux;
     endcase
-  /* 6805.vhd:1491:13  */
+  /* 6805.vhd:1497:13  */
   always @*
     case (n3482_o)
       4'b1000: n3505_o = datamux;
@@ -9515,40 +9535,40 @@ module UR6805
       4'b0001: n3505_o = datamux;
       default: n3505_o = datamux;
     endcase
-  /* 6805.vhd:1490:11  */
+  /* 6805.vhd:1496:11  */
   assign n3507_o = mainfsm == 4'b0110;
-  /* 6805.vhd:1519:15  */
+  /* 6805.vhd:1525:15  */
   assign n3509_o = opcode == 8'b10000000;
-  /* 6805.vhd:1519:26  */
+  /* 6805.vhd:1525:26  */
   assign n3511_o = opcode == 8'b10000010;
-  /* 6805.vhd:1519:26  */
+  /* 6805.vhd:1525:26  */
   assign n3512_o = n3509_o | n3511_o;
-  /* 6805.vhd:1524:34  */
+  /* 6805.vhd:1530:34  */
   assign n3514_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1527:26  */
+  /* 6805.vhd:1533:26  */
   assign n3515_o = ~trace;
-  /* 6805.vhd:1531:19  */
+  /* 6805.vhd:1537:19  */
   assign n3518_o = timerirqrequest ? 16'b0001111111111000 : 16'b0001111111111100;
-  /* 6805.vhd:1531:19  */
+  /* 6805.vhd:1537:19  */
   assign n3520_o = timerirqrequest ? 1'b0 : n111_o;
-  /* 6805.vhd:1528:19  */
+  /* 6805.vhd:1534:19  */
   assign n3522_o = extirqrequest ? 16'b0001111111111010 : n3518_o;
-  /* 6805.vhd:1527:17  */
+  /* 6805.vhd:1533:17  */
   assign n3524_o = n3531_o ? 1'b0 : n106_o;
-  /* 6805.vhd:1528:19  */
+  /* 6805.vhd:1534:19  */
   assign n3525_o = extirqrequest ? n111_o : n3520_o;
-  /* 6805.vhd:1527:17  */
+  /* 6805.vhd:1533:17  */
   assign n3527_o = n3515_o ? n3522_o : 16'b0001111111111000;
-  /* 6805.vhd:1527:17  */
+  /* 6805.vhd:1533:17  */
   assign n3530_o = n3515_o ? 4'b1000 : 4'b1011;
-  /* 6805.vhd:1527:17  */
+  /* 6805.vhd:1533:17  */
   assign n3531_o = extirqrequest & n3515_o;
-  /* 6805.vhd:1527:17  */
+  /* 6805.vhd:1533:17  */
   assign n3532_o = n3515_o ? n3525_o : n111_o;
-  /* 6805.vhd:1523:15  */
+  /* 6805.vhd:1529:15  */
   assign n3534_o = opcode == 8'b10000011;
   assign n3535_o = {n3534_o, n3512_o};
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3536_o = n3514_o;
@@ -9556,165 +9576,165 @@ module UR6805
       default: n3536_o = regsp;
     endcase
   assign n3537_o = regpc[7:0];
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3538_o = n3537_o;
       2'b01: n3538_o = datain;
       default: n3538_o = n3537_o;
     endcase
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3540_o = 1'b1;
       2'b01: n3540_o = flagi;
       default: n3540_o = flagi;
     endcase
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3541_o = n3527_o;
       2'b01: n3541_o = temp;
       default: n3541_o = temp;
     endcase
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3544_o = n3530_o;
       2'b01: n3544_o = 4'b0010;
       default: n3544_o = 4'b0000;
     endcase
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3546_o = addrmux;
       2'b01: n3546_o = 3'b000;
       default: n3546_o = addrmux;
     endcase
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3548_o = 4'b1001;
       2'b01: n3548_o = datamux;
       default: n3548_o = datamux;
     endcase
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3549_o = n3524_o;
       2'b01: n3549_o = n106_o;
       default: n3549_o = n106_o;
     endcase
-  /* 6805.vhd:1518:13  */
+  /* 6805.vhd:1524:13  */
   always @*
     case (n3535_o)
       2'b10: n3550_o = n3532_o;
       2'b01: n3550_o = n111_o;
       default: n3550_o = n111_o;
     endcase
-  /* 6805.vhd:1517:11  */
+  /* 6805.vhd:1523:11  */
   assign n3552_o = mainfsm == 4'b0111;
-  /* 6805.vhd:1552:34  */
+  /* 6805.vhd:1558:34  */
   assign n3554_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1549:15  */
+  /* 6805.vhd:1555:15  */
   assign n3556_o = opcode == 8'b10000011;
-  /* 6805.vhd:1548:13  */
+  /* 6805.vhd:1554:13  */
   always @*
     case (n3556_o)
       1'b1: n3558_o = 1'b1;
-      default: n3558_o = n3790_q;
+      default: n3558_o = n3828_q;
     endcase
-  /* 6805.vhd:1548:13  */
+  /* 6805.vhd:1554:13  */
   always @*
     case (n3556_o)
       1'b1: n3559_o = n3554_o;
       default: n3559_o = regsp;
     endcase
-  /* 6805.vhd:1548:13  */
+  /* 6805.vhd:1554:13  */
   always @*
     case (n3556_o)
       1'b1: n3562_o = 4'b1001;
       default: n3562_o = 4'b0000;
     endcase
-  /* 6805.vhd:1548:13  */
+  /* 6805.vhd:1554:13  */
   always @*
     case (n3556_o)
       1'b1: n3564_o = 3'b011;
       default: n3564_o = addrmux;
     endcase
-  /* 6805.vhd:1547:11  */
+  /* 6805.vhd:1553:11  */
   assign n3566_o = mainfsm == 4'b1000;
-  /* 6805.vhd:1562:30  */
+  /* 6805.vhd:1568:30  */
   assign n3568_o = temp + 16'b0000000000000001;
-  /* 6805.vhd:1560:15  */
+  /* 6805.vhd:1566:15  */
   assign n3570_o = opcode == 8'b10000011;
   assign n3571_o = regpc[15:8];
-  /* 6805.vhd:1559:13  */
+  /* 6805.vhd:1565:13  */
   always @*
     case (n3570_o)
       1'b1: n3572_o = datain;
       default: n3572_o = n3571_o;
     endcase
-  /* 6805.vhd:1559:13  */
+  /* 6805.vhd:1565:13  */
   always @*
     case (n3570_o)
       1'b1: n3573_o = n3568_o;
       default: n3573_o = temp;
     endcase
-  /* 6805.vhd:1559:13  */
+  /* 6805.vhd:1565:13  */
   always @*
     case (n3570_o)
       1'b1: n3576_o = 4'b1010;
       default: n3576_o = 4'b0000;
     endcase
-  /* 6805.vhd:1558:11  */
+  /* 6805.vhd:1564:11  */
   assign n3578_o = mainfsm == 4'b1001;
-  /* 6805.vhd:1570:15  */
+  /* 6805.vhd:1576:15  */
   assign n3580_o = opcode == 8'b10000011;
   assign n3581_o = regpc[7:0];
-  /* 6805.vhd:1569:13  */
+  /* 6805.vhd:1575:13  */
   always @*
     case (n3580_o)
       1'b1: n3582_o = datain;
       default: n3582_o = n3581_o;
     endcase
-  /* 6805.vhd:1569:13  */
+  /* 6805.vhd:1575:13  */
   always @*
     case (n3580_o)
       1'b1: n3585_o = 4'b0010;
       default: n3585_o = 4'b0000;
     endcase
-  /* 6805.vhd:1569:13  */
+  /* 6805.vhd:1575:13  */
   always @*
     case (n3580_o)
       1'b1: n3587_o = 3'b000;
       default: n3587_o = addrmux;
     endcase
-  /* 6805.vhd:1568:11  */
+  /* 6805.vhd:1574:11  */
   assign n3589_o = mainfsm == 4'b1010;
-  /* 6805.vhd:1579:30  */
+  /* 6805.vhd:1585:30  */
   assign n3591_o = regsp - 16'b0000000000000001;
-  /* 6805.vhd:1578:11  */
+  /* 6805.vhd:1584:11  */
   assign n3593_o = mainfsm == 4'b1011;
   assign n3594_o = {n3593_o, n3589_o, n3578_o, n3566_o, n3552_o, n3507_o, n3459_o, n2633_o, n1961_o, n1312_o, n117_o, n115_o};
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
-      12'b100000000000: n3595_o = n3790_q;
-      12'b010000000000: n3595_o = n3790_q;
-      12'b001000000000: n3595_o = n3790_q;
+      12'b100000000000: n3595_o = n3828_q;
+      12'b010000000000: n3595_o = n3828_q;
+      12'b001000000000: n3595_o = n3828_q;
       12'b000100000000: n3595_o = n3558_o;
-      12'b000010000000: n3595_o = n3790_q;
+      12'b000010000000: n3595_o = n3828_q;
       12'b000001000000: n3595_o = n3485_o;
       12'b000000100000: n3595_o = n3387_o;
       12'b000000010000: n3595_o = n2530_o;
       12'b000000001000: n3595_o = n1861_o;
       12'b000000000100: n3595_o = n1289_o;
-      12'b000000000010: n3595_o = n3790_q;
-      12'b000000000001: n3595_o = n3790_q;
-      default: n3595_o = n3790_q;
+      12'b000000000010: n3595_o = n3828_q;
+      12'b000000000001: n3595_o = n3828_q;
+      default: n3595_o = n3828_q;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3596_o = rega;
@@ -9731,7 +9751,7 @@ module UR6805
       12'b000000000001: n3596_o = rega;
       default: n3596_o = rega;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3597_o = regx;
@@ -9748,7 +9768,7 @@ module UR6805
       12'b000000000001: n3597_o = regx;
       default: n3597_o = regx;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3598_o = n3591_o;
@@ -9768,7 +9788,7 @@ module UR6805
   assign n3599_o = n1293_o[7:0];
   assign n3600_o = n3391_o[7:0];
   assign n3601_o = regpc[7:0];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3602_o = n3601_o;
@@ -9788,7 +9808,7 @@ module UR6805
   assign n3603_o = n1293_o[15:8];
   assign n3604_o = n3391_o[15:8];
   assign n3605_o = regpc[15:8];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3606_o = n3605_o;
@@ -9805,7 +9825,7 @@ module UR6805
       12'b000000000001: n3606_o = datain;
       default: n3606_o = n3605_o;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3607_o = flagh;
@@ -9822,7 +9842,7 @@ module UR6805
       12'b000000000001: n3607_o = flagh;
       default: n3607_o = flagh;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3608_o = flagi;
@@ -9839,7 +9859,7 @@ module UR6805
       12'b000000000001: n3608_o = flagi;
       default: n3608_o = flagi;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3609_o = flagn;
@@ -9856,7 +9876,7 @@ module UR6805
       12'b000000000001: n3609_o = flagn;
       default: n3609_o = flagn;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3610_o = flagz;
@@ -9873,7 +9893,7 @@ module UR6805
       12'b000000000001: n3610_o = flagz;
       default: n3610_o = flagz;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3611_o = flagc;
@@ -9894,7 +9914,7 @@ module UR6805
   assign n3613_o = n1913_o[0];
   assign n3614_o = n2564_o[0];
   assign n3615_o = help[0];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3616_o = n3615_o;
@@ -9915,7 +9935,7 @@ module UR6805
   assign n3618_o = n1913_o[1];
   assign n3619_o = n2564_o[1];
   assign n3620_o = help[1];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3621_o = n3620_o;
@@ -9936,7 +9956,7 @@ module UR6805
   assign n3623_o = n1913_o[2];
   assign n3624_o = n2564_o[2];
   assign n3625_o = help[2];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3626_o = n3625_o;
@@ -9957,7 +9977,7 @@ module UR6805
   assign n3628_o = n1913_o[3];
   assign n3629_o = n2564_o[3];
   assign n3630_o = help[3];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3631_o = n3630_o;
@@ -9978,7 +9998,7 @@ module UR6805
   assign n3633_o = n1913_o[4];
   assign n3634_o = n2564_o[4];
   assign n3635_o = help[4];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3636_o = n3635_o;
@@ -9999,7 +10019,7 @@ module UR6805
   assign n3638_o = n1913_o[5];
   assign n3639_o = n2564_o[5];
   assign n3640_o = help[5];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3641_o = n3640_o;
@@ -10020,7 +10040,7 @@ module UR6805
   assign n3643_o = n1913_o[6];
   assign n3644_o = n2564_o[6];
   assign n3645_o = help[6];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3646_o = n3645_o;
@@ -10041,7 +10061,7 @@ module UR6805
   assign n3648_o = n1913_o[7];
   assign n3649_o = n2564_o[7];
   assign n3650_o = help[7];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3651_o = n3650_o;
@@ -10063,7 +10083,7 @@ module UR6805
   assign n3654_o = n3541_o[7:0];
   assign n3655_o = n3573_o[7:0];
   assign n3656_o = temp[7:0];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3657_o = n3656_o;
@@ -10085,7 +10105,7 @@ module UR6805
   assign n3660_o = n3541_o[15:8];
   assign n3661_o = n3573_o[15:8];
   assign n3662_o = temp[15:8];
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3663_o = n3662_o;
@@ -10102,7 +10122,7 @@ module UR6805
       12'b000000000001: n3663_o = n3658_o;
       default: n3663_o = n3662_o;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3668_o = 4'b1000;
@@ -10119,7 +10139,7 @@ module UR6805
       12'b000000000001: n3668_o = 4'b0001;
       default: n3668_o = 4'b0000;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3670_o = addrmux;
@@ -10136,7 +10156,7 @@ module UR6805
       12'b000000000001: n3670_o = addrmux;
       default: n3670_o = addrmux;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3672_o = 4'b1010;
@@ -10153,7 +10173,7 @@ module UR6805
       12'b000000000001: n3672_o = datamux;
       default: n3672_o = datamux;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3673_o = opcode;
@@ -10170,7 +10190,7 @@ module UR6805
       12'b000000000001: n3673_o = opcode;
       default: n3673_o = opcode;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3674_o = n106_o;
@@ -10187,7 +10207,7 @@ module UR6805
       12'b000000000001: n3674_o = n106_o;
       default: n3674_o = n106_o;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3675_o = n111_o;
@@ -10204,7 +10224,7 @@ module UR6805
       12'b000000000001: n3675_o = n111_o;
       default: n3675_o = n111_o;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3677_o = 1'b0;
@@ -10221,7 +10241,7 @@ module UR6805
       12'b000000000001: n3677_o = trace;
       default: n3677_o = trace;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3679_o = 1'b0;
@@ -10238,7 +10258,7 @@ module UR6805
       12'b000000000001: n3679_o = trace_i;
       default: n3679_o = trace_i;
     endcase
-  /* 6805.vhd:291:9  */
+  /* 6805.vhd:297:9  */
   always @*
     case (n3594_o)
       12'b100000000000: n3680_o = traceopcode;
@@ -10258,273 +10278,310 @@ module UR6805
   assign n3686_o = {n3606_o, n3602_o};
   assign n3693_o = {n3651_o, n3646_o, n3641_o, n3636_o, n3631_o, n3626_o, n3621_o, n3616_o};
   assign n3695_o = {n3663_o, n3657_o};
-  assign n3711_o = {8'b11111110, 8'b11111101, 8'b11111011, 8'b11110111, 8'b11101111, 8'b11011111, 8'b10111111, 8'b01111111};
-  assign n3713_o = {8'b00000001, 8'b00000010, 8'b00000100, 8'b00001000, 8'b00010000, 8'b00100000, 8'b01000000, 8'b10000000};
-  /* 6805.vhd:236:3  */
-  always @(n84_o)
-    n3762_q <= n3711_o;
-  /* 6805.vhd:236:3  */
-  always @(n84_o)
-    n3763_q <= n3713_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3764_q <= 8'b00000000;
+  /* 6805.vhd:296:7  */
+  assign n3701_o = clken ? n3674_o : n106_o;
+  /* 6805.vhd:296:7  */
+  assign n3702_o = clken ? n3675_o : n111_o;
+  /* 6805.vhd:260:5  */
+  assign n3781_o = {8'b11111110, 8'b11111101, 8'b11111011, 8'b11110111, 8'b11101111, 8'b11011111, 8'b10111111, 8'b01111111};
+  assign n3782_o = {8'b00000001, 8'b00000010, 8'b00000100, 8'b00001000, 8'b00010000, 8'b00100000, 8'b01000000, 8'b10000000};
+  /* 6805.vhd:284:7  */
+  assign n3783_o = clken ? n3596_o : rega;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3784_q <= 8'b00000000;
     else
-      n3764_q <= n3596_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3765_q <= 8'b00000000;
+      n3784_q <= n3783_o;
+  /* 6805.vhd:284:7  */
+  assign n3785_o = clken ? n3597_o : regx;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3786_q <= 8'b00000000;
     else
-      n3765_q <= n3597_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3766_q <= 16'b0000000011111111;
+      n3786_q <= n3785_o;
+  /* 6805.vhd:284:7  */
+  assign n3787_o = clken ? n3598_o : regsp;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3788_q <= 16'b0000000011111111;
     else
-      n3766_q <= n3598_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3767_q <= 16'b0001111111111110;
+      n3788_q <= n3787_o;
+  /* 6805.vhd:284:7  */
+  assign n3789_o = clken ? n3686_o : regpc;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3790_q <= 16'b0001111111111110;
     else
-      n3767_q <= n3686_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3768_q <= 1'b0;
+      n3790_q <= n3789_o;
+  /* 6805.vhd:284:7  */
+  assign n3791_o = clken ? n3607_o : flagh;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3792_q <= 1'b0;
     else
-      n3768_q <= n3607_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3769_q <= 1'b1;
+      n3792_q <= n3791_o;
+  /* 6805.vhd:284:7  */
+  assign n3793_o = clken ? n3608_o : flagi;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3794_q <= 1'b1;
     else
-      n3769_q <= n3608_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3770_q <= 1'b0;
+      n3794_q <= n3793_o;
+  /* 6805.vhd:284:7  */
+  assign n3795_o = clken ? n3609_o : flagn;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3796_q <= 1'b0;
     else
-      n3770_q <= n3609_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3771_q <= 1'b0;
+      n3796_q <= n3795_o;
+  /* 6805.vhd:284:7  */
+  assign n3797_o = clken ? n3610_o : flagz;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3798_q <= 1'b0;
     else
-      n3771_q <= n3610_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3772_q <= 1'b0;
+      n3798_q <= n3797_o;
+  /* 6805.vhd:284:7  */
+  assign n3799_o = clken ? n3611_o : flagc;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3800_q <= 1'b0;
     else
-      n3772_q <= n3611_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3773_q <= 8'b00000000;
+      n3800_q <= n3799_o;
+  /* 6805.vhd:284:7  */
+  assign n3801_o = clken ? n3693_o : help;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3802_q <= 8'b00000000;
     else
-      n3773_q <= n3693_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3774_q <= 16'b0001111111111110;
+      n3802_q <= n3801_o;
+  /* 6805.vhd:284:7  */
+  assign n3803_o = clken ? n3695_o : temp;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3804_q <= 16'b0001111111111110;
     else
-      n3774_q <= n3695_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3775_q <= 4'b0000;
+      n3804_q <= n3803_o;
+  /* 6805.vhd:284:7  */
+  assign n3805_o = clken ? n3668_o : mainfsm;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3806_q <= 4'b0000;
     else
-      n3775_q <= n3668_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3776_q <= 3'b011;
+      n3806_q <= n3805_o;
+  /* 6805.vhd:284:7  */
+  assign n3807_o = clken ? n3670_o : addrmux;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3808_q <= 3'b011;
     else
-      n3776_q <= n3670_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3777_q <= 4'b0000;
+      n3808_q <= n3807_o;
+  /* 6805.vhd:284:7  */
+  assign n3809_o = clken ? n3672_o : datamux;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3810_q <= 4'b0000;
     else
-      n3777_q <= n3672_o;
-  /* 6805.vhd:236:3  */
-  assign n3778_o = ~n84_o;
-  /* 6805.vhd:279:7  */
-  assign n3779_o = n3778_o ? n3673_o : opcode;
-  /* 6805.vhd:279:7  */
+      n3810_q <= n3809_o;
+  /* 6805.vhd:256:3  */
+  assign n3811_o = ~n100_o;
+  /* 6805.vhd:256:3  */
+  assign n3812_o = clken & n3811_o;
+  /* 6805.vhd:284:7  */
+  assign n3813_o = n3812_o ? n3673_o : opcode;
+  /* 6805.vhd:284:7  */
   always @(posedge clk)
-    n3780_q <= n3779_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3781_q <= 1'b1;
+    n3814_q <= n3813_o;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3815_q <= 1'b1;
     else
-      n3781_q <= extirq;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3782_q <= 1'b1;
+      n3815_q <= extirq;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3816_q <= 1'b1;
     else
-      n3782_q <= timerirq;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3783_q <= 1'b0;
+      n3816_q <= timerirq;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3817_q <= 1'b0;
     else
-      n3783_q <= n3674_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3784_q <= 1'b0;
+      n3817_q <= n3701_o;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3818_q <= 1'b0;
     else
-      n3784_q <= n3675_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3785_q <= 1'b0;
+      n3818_q <= n3702_o;
+  /* 6805.vhd:284:7  */
+  assign n3819_o = clken ? n3677_o : trace;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3820_q <= 1'b0;
     else
-      n3785_q <= n3677_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3786_q <= 1'b0;
+      n3820_q <= n3819_o;
+  /* 6805.vhd:284:7  */
+  assign n3821_o = clken ? n3679_o : trace_i;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3822_q <= 1'b0;
     else
-      n3786_q <= n3679_o;
-  /* 6805.vhd:236:3  */
-  assign n3787_o = ~n84_o;
-  /* 6805.vhd:279:7  */
-  assign n3788_o = n3787_o ? n3680_o : traceopcode;
-  /* 6805.vhd:279:7  */
+      n3822_q <= n3821_o;
+  /* 6805.vhd:256:3  */
+  assign n3823_o = ~n100_o;
+  /* 6805.vhd:256:3  */
+  assign n3824_o = clken & n3823_o;
+  /* 6805.vhd:284:7  */
+  assign n3825_o = n3824_o ? n3680_o : traceopcode;
+  /* 6805.vhd:284:7  */
   always @(posedge clk)
-    n3789_q <= n3788_o;
-  /* 6805.vhd:279:7  */
-  always @(posedge clk or posedge n84_o)
-    if (n84_o)
-      n3790_q <= 1'b1;
+    n3826_q <= n3825_o;
+  /* 6805.vhd:284:7  */
+  assign n3827_o = clken ? n3595_o : n3828_q;
+  /* 6805.vhd:284:7  */
+  always @(posedge clk or posedge n100_o)
+    if (n100_o)
+      n3828_q <= 1'b1;
     else
-      n3790_q <= n3595_o;
-  /* 6805.vhd:212:13  */
-  assign n3791_o = mask1[7:0];
-  /* 6805.vhd:209:3  */
-  assign n3792_o = mask1[15:8];
+      n3828_q <= n3827_o;
+  /* 6805.vhd:213:13  */
+  assign n3829_o = mask1[7:0];
+  /* 6805.vhd:210:3  */
+  assign n3830_o = mask1[15:8];
+  /* 6805.vhd:145:6  */
+  assign n3831_o = mask1[23:16];
   /* 6805.vhd:144:6  */
-  assign n3793_o = mask1[23:16];
-  /* 6805.vhd:143:6  */
-  assign n3794_o = mask1[31:24];
+  assign n3832_o = mask1[31:24];
+  /* 6805.vhd:142:6  */
+  assign n3833_o = mask1[39:32];
   /* 6805.vhd:141:6  */
-  assign n3795_o = mask1[39:32];
-  /* 6805.vhd:140:6  */
-  assign n3796_o = mask1[47:40];
-  /* 6805.vhd:279:7  */
-  assign n3797_o = mask1[55:48];
-  /* 6805.vhd:279:7  */
-  assign n3798_o = mask1[63:56];
-  /* 6805.vhd:931:37  */
-  assign n3799_o = n1965_o[1:0];
-  /* 6805.vhd:931:37  */
+  assign n3834_o = mask1[47:40];
+  /* 6805.vhd:284:7  */
+  assign n3835_o = mask1[55:48];
+  /* 6805.vhd:284:7  */
+  assign n3836_o = mask1[63:56];
+  /* 6805.vhd:937:37  */
+  assign n3837_o = n1965_o[1:0];
+  /* 6805.vhd:937:37  */
   always @*
-    case (n3799_o)
-      2'b00: n3800_o = n3791_o;
-      2'b01: n3800_o = n3792_o;
-      2'b10: n3800_o = n3793_o;
-      2'b11: n3800_o = n3794_o;
+    case (n3837_o)
+      2'b00: n3838_o = n3829_o;
+      2'b01: n3838_o = n3830_o;
+      2'b10: n3838_o = n3831_o;
+      2'b11: n3838_o = n3832_o;
     endcase
-  /* 6805.vhd:931:37  */
-  assign n3801_o = n1965_o[1:0];
-  /* 6805.vhd:931:37  */
+  /* 6805.vhd:937:37  */
+  assign n3839_o = n1965_o[1:0];
+  /* 6805.vhd:937:37  */
   always @*
-    case (n3801_o)
-      2'b00: n3802_o = n3795_o;
-      2'b01: n3802_o = n3796_o;
-      2'b10: n3802_o = n3797_o;
-      2'b11: n3802_o = n3798_o;
+    case (n3839_o)
+      2'b00: n3840_o = n3833_o;
+      2'b01: n3840_o = n3834_o;
+      2'b10: n3840_o = n3835_o;
+      2'b11: n3840_o = n3836_o;
     endcase
-  /* 6805.vhd:931:37  */
-  assign n3803_o = n1965_o[2];
-  /* 6805.vhd:931:37  */
-  assign n3804_o = n3803_o ? n3802_o : n3800_o;
-  /* 6805.vhd:931:37  */
-  assign n3805_o = mask1[7:0];
-  /* 6805.vhd:931:38  */
-  assign n3806_o = mask1[15:8];
-  /* 6805.vhd:928:13  */
-  assign n3807_o = mask1[23:16];
-  /* 6805.vhd:945:44  */
-  assign n3808_o = mask1[31:24];
-  /* 6805.vhd:943:44  */
-  assign n3809_o = mask1[39:32];
-  /* 6805.vhd:931:38  */
-  assign n3810_o = mask1[47:40];
-  /* 6805.vhd:303:13  */
-  assign n3811_o = mask1[55:48];
-  /* 6805.vhd:308:13  */
-  assign n3812_o = mask1[63:56];
-  /* 6805.vhd:943:43  */
-  assign n3813_o = n2026_o[1:0];
-  /* 6805.vhd:943:43  */
+  /* 6805.vhd:937:37  */
+  assign n3841_o = n1965_o[2];
+  /* 6805.vhd:937:37  */
+  assign n3842_o = n3841_o ? n3840_o : n3838_o;
+  /* 6805.vhd:937:37  */
+  assign n3843_o = mask1[7:0];
+  /* 6805.vhd:937:38  */
+  assign n3844_o = mask1[15:8];
+  /* 6805.vhd:284:7  */
+  assign n3845_o = mask1[23:16];
+  /* 6805.vhd:284:7  */
+  assign n3846_o = mask1[31:24];
+  /* 6805.vhd:284:7  */
+  assign n3847_o = mask1[39:32];
+  /* 6805.vhd:284:7  */
+  assign n3848_o = mask1[47:40];
+  /* 6805.vhd:284:7  */
+  assign n3849_o = mask1[55:48];
+  /* 6805.vhd:284:7  */
+  assign n3850_o = mask1[63:56];
+  /* 6805.vhd:949:43  */
+  assign n3851_o = n2026_o[1:0];
+  /* 6805.vhd:949:43  */
   always @*
-    case (n3813_o)
-      2'b00: n3814_o = n3805_o;
-      2'b01: n3814_o = n3806_o;
-      2'b10: n3814_o = n3807_o;
-      2'b11: n3814_o = n3808_o;
+    case (n3851_o)
+      2'b00: n3852_o = n3843_o;
+      2'b01: n3852_o = n3844_o;
+      2'b10: n3852_o = n3845_o;
+      2'b11: n3852_o = n3846_o;
     endcase
-  /* 6805.vhd:943:43  */
-  assign n3815_o = n2026_o[1:0];
-  /* 6805.vhd:943:43  */
+  /* 6805.vhd:949:43  */
+  assign n3853_o = n2026_o[1:0];
+  /* 6805.vhd:949:43  */
   always @*
-    case (n3815_o)
-      2'b00: n3816_o = n3809_o;
-      2'b01: n3816_o = n3810_o;
-      2'b10: n3816_o = n3811_o;
-      2'b11: n3816_o = n3812_o;
+    case (n3853_o)
+      2'b00: n3854_o = n3847_o;
+      2'b01: n3854_o = n3848_o;
+      2'b10: n3854_o = n3849_o;
+      2'b11: n3854_o = n3850_o;
     endcase
-  /* 6805.vhd:943:43  */
-  assign n3817_o = n2026_o[2];
-  /* 6805.vhd:943:43  */
-  assign n3818_o = n3817_o ? n3816_o : n3814_o;
-  /* 6805.vhd:943:43  */
-  assign n3819_o = mask0[7:0];
-  /* 6805.vhd:943:44  */
-  assign n3820_o = mask0[15:8];
-  /* 6805.vhd:240:5  */
-  assign n3821_o = mask0[23:16];
-  /* 6805.vhd:240:5  */
-  assign n3822_o = mask0[31:24];
-  /* 6805.vhd:240:5  */
-  assign n3823_o = mask0[39:32];
-  /* 6805.vhd:240:5  */
-  assign n3824_o = mask0[47:40];
-  /* 6805.vhd:240:5  */
-  assign n3825_o = mask0[55:48];
-  /* 6805.vhd:240:5  */
-  assign n3826_o = mask0[63:56];
-  /* 6805.vhd:945:43  */
-  assign n3827_o = n2033_o[1:0];
-  /* 6805.vhd:945:43  */
+  /* 6805.vhd:949:43  */
+  assign n3855_o = n2026_o[2];
+  /* 6805.vhd:949:43  */
+  assign n3856_o = n3855_o ? n3854_o : n3852_o;
+  /* 6805.vhd:949:43  */
+  assign n3857_o = mask0[7:0];
+  /* 6805.vhd:949:44  */
+  assign n3858_o = mask0[15:8];
+  /* 6805.vhd:284:7  */
+  assign n3859_o = mask0[23:16];
+  /* 6805.vhd:284:7  */
+  assign n3860_o = mask0[31:24];
+  /* 6805.vhd:284:7  */
+  assign n3861_o = mask0[39:32];
+  /* 6805.vhd:284:7  */
+  assign n3862_o = mask0[47:40];
+  /* 6805.vhd:284:7  */
+  assign n3863_o = mask0[55:48];
+  /* 6805.vhd:297:9  */
+  assign n3864_o = mask0[63:56];
+  /* 6805.vhd:951:43  */
+  assign n3865_o = n2033_o[1:0];
+  /* 6805.vhd:951:43  */
   always @*
-    case (n3827_o)
-      2'b00: n3828_o = n3819_o;
-      2'b01: n3828_o = n3820_o;
-      2'b10: n3828_o = n3821_o;
-      2'b11: n3828_o = n3822_o;
+    case (n3865_o)
+      2'b00: n3866_o = n3857_o;
+      2'b01: n3866_o = n3858_o;
+      2'b10: n3866_o = n3859_o;
+      2'b11: n3866_o = n3860_o;
     endcase
-  /* 6805.vhd:945:43  */
-  assign n3829_o = n2033_o[1:0];
-  /* 6805.vhd:945:43  */
+  /* 6805.vhd:951:43  */
+  assign n3867_o = n2033_o[1:0];
+  /* 6805.vhd:951:43  */
   always @*
-    case (n3829_o)
-      2'b00: n3830_o = n3823_o;
-      2'b01: n3830_o = n3824_o;
-      2'b10: n3830_o = n3825_o;
-      2'b11: n3830_o = n3826_o;
+    case (n3867_o)
+      2'b00: n3868_o = n3861_o;
+      2'b01: n3868_o = n3862_o;
+      2'b10: n3868_o = n3863_o;
+      2'b11: n3868_o = n3864_o;
     endcase
-  /* 6805.vhd:945:43  */
-  assign n3831_o = n2033_o[2];
-  /* 6805.vhd:945:43  */
-  assign n3832_o = n3831_o ? n3830_o : n3828_o;
+  /* 6805.vhd:951:43  */
+  assign n3869_o = n2033_o[2];
+  /* 6805.vhd:951:43  */
+  assign n3870_o = n3869_o ? n3868_o : n3866_o;
 endmodule
 

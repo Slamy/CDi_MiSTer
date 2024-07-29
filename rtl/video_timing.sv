@@ -19,7 +19,7 @@ module video_timing (
     output bit new_pixel
 );
 
-    localparam bit [12:0] ClksPerCycle = 16 * 2;
+    localparam bit [12:0] ClksPerCycle = 16;
 
     // horizontal timing according to Table 5-4
     bit [12:0] h_total;  // A in datasheet
@@ -113,7 +113,7 @@ module video_timing (
     int pixels_per_line = 0;
     always_ff @(posedge clk) begin
         if (new_line) begin
-            $display(pixels_per_line);
+            //$display(pixels_per_line);
             pixels_per_line <= 0;
         end else if (new_pixel) begin
             pixels_per_line <= pixels_per_line + 1;

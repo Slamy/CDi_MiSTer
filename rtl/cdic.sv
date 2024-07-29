@@ -4,43 +4,53 @@
 
 module cdic (
     input clk,
+    input reset,
     input [23:1] address,
     input [15:0] din,
     output bit [15:0] dout,
     input uds,
     input lds,
     input write_strobe,
-    input cs
+    input cs,
+    output bit bus_ack
 );
+
+    // most info is from https://github.com/cdifan/cdichips/blob/master/ims66490cdic.md
+    // or MAME
+    // CDIC memory should be from 0x0000 ot 0x3C7F according to the low level test
+    // All access must be word aligned according to ims66490cdic.md
 
     // 16 kB of CDIC memory
     bit [15:0] ram[8192];
+    bit [15:0] ram_readout;
 
     wire access = cs && uds && lds;
-    bit access_q = 1;
+    bit access_q = 0;
 
-    // All access must be word aligned according to
-    // https://github.com/cdifan/cdichips/blob/master/ims66490cdic.md
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            bus_ack <= 0;
+        end else begin
+            if (address[13:1] <= 13'h1E3F && access && write_strobe && !bus_ack) begin
+                ram[address[13:1]] <= din;
+                $display("CDIC Write RAM %x %x", address[13:1], din);
+            end else begin
+                ram_readout <= ram[address[13:1]];
+
+                if (access && address[13:1] <= 13'h1E3F && bus_ack)
+                    $display("CDIC Read RAM %x %x", address[13:1], dout);
+            end
+
+            if (bus_ack) bus_ack <= 0;
+            else if (access) begin
+                bus_ack <= 1;
+            end
+        end
+    end
+
+
     always_ff @(posedge clk) begin
         access_q <= access;
-
-        if (address[13:1] < 13'h1E00) begin  // Is it before register area?
-            case (address[13:1])
-                default: begin
-                    if (access && cs && write_strobe) begin
-                        $display("CDIC Write RAM %x %x", address[13:1], din);
-
-                        ram[address[13:1]] <= din;
-                    end else if (access && cs && !write_strobe) begin
-                        $display("CDIC Read RAM %x %x", address[13:1], dout);
-                    end
-                end
-            endcase
-        end else if (cs) begin
-            $display("CDIC %x", address[13:1]);
-
-        end
-
     end
 
     always_comb begin
@@ -66,10 +76,7 @@ module cdic (
                 dout = 16'h0;
             end
             default: begin
-                // TODO fix this. Must be clocked for proper block ram
-`ifdef VERILATOR
-                dout = ram[address[13:1]];
-`endif
+                dout = ram_readout;
             end
         endcase
     end

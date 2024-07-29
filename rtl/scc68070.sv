@@ -20,7 +20,11 @@ module scc68070 (
     input in5,  // decoded interrupt priority
     input [15:0] data_in,
     output [15:0] data_out,
-    output [23:1] addr
+    output [23:1] addr,
+    output uart_tx,
+    input uart_rx,
+    input debug_uart_loopback,
+    input debug_uart_fake_space
 );
 
     wire nResetOut;
@@ -72,7 +76,7 @@ module scc68070 (
 
 
 
-    bit [15:0] internal_data_in;
+    (* keep *) bit [15:0] internal_data_in;
 
     // UART is from 0x1008 to 0x100D
     wire soc_periph = internal_addr[31];
@@ -166,8 +170,17 @@ module scc68070 (
     } uart_status_register  /*verilator public_flat_rw*/;
 
     bit [7:0] uart_receive_holding_register  /*verilator public_flat_rw*/ = 0;
+    bit uart_receive_holding_valid = 0;
     bit [7:0] uart_transmit_holding_register  /*verilator public_flat_rd*/ = 0;
+    bit uart_transmit_holding_valid  /*verilator public_flat_rw*/ = 0;
+    wire uart_tx_data_ready;
 
+    always_comb begin
+        uart_status_register = 0;
+        uart_status_register.rx_rdy = uart_receive_holding_valid;
+        uart_status_register.tx_rdy = !uart_transmit_holding_valid;
+        uart_status_register.tx_emt = uart_tx_data_ready;
+    end
 
     bit [15:0] timer_reload_register  /*verilator public_flat_rd*/;
     bit [15:0] timer0  /*verilator public_flat_rd*/;
@@ -175,20 +188,23 @@ module scc68070 (
     bit [15:0] timer2;
 
     always_ff @(posedge clk) begin
-        if (timer0 == 16'hffff) begin
+        if (reset) begin
+            timer_status_register.t0_ov <= 0;
+        end else if (timer0 == 16'hffff) begin
             timer_status_register.t0_ov <= 1;
             if (timer_status_register.t0_ov == 0) $display("Timer 0 Overflow On!");
 
         end else if (timer_cs && internal_uds && write_strobe && addr[3:1] == 3'd0 && data_out[15]) begin
             timer_status_register.t0_ov <= 0;
             if (timer_status_register.t0_ov == 1) $display("Timer 0 Overflow Off!");
-
         end
     end
 
     always_ff @(posedge clk) begin
         // TODO ensure correct frequency
-        if (timer0 == 16'hffff) begin
+        if (reset) begin
+            timer0 <= 0;
+        end else if (timer0 == 16'hffff) begin
             timer0 <= timer_reload_register;
             // $display("Reload Timer 0 with %x", timer_reload_register);
         end else if (timer_cs && (internal_lds || internal_uds) && write_strobe && addr[3:1] == 3'd2) begin
@@ -197,11 +213,51 @@ module scc68070 (
         end else timer0 <= timer0 + 1;
     end
 
-    always_ff @(posedge clk) begin
+    bit debug_flag = 0;
+    bit debug_print_active = 0;
 
-        if (lir_cs && internal_lds && write_strobe) begin
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            lir <= 0;
+        end else if (lir_cs && internal_lds && write_strobe) begin
             lir.int2n_ipl <= data_out[2:0];
             lir.int1n_ipl <= data_out[6:4];
+        end
+
+        //if (internal_addr == 32'h00400c0e) $display("After read chann");
+
+        if (!skipFetch && bus_ack && internal_addr == 32'h00404b02 && (internal_lds || internal_uds))begin
+            $display("** Mark 6");
+        end
+        if (!skipFetch && bus_ack && internal_addr == 32'h00404aa0 && (internal_lds || internal_uds))begin
+            $display("** Mark 5");
+        end
+        if (!skipFetch && bus_ack && internal_addr == 32'h00404a46 && (internal_lds || internal_uds))begin
+            $display("** Mark 4");
+        end
+        if (!skipFetch && bus_ack && internal_addr == 32'h004048f4 && (internal_lds || internal_uds))begin
+            $display("** Mark 2");
+        end
+        if (!skipFetch && bus_ack && internal_addr == 32'h00404902 && (internal_lds || internal_uds))begin
+            $display("** Mark 3");
+        end
+        if (!skipFetch && bus_ack && internal_addr == 32'h00404874 && (internal_lds || internal_uds))begin
+            $display("** Mark 1");
+            //debug_print_active <= 1;
+        end
+        if (!skipFetch && bus_ack && internal_addr == 32'h0040469c && (internal_lds || internal_uds))begin
+            $display("** Mark 0");
+        end
+        //if (internal_addr == 32'h004010d4) debug_print_active <= 1;
+
+        if (debug_print_active) begin
+            if (!skipFetch && bus_ack && !write_strobe && !reset && (internal_lds || internal_uds)) begin
+                $display("CPU Read Access %x %x", internal_addr, internal_data_in);
+            end
+
+            if (!skipFetch && bus_ack && write_strobe && (internal_lds || internal_uds)) begin
+                $display("CPU Write Access %x %x", internal_addr, data_out);
+            end
         end
 
         if (lir_cs && (internal_lds || internal_uds)) begin
@@ -261,14 +317,10 @@ module scc68070 (
         if (uart_cs && internal_lds && write_strobe) begin
             $display("UART Write %x %x %x", addr[3:1], data_out[7:0], {addr, 1'b0});
 
-            uart_status_register.tx_emt <= 1;  // TODO remove again
-            uart_status_register.tx_rdy <= 1;  // TODO remoe again
-
             case (addr[3:1])
                 3'd0: uart_mode_register <= data_out[7:0];
                 3'd4: begin
-                    uart_transmit_holding_register <= data_out[7:0];
-                    $display("UART char %c", data_out[7:0]);
+                    //$display("UART char %c", data_out[7:0]);
                 end
                 default: ;
             endcase
@@ -276,20 +328,86 @@ module scc68070 (
 
         if (uart_cs && internal_lds && !write_strobe) begin
             //$display("UART Read %x %x", addr[3:1], internal_data_in[7:0]);
-
-            if (addr[3:1] == 3'd5) begin
-                // Reset Receive
-                uart_status_register.rx_rdy <= 0;
-            end
         end
-
     end
+
+    bit [7:0] uart_rx_data  /*verilator public_flat_rw*/;
+    bit uart_rx_data_valid  /*verilator public_flat_rw*/;
+
+    bit [17:0] debug_uart_fake_space_cnt = 0;
+    bit debug_uart_fake_space_timed = 0;
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            debug_uart_fake_space_cnt <= 0;
+        end else if (debug_uart_fake_space_cnt < 40000) begin
+            debug_uart_fake_space_cnt   <= debug_uart_fake_space_cnt + 1;
+            debug_uart_fake_space_timed <= debug_uart_fake_space;
+        end else begin
+            debug_uart_fake_space_timed <= 0;
+        end
+    end
+
+`ifdef VERILATOR
+    assign uart_tx_data_ready = 1;
+`else
+    uart_rx #(
+        .CLK_FRE  (30),
+        .BAUD_RATE(115200)
+    ) uart_rx_inst (
+        .clk          (clk),
+        .rst_n        (!reset),
+        .rx_data      (uart_rx_data),
+        .rx_data_valid(uart_rx_data_valid),
+        .rx_data_ready(1'b1),                // always ready
+        .rx_pin       (uart_rx)
+    );
+
+    uart_tx #(
+        .CLK_FRE  (30),
+        .BAUD_RATE(115200)
+    ) uart_tx_inst (
+        .clk(clk),
+        .rst_n(!reset),
+        .tx_data(debug_uart_loopback ? uart_rx_data : uart_transmit_holding_register),
+        .tx_data_valid(debug_uart_loopback ? uart_rx_data_valid : (uart_transmit_holding_valid && uart_tx_data_ready)),
+        .tx_data_ready(uart_tx_data_ready),
+        .tx_pin(uart_tx)
+    );
+`endif
+
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            uart_receive_holding_register <= 0;
+            uart_receive_holding_valid <= 0;
+            uart_transmit_holding_valid <= 0;
+            uart_transmit_holding_register <= 0;
+        end else begin
+            if (debug_uart_fake_space_timed) begin
+                uart_receive_holding_register <= 8'h20;
+                uart_receive_holding_valid <= 1;
+            end else if (uart_rx_data_valid) begin
+                uart_receive_holding_register <= uart_rx_data;
+                uart_receive_holding_valid <= 1;
+            end else if (uart_cs && addr[3:1] == 3'd5 && internal_lds && !write_strobe) begin
+                uart_receive_holding_valid <= 0;
+            end
+
+            if (uart_cs && addr[3:1] == 3'd4 && internal_lds && write_strobe) begin
+                uart_transmit_holding_register <= data_out[7:0];
+                uart_transmit_holding_valid <= 1;
+            end else if (uart_transmit_holding_valid && uart_tx_data_ready)
+                uart_transmit_holding_valid <= 0;
+        end
+    end
+
+
 
     always_comb begin
         internal_data_in = data_in;
-        clkena_in = bus_ack || skipFetch;
+        clkena_in = bus_ack || skipFetch || (!internal_lds && !internal_uds);
 
         if (internal_addr == 32'hffff_fffc) begin
+            // On-Chip Autovector for Timer
             internal_data_in = 16'd62;
         end
 
@@ -321,7 +439,5 @@ module scc68070 (
 
             endcase
         end
-
-
     end
 endmodule

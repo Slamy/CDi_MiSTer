@@ -134,6 +134,7 @@ USE ieee.numeric_std.all;
 ENTITY UR6805 IS
    PORT(
      clk     : in  std_logic;
+     clken     : in  std_logic;
      rst     : in  std_logic;
      extirq     : in  std_logic;
      timerirq     : in  std_logic;
@@ -233,6 +234,25 @@ begin
              traceOpCode;
 
   state <= mainFSM;
+  
+  mask0(0) <= "11111110";
+  mask0(1) <= "11111101";
+  mask0(2) <= "11111011";
+  mask0(3) <= "11110111";
+  mask0(4) <= "11101111";
+  mask0(5) <= "11011111";
+  mask0(6) <= "10111111";
+  mask0(7) <= "01111111";
+  mask1(0) <= "00000001";
+  mask1(1) <= "00000010";
+  mask1(2) <= "00000100";
+  mask1(3) <= "00001000";
+  mask1(4) <= "00010000";
+  mask1(5) <= "00100000";
+  mask1(6) <= "01000000";
+  mask1(7) <= "10000000";
+  
+  
   process(clk, rst)
     variable tres : std_logic_vector(7 downto 0);
     variable lres : std_logic_vector(15 downto 0);
@@ -240,22 +260,7 @@ begin
     if rst = '0' then
       trace    <= '0';
       trace_i  <= '0';
-      mask0(0) <= "11111110";
-      mask0(1) <= "11111101";
-      mask0(2) <= "11111011";
-      mask0(3) <= "11110111";
-      mask0(4) <= "11101111";
-      mask0(5) <= "11011111";
-      mask0(6) <= "10111111";
-      mask0(7) <= "01111111";
-      mask1(0) <= "00000001";
-      mask1(1) <= "00000010";
-      mask1(2) <= "00000100";
-      mask1(3) <= "00001000";
-      mask1(4) <= "00010000";
-      mask1(5) <= "00100000";
-      mask1(6) <= "01000000";
-      mask1(7) <= "10000000";
+
       wr <= CPUread;
       flagH <= '0';
       flagI <= '1'; -- irq disabled
@@ -288,6 +293,7 @@ begin
           timerIrqRequest <= '1';
         end if;
 
+      if clken = '1' then
         case mainFSM is
           when "0000" => --############# reset fetch PCH from 1FFE
             regPC(15 downto 8) <= datain;
@@ -1585,6 +1591,7 @@ begin
           when others =>
             mainFSM <= "0000";
         end case; -- mainFSM
+      end if;
       end if;
     end if;
   end process;

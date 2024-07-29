@@ -13,51 +13,47 @@ module mcd212 (
     input cpu_write_strobe,
     output bit cpu_bus_ack,
     input cs,
-    output csrom,
 
     output [7:0] r,
     output [7:0] g,
     output [7:0] b,
-    output hsync,
-    output vsync,
-    output hblank,
-    output vblank
+    output       hsync,
+    output       vsync,
+    output       hblank,
+    output       vblank,
+
+    output bit [24:0] sdram_addr,
+    output bit        sdram_rd,
+    output bit        sdram_wr,
+    output bit        sdram_word,
+    output bit [15:0] sdram_din,
+    input      [15:0] sdram_dout,
+    input             sdram_busy
 );
 
-    // TODO remove this
-`ifdef VERILATOR
-    bit [15:0] testram[512*1024]  /*verilator public_flat_rw*/;
-`else
-    bit [15:0] testram[16]  /*verilator public_flat_rw*/;
-`endif
-
+    // Memory Swapping according to chapter 3.4
+    // of MCD212 datasheet.
+    bit [3:0] early_rom_cnt = 0;
+    wire cs_early_rom = early_rom_cnt < 4;
+    always_ff @(posedge clk) begin
+        // first 4 memory accesses must be mapped to ROM
+        if (reset) begin
+            early_rom_cnt <= 0;
+        end else if (cs && cpu_uds && cs_early_rom && cpu_bus_ack) begin
+            early_rom_cnt <= early_rom_cnt + 1;
+        end
+    end
 
 
     wire [22:0] cpu_addressb = {cpu_address[22:1], 1'b0};
     // implementation of memory map according to MCD212 datasheet
-    wire cs_ram = cpu_addressb <= 23'h3fffff && cs;  // 4MB
+    wire cs_ram = cpu_addressb <= 23'h3fffff && cs && !cs_early_rom;  // 4MB
     wire cs_rom = cpu_addressb >= 23'h400000 && cpu_addressb <= 23'h4ffbff && cs;
     wire cs_system_io = cpu_addressb >= 23'h4ffc00 && cpu_addressb <= 23'h4fffdf && cs;
     wire cs_channel2 = cpu_addressb >= 23'h4fffe0 && cpu_addressb <= 23'h4fffef && cs;
     wire cs_channel1 = cpu_addressb >= 23'h4ffff0 && cpu_addressb <= 23'h4fffff && cs;
 
-    // Memory Swapping according to chapter 3.4
-    // of MCD212 datasheet.
-    bit [3:0] early_rom_cnt = 0;
-    wire cs_early_rom = early_rom_cnt <= 10;
-    always @(posedge clk) begin
-        // first 4 memory accesses must be mapped to ROM
-        if (reset) begin
-            early_rom_cnt <= 0;
-        end else if (cs && cpu_uds && cs_early_rom) begin
-            early_rom_cnt <= early_rom_cnt + 1;
-        end
-    end
-
-    assign csrom = (cs_rom || cs_early_rom) && cs;
-
-    //wire [9:0] ras = {cpu_address[19], cpu_address[10], cpu_address[18:11]};
-    //wire [9:0] cas = {cpu_address[10:1]};
+    wire cs_rom_fused = (cs_rom || cs_early_rom) && cs;
 
     // Bit 18 is the Bank selection for TD=0
     // CAS1 if A18=0, CAS2 if A18=1
@@ -66,56 +62,124 @@ module mcd212 (
     bit cs_q = 0;
     bit cpu_lds_q = 0;
     bit cpu_uds_q = 0;
-
+    bit sdram_busy_q = 0;
     bit parity = 0;
-    bit display_active = 0;
+    bit sdram_rd_q;
+    bit sdram_wr_q;
 
-    bit [7:0] tempcnt = 0;
+    wire sdram_access = (cs_ram || cs_rom_fused) && (cpu_uds || cpu_lds);
+    wire sdram_refresh_request;
+    bit [24:0] last_read_sdram_addr;
 
+    typedef enum {
+        REFRESH,  // most important
+        VIDEO0,
+        VIDEO1,
+        CPU       // least important
+    } e_arbit_target;
+
+    // must only be changed if sdram_busy == false
+    e_arbit_target sdram_owner;
+    e_arbit_target sdram_owner_q;
+    e_arbit_target sdram_owner_next;
+
+`ifdef VERILATOR
+    // add a check to assert that sdram_owner is never changed during memory access
     always_ff @(posedge clk) begin
-        tempcnt <= tempcnt + 1;
-        display_active <= tempcnt[7];
+        if (sdram_busy) assert (sdram_owner_q == sdram_owner);
     end
-    bit ram_read_access_q = 0;
-    wire ram_read_access = !cpu_write_strobe && cs_ram && (cpu_uds || cpu_lds) && !ram_read_access_q;
+`endif
 
     always_comb begin
-        cpu_bus_ack = 1;
+        sdram_owner_next = CPU;
+        if (sdram_refresh_request) sdram_owner_next = REFRESH;
 
-        if (ram_read_access) cpu_bus_ack = 0;
+        if (sdram_busy) sdram_owner = sdram_owner_q;
+        else sdram_owner = sdram_owner_next;
     end
 
-    always_ff @(posedge clk) begin
-        cs_q <= cs;
-        cpu_uds_q <= cpu_uds;
-        cpu_lds_q <= cpu_lds;
-        ram_read_access_q <= ram_read_access;
+    always_comb begin
+        cpu_dout = 0;
 
-        if (cs_ram) begin
-            if (cpu_uds && cpu_write_strobe) begin
-                testram[ram_address[19:1]][15:8] <= cpu_din[15:8];
-            end
-            if (cpu_lds && cpu_write_strobe) begin
-                testram[ram_address[19:1]][7:0] <= cpu_din[7:0];
-            end
+        // per default everything is acked but not SDRAM
+        cpu_bus_ack = !sdram_access;
+        sdram_rd = 0;
+        sdram_wr = 0;
+        sdram_word = 0;
+        sdram_addr = 0;
 
-            if (!cpu_write_strobe) begin
-                cpu_dout <= testram[ram_address[19:1]];
-            end
+        if (!reset) begin
+            case (sdram_owner)
+                REFRESH: begin
+                    // keep reading the same address to force auto refresh
+                    sdram_addr = last_read_sdram_addr;
+                    if (!sdram_busy) sdram_rd = 1;
+                end
+                CPU: begin
+                    if (sdram_access) begin
+                        if (cs_rom_fused) begin
+                            sdram_word = 1;
+                            sdram_addr[24:1] = {3'b001, cpu_address[21:1]};
+                            sdram_addr[0] = 1'b0;
+                            sdram_rd = !sdram_busy && !sdram_busy_q;
+                            sdram_wr = 1'b0;
+                        end else begin
+                            sdram_addr[24:1] = {5'b0, ram_address[19:1]};
+                            sdram_addr[0] = cpu_write_strobe ? cpu_lds && !cpu_uds : 1'b0;  // only active on odd byte accesses
+                            sdram_word = (cpu_lds && cpu_uds) || !cpu_write_strobe;
+                            sdram_rd = cs_ram && !cpu_write_strobe && !sdram_busy && !sdram_busy_q;
+                            sdram_wr = cs_ram && cpu_write_strobe && !sdram_busy && !sdram_busy_q;
+                        end
+
+                    end
+                end
+            endcase
+
+            case (sdram_owner_q)
+                CPU: begin
+                    if (sdram_access) begin
+                        cpu_bus_ack = !sdram_busy && sdram_busy_q;
+                    end
+                end
+            endcase
+        end
+        // only the CPU writes to SDRAM
+        sdram_din = cpu_din;
+
+        if (cs_ram || cs_rom_fused) begin
+            cpu_dout = sdram_dout;
         end else if (cs_channel1) begin
             case (cpu_addressb[7:0])
                 8'hf0: begin
-                    cpu_dout <= {8'h0, display_active, 1'b0, parity, 5'b0};
-                    //cpu_dout <= {display_active, 1'b0, parity, 5'b0, display_active, 1'b0, parity, 5'b0};
+                    cpu_dout = {8'h0, !vblank, 1'b0, parity, 5'b0};
                 end
-                default: cpu_dout <= 16'h0;
+                default: cpu_dout = 16'h0;
             endcase
         end else if (cs_channel2) begin
             case (cpu_addressb[7:0])
-                default: cpu_dout <= 16'h0;
+                default: cpu_dout = 16'h0;
             endcase
         end
+    end
 
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            cs_q <= 0;
+            cpu_uds_q <= 0;
+            cpu_lds_q <= 0;
+            sdram_busy_q <= 0;
+            sdram_owner_q <= CPU;
+        end else begin
+            cs_q <= cs;
+            cpu_uds_q <= cpu_uds;
+            cpu_lds_q <= cpu_lds;
+            sdram_busy_q <= sdram_busy;
+            sdram_owner_q <= sdram_owner;
+            sdram_wr_q <= sdram_wr;
+            sdram_rd_q <= sdram_rd;
+        end
+
+        if (sdram_rd) last_read_sdram_addr <= sdram_addr;
         /*
         if ((cpu_lds || cpu_uds) && cs_ram && !cpu_write_strobe && cpu_bus_ack) 
             $display("Read DRAM %x %x", cpu_addressb, cpu_dout);
@@ -145,6 +209,43 @@ module mcd212 (
             $display("Write Sys %x %x", cpu_addressb, cpu_din);
     end
 
+    bit sm = 0;
+    bit cf = 1;
+    bit st = 0;
+    bit fd = 0;
+    bit cm = 0;
+    bit [8:0] video_y;
+    bit [12:0] video_x;
+    bit new_frame;
+    bit new_line;
+    bit new_pixel;
+
+    // we should have 8-9 refresh cycles per horizontal line
+    // to fulfill 8192 refreshes per 64ms 
+    assign sdram_refresh_request = video_x < 80;
+
+    video_timing vt (
+        .clk,
+        .reset,
+        .sm(sm),
+        .cf(cf),
+        .st(st),
+        .cm(cm),
+        .fd(fd),
+        .video_y,
+        .video_x,
+        .hsync(hsync),
+        .vsync(vsync),
+        .hblank(hblank),
+        .vblank(vblank),
+        .new_frame,
+        .new_line,
+        .new_pixel
+    );
+
+
+`ifndef VERILATOR
+
     typedef struct packed {
         bit [5:0] r;
         bit [5:0] g;
@@ -165,36 +266,8 @@ module mcd212 (
     clut_entry trans_color_plane_b;
     clut_entry mask_color_plane_a;
     clut_entry mask_color_plane_b;
+    clut_entry clut_out;
 
-    bit sm = 0;
-    bit cf = 1;
-    bit st = 0;
-    bit fd = 0;
-    bit cm = 0;
-    bit [8:0] video_y;
-    bit [12:0] video_x;
-    bit new_frame;
-    bit new_line;
-    bit new_pixel;
-
-    video_timing vt (
-        .clk,
-        .reset,
-        .sm(sm),
-        .cf(cf),
-        .st(st),
-        .cm(cm),
-        .fd(fd),
-        .video_y,
-        .video_x,
-        .hsync(hsync),
-        .vsync(vsync),
-        .hblank(hblank),
-        .vblank(vblank),
-        .new_frame,
-        .new_line,
-        .new_pixel
-    );
 
     wire ica0_reset = new_frame;
     bit [21:0] ica0_adr;
@@ -286,12 +359,14 @@ module mcd212 (
 
         if (new_line) synchronized_pixel <= 0;
         else if (rle_pixel_write && rle_pixel_strobe) synchronized_pixel <= rle_pixel;
+
+        clut_out <= clut[synchronized_pixel];
     end
 
 
-    assign r = {clut[synchronized_pixel].r, 2'b00};
-    assign g = {clut[synchronized_pixel].g, 2'b00};
-    assign b = {clut[synchronized_pixel].b, 2'b00};
+    assign r = {clut_out.r, 2'b00};
+    assign g = {clut_out.g, 2'b00};
+    assign b = {clut_out.b, 2'b00};
     //assign b =  (rle_pixel_write && rle_pixel_strobe)  ? 255 : 0;
 
     /*
@@ -305,7 +380,6 @@ module mcd212 (
     always_ff @(posedge clk) begin
         //file0_din <= testram[file0_adr[19:1]];
         file0_din <= videotestram[file0_adr[19:1]-484208/2];
-
 
         if (file0_bus_ack) file0_bus_ack <= 0;
         else file0_bus_ack <= file0_as;
@@ -1013,7 +1087,7 @@ module mcd212 (
                     // Cursor Pattern
                     cursor[register_data[19:16]] <= register_data[15:0];
 
-                    $display("Cursor %x %b", register_data[19:16], register_data[15:0]);
+                    // $display("Cursor %x %b", register_data[19:16], register_data[15:0]);
                 end
 
                 7'h58: begin
@@ -1026,21 +1100,25 @@ module mcd212 (
                     // Weight Factor for Plane A
                 end
                 default: begin
+                    /*
                     if (register_adr >= 7'h40) begin
                         $display("Ignored %x", register_adr);
                     end
+                    */
                 end
             endcase
 
             if (register_adr[6:3] == 4'b1010) begin
-                $display("Region %d %b", register_adr[2:0], register_data);
+                //$display("Region %d %b", register_adr[2:0], register_data);
                 region_control[register_adr[2:0]] <= {register_data[23:20], register_data[16:0]};
             end
 
             if (register_adr <= 7'h3f) begin
                 // CLUT Color 0 to 63
+                /*
                 $display("CLUT  %d  %d %d %d", {clut_bank, register_adr[5:0]},
                          register_data[23:18], register_data[15:10], register_data[7:2]);
+                         */
                 clut[{
                     clut_bank, register_adr[5:0]
                 }] <= {
@@ -1049,5 +1127,7 @@ module mcd212 (
             end
         end
     end
+`endif
+
 endmodule
 

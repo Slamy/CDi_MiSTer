@@ -22,3 +22,13 @@ I assume the ATTEX limits the DRAM to 0x27fffe as these do now follow.
 0x400000 to 0x4ffbff    ROM but only 512kB so it ends 0x80000
 0x4ffc00 to 0x4fffdf    MCD212 SystemIO (is this even used? at least not mentioned in MAME)
 0x4fffe0 to 0x4fffff    MCD212 according to MAME, channels 1+2 according to datasheet
+
+
+## Auto refresh
+
+According to the datasheet of the SDRAM it is required to perform 8192 auto refresh cycles within 64ms.
+The CD-i connected to a TV has 64µs per scanline. This is standard for PAL and NTSC. This would indicate
+that 8-9 refresh cycles are required per scanline.
+
+Source: AllianceMemory_512M_SDRAM_Bdie_AS4C32M16SB_7TXN_6T-1826888.pdf
+
