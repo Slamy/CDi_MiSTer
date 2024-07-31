@@ -107,13 +107,14 @@ module video_timing (
         new_line <= video_x == 0;
         hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
         vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
-        new_pixel <= (cm ? video_x[1:0] == 0 : video_x[2:0] == 0) && !hblank && !vblank;
     end
+
+    assign new_pixel = (cm ? video_x[0] == 1 : video_x[1:0] == 1) && !hblank && !vblank;
 
     int pixels_per_line = 0;
     always_ff @(posedge clk) begin
         if (new_line) begin
-            //$display(pixels_per_line);
+            $display(pixels_per_line);
             pixels_per_line <= 0;
         end else if (new_pixel) begin
             pixels_per_line <= pixels_per_line + 1;

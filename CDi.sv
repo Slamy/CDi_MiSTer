@@ -319,6 +319,7 @@ module emu (
     bit [25:0] sdram_real_addr;
     initial begin
         $readmemh("cdi200.mem", rom);
+        //$readmemh("ramdump.mem", ram);
     end
 
     always_comb begin
@@ -409,8 +410,8 @@ module emu (
     assign VGA_DE = ~(HBlank | VBlank);
     assign VGA_HS = HSync;
     assign VGA_VS = VSync;
-    assign VGA_R = UART_RXD ? r : 0;
-    assign VGA_G = UART_TXD ? g : 0;
+    assign VGA_R = r;
+    assign VGA_G = g;
     assign VGA_B = b;
 
     reg [26:0] act_cnt;

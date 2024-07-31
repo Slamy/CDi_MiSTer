@@ -20,10 +20,11 @@ volatile sig_atomic_t status = 0;
 static void catch_function(int signo) {
     status = signo;
 }
-const int width = 120 * 16 * 2;
+const int width = 120 * 16;
 const int height = 600;
+const int size = width * height * 3;
 
-uint8_t output_image[width * height * 3] = {0};
+uint8_t output_image[size] = {0};
 
 void write_png_file(const char *filename) {
     int y;
@@ -79,7 +80,7 @@ void clock(VerilatedVcdC &m_trace, Vemu &dut) {
     }
 }
 
-void loadfile(VerilatedVcdC &m_trace, Vemu &dut){
+void loadfile(VerilatedVcdC &m_trace, Vemu &dut) {
 
     FILE *f = fopen("68ktest.bin", "rb");
     assert(f);
@@ -96,7 +97,7 @@ void loadfile(VerilatedVcdC &m_trace, Vemu &dut){
         clock(m_trace, dut);
         dut.rootp->emu__DOT__ioctl_wr = 0;
 
-       	// make some clocks to avoid asking for busy
+        // make some clocks to avoid asking for busy
         clock(m_trace, dut);
         clock(m_trace, dut);
         clock(m_trace, dut);
@@ -112,9 +113,21 @@ void loadfile(VerilatedVcdC &m_trace, Vemu &dut){
 
 void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
     dut.eval();
-    // dut.rootp->fx68k_tb__DOT__resetcnt = 0x7FFF8;
     kDoTrace = false;
     dut.rootp->emu__DOT__debug_uart_fake_space = false;
+
+    FILE *f = fopen("ramdump.bin", "rb");
+    assert(f);
+    fread(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
+
+    /*
+        fread(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256, f);
+    fread(&dut.rootp->emu__DOT__ram[2 * 1024 * 128], 1, 1024 * 256, f);
+    fread(&dut.rootp->emu__DOT__ram[1 * 1024 * 128], 1, 1024 * 256, f);
+    fread(&dut.rootp->emu__DOT__ram[3 * 1024 * 128], 1, 1024 * 256, f);
+*/
+    // 0x7FFB0  0xCD04 0xC1B9
+    fclose(f);
 
     dut.RESET = 1;
     dut.UART_RXD = 1;
@@ -123,116 +136,53 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
         clock(m_trace, dut);
     }
 
-   //loadfile(m_trace, dut);
+    // loadfile(m_trace, dut);
     dut.RESET = 0;
 
-    // for (int y = 0; y < 1880000; y++) {
-    for (int y = 0;; y++) {
+    for (int y = 0; y < 780000; y++) {
+        // for (int y = 0;; y++) {
         clock(m_trace, dut);
 
         if ((y % 10000) == 0) {
             printf("%d\n", y);
         }
 
+        static int output_index = 0;
+        // if (dut.rootp->fx68k_tb__DOT__mcd212_inst__DOT__rle_pixel_strobe) {
+        // printf("%d %d\n",(output_index/3) % 384,dut.rootp->fx68k_tb__DOT__mcd212_inst__DOT__rle_pixel);
+
+        if (output_index < size - 6) {
+            if (dut.VGA_DE) {
+                output_image[output_index++] = dut.VGA_R;
+                output_image[output_index++] = dut.VGA_G;
+                output_image[output_index++] = dut.VGA_B;
+            } else {
+                output_image[output_index++] = kDoTrace ? 80 : 10;
+                output_image[output_index++] = 10;
+                output_image[output_index++] = 10;
+            }
+        }
+
+        if (y == 43000)
+            kDoTrace = true;
+
+        if (y == 53000)
+            kDoTrace = false;
+
+        if (y == 640000)
+            kDoTrace = true;
+
+        if (y == 670000)
+            kDoTrace = false;
+
         static uint32_t pc = 0;
         static uint32_t regfile[16];
-
-        if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid) {
-            fputc(dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_register, stderr);
-            dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid = 0;
-        }
-
-#if 0
-        if (dut.rootp->fx68k_tb__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc) {
-            pc = dut.rootp->fx68k_tb__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__exe_pc;
-            // d0 = dut.rootp->fx68k_tb__DOT__d0;
-            memcpy(regfile, &dut.rootp->fx68k_tb__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[0],
-                   sizeof(regfile));
-
-            printf("%x", pc);
-            for (int i = 0; i < 16; i++)
-                printf(" %x", regfile[i]);
-            printf("\n");
-
-            // d1 = dut.rootp->fx68k_tb__DOT__d1;
-            /*
-            printf("%x %x %x %x %x %x\n", pc, dut.rootp->fx68k_tb__DOT__d0, dut.rootp->fx68k_tb__DOT__d1,
-                   regfile[8 + 0], regfile[8 + 2], regfile[8 + 6]);
-            */
-        }
-#endif
-        /*
-              if (y == 2380000)
-                      kDoTrace = true;
-      */
 
         if (status == SIGINT)
             break;
     }
-    /*
-        uint32_t ica1 = readlongword(dut, 0x400);
-        uint32_t ica2 = readlongword(dut, 0x40400);
 
-        printf("ICA1 %x\n", ica1);
-        printf("ICA2 %x\n", ica2);
-
-        for (int i = 0; i < 20; i++)
-            printf("ICA1 %x\n", readlongword(dut, 0x408 + i * 4));
-
-        for (int i = 0; i < 20; i++)
-            printf("ICA2 %x\n", readlongword(dut, 0x40408 + i * 4));
-            */
-
-    write_png_file("derp.png");
-/*
-    for (int i = 0; i < 100; i++)
-        printf("pixels %04x\n", dut.rootp->fx68k_tb__DOT__mcd212_inst__DOT__testram[(0x43c >> 1) + i]);
-*/
-// uint8_t *src = (uint8_t *)&dut.rootp->fx68k_tb__DOT__mcd212_inst__DOT__testram[0x43c >> 1];
-#if 0
-    for (int y = 0; y < 220; y++) {
-        for (int x = 0; x < 360; x++) {
-            uint8_t color = *src;
-            printf("%02x", color);
-            src++;
-        }
-        printf("\n");
-    }
-#endif
-#if 0
-    for (int y = 0; y < 220; y++) {
-        int x = 0;
-        while (x < 360) {
-
-            uint8_t color = *src & 0x7f;
-            if (*src & 0x80) {
-                src++;
-                uint8_t number = *src;
-                if (number == 0) {
-                    while (x < 360) {
-                        x++;
-                        printf("%02x", color);
-                    }
-                } else if (number == 1) {
-                    printf("Nope!\n");
-                    exit(1);
-                } else {
-                    while (number > 0) {
-                        number--;
-                        x++;
-                        printf("%02x", color);
-                    }
-                }
-            } else {
-                printf("%02x", color);
-                x++;
-            }
-
-            src++;
-        }
-        printf("\n");
-    }
-#endif
+    write_png_file("video.png");
 
     // printf("ICA1 %x\n",dut.rootp->fx68k_tb__DOT__mcd212_inst__DOT__testram[ica1>>1]);
 }

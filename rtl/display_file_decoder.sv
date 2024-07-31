@@ -1,3 +1,5 @@
+
+
 module display_file_decoder (
     input clk,
     input reset,
@@ -9,10 +11,8 @@ module display_file_decoder (
     input reload_vsr,
     input [21:0] vsr_in,
     input read_pixels,
-    
-    output bit [7:0] pixel,
-    output bit pixel_write,
-    input pixel_strobe
+
+    pixelstream.source out
 );
 
     bit [21:0] vsr = 22'h0076370;
@@ -29,9 +29,19 @@ module display_file_decoder (
 
     bit [7:0] temp;
 
+
+    always_comb begin
+        out.write = state == WRITE0 || state == WRITE1;
+        //if (out.strobe) out.write = 0;
+    end
+
+
     always_ff @(posedge clk) begin
 
-        if (reload_vsr) begin
+        if (reset) begin
+            as <= 0;
+            state <= IDLE;
+        end else if (reload_vsr) begin
             $display("start read");
             state <= IDLE;
             vsr   <= vsr_in;
@@ -41,7 +51,6 @@ module display_file_decoder (
                     if (read_pixels) begin
                         state <= READ;
                         as <= 1;
-                        pixel_write <= 0;
                     end
                 end
                 READ: begin
@@ -50,20 +59,18 @@ module display_file_decoder (
                         as <= 0;
                         state <= WRITE0;
                         //$display("Jo %x", din);
-                        pixel <= din[15:8];
+                        out.pixel <= din[15:8];
                         temp <= din[7:0];
-                        pixel_write <= 1;
                     end
                 end
                 WRITE0: begin
-                    if (pixel_strobe) begin
-                        pixel <= temp;
+                    if (out.strobe) begin
+                        out.pixel <= temp;
                         state <= WRITE1;
                     end
                 end
                 WRITE1: begin
-                    if (pixel_strobe) begin
-                        pixel_write <= 0;
+                    if (out.strobe) begin
                         state <= IDLE;
                         //$display("Jo %x", din)!
                     end
