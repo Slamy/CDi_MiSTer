@@ -100,11 +100,16 @@ module scc68070 (
 
     bit [2:0] ipl;
     bit [2:0] ipl_q;
-    bit autovector;
+    bit [7:0] autovector_lut;
+
+    wire irq_ack = (fc == 3'b111);
+    wire [2:0] ack_ipl = addr[3:1];
+
+    wire autovector = autovector_lut[ack_ipl];
 
     always_comb begin
         ipl = 0;
-        autovector = 1;
+        autovector_lut = 8'hff;
 
         // IPL 1, 3 and 6 are only internal
         // IPL 2, 4, 5 and 7 are external
@@ -114,11 +119,8 @@ module scc68070 (
 
         if (timer_status_register.t0_ov && picr1.timer_ipl != 0) begin
             ipl = picr1.timer_ipl;
-            // TODO might be a problem later on with the timing when multiple IRQs
-            // are occuring at the same time as IPL is not latched in the same cycle
-            autovector = 0;
+            autovector_lut[ipl] = 0;
         end
-
     end
 
     always_ff @(posedge clk) begin
@@ -200,17 +202,27 @@ module scc68070 (
         end
     end
 
+    bit [6:0] timer0_internal_cnt = 0;
+
     always_ff @(posedge clk) begin
         // TODO ensure correct frequency
         if (reset) begin
             timer0 <= 0;
+            timer0_internal_cnt <= 0;
         end else if (timer0 == 16'hffff) begin
             timer0 <= timer_reload_register;
+            timer0_internal_cnt <= 0;
             // $display("Reload Timer 0 with %x", timer_reload_register);
         end else if (timer_cs && (internal_lds || internal_uds) && write_strobe && addr[3:1] == 3'd2) begin
             timer0 <= data_out;
+            timer0_internal_cnt <= 0;
             $display("Load Timer 0 with %x", data_out);
-        end else timer0 <= timer0 + 1;
+        end else if (timer0_internal_cnt == 96) begin
+            timer0 <= timer0 + 1;
+            timer0_internal_cnt <= 0;
+        end else begin
+            timer0_internal_cnt <= timer0_internal_cnt + 1;
+        end
     end
 
     bit debug_flag = 0;
