@@ -48,7 +48,7 @@ module video_timing (
         h_total  = h_total * ClksPerCycle;
         h_active = h_active * ClksPerCycle;
         h_start  = h_start * ClksPerCycle;
-        h_sync = h_sync * ClksPerCycle;
+        h_sync   = h_sync * ClksPerCycle;
     end
 
     // vertical timing according to Table 5-6
@@ -111,16 +111,16 @@ module video_timing (
 
     assign new_pixel = (cm ? video_x[0] == 1 : video_x[1:0] == 1) && !hblank && !vblank;
 
+`ifdef VERILATOR
     int pixels_per_line = 0;
     always_ff @(posedge clk) begin
         if (new_line) begin
-            $display(pixels_per_line);
+            //$display(pixels_per_line);
             pixels_per_line <= 0;
         end else if (new_pixel) begin
             pixels_per_line <= pixels_per_line + 1;
         end
     end
-
-
+`endif
 
 endmodule

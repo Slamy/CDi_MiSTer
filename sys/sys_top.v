@@ -44,17 +44,17 @@ module sys_top
 	input         HDMI_TX_INT,
 
 	//////////// SDR ///////////
-	output [12:0] SDRAM_A,
+	(* keep *) output [12:0] SDRAM_A,
 	inout  [15:0] SDRAM_DQ,
-	output        SDRAM_DQML,
-	output        SDRAM_DQMH,
-	output        SDRAM_nWE,
-	output        SDRAM_nCAS,
-	output        SDRAM_nRAS,
-	output        SDRAM_nCS,
-	output  [1:0] SDRAM_BA,
-	output        SDRAM_CLK,
-	output        SDRAM_CKE,
+	(* keep *) output        SDRAM_DQML,
+	(* keep *) output        SDRAM_DQMH,
+	(* keep *) output        SDRAM_nWE,
+	(* keep *) output        SDRAM_nCAS,
+	(* keep *) output        SDRAM_nRAS,
+	(* keep *) output        SDRAM_nCS,
+	(* keep *) output  [1:0] SDRAM_BA,
+	 output        SDRAM_CLK,
+	(* keep *) output        SDRAM_CKE,
 
 `ifdef MISTER_DUAL_SDRAM
 	////////// SDR #2 //////////

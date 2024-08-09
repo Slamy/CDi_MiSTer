@@ -26,36 +26,39 @@ module clut_rle (
     end
 
     always_comb begin
-        dst.write = 0;
+        dst.write  = 0;
         src.strobe = 0;
-        dst.pixel = {1'b0, stored_pixel};
+        dst.pixel  = {1'b0, stored_pixel};
 
-        case (state)
-            SINGLE: begin
-                if (src.pixel[7]) begin
-                    src.strobe = src.write;
-                end else begin
-                    dst.pixel = {1'b0, src.pixel[6:0]};
-                    dst.write = src.write;
-                    src.strobe = dst.strobe;
+        if (!reset) begin
+            case (state)
+                SINGLE: begin
+                    if (src.pixel[7]) begin
+                        src.strobe = src.write;
+                    end else begin
+                        dst.pixel  = {1'b0, src.pixel[6:0]};
+                        dst.write  = src.write;
+                        src.strobe = dst.strobe;
+                    end
+
                 end
-
-            end
-            GET_NUMBER: begin
-                if (src.write) src.strobe = 1;
-            end
-            LIMITED_RLE: begin
-                if (rle_counter != 0) dst.write = 1;
-            end
-            END_OF_LINE_RLE: begin
-                if (pixelcounter != 0) dst.write = 1;
-            end
-        endcase
+                GET_NUMBER: begin
+                    if (src.write) src.strobe = 1;
+                end
+                LIMITED_RLE: begin
+                    if (rle_counter != 0) dst.write = 1;
+                end
+                END_OF_LINE_RLE: begin
+                    if (pixelcounter != 0) dst.write = 1;
+                end
+            endcase
+        end
     end
 
     always_ff @(posedge clk) begin
         if (reset) begin
             state <= SINGLE;
+            rle_counter <= 0;
         end else begin
             case (state)
                 SINGLE: begin

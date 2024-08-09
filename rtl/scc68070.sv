@@ -36,7 +36,7 @@ module scc68070 (
     wire internal_LDSn;
     wire internal_UDSn;
     wire internal_nWr;
-    bit clkena_in;
+    bit clkena_in /*verilator public_flat_rd*/;
 
     assign addr = internal_addr[23:1];
 
@@ -106,6 +106,7 @@ module scc68070 (
     wire [2:0] ack_ipl = addr[3:1];
 
     wire autovector = autovector_lut[ack_ipl];
+    bit autovector_q;
 
     always_comb begin
         ipl = 0;
@@ -113,7 +114,7 @@ module scc68070 (
 
         // IPL 1, 3 and 6 are only internal
         // IPL 2, 4, 5 and 7 are external
-        if (in2) ipl = 2;
+        // if (in2) ipl = 2; TODO revert
         if (in4) ipl = 4;
         if (in5) ipl = 5;
 
@@ -125,6 +126,7 @@ module scc68070 (
 
     always_ff @(posedge clk) begin
         ipl_q <= ipl;
+        autovector_q <= autovector;
 
         if (ipl_q != ipl) $display("IPL %d", ipl);
     end
@@ -136,7 +138,7 @@ module scc68070 (
         .clkena_in(clkena_in),
         .data_in(internal_data_in),
         .IPL(~ipl),
-        .IPL_autovector(autovector),
+        .IPL_autovector(autovector_q),
         .berr(bus_err),
         .addr_out(internal_addr),
         .FC(fc),
@@ -225,9 +227,10 @@ module scc68070 (
         end
     end
 
-    bit debug_flag = 0;
-    bit debug_print_active = 0;
+    bit  debug_flag = 0;
+    bit  debug_print_active /*verilator public_flat_rd*/ = 0;
 
+    wire memory_access = !skipFetch && bus_ack && (internal_lds || internal_uds);
     always_ff @(posedge clk) begin
         if (reset) begin
             lir <= 0;
@@ -238,38 +241,34 @@ module scc68070 (
 
         //if (internal_addr == 32'h00400c0e) $display("After read chann");
 
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404b02 && (internal_lds || internal_uds))begin
-            $display("** Mark 6");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404aa0 && (internal_lds || internal_uds))begin
-            $display("** Mark 5");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404a46 && (internal_lds || internal_uds))begin
-            $display("** Mark 4");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h004048f4 && (internal_lds || internal_uds))begin
-            $display("** Mark 2");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404902 && (internal_lds || internal_uds))begin
-            $display("** Mark 3");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404874 && (internal_lds || internal_uds))begin
-            $display("** Mark 1");
-            //debug_print_active <= 1;
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h0040469c && (internal_lds || internal_uds))begin
-            $display("** Mark 0");
-        end
+        if (memory_access && internal_addr == 32'h00400f3a) $display("** Mark VSync Start 0\n");
+        if (memory_access && internal_addr == 32'h00401012) $display("** Mark VSync Stop 0\n");
+        if (memory_access && internal_addr == 32'h0041c734) $display("** Mark VSync Start 1\n");
+        if (memory_access && internal_addr == 32'h0041c77e) $display("** Mark VSync Stop 1\n");
+        if (memory_access && internal_addr == 32'h0041c48c) $display("** Mark VSync Start 2\n");
+        if (memory_access && internal_addr == 32'h0041c4ac) $display("** Mark VSync Stop 2\n");
+        //if (memory_access && internal_addr == 32'h00017756) $display("** Mark 7.5\n");
+        if (memory_access && internal_addr == 32'h0041d618) begin  $display("** Mark 7\n"); debug_print_active=0; end
+        if (memory_access && internal_addr == 32'h00404b02) $display("** Mark 6\n");
+        if (memory_access && internal_addr == 32'h00404aa0) $display("** Mark 5\n");
+        if (memory_access && internal_addr == 32'h00404a46) $display("** Mark 4\n");
+        if (memory_access && internal_addr == 32'h00404902) $display("** Mark 3\n");
+        if (memory_access && internal_addr == 32'h004048f2) $display("** Mark 2\n");
+        if (memory_access && internal_addr == 32'h00404874) $display("** Mark 1\n");
+        if (memory_access && internal_addr == 32'h0040469c) $display("** Mark 0\n");
+
         //if (internal_addr == 32'h004010d4) debug_print_active <= 1;
 
         if (debug_print_active) begin
+            /*
             if (!skipFetch && bus_ack && !write_strobe && !reset && (internal_lds || internal_uds)) begin
                 $display("CPU Read Access %x %x", internal_addr, internal_data_in);
             end
-
+            */
             if (!skipFetch && bus_ack && write_strobe && (internal_lds || internal_uds)) begin
                 $display("CPU Write Access %x %x", internal_addr, data_out);
             end
+            
         end
 
         if (lir_cs && (internal_lds || internal_uds)) begin
@@ -448,7 +447,6 @@ module scc68070 (
                 3'd3: internal_data_in = timer1;
                 3'd4: internal_data_in = timer2;
                 default: internal_data_in = 0;
-
             endcase
         end
     end

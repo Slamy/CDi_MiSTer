@@ -1,3 +1,5 @@
+`timescale 1 ns / 1 ns
+
 //============================================================================
 //
 //  This program is free software; you can redistribute it and/or modify it
@@ -210,7 +212,7 @@ module emu (
 
     //////////////////////////////////////////////////////////////////
 
-    wire [1:0] ar = status[122:121];
+
 
 `ifndef VERILATOR
     assign VIDEO_ARX = (!ar) ? 12'd4 : (ar - 1'd1);
@@ -225,6 +227,7 @@ module emu (
         "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
         "O[2],UART Loopback,No,Yes;",
         "O[3],UART Fake Space,No,Yes;",
+        "O[4],Release CPU,No,Yes;",
         "-;",
         "-;",
         "T[0],Reset;",
@@ -239,6 +242,7 @@ module emu (
     wire         forced_scandoubler;
     wire [  1:0] buttons;
     wire [127:0] status;
+    wire [  1:0] ar = status[122:121];
     wire [ 10:0] ps2_key;
 
     wire         ioctl_download  /*verilator public_flat_rw*/;
@@ -295,8 +299,10 @@ module emu (
     wire        sdram_wr;
     wire        sdram_word;
     wire [15:0] sdram_din;
-    wire [15:0] sdram_dout;
+    (* keep *)wire [15:0] sdram_dout;
     wire        sdram_busy;
+    wire        sdram_burst;
+    wire        sdram_burstdata_valid;
     assign ioctl_wait = sdram_busy;
 
     sdram sdram (
@@ -305,26 +311,40 @@ module emu (
         .clk(clk_sys),
 
         .addr(rom_download ? {3'b001, ioctl_addr[21:1], 1'b0} : sdram_addr),
-        .din (rom_download ? {ioctl_dout[7:0], ioctl_dout[15:8]} : sdram_din),
+        .din(rom_download ? {ioctl_dout[7:0], ioctl_dout[15:8]} : sdram_din),
         .dout(sdram_dout),
-        .rd  (rom_download ? 1'b0 : sdram_rd),
-        .wr  (rom_download ? ioctl_wr : sdram_wr),
+        .rd(rom_download ? 1'b0 : sdram_rd),
+        .wr(rom_download ? ioctl_wr : sdram_wr),
         .word(rom_download ? 1'b1 : sdram_word),
-        .busy(sdram_busy)
+        .busy(sdram_busy),
+        .burst(rom_download ? 1'b0 : sdram_burst),
+        .burstdata_valid(sdram_burstdata_valid)
     );
+
+`ifndef VERILATOR
+    (* noprune *) bit [15:0] SDRAM_DQ_in;
+
+    always_ff @(posedge clk_sys) begin
+        SDRAM_DQ_in <= SDRAM_DQ;
+    end
+`endif
 
 `ifdef VERILATOR
     bit [15:0] rom[262144]  /*verilator public_flat_rw*/;
     bit [15:0] ram[262144*2]  /*verilator public_flat_rw*/;
-    bit [25:0] sdram_real_addr;
+    bit [22:0] sdram_real_addr;
     initial begin
         $readmemh("cdi200.mem", rom);
         //$readmemh("ramdump.mem", ram);
     end
 
+    reg [3:0] burstindex = 0;
+
     always_comb begin
-        if (sdram_real_addr[21]) SDRAM_DQ_in = rom[sdram_real_addr[17:0]];
-        else SDRAM_DQ_in = ram[sdram_real_addr[18:0]];
+        SDRAM_DQ_in = 0;
+
+        if (sdram_real_addr[21]) SDRAM_DQ_in = rom[sdram_real_addr[17:0]+18'(burstindex)];
+        else SDRAM_DQ_in = ram[sdram_real_addr[18:0]+19'(burstindex)];
     end
 
     bit SDRAM_nWE_q;
@@ -336,10 +356,15 @@ module emu (
         SDRAM_DQMH_q <= SDRAM_DQMH;
         SDRAM_DQML_q <= SDRAM_DQML;
 
-        if (!SDRAM_nCAS) sdram_real_addr[25:13] <= SDRAM_A;
-        if (!SDRAM_nRAS) sdram_real_addr[12:0] <= SDRAM_A;
+        if (!SDRAM_nRAS) sdram_real_addr[21:9] <= SDRAM_A;
+        if (!SDRAM_nCAS) sdram_real_addr[8:0] <= SDRAM_A[8:0];
+
+        if (!SDRAM_nCAS) burstindex <= 0;
+        else if (burstindex < 4) burstindex <= burstindex + 1;
+
 
         if (sdram_real_addr[21]) begin
+            // no write during download
             if (!SDRAM_nWE_q) assert (ioctl_download);
 
             if (!SDRAM_nWE_q && !SDRAM_DQML_q)
@@ -350,20 +375,13 @@ module emu (
                 ram[sdram_real_addr[18:0]][15:8] <= SDRAM_DQ_out[15:8];
             if (!SDRAM_nWE_q && !SDRAM_DQMH_q) ram[sdram_real_addr[18:0]][7:0] <= SDRAM_DQ_out[7:0];
         end
-
     end
 `endif
 
     (* keep *) wire reset = RESET || status[0] || buttons[1] || rom_download;
 
-    always_ff @(posedge clk_sys) begin
-        if (rom_download) rom_download_not_yet <= 0;
-
-        //assert (sdram_wr == 0);
-    end
-
-    wire [1:0] col = status[4:3];
     wire debug_uart_fake_space  /*verilator public_flat_rw*/ = status[3];
+    wire debug_keep_cpu_reset = 0;
 
     wire HBlank;
     wire HSync;
@@ -377,6 +395,7 @@ module emu (
     cditop cditop (
         .clk30(clk_sys),
         .reset(reset),
+        .debug_keep_cpu_reset(debug_keep_cpu_reset),
 
         .debug_uart_loopback(status[2]),
         .debug_uart_fake_space,
@@ -400,6 +419,8 @@ module emu (
         .sdram_din(sdram_din),
         .sdram_dout(sdram_dout),
         .sdram_busy(sdram_busy),
+        .sdram_burst,
+        .sdram_burstdata_valid,
         .scc68_uart_tx(UART_TXD),
         .scc68_uart_rx(UART_RXD)
     );

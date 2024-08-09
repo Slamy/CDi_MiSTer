@@ -76,6 +76,7 @@ make SOURCES=src/mame/philips/cdi.cpp REGENIE=1 -j8
 ## Using mame
 
 ./mame cdimono1 -log -oslog
+./mame cdimono1 -verbose -log -oslog -window &> log
 
 
 /opt/m68k-amigaos3/bin/vasmm68k_mot -Fbin -m68000 68ktest.asm  -o 68ktest.bin
@@ -202,3 +203,31 @@ microstate=nopnop
 [:mcd212] Byte fb w/ run length 06 at 138
 
 cat k | grep XYZ | cut -f 2 -d " " > videotestram.mem
+
+
+
+Setzen von Framebuffer Ptr Struktur
+
+41c13a 3 1a6 1 460001 0 0 40076370 8e0080 673a0 27da00 27e130 1500 41c128 27cc18 1500 27cbb8
+Write DRAM 0673a0 4007
+Write DRAM 0673a2 6370
+
+
+[:mcd212] 00000430: 5000043c: ICA 0: RELOAD VSR and STOP: VSR = 0043c Blauer Bildschirm?
+[:mcd212] 00000430: 5000043c: ICA 0: RELOAD VSR and STOP: VSR = 0043c
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730 Definitiv ein blauer Bildschirm
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 50076370: ICA 0: RELOAD VSR and STOP: VSR = 76370 System Menü
+[:mcd212] 00062d4c: 50076370: ICA 0: RELOAD VSR and STOP: VSR = 76370
+[:mcd212] 00062d4c: 50076370: ICA 0: RELOAD VSR and STOP: VSR = 76370
+
+
+http://www.icdia.co.uk/microware/index.html
+https://github.com/Stovent/CeDImu/blob/master/src/CDI/OS9/SystemCalls.hpp
+
+Swap 16 bit endianness:
+    objcopy -I binary -O binary --reverse-bytes=2 picture.bin picture2.bin

@@ -18,10 +18,10 @@ It requires no CDIC to function.
 	* Cdic test passed (tests only memory...)
 	* Slave processor test passed
 * MCD212
-	* SDRAM interface slow but functional
+	* SDRAM interface according to specification
 	* ICA/DCA parser partially implemented
-	* CLUT7 RLE partially implemented (currently bugged)
-	* Display File partially implemented (currently bugged)
+	* CLUT7 RLE partially implemented
+	* Display File partially implemented
 * SCC68070
 	* UART interface accessible from MiSTer linux
 	* Timer IRQ implemented
@@ -34,9 +34,9 @@ It requires no CDIC to function.
 
 ## TODOs
 
+* Investigate why F$Sleep returns E$NoClk
+	* System clock not detected?
 * Implement boot rom loading for slave to avoid legal issues
-* Fix "Error: system state exception; vector #$0010  at addr $00001500" during boot
-	* Might be related to wrong on-chip auto-vectoring
 * Implement ICA/DCA parser
 * Implement functional video channel 1
 * Attach MiSTer input system to the SLAVE controller
