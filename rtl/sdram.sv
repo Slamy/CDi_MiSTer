@@ -73,7 +73,7 @@ module sdram (
     localparam STATE_START = STATE_IDLE + 1'd1;  // state in which a new command is started
     localparam STATE_CONT = STATE_START + RASCAS_DELAY;
     localparam STATE_READY = STATE_CONT + CAS_LATENCY;
-    localparam STATE_LAST = STATE_READY;  // last state in cycle
+    localparam STATE_LAST = STATE_READY + 4'd3;  // last state in cycle
 
     reg  [ 3:0] state;
     reg  [24:0] a;  // temporary storage of address to allow change after request
@@ -118,31 +118,29 @@ module sdram (
             ram_req <= ram_req_test;
         end
 
+        if (state == STATE_LAST && busy) begin
+            ram_req <= 0;
+            we <= 0;
+            busy <= 0;
+            if (ram_req) begin
+                if (we) begin
+                    a <= '1;
+                end
+            end
+        end
+
         if (!burst && state == STATE_READY && busy) begin
-            ram_req <= 0;
-            we <= 0;
-            busy <= 0;
-            if (ram_req) begin
-                if (we) begin
-                    a <= '1;
-                end
+            if (ram_req && !we) begin
+`ifdef VERILATOR
+                last_data <= SDRAM_DQ_in;
+`else
+                last_data <= SDRAM_DQ;
+`endif
             end
         end
-
-        if (burst && state == STATE_READY+3 && busy) begin
-            ram_req <= 0;
-            we <= 0;
-            busy <= 0;
-            if (ram_req) begin
-                if (we) begin
-                    a <= '1;
-                end
-            end
-        end
-
-
-        if (state >= STATE_READY && busy) begin
-            burstdata_valid <= burst;
+        
+        if (burst && state >= STATE_READY && busy) begin
+            burstdata_valid <= 1;
 
             if (ram_req && !we) begin
 `ifdef VERILATOR
@@ -155,8 +153,7 @@ module sdram (
 
         if (mode != MODE_NORMAL || state != STATE_IDLE || reset != 0) begin
             state <= state + 1'd1;
-            if (!burst && state == STATE_LAST) state <= STATE_IDLE;
-            if (burst && state == STATE_LAST + 3) state <= STATE_IDLE;
+            if (state == STATE_LAST) state <= STATE_IDLE;
         end
     end
 
