@@ -10,12 +10,13 @@ vector:
 main:
 	move.b #0,$80002019
 
+	move.w #$ffff,$4ffff2
+
 	lea.l icalist,a0
 	move.l #$400,a1
 	move.l #350,d0
 	bsr copy
 
-	move.b #0,$80002019
 	move.b #1,$80002019
 
 	lea.l picture,a0
@@ -25,12 +26,7 @@ main:
 
 	move.b #2,$80002019
 
-	move.w #$ffff,$4ffff2
-
-
-	nop
-endless:
-	bra endless
+	bra main
 
 
 copy:

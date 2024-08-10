@@ -231,3 +231,6 @@ https://github.com/Stovent/CeDImu/blob/master/src/CDI/OS9/SystemCalls.hpp
 
 Swap 16 bit endianness:
     objcopy -I binary -O binary --reverse-bytes=2 picture.bin picture2.bin
+
+Transmit binary:
+    scp 68ktest.bin root@mister:/media/fat/games/CD-i

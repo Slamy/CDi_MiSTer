@@ -85,7 +85,7 @@ module mcd212 (
     wire sdram_refresh_request;
     bit [24:0] last_read_sdram_addr;
 
-    typedef enum {
+    typedef enum bit [3:0] {
         REFRESH,  // most important
         VIDEO0,
         VIDEO1,
@@ -170,6 +170,7 @@ module mcd212 (
 
                     end
                 end
+                default: begin end
             endcase
 
             case (sdram_owner_q)
@@ -185,6 +186,8 @@ module mcd212 (
                     end
                     if (ica0_as) ica0_bus_ack = !sdram_busy && sdram_busy_q;
                 end
+                default: begin end
+
             endcase
         end
         // only the CPU writes to SDRAM

@@ -7,7 +7,7 @@ module clut_rle (
     pixelstream.source dst
 );
 
-    enum {
+    enum bit [3:0] {
         SINGLE,
         GET_NUMBER,
         LIMITED_RLE,
@@ -51,6 +51,8 @@ module clut_rle (
                 END_OF_LINE_RLE: begin
                     if (pixelcounter != 0) dst.write = 1;
                 end
+                default: begin end
+
             endcase
         end
     end
@@ -86,6 +88,7 @@ module clut_rle (
                 END_OF_LINE_RLE: begin
                     if (pixelcounter == 0) state <= SINGLE;
                 end
+                default: begin end
             endcase
         end
     end

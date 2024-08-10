@@ -23,7 +23,7 @@ module display_file_decoder (
 
     assign address = vsr;
 
-    enum {
+    enum bit [3:0] {
         IDLE,
         READ
     } state = IDLE;
@@ -35,7 +35,7 @@ module display_file_decoder (
         if (reset) begin
             as <= 0;
             state <= IDLE;
-            vsr <= 22'h0;
+            vsr <= 22'h0076370;
         end else if (reload_vsr) begin
             state <= IDLE;
             vsr   <= vsr_in;
@@ -55,6 +55,8 @@ module display_file_decoder (
                         state <= IDLE;
                     end
                 end
+                default: begin end
+
             endcase
         end
     end

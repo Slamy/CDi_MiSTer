@@ -17,17 +17,19 @@ module ica_dca_ctrl (
     localparam bit [21:0] odd_ica_start = 22'h400;
     localparam bit [21:0] even_ica_start = 22'h404;
 
-    bit [21:0] ica_pointer;
+    (* keep *) bit [21:0] ica_pointer;
     bit [21:0] dca_pointer;
-    bit [31:0] instruction;
+    (* keep *) bit [31:0] instruction;
 
-    enum {
+    enum bit [3:0] {
         IDLE,
         READ0,
         READ1,
         EXECUTE,
         STOPPED
     } state;
+
+    (* noprune *) wire execute = state == EXECUTE;
 
     assign register_adr = instruction[30:24];
     assign register_data = instruction[23:0];
@@ -148,6 +150,8 @@ module ica_dca_ctrl (
                 STOPPED: begin
                     // Do nothing until reset
                 end
+                default: begin end
+
             endcase
         end
     end
