@@ -8,7 +8,7 @@ vector:
 
     dc.l 0,0
 main:
-	move.b #0,$80002019
+	move.b #'A',$80002019
 
 	move.w #$ffff,$4ffff2
 
@@ -17,17 +17,65 @@ main:
 	move.l #350,d0
 	bsr copy
 
-	move.b #1,$80002019
+	move.b #'B',$80002019
 
 	lea.l picture,a0
 	move.l #$76370,a1
 	move.l #(19410/4),d0
 	bsr copy
 
-	move.b #2,$80002019
+	move.b #'C',$80002019
+
+	move.l #0,a0
+	move.l #(1024*512/4),d1
+memtest:
+	move.l a0,d0
+	move.l d0,(a0)
+	add.l #4,a0
+	add.l #-1,d1
+	bne memtest
+
+	move.l #$200000,a0
+	move.l #(1024*512/4),d1
+memtest3:
+	move.l a0,d0
+	move.l d0,(a0)
+	add.l #4,a0
+	add.l #-1,d1
+	bne memtest3
+
+	move.b #'D',$80002019
+
+	move.l #0,a0
+	move.l #(1024*512/4),d1
+memtest2:
+	move.l a0,d0
+	cmp.l (a0),d0
+	bne error
+	add.l #4,a0
+	add.l #-1,d1
+	bne memtest2
+
+	move.l #$200000,a0
+	move.l #(1024*512/4),d1
+memtest4:
+	move.l a0,d0
+	cmp.l (a0),d0
+	bne error
+	add.l #4,a0
+	add.l #-1,d1
+	bne memtest4
+
+	move.b #'E',$80002019
 
 	bra main
 
+
+error:
+	move.b #'Z',$80002019
+
+endless:
+	bra endless
 
 copy:
 	move.l (a0)+,(a1)+

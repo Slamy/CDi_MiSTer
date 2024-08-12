@@ -112,8 +112,6 @@ void loadfile(VerilatedVcdC &m_trace, Vemu &dut) {
     dut.rootp->emu__DOT__ioctl_download = 0;
 }
 
-
-
 void printstate(Vemu &dut) {
 
     static uint32_t regfile[16];
@@ -131,7 +129,7 @@ void printstate(Vemu &dut) {
 
 void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
     dut.eval();
-    kDoTrace = false;
+    kDoTrace = true;
     dut.rootp->emu__DOT__debug_uart_fake_space = false;
 
     if (0) {
@@ -165,12 +163,11 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
         if ((y % 100000) == 0) {
             printf("%d\n", y);
         }
-        /*
-        if (y == 151000000)
+
+        /*if (y == 14000000)
             kDoTrace = true;
-        if (y == 151800000)
-            kDoTrace = false;
-*/
+        if (y == 14100000)
+            break;*/
 
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid) {
             fputc(dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_register, stderr);
@@ -252,7 +249,7 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
             char filename[100];
 
             if (frame_index == 251) {
-               // dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__file0__DOT__debug_print_file = 1;
+                // dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__file0__DOT__debug_print_file = 1;
             }
 
             if (output_index > 100) {

@@ -234,3 +234,10 @@ Swap 16 bit endianness:
 
 Transmit binary:
     scp 68ktest.bin root@mister:/media/fat/games/CD-i
+
+
+Ideen:
+    * PC Counter Block RAM oder live
+    * RAM test verbessern
+    * RAM nicht erwartet
+        * RAM simulation alles 1 oder random

@@ -227,7 +227,6 @@ module scc68070 (
         end
     end
 
-    bit  debug_flag = 0;
     bit  debug_print_active /*verilator public_flat_rd*/ = 0;
 
     wire memory_access = !skipFetch && bus_ack && (internal_lds || internal_uds);
@@ -270,6 +269,12 @@ module scc68070 (
             end
             
         end
+
+        if (!skipFetch && bus_ack && write_strobe && (internal_lds || internal_uds) && internal_addr < 100) begin
+                $display("CPU RAM Write Access %x %x", internal_addr, data_out);
+
+        end
+
 
         if (lir_cs && (internal_lds || internal_uds)) begin
             $display("LIR Access %x %x %d %d %d", addr[3:1], data_out[7:0], write_strobe,

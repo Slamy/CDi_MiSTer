@@ -362,7 +362,6 @@ module emu (
         if (!SDRAM_nCAS) burstindex <= 0;
         else if (burstindex < 4) burstindex <= burstindex + 1;
 
-
         if (sdram_real_addr[21]) begin
             // no write during download
             if (!SDRAM_nWE_q) assert (ioctl_download);
@@ -425,13 +424,21 @@ module emu (
         .scc68_uart_rx(UART_RXD)
     );
 
+    bit error_condition = 0;
+    always_ff @(posedge clk_sys) begin
+        if (reset) error_condition <= 0;
+        else if (sdram_addr == 25'h00003a && sdram_wr && sdram_din != 16'h0578) begin
+            $display("RAM Write Access %x %x", sdram_addr, sdram_din);
+            error_condition <= 1;
+        end
+    end
     assign CLK_VIDEO = clk_sys;
     assign CE_PIXEL = ce_pix;
 
     assign VGA_DE = ~(HBlank | VBlank);
     assign VGA_HS = HSync;
     assign VGA_VS = VSync;
-    assign VGA_R = r;
+    assign VGA_R = error_condition ? 8'hff : r;
     assign VGA_G = g;
     assign VGA_B = b;
 
