@@ -36,7 +36,7 @@ module scc68070 (
     wire internal_LDSn;
     wire internal_UDSn;
     wire internal_nWr;
-    bit clkena_in;
+    bit clkena_in  /*verilator public_flat_rd*/;
 
     assign addr = internal_addr[23:1];
 
@@ -100,11 +100,17 @@ module scc68070 (
 
     bit [2:0] ipl;
     bit [2:0] ipl_q;
-    bit autovector;
+    bit [7:0] autovector_lut;
+
+    wire irq_ack = (fc == 3'b111);
+    wire [2:0] ack_ipl = addr[3:1];
+
+    wire autovector = autovector_lut[ack_ipl];
+    bit autovector_q;
 
     always_comb begin
         ipl = 0;
-        autovector = 1;
+        autovector_lut = 8'hff;
 
         // IPL 1, 3 and 6 are only internal
         // IPL 2, 4, 5 and 7 are external
@@ -114,15 +120,13 @@ module scc68070 (
 
         if (timer_status_register.t0_ov && picr1.timer_ipl != 0) begin
             ipl = picr1.timer_ipl;
-            // TODO might be a problem later on with the timing when multiple IRQs
-            // are occuring at the same time as IPL is not latched in the same cycle
-            autovector = 0;
+            autovector_lut[ipl] = 0;
         end
-
     end
 
     always_ff @(posedge clk) begin
         ipl_q <= ipl;
+        autovector_q <= autovector;
 
         if (ipl_q != ipl) $display("IPL %d", ipl);
     end
@@ -134,7 +138,7 @@ module scc68070 (
         .clkena_in(clkena_in),
         .data_in(internal_data_in),
         .IPL(~ipl),
-        .IPL_autovector(autovector),
+        .IPL_autovector(autovector_q),
         .berr(bus_err),
         .addr_out(internal_addr),
         .FC(fc),
@@ -156,7 +160,6 @@ module scc68070 (
         bit stop_bit_length;
         bit character_length;
     } uart_mode_register;
-
 
     struct packed {
         bit received_break;
@@ -200,21 +203,31 @@ module scc68070 (
         end
     end
 
+    bit [6:0] timer0_internal_cnt = 0;
+
     always_ff @(posedge clk) begin
-        // TODO ensure correct frequency
         if (reset) begin
             timer0 <= 0;
+            timer0_internal_cnt <= 0;
         end else if (timer0 == 16'hffff) begin
             timer0 <= timer_reload_register;
+            timer0_internal_cnt <= 0;
             // $display("Reload Timer 0 with %x", timer_reload_register);
         end else if (timer_cs && (internal_lds || internal_uds) && write_strobe && addr[3:1] == 3'd2) begin
             timer0 <= data_out;
+            timer0_internal_cnt <= 0;
             $display("Load Timer 0 with %x", data_out);
-        end else timer0 <= timer0 + 1;
+        end else if (timer0_internal_cnt == 95) begin
+            timer0 <= timer0 + 1;
+            timer0_internal_cnt <= 0;
+        end else begin
+            timer0_internal_cnt <= timer0_internal_cnt + 1;
+        end
     end
 
-    bit debug_flag = 0;
-    bit debug_print_active = 0;
+    bit  debug_print_active  /*verilator public_flat_rd*/ = 0;
+
+    wire memory_access = !skipFetch && bus_ack && (internal_lds || internal_uds);
 
     always_ff @(posedge clk) begin
         if (reset) begin
@@ -224,38 +237,22 @@ module scc68070 (
             lir.int1n_ipl <= data_out[6:4];
         end
 
-        //if (internal_addr == 32'h00400c0e) $display("After read chann");
-
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404b02 && (internal_lds || internal_uds))begin
-            $display("** Mark 6");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404aa0 && (internal_lds || internal_uds))begin
-            $display("** Mark 5");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404a46 && (internal_lds || internal_uds))begin
-            $display("** Mark 4");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h004048f4 && (internal_lds || internal_uds))begin
-            $display("** Mark 2");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404902 && (internal_lds || internal_uds))begin
-            $display("** Mark 3");
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h00404874 && (internal_lds || internal_uds))begin
-            $display("** Mark 1");
-            //debug_print_active <= 1;
-        end
-        if (!skipFetch && bus_ack && internal_addr == 32'h0040469c && (internal_lds || internal_uds))begin
-            $display("** Mark 0");
-        end
-        //if (internal_addr == 32'h004010d4) debug_print_active <= 1;
-
         if (debug_print_active) begin
-            if (!skipFetch && bus_ack && !write_strobe && !reset && (internal_lds || internal_uds)) begin
+            if (memory_access && !write_strobe && !reset) begin
                 $display("CPU Read Access %x %x", internal_addr, internal_data_in);
             end
 
-            if (!skipFetch && bus_ack && write_strobe && (internal_lds || internal_uds)) begin
+            if (memory_access && write_strobe && !reset) begin
+                $display("CPU Write Access %x %x", internal_addr, data_out);
+            end
+        end
+
+        if (memory_access && internal_addr == 32'h00002cc4) begin
+            if (!write_strobe && !reset) begin
+                $display("CPU Read Access %x %x", internal_addr, internal_data_in);
+            end
+
+            if (write_strobe && !reset) begin
                 $display("CPU Write Access %x %x", internal_addr, data_out);
             end
         end
@@ -320,7 +317,7 @@ module scc68070 (
             case (addr[3:1])
                 3'd0: uart_mode_register <= data_out[7:0];
                 3'd4: begin
-                    //$display("UART char %c", data_out[7:0]);
+                    $display("UART char %c", data_out[7:0]);
                 end
                 default: ;
             endcase
@@ -347,9 +344,6 @@ module scc68070 (
         end
     end
 
-`ifdef VERILATOR
-    assign uart_tx_data_ready = 1;
-`else
     uart_rx #(
         .CLK_FRE  (30),
         .BAUD_RATE(115200)
@@ -373,7 +367,6 @@ module scc68070 (
         .tx_data_ready(uart_tx_data_ready),
         .tx_pin(uart_tx)
     );
-`endif
 
     always_ff @(posedge clk) begin
         if (reset) begin
@@ -436,7 +429,6 @@ module scc68070 (
                 3'd3: internal_data_in = timer1;
                 3'd4: internal_data_in = timer2;
                 default: internal_data_in = 0;
-
             endcase
         end
     end

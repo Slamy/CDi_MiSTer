@@ -16,7 +16,7 @@ module u3090mg (
 
     bit [7:0] ram[16];
 
-    enum {
+    enum bit [3:0] {
         IDLE,
         DEVICE_ADR,
         READ,
@@ -119,6 +119,8 @@ module u3090mg (
                         cnt <= 0;
                     end
                 end
+                default: begin end
+
             endcase
         end
     end

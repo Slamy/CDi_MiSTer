@@ -7539,8 +7539,8 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   wire setexecopc;
   wire endopc;
   wire setendopc;
-  wire [7:0] flags;
-  wire [7:0] flagssr;
+  wire [7:0] flags /*verilator public_flat_rd*/ ;
+  wire [7:0] flagssr /*verilator public_flat_rd*/ ;
   wire [7:0] srin;
   wire exec_direct;
   wire exec_tas;
@@ -7577,7 +7577,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   wire set_vectoraddr;
   wire writesr;
   wire trap_berr;
-  wire trap_illegal;
+  wire trap_illegal /*verilator public_flat_rd*/ ;
   wire trap_addr_error;
   wire trap_priv;
   wire trap_trace;

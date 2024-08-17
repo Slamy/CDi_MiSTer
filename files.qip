@@ -1,5 +1,3 @@
-set_global_assignment -name VERILOG_FILE rtl/lfsr.v
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/cos.sv
 set_global_assignment -name SDC_FILE CDi.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE CDi.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/flag_cross_domain.sv
@@ -10,7 +8,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/clut_rle.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ica_dca_ctrl.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/display_file_decoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/video_timing.sv
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/mycore.v
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/videofifo.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/cditop.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mcd212.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/scc68070.sv

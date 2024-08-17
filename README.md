@@ -18,10 +18,10 @@ It requires no CDIC to function.
 	* Cdic test passed (tests only memory...)
 	* Slave processor test passed
 * MCD212
-	* SDRAM interface slow but functional
+	* SDRAM interface according to specification
 	* ICA/DCA parser partially implemented
-	* CLUT7 RLE partially implemented (currently bugged)
-	* Display File partially implemented (currently bugged)
+	* CLUT7 RLE partially implemented
+	* Display File partially implemented
 * SCC68070
 	* UART interface accessible from MiSTer linux
 	* Timer IRQ implemented
@@ -32,14 +32,21 @@ It requires no CDIC to function.
 * MiSTer
 	* Rom loading via Menu functional
 
-## TODOs
+Core Utilization:
 
-* Implement boot rom loading for slave to avoid legal issues
-* Fix "Error: system state exception; vector #$0010  at addr $00001500" during boot
-	* Might be related to wrong on-chip auto-vectoring
-* Implement ICA/DCA parser
-* Implement functional video channel 1
+	Logic utilization (in ALMs)	11,174 / 41,910 ( 27 % )
+	Total block memory bits	629,810 / 5,662,720 ( 11 % )
+	Total DSP Blocks	39 / 112 ( 35 % )
+
+## TODOs in order of priority
+
+* Implement boot rom loading for SLAVE to avoid legal issues
 * Attach MiSTer input system to the SLAVE controller
+* Add hardware cursor sprite
+* Investigate why F$Sleep returns E$NoClk
+	* System clock not detected?
+* Added remaining ICA/DCA features
+* Implement functional video channel 1
 * Have the system menu usable on MiSTer
 * Evaluate wrong answer on PAL/NTSC status from SLAVE
 	* Right now, the expected answer 0x02 is inserted with glue logic

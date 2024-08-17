@@ -1,3 +1,4 @@
+`timescale 1 ns / 1 ns
 // CD-Interface Controller
 // TODO implement audio
 // TODO implement CD reading
@@ -25,7 +26,6 @@ module cdic (
     bit [15:0] ram_readout;
 
     wire access = cs && uds && lds;
-    bit access_q = 0;
 
     always_ff @(posedge clk) begin
         if (reset) begin
@@ -48,15 +48,13 @@ module cdic (
         end
     end
 
-
-    always_ff @(posedge clk) begin
-        access_q <= access;
-    end
-
     always_comb begin
         dout = 16'h0;
 
         case (address[13:1])
+            // 13'h00a00: dout = 16'h1234;  //enable debug mode of ROM code
+            // 13'h00a01: dout = 16'h1234;  //enable debug mode of ROM code
+
             13'h001FFA: begin  // 0x3FF4  ABUF	Audio buffer register
                 dout = 16'h0;
             end

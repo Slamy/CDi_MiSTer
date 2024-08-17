@@ -18,11 +18,16 @@ I assume the ATTEX limits the DRAM to 0x27fffe as these do now follow.
 
 0x300000 to 0x303ffe    CDIC
 0x310000                SLAVE
+0x320000 to 0x323fff    NVRAM (according to mame)
 
 0x400000 to 0x4ffbff    ROM but only 512kB so it ends 0x80000
 0x4ffc00 to 0x4fffdf    MCD212 SystemIO (is this even used? at least not mentioned in MAME)
 0x4fffe0 to 0x4fffff    MCD212 according to MAME, channels 1+2 according to datasheet
 
+## CPU Internal
+
+0x80002011  UART Mode
+0x80002013  UART Status
 
 ## Auto refresh
 
