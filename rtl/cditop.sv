@@ -31,8 +31,11 @@ module cditop (
     input         sdram_burstdata_valid,
 
     output scc68_uart_tx,
-    input  scc68_uart_rx
+    input  scc68_uart_rx,
 
+    input [12:0] slave_worm_adr,
+    input [7:0] slave_worm_data,
+    input slave_worm_wr
 );
 
     wire write_strobe;
@@ -255,7 +258,11 @@ module cditop (
         .irq(!slave_irq),
         .ddra,
         .ddrb,
-        .ddrc
+        .ddrc,
+
+        .worm_adr (slave_worm_adr),
+        .worm_data(slave_worm_data),
+        .worm_wr  (slave_worm_wr)
     );
 
     u3090mg u3090mg (
@@ -264,7 +271,7 @@ module cditop (
         .sda_out(disdat_to_ic),
         .scl(disclk)
     );
-    
+
     always_comb begin
         slave_bus_ack = dtackslaven && !dtackslaven_q;
         slave_irq = irq_cooldown == 1;

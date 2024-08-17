@@ -148,7 +148,8 @@ module ica_dca_ctrl (
                 STOPPED: begin
                     // Do nothing until reset
                 end
-                default: begin end
+                default: begin
+                end
 
             endcase
         end

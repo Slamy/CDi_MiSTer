@@ -104,7 +104,7 @@ module u3090mg (
                     end
 
                     if (!scl && scl_q && cnt == 8) begin
-                       // $display("-- I2C DATA %x", shiftreg[7:0]);
+                        // $display("-- I2C DATA %x", shiftreg[7:0]);
                         //assert (shiftreg[0] == 1);
 
                         sda_out <= 0;  // ACK
@@ -119,7 +119,8 @@ module u3090mg (
                         cnt <= 0;
                     end
                 end
-                default: begin end
+                default: begin
+                end
 
             endcase
         end

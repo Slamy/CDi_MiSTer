@@ -51,7 +51,8 @@ module clut_rle (
                 END_OF_LINE_RLE: begin
                     if (pixelcounter != 0) dst.write = 1;
                 end
-                default: begin end
+                default: begin
+                end
 
             endcase
         end
@@ -88,7 +89,8 @@ module clut_rle (
                 END_OF_LINE_RLE: begin
                     if (pixelcounter == 0) state <= SINGLE;
                 end
-                default: begin end
+                default: begin
+                end
             endcase
         end
     end

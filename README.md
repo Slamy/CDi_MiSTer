@@ -9,6 +9,11 @@ on the MiSTer.
 It requires no CDIC to function.
 
 
+## Usage
+
+Place `cdi200.rom` as `boot0.rom` in `/media/fat/games/CD-i`.
+Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` as `boot1.rom` next to it.
+
 ## Status
 
 * CD-I MONO BOARD low level test is functional
@@ -31,6 +36,7 @@ It requires no CDIC to function.
 	* Answers to basic requests from main CPU
 * MiSTer
 	* Rom loading via Menu functional
+	* Automatic rom loading for main cpu and slave
 
 Core Utilization:
 
@@ -40,7 +46,6 @@ Core Utilization:
 
 ## TODOs in order of priority
 
-* Implement boot rom loading for SLAVE to avoid legal issues
 * Attach MiSTer input system to the SLAVE controller
 * Add hardware cursor sprite
 * Investigate why F$Sleep returns E$NoClk

@@ -245,7 +245,7 @@ module emu (
     wire        ioctl_wr  /*verilator public_flat_rw*/;
     wire [24:0] ioctl_addr  /*verilator public_flat_rw*/;
     wire [15:0] ioctl_dout  /*verilator public_flat_rw*/;
-    wire [ 7:0] ioctl_index  /*verilator public_flat_rw*/;
+    wire [15:0] ioctl_index  /*verilator public_flat_rw*/;
     wire        ioctl_wait  /*verilator public_flat_rw*/ = 0;
 
     (* keep *)wire        clk_sys  /*verilator public_flat_rw*/;
@@ -332,11 +332,43 @@ module emu (
         IDLE
     } e_arbit_target;
 
-    e_arbit_target sdram_owner;
-    e_arbit_target sdram_owner_q;
-    e_arbit_target sdram_owner_next;
+    e_arbit_target        sdram_owner;
+    e_arbit_target        sdram_owner_q;
+    e_arbit_target        sdram_owner_next;
 
-    bit            ioctl_wr_latch  /*verilator public_flat_rw*/ = 0;
+    bit                   ioctl_sdram_wr_latch  /*verilator public_flat_rw*/ = 0;
+
+    // boot0.rom represented as ioctl_index==16h'0000
+    // boot1.rom represented as ioctl_index==16h'0040
+    wire                  ioctl_maincpu_rom_wr = ioctl_wr && ioctl_index[6] == 0;
+    wire                  ioctl_slave_worm_wr = ioctl_wr && ioctl_index[6] == 1;
+
+    bit                   ioctl_slave_worm_wr_q = 0;
+
+    // We get 16 bit data from Main. The second 8 bit is stored here while writing the first
+    bit            [ 7:0] slave_worm_second_data = 0;
+
+    // Signals to write the "Write once read many" memory of the slave
+    bit            [12:0] slave_worm_adr = 0;
+    bit            [ 7:0] slave_worm_data = 0;
+    bit                   slave_worm_wr;
+
+    always_ff @(posedge clk_sys) begin
+        ioctl_slave_worm_wr_q <= ioctl_slave_worm_wr;
+        slave_worm_wr <= ioctl_slave_worm_wr_q || ioctl_slave_worm_wr;
+
+        if (ioctl_slave_worm_wr) begin
+            // Lower byte first
+            slave_worm_adr <= ioctl_addr[12:0];
+            slave_worm_data <= ioctl_dout[7:0];
+            slave_worm_second_data <= ioctl_dout[15:8];
+        end else begin
+            // Afterwards the upper byte
+            slave_worm_data   <= slave_worm_second_data;
+            slave_worm_adr[0] <= 1;
+        end
+    end
+
 
     always_comb begin
         sdram_owner_next = IDLE;
@@ -345,7 +377,7 @@ module emu (
             sdram_owner_next = REFRESH;
 
             if (!ram_zero_done) sdram_owner_next = RAM_ZERO;
-            if (ioctl_wr_latch) sdram_owner_next = ROM_DOWNLOAD;
+            if (ioctl_sdram_wr_latch) sdram_owner_next = ROM_DOWNLOAD;
         end
 
         if (sdram_busy) sdram_owner = sdram_owner_q;
@@ -388,10 +420,10 @@ module emu (
     bit ioctl_wr_overflow = 0;
 
     always_ff @(posedge clk_sys) begin
-        if (ioctl_wr_latch && ioctl_wr) ioctl_wr_overflow <= 1;
+        if (ioctl_sdram_wr_latch && ioctl_wr) ioctl_wr_overflow <= 1;
 
-        if (ioctl_wr) begin
-            ioctl_wr_latch <= 1;
+        if (ioctl_maincpu_rom_wr) begin
+            ioctl_sdram_wr_latch <= 1;
         end
 
         ioctl_download_q <= ioctl_download;
@@ -407,7 +439,8 @@ module emu (
             if (sdram_owner_q == RAM_ZERO && sdram_busy_q && !sdram_busy)
                 ram_zero_adr <= ram_zero_adr + 1;
 
-            if (sdram_owner_q == ROM_DOWNLOAD && sdram_busy_q && !sdram_busy) ioctl_wr_latch <= 0;
+            if (sdram_owner_q == ROM_DOWNLOAD && sdram_busy_q && !sdram_busy)
+                ioctl_sdram_wr_latch <= 0;
         end
     end
 
@@ -531,7 +564,11 @@ module emu (
         .sdram_burst,
         .sdram_burstdata_valid,
         .scc68_uart_tx(UART_TXD),
-        .scc68_uart_rx(UART_RXD)
+        .scc68_uart_rx(UART_RXD),
+
+        .slave_worm_adr (slave_worm_adr),
+        .slave_worm_data(slave_worm_data),
+        .slave_worm_wr  (slave_worm_wr)
     );
 
 
@@ -546,7 +583,7 @@ module emu (
     assign VGA_B = b;
 
     reg [26:0] act_cnt;
-    always @(posedge clk_sys) act_cnt <= act_cnt + 1'd1;
+    always_ff @(posedge clk_sys) act_cnt <= act_cnt + 1'd1;
     assign LED_USER = act_cnt[26] ? act_cnt[25:18] > act_cnt[7:0] : act_cnt[25:18] <= act_cnt[7:0];
 
 endmodule

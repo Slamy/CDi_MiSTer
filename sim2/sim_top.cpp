@@ -81,15 +81,15 @@ void clock(VerilatedVcdC &m_trace, Vemu &dut) {
     }
 }
 
-void loadfile(VerilatedVcdC &m_trace, Vemu &dut) {
+void loadfile(uint16_t index, const char *path, VerilatedVcdC &m_trace, Vemu &dut) {
 
-    FILE *f = fopen("ramsender.bin", "rb");
+    FILE *f = fopen(path, "rb");
     assert(f);
 
     uint16_t transferword;
 
     dut.rootp->emu__DOT__ioctl_addr = 0;
-    dut.rootp->emu__DOT__ioctl_download = 1;
+    dut.rootp->emu__DOT__ioctl_index = index;
 
     // make some clocks before starting
     for (int y = 0; y < 300; y++) {
@@ -113,7 +113,6 @@ void loadfile(VerilatedVcdC &m_trace, Vemu &dut) {
         clock(m_trace, dut);
     }
     fclose(f);
-    dut.rootp->emu__DOT__ioctl_download = 0;
 }
 
 void printstate(Vemu &dut) {
@@ -155,11 +154,16 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
     dut.RESET = 1;
     dut.UART_RXD = 1;
 
+    // wait for SDRAM to initialize
     for (int y = 0; y < 300; y++) {
         clock(m_trace, dut);
     }
 
-    // loadfile(m_trace, dut);
+    dut.rootp->emu__DOT__ioctl_download = 1;
+    loadfile(0, "cdi200.rom", m_trace, dut);
+    loadfile(0x0040, "zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206", m_trace, dut);
+    dut.rootp->emu__DOT__ioctl_download = 0;
+
     dut.RESET = 0;
 
     // for (int y = 0; y < 780000; y++) {
@@ -265,9 +269,9 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
 
     if (1) {
         printf("Writing rampdump!\n");
-        FILE *f = fopen("ramdump2.bin", "wb");
+        FILE *f = fopen("slavedump.bin", "wb");
         assert(f);
-        fwrite(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
+        fwrite(&dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__memory[0], 1, 1024 * 8, f);
         fclose(f);
     }
 

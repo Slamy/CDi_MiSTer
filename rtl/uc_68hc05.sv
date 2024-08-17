@@ -16,7 +16,13 @@ module uc68hc05 (
     input irq,
     output bit [7:0] ddra,
     output bit [7:0] ddrb,
-    output bit [7:0] ddrc
+    output bit [7:0] ddrc,
+
+    // ROM is implemented as a write once read many memory
+    input [12:0] worm_adr,
+    input [7:0] worm_data,
+    input worm_wr
+
 );
 
     bit [7:0] datain;
@@ -29,10 +35,13 @@ module uc68hc05 (
     wire [7:0] dataout;
 
     bit fail = 0;
-    bit [7:0] memory[8192];
+    bit [7:0] memory[8192]  /*verilator public_flat_rd*/;
+
+`ifdef VERILATOR
     initial begin
         $readmemh("slave.mem", memory);
     end
+`endif
 
     // Readback of PORTx registers depend on DDRx
     // With a pin being 1, provided the output value
@@ -105,6 +114,12 @@ module uc68hc05 (
             memory_in   = 0;
             memory_wr   = 1;
             memory_addr = {4'b0, memory_reset_addr};
+        end
+
+        if (worm_wr) begin
+            memory_in   = worm_data;
+            memory_wr   = 1;
+            memory_addr = worm_adr;
         end
     end
 
