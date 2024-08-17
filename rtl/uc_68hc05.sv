@@ -196,6 +196,8 @@ module uc68hc05 (
             ddrb <= 0;
             ddrc <= 0;
             latched_counter <= 0;
+            spi_transfer_complete <= 0;
+            output_capture <= 0;
         end else if (!clken) begin
             lastaddr <= addr;
 

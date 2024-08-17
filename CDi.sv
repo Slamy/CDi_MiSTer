@@ -1,3 +1,5 @@
+`timescale 1 ns / 1 ns
+
 //============================================================================
 //
 //  This program is free software; you can redistribute it and/or modify it
@@ -210,13 +212,6 @@ module emu (
 
     //////////////////////////////////////////////////////////////////
 
-    wire [1:0] ar = status[122:121];
-
-`ifndef VERILATOR
-    assign VIDEO_ARX = (!ar) ? 12'd4 : (ar - 1'd1);
-    assign VIDEO_ARY = (!ar) ? 12'd3 : 12'd0;
-`endif
-
     `include "build_id.v"
     localparam CONF_STR = {
         "CD-i;UART115200;",
@@ -239,18 +234,21 @@ module emu (
     wire         forced_scandoubler;
     wire [  1:0] buttons;
     wire [127:0] status;
-    wire [ 10:0] ps2_key;
 
-    wire         ioctl_download  /*verilator public_flat_rw*/;
-    wire         ioctl_wr  /*verilator public_flat_rw*/;
-    wire [ 24:0] ioctl_addr  /*verilator public_flat_rw*/;
-    wire [ 15:0] ioctl_dout  /*verilator public_flat_rw*/;
-    wire [  7:0] ioctl_index  /*verilator public_flat_rw*/;
-    wire         ioctl_wait  /*verilator public_flat_rw*/;
+    wire [  1:0] ar = status[122:121];
+    assign VIDEO_ARX = (ar == 0) ? 13'd4 : (13'(ar) - 13'd1);
+    assign VIDEO_ARY = (ar == 0) ? 13'd3 : 13'd0;
 
-    //wire rom_download = ioctl_download & (ioctl_index[5:0] <= 6'h00);
-    wire         rom_download = ioctl_download;
-    bit          rom_download_not_yet = 1;
+    wire [10:0] ps2_key;
+
+    wire        ioctl_download  /*verilator public_flat_rw*/;
+    wire        ioctl_wr  /*verilator public_flat_rw*/;
+    wire [24:0] ioctl_addr  /*verilator public_flat_rw*/;
+    wire [15:0] ioctl_dout  /*verilator public_flat_rw*/;
+    wire [ 7:0] ioctl_index  /*verilator public_flat_rw*/;
+    wire        ioctl_wait  /*verilator public_flat_rw*/ = 0;
+
+    (* keep *)wire        clk_sys  /*verilator public_flat_rw*/;
 
 `ifndef VERILATOR
     hps_io #(
@@ -281,7 +279,6 @@ module emu (
 
     ///////////////////////   CLOCKS   ///////////////////////////////
 
-    (* keep *) wire clk_sys  /*verilator public_flat_rw*/;
 `ifndef VERILATOR
     pll pll (
         .refclk(CLK_50M),
@@ -297,73 +294,204 @@ module emu (
     wire [15:0] sdram_din;
     wire [15:0] sdram_dout;
     wire        sdram_busy;
-    assign ioctl_wait = sdram_busy;
+    wire        sdram_burst;
+    wire        sdram_refresh;
+    wire        sdram_burstdata_valid;
+    wire        sdram_init_done;
+
+    bit         prepare_sdram;
+    bit  [24:0] prepare_sdram_addr;
+    bit  [15:0] prepare_sdram_din;
+    bit         prepare_sdram_wr;
+    bit         prepare_sdram_refresh;
+    bit         prepare_sdram_rd;
+
+    bit         cditop_reset = 1;
+
+    // 1MB of RAM to zero, 512k 16 bit words
+    // The highest bit 20 is only used for detection that the process was finished
+    bit  [20:1] ram_zero_adr = 0;
+
+    // Zeroing of RAM currently disabled. Seems to be not required.
+    wire        ram_zero_done = 1;
+    //wire ram_zero_done = ram_zero_adr[20];
+
+`ifdef VERILATOR
+    bit ram_zero_done_q = 0;
+    always_ff @(posedge clk_sys) begin
+        ram_zero_done_q <= ram_zero_done;
+
+        if (ram_zero_done && !ram_zero_done_q) $display("RAM Zeroed");
+    end
+`endif
+
+    typedef enum bit [3:0] {
+        ROM_DOWNLOAD,  // most important
+        RAM_ZERO,  // bulk afterwards
+        REFRESH,
+        IDLE
+    } e_arbit_target;
+
+    e_arbit_target sdram_owner;
+    e_arbit_target sdram_owner_q;
+    e_arbit_target sdram_owner_next;
+
+    bit            ioctl_wr_latch  /*verilator public_flat_rw*/ = 0;
+
+    always_comb begin
+        sdram_owner_next = IDLE;
+
+        if (prepare_sdram) begin
+            sdram_owner_next = REFRESH;
+
+            if (!ram_zero_done) sdram_owner_next = RAM_ZERO;
+            if (ioctl_wr_latch) sdram_owner_next = ROM_DOWNLOAD;
+        end
+
+        if (sdram_busy) sdram_owner = sdram_owner_q;
+        else sdram_owner = sdram_owner_next;
+    end
+
+    bit sdram_busy_q = 0;
+
+    always_comb begin
+        prepare_sdram_din = 0;
+        prepare_sdram_wr = 0;
+        prepare_sdram_addr = {4'b0000, ram_zero_adr, 1'b0};
+        prepare_sdram_rd = 0;
+        prepare_sdram_refresh = 0;
+
+        case (sdram_owner)
+            ROM_DOWNLOAD: begin
+                prepare_sdram_din  = {ioctl_dout[7:0], ioctl_dout[15:8]};
+                prepare_sdram_addr = {3'b001, ioctl_addr[21:1], 1'b0};
+                prepare_sdram_wr   = 1;
+            end
+            RAM_ZERO: begin
+                if (!sdram_busy_q) prepare_sdram_wr = 1;
+            end
+            REFRESH: begin
+                prepare_sdram_rd = 1;
+                prepare_sdram_refresh = 1;
+            end
+            default: begin
+            end
+        endcase
+
+        if (sdram_busy) begin
+            prepare_sdram_rd = 0;
+            prepare_sdram_wr = 0;
+        end
+    end
+
+    bit ioctl_download_q = 0;
+    bit ioctl_wr_overflow = 0;
+
+    always_ff @(posedge clk_sys) begin
+        if (ioctl_wr_latch && ioctl_wr) ioctl_wr_overflow <= 1;
+
+        if (ioctl_wr) begin
+            ioctl_wr_latch <= 1;
+        end
+
+        ioctl_download_q <= ioctl_download;
+        sdram_busy_q <= sdram_busy;
+
+        if (!ioctl_download_q && ioctl_download) begin
+            // Use positive edge of ioctl_download as reset
+            sdram_owner_q <= RAM_ZERO;
+            ram_zero_adr  <= 0;
+        end else begin
+            sdram_owner_q <= sdram_owner;
+
+            if (sdram_owner_q == RAM_ZERO && sdram_busy_q && !sdram_busy)
+                ram_zero_adr <= ram_zero_adr + 1;
+
+            if (sdram_owner_q == ROM_DOWNLOAD && sdram_busy_q && !sdram_busy) ioctl_wr_latch <= 0;
+        end
+    end
+
+    assign prepare_sdram = cditop_reset;
+    always_ff @(posedge clk_sys) begin
+        cditop_reset <= RESET || status[0] || buttons[1] || ioctl_download || !ram_zero_done;
+    end
 
     sdram sdram (
         .*,
         .init(0),  //~clock_locked),
         .clk(clk_sys),
 
-        .addr(rom_download ? {3'b001, ioctl_addr[21:1], 1'b0} : sdram_addr),
-        .din (rom_download ? {ioctl_dout[7:0], ioctl_dout[15:8]} : sdram_din),
+        .addr(prepare_sdram ? prepare_sdram_addr : sdram_addr),
+        .din(prepare_sdram ? prepare_sdram_din : sdram_din),
         .dout(sdram_dout),
-        .rd  (rom_download ? 1'b0 : sdram_rd),
-        .wr  (rom_download ? ioctl_wr : sdram_wr),
-        .word(rom_download ? 1'b1 : sdram_word),
-        .busy(sdram_busy)
+        .rd(prepare_sdram ? prepare_sdram_rd : sdram_rd),
+        .wr(prepare_sdram ? prepare_sdram_wr : sdram_wr),
+        .word(prepare_sdram ? 1'b1 : sdram_word),
+        .busy(sdram_busy),
+        .refresh(prepare_sdram ? prepare_sdram_refresh : sdram_refresh),
+        .burst(prepare_sdram ? 1'b0 : sdram_burst),
+        .burstdata_valid(sdram_burstdata_valid)
     );
+
+`ifndef VERILATOR
+    (* noprune *) bit [15:0] SDRAM_DQ_in;
+
+    always_ff @(posedge clk_sys) begin
+        SDRAM_DQ_in <= SDRAM_DQ;
+    end
+`endif
 
 `ifdef VERILATOR
     bit [15:0] rom[262144]  /*verilator public_flat_rw*/;
     bit [15:0] ram[262144*2]  /*verilator public_flat_rw*/;
-    bit [25:0] sdram_real_addr;
+    bit [22:0] sdram_real_addr;
     initial begin
         $readmemh("cdi200.mem", rom);
+        //$readmemh("ramdump.mem", ram);
     end
 
+    reg [3:0] burstindex = 0;
+
     always_comb begin
-        if (sdram_real_addr[21]) SDRAM_DQ_in = rom[sdram_real_addr[17:0]];
-        else SDRAM_DQ_in = ram[sdram_real_addr[18:0]];
+        SDRAM_DQ_in = 0;
+
+        if (sdram_real_addr[21]) SDRAM_DQ_in = rom[sdram_real_addr[17:0]+18'(burstindex)];
+        else SDRAM_DQ_in = ram[sdram_real_addr[18:0]+19'(burstindex)];
     end
 
     bit SDRAM_nWE_q;
     bit SDRAM_DQMH_q;
     bit SDRAM_DQML_q;
+    bit alignment_fail = 0;
 
     always_ff @(posedge clk_sys) begin
         SDRAM_nWE_q  <= SDRAM_nWE;
         SDRAM_DQMH_q <= SDRAM_DQMH;
         SDRAM_DQML_q <= SDRAM_DQML;
 
-        if (!SDRAM_nCAS) sdram_real_addr[25:13] <= SDRAM_A;
-        if (!SDRAM_nRAS) sdram_real_addr[12:0] <= SDRAM_A;
+        if (!SDRAM_nRAS) sdram_real_addr[21:9] <= SDRAM_A;
+        if (!SDRAM_nCAS) sdram_real_addr[8:0] <= SDRAM_A[8:0];
+
+        if (!SDRAM_nCAS) burstindex <= 0;
+        else if (burstindex < 4) burstindex <= burstindex + 1;
 
         if (sdram_real_addr[21]) begin
-            if (!SDRAM_nWE_q) assert (ioctl_download);
+            // no write during download
+            //if (!SDRAM_nWE_q) assert (ioctl_download);
 
-            if (!SDRAM_nWE_q && !SDRAM_DQML_q)
+            if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
                 rom[sdram_real_addr[17:0]][15:8] <= SDRAM_DQ_out[15:8];
-            if (!SDRAM_nWE_q && !SDRAM_DQMH_q) rom[sdram_real_addr[17:0]][7:0] <= SDRAM_DQ_out[7:0];
+            if (!SDRAM_nWE_q && !SDRAM_DQML_q) rom[sdram_real_addr[17:0]][7:0] <= SDRAM_DQ_out[7:0];
         end else begin
-            if (!SDRAM_nWE_q && !SDRAM_DQML_q)
+            if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
                 ram[sdram_real_addr[18:0]][15:8] <= SDRAM_DQ_out[15:8];
-            if (!SDRAM_nWE_q && !SDRAM_DQMH_q) ram[sdram_real_addr[18:0]][7:0] <= SDRAM_DQ_out[7:0];
+            if (!SDRAM_nWE_q && !SDRAM_DQML_q) ram[sdram_real_addr[18:0]][7:0] <= SDRAM_DQ_out[7:0];
         end
-
     end
 `endif
 
-    (* keep *) wire reset = RESET || status[0] || buttons[1] || rom_download;
 
-    always_ff @(posedge clk_sys) begin
-        if (rom_download) rom_download_not_yet <= 0;
-
-        //assert (sdram_wr == 0);
-    end
-
-    wire [1:0] col = status[4:3];
     wire debug_uart_fake_space  /*verilator public_flat_rw*/ = status[3];
-
     wire HBlank;
     wire HSync;
     wire VBlank;
@@ -375,7 +503,7 @@ module emu (
 
     cditop cditop (
         .clk30(clk_sys),
-        .reset(reset),
+        .reset(cditop_reset),
 
         .debug_uart_loopback(status[2]),
         .debug_uart_fake_space,
@@ -399,9 +527,13 @@ module emu (
         .sdram_din(sdram_din),
         .sdram_dout(sdram_dout),
         .sdram_busy(sdram_busy),
+        .sdram_refresh(sdram_refresh),
+        .sdram_burst,
+        .sdram_burstdata_valid,
         .scc68_uart_tx(UART_TXD),
         .scc68_uart_rx(UART_RXD)
     );
+
 
     assign CLK_VIDEO = clk_sys;
     assign CE_PIXEL = ce_pix;
@@ -409,8 +541,8 @@ module emu (
     assign VGA_DE = ~(HBlank | VBlank);
     assign VGA_HS = HSync;
     assign VGA_VS = VSync;
-    assign VGA_R = UART_RXD ? r : 0;
-    assign VGA_G = UART_TXD ? g : 0;
+    assign VGA_R = r;
+    assign VGA_G = g;
     assign VGA_B = b;
 
     reg [26:0] act_cnt;

@@ -76,6 +76,7 @@ make SOURCES=src/mame/philips/cdi.cpp REGENIE=1 -j8
 ## Using mame
 
 ./mame cdimono1 -log -oslog
+./mame cdimono1 -verbose -log -oslog -window &> log
 
 
 /opt/m68k-amigaos3/bin/vasmm68k_mot -Fbin -m68000 68ktest.asm  -o 68ktest.bin
@@ -202,3 +203,77 @@ microstate=nopnop
 [:mcd212] Byte fb w/ run length 06 at 138
 
 cat k | grep XYZ | cut -f 2 -d " " > videotestram.mem
+
+
+
+Setzen von Framebuffer Ptr Struktur
+
+41c13a 3 1a6 1 460001 0 0 40076370 8e0080 673a0 27da00 27e130 1500 41c128 27cc18 1500 27cbb8
+Write DRAM 0673a0 4007
+Write DRAM 0673a2 6370
+
+
+[:mcd212] 00000430: 5000043c: ICA 0: RELOAD VSR and STOP: VSR = 0043c Blauer Bildschirm?
+[:mcd212] 00000430: 5000043c: ICA 0: RELOAD VSR and STOP: VSR = 0043c
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730 Definitiv ein blauer Bildschirm
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 5006c730: ICA 0: RELOAD VSR and STOP: VSR = 6c730
+[:mcd212] 00062d4c: 50076370: ICA 0: RELOAD VSR and STOP: VSR = 76370 System Menü
+[:mcd212] 00062d4c: 50076370: ICA 0: RELOAD VSR and STOP: VSR = 76370
+[:mcd212] 00062d4c: 50076370: ICA 0: RELOAD VSR and STOP: VSR = 76370
+
+
+http://www.icdia.co.uk/microware/index.html
+https://github.com/Stovent/CeDImu/blob/master/src/CDI/OS9/SystemCalls.hpp
+
+Swap 16 bit endianness:
+    objcopy -I binary -O binary --reverse-bytes=2 picture.bin picture2.bin
+
+Transmit binary:
+    scp 68ktest.bin root@mister:/media/fat/games/CD-i
+
+
+Ideen:
+* PC Counter Block RAM oder live
+* RAM test verbessern
+    * Mehr Muster
+* RAM nicht erwartet
+    * RAM simulation alles 1 oder random
+    * Das war es nicht.
+* Mark Signale auf dem Video ausgeben.
+    * Kann man Status Signale im MiSTer Menü anzeigen?
+    * Ansonsten UART mit FIFO?
+    * Mark Signale mit SignalTap...
+    * CPU Zähler würde Sinn machen.
+* Es ist deterministisch falsch
+
+XXX Mark  0 after    3140937
+XXX Mark  1 after    3155452
+XXX Mark  2 after    5385498
+XXX Mark  3 after    5385504
+XXX Mark  4 after   16335717
+XXX Mark  5 after   16338780
+XXX Mark  7 after   16580483
+XXX Mark  8 after   20141874
+XXX Mark  9 after   20172818
+
+
+XXX Mark           0 0040469c after    3140937
+XXX Mark           1 00404874 after    3155452
+XXX Mark           2 004048f2 after    5385498
+XXX Mark           3 00404902 after    5385504
+XXX Mark           4 00404a46 after   16335717
+XXX Mark           5 00404aa0 after   16338780
+XXX Mark           7 0041d618 after   16580483
+XXX Mark           8 0041d672 after   16583264
+XXX Mark           9 004758d4 after   20141874
+XXX Mark          10 004758d8 after   20172818
+
+
+XXX Note 00015000 9CE32CC5 2422 F660 1189 68
+XXX Note 00015800 E3D61766 4F97 C961 1039 79 anders
+XXX Note 00016000 17A11B64 4F97 3263 1481 89
+XXX Note 00016800 4B00ACCA 4F97 28DC 3 100

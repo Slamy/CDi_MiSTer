@@ -48,7 +48,7 @@ module video_timing (
         h_total  = h_total * ClksPerCycle;
         h_active = h_active * ClksPerCycle;
         h_start  = h_start * ClksPerCycle;
-        h_sync = h_sync * ClksPerCycle;
+        h_sync   = h_sync * ClksPerCycle;
     end
 
     // vertical timing according to Table 5-6
@@ -101,15 +101,26 @@ module video_timing (
     end
 
     always_ff @(posedge clk) begin
-        hsync <= video_x < h_sync;
-        vsync <= video_y < v_sync;
-        new_frame <= video_x == 0 && video_y == 0;
-        new_line <= video_x == 0;
-        hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
-        vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
-        new_pixel <= (cm ? video_x[1:0] == 0 : video_x[2:0] == 0) && !hblank && !vblank;
+        if (reset) begin
+            hsync <= 0;
+            vsync <= 0;
+            new_frame <= 0;
+            new_line <= 0;
+            hblank <= 0;
+            vblank <= 0;
+        end else begin
+            hsync <= video_x < h_sync;
+            vsync <= video_y < v_sync;
+            new_frame <= video_x == 0 && video_y == 0;
+            new_line <= video_x == 0;
+            hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
+            vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
+        end
     end
 
+    assign new_pixel = (cm ? video_x[0] == 1 : video_x[1:0] == 1) && !hblank && !vblank;
+
+`ifdef VERILATOR
     int pixels_per_line = 0;
     always_ff @(posedge clk) begin
         if (new_line) begin
@@ -119,7 +130,6 @@ module video_timing (
             pixels_per_line <= pixels_per_line + 1;
         end
     end
-
-
+`endif
 
 endmodule

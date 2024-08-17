@@ -26,6 +26,9 @@ module cditop (
     output [15:0] sdram_din,
     input  [15:0] sdram_dout,
     input         sdram_busy,
+    output        sdram_burst,
+    output        sdram_refresh,
+    input         sdram_burstdata_valid,
 
     output scc68_uart_tx,
     input  scc68_uart_rx
@@ -37,7 +40,7 @@ module cditop (
     (* keep *) wire lds;
     (* keep *) wire uds;
 
-    (* keep *) bit bus_ack;
+    (* keep *) bit bus_ack  /*verilator public_flat_rd*/;
 
     (* keep *) bit [15:0] data_in;
     wire [15:0] cpu_data_out;
@@ -90,7 +93,7 @@ module cditop (
             if ((lds || uds) && attex_cs_slave && !write_strobe)
                 $display("Read SLAVE %x %x %d %d %d", addr[7:1], data_in_q, lds, uds, write_strobe);
 
-            /*
+
             if ((lds || uds) && attex_cs_nvram)
                 $display(
                     "Access NVRAM %x %x %x %d %d %d",
@@ -101,7 +104,7 @@ module cditop (
                     uds,
                     write_strobe
                 );
-                */
+
         end
     end
 
@@ -130,7 +133,10 @@ module cditop (
         .sdram_word(sdram_word),
         .sdram_din(sdram_din),
         .sdram_dout(sdram_dout),
-        .sdram_busy(sdram_busy)
+        .sdram_busy(sdram_busy),
+        .sdram_burst(sdram_burst),
+        .sdram_refresh(sdram_refresh),
+        .sdram_burstdata_valid
     );
 
     cdic cdic_inst (
@@ -258,12 +264,12 @@ module cditop (
         .sda_out(disdat_to_ic),
         .scl(disclk)
     );
-
+    
     always_comb begin
         slave_bus_ack = dtackslaven && !dtackslaven_q;
         slave_irq = irq_cooldown == 1;
     end
-    
+
     always_ff @(posedge clk30) begin
         if (reset) begin
             irq_cooldown <= 0;

@@ -17,11 +17,11 @@ module ica_dca_ctrl (
     localparam bit [21:0] odd_ica_start = 22'h400;
     localparam bit [21:0] even_ica_start = 22'h404;
 
-    bit [21:0] ica_pointer;
+    (* keep *) bit [21:0] ica_pointer;
     bit [21:0] dca_pointer;
-    bit [31:0] instruction;
+    (* keep *) bit [31:0] instruction;
 
-    enum {
+    enum bit [3:0] {
         IDLE,
         READ0,
         READ1,
@@ -35,11 +35,12 @@ module ica_dca_ctrl (
 
     assign vsr = instruction[21:0];
     assign reload_vsr = state == EXECUTE && instruction[31:28] == 5;
-    /*
+
     always_ff @(posedge clk) begin
-        if (register_write) $display("ICA Write %x %x %b", {1'b1, register_adr}, register_data, register_data);
+        if (register_write)
+            $display("ICA Write %x %x %b", {1'b1, register_adr}, register_data, register_data);
     end
-    */
+
     bit cm;
     bit mf1;
     bit mf2;
@@ -52,12 +53,20 @@ module ica_dca_ctrl (
             ica_pointer <= odd_ica_start;
             as <= 0;
             state <= IDLE;
+
+            cm <= 0;
+            mf1 <= 0;
+            mf2 <= 0;
+            ft1 <= 0;
+            ft2 <= 0;
+            instruction <= 0;
         end else begin
             case (state)
                 IDLE: begin
                     state <= READ0;
                     address <= ica_pointer;
                     ica_pointer <= ica_pointer + 2;
+                    $display("Start reading ICA %x", ica_pointer);
                     as <= 1;
                 end
                 READ0: begin
@@ -76,44 +85,46 @@ module ica_dca_ctrl (
                     end
                 end
                 EXECUTE: begin
+                    $display("ICA instruction %x", instruction);
+
                     case (instruction[31:28])
                         0: begin
                             // stop until next field
                             state <= STOPPED;
-                            //$display("STOP");
+                            $display("STOP");
 
                         end
                         1: begin
                             // no operation
                             state <= IDLE;
-                            //$display("NOP");
+                            $display("NOP");
                         end
                         2: begin
                             // reload dcp
                             dca_pointer <= instruction[21:0];
-                            //$display("Reload DCP %x", instruction[21:0]);
+                            $display("Reload DCP %x", instruction[21:0]);
                             state <= IDLE;
                         end
                         3: begin
                             // reload dcp and stop
                             dca_pointer <= instruction[21:0];
-                            //$display("Reload DCP and STOP %x", instruction[21:0]);
+                            $display("Reload DCP and STOP %x", instruction[21:0]);
                             state <= STOPPED;
                         end
                         4: begin
                             // reload ica pointer
                             ica_pointer <= instruction[21:0];
-                            //$display("Reload ICA %x", instruction[21:0]);
+                            $display("Reload ICA %x", instruction[21:0]);
                             state <= IDLE;
                         end
                         5: begin
                             // reload vsr pointer and stop
-                            //$display("Reload VSR and STOP %x", instruction[21:0]);
+                            $display("Reload VSR and STOP %x", instruction[21:0]);
                             state <= STOPPED;
                         end
                         6: begin
                             // interrupt
-                            //$display("INTERRUPT");
+                            $display("INTERRUPT");
                             state <= IDLE;
                         end
                         7: begin
@@ -125,7 +136,7 @@ module ica_dca_ctrl (
                             mf2 <= instruction[2];
                             ft1 <= instruction[1];
                             ft2 <= instruction[0];
-                            //$display("RELOAD DISPLAY PARAMETERS %b", instruction[4:0]);
+                            $display("RELOAD DISPLAY PARAMETERS %b", instruction[4:0]);
                             state <= IDLE;
                         end
                         default: begin
@@ -137,6 +148,8 @@ module ica_dca_ctrl (
                 STOPPED: begin
                     // Do nothing until reset
                 end
+                default: begin end
+
             endcase
         end
     end

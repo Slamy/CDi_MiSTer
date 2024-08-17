@@ -49,6 +49,9 @@ module sdram (
     input             rd,
     input             wr,
     input             word,
+    input             burst,
+    input             refresh,
+    output reg        burstdata_valid,
     input      [15:0] din,
     output     [15:0] dout,
     output reg        busy
@@ -59,7 +62,7 @@ module sdram (
     assign {SDRAM_DQMH, SDRAM_DQML} = SDRAM_A[12:11];
 
     localparam RASCAS_DELAY = 3'd1;  // tRCD=20ns -> 2 cycles@85MHz
-    localparam BURST_LENGTH = 3'd0;  // 0=1, 1=2, 2=4, 3=8, 7=full page
+    localparam BURST_LENGTH = 3'd2;  // 0=1, 1=2, 2=4, 3=8, 7=full page
     localparam ACCESS_TYPE = 1'd0;  // 0=sequential, 1=interleaved
     localparam CAS_LATENCY = 3'd2;  // 2/3 allowed
     localparam OP_MODE = 2'd0;  // only 0 (standard operation) allowed
@@ -67,20 +70,27 @@ module sdram (
 
     localparam MODE = {3'b000, NO_WRITE_BURST, OP_MODE, CAS_LATENCY, ACCESS_TYPE, BURST_LENGTH};
 
-    localparam STATE_IDLE = 3'd0;  // state to check the requests
+    localparam STATE_IDLE = 4'd0;  // state to check the requests
     localparam STATE_START = STATE_IDLE + 1'd1;  // state in which a new command is started
     localparam STATE_CONT = STATE_START + RASCAS_DELAY;
-    localparam STATE_READY = STATE_CONT + CAS_LATENCY + 1'd1;
+    localparam STATE_READY = STATE_CONT + CAS_LATENCY;
     localparam STATE_LAST = STATE_READY;  // last state in cycle
 
-    reg  [ 2:0] state;
-    reg  [24:0] a;
+    reg  [ 3:0] state;
+    reg  [24:0] a;  // temporary storage of address to allow change after request
     reg  [15:0] data;
-    reg         we;
-    reg         ds;
+    reg         we;  // temporary storage of wr to allow change after request
+    reg         ds;  // temporary storage of word to allow change after request
     reg         ram_req = 0;
-    wire        ram_req_test = (we || (a[24:1] != addr[24:1]));
+    wire        ram_req_test = !refresh;
     reg  [15:0] last_data;
+
+    localparam MODE_NORMAL = 2'b00;
+    localparam MODE_RESET = 2'b01;
+    localparam MODE_LDM = 2'b10;
+    localparam MODE_PRE = 2'b11;
+    reg [1:0] mode = 0;
+    reg [4:0] reset = '1;
 
     // access manager
     always_ff @(posedge clk) begin
@@ -91,6 +101,8 @@ module sdram (
         old_wr <= old_wr & wr;
 
         if (state == STATE_IDLE && mode == MODE_NORMAL) begin
+            burstdata_valid <= 0;
+
             if ((~old_rd & rd) | (~old_wr & wr)) begin
                 old_rd <= rd;
                 old_wr <= wr;
@@ -107,39 +119,51 @@ module sdram (
             ram_req <= ram_req_test;
         end
 
-        if (state == STATE_READY && busy) begin
+        if (!burst && state == STATE_READY && busy) begin
             ram_req <= 0;
             we <= 0;
             busy <= 0;
             if (ram_req) begin
                 if (we) begin
                     a <= '1;
-                end else begin
-`ifdef VERILATOR
-                    last_data <= SDRAM_DQ_in;
-`else
-                    last_data <= SDRAM_DQ;
-`endif
                 end
+            end
+        end
+
+        if (burst && state == STATE_READY + 3 && busy) begin
+            ram_req <= 0;
+            we <= 0;
+            busy <= 0;
+            if (ram_req) begin
+                if (we) begin
+                    a <= '1;
+                end
+            end
+        end
+
+
+        if (state >= STATE_READY && busy) begin
+            burstdata_valid <= burst;
+
+            if (ram_req && !we) begin
+`ifdef VERILATOR
+                last_data <= SDRAM_DQ_in;
+`else
+                last_data <= SDRAM_DQ;
+`endif
             end
         end
 
         if (mode != MODE_NORMAL || state != STATE_IDLE || reset != 0) begin
             state <= state + 1'd1;
-            if (state == STATE_LAST) state <= STATE_IDLE;
+            if (!burst && state == STATE_LAST) state <= STATE_IDLE;
+            if (burst && state == STATE_LAST + 3) state <= STATE_IDLE;
         end
     end
 
     assign dout = ((~ds & a[0]) ? {last_data[7:0], last_data[15:8]} : last_data);
 
-    localparam MODE_NORMAL = 2'b00;
-    localparam MODE_RESET = 2'b01;
-    localparam MODE_LDM = 2'b10;
-    localparam MODE_PRE = 2'b11;
-
     // initialization 
-    reg [1:0] mode;
-    reg [4:0] reset = '1;
     reg init_old = 0;
     always_ff @(posedge clk) begin
         init_old <= init;
@@ -173,22 +197,17 @@ module sdram (
 `ifndef VERILATOR
         SDRAM_DQ <= 'Z;
 `endif
+
         casex ({
             ram_req, we, mode, state
         })
-            {
-                2'bXX, MODE_NORMAL, STATE_START
-            } :
-            {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE} <= ram_req_test ? CMD_ACTIVE : CMD_AUTO_REFRESH;
-            {
-                2'b11, MODE_NORMAL, STATE_CONT
-            } :
+            // verilog_format: off
+            {2'bXX, MODE_NORMAL, STATE_START} : {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE} <= ram_req_test ? CMD_ACTIVE : CMD_AUTO_REFRESH;
 `ifdef VERILATOR
-            {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE, SDRAM_DQ_out} <= {CMD_WRITE, data};
+            {2'b11, MODE_NORMAL, STATE_CONT} : {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE, SDRAM_DQ_out} <= {CMD_WRITE, data};
 `else
-            {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE, SDRAM_DQ} <= {CMD_WRITE, data};
+            {2'b11, MODE_NORMAL, STATE_CONT} : {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE, SDRAM_DQ} <= {CMD_WRITE, data};
 `endif
-
             {2'b10, MODE_NORMAL, STATE_CONT} : {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE} <= CMD_READ;
 
             // init
@@ -196,14 +215,17 @@ module sdram (
             {2'bXX, MODE_PRE, STATE_START} : {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE} <= CMD_PRECHARGE;
 
             default: {SDRAM_nRAS, SDRAM_nCAS, SDRAM_nWE} <= CMD_NOP;
+            // verilog_format: on
         endcase
 
         if (mode == MODE_NORMAL) begin
             casex (state)
-                STATE_START: SDRAM_A <= addr[13:1];
-                STATE_CONT:  SDRAM_A <= {dqm, 2'b10, a[22:14]};
+                // apply row address
+                STATE_START: SDRAM_A <= addr[22:10];
+                // apply column address
+                STATE_CONT:  SDRAM_A <= {dqm, 2'b10, a[9:1]};
             endcase
-            ;
+
         end else if (mode == MODE_LDM && state == STATE_START) SDRAM_A <= MODE;
         else if (mode == MODE_PRE && state == STATE_START) SDRAM_A <= 13'b0010000000000;
         else SDRAM_A <= 0;

@@ -1,4 +1,5 @@
 
+
 interface bus68k (
     input clk
 );
@@ -14,4 +15,17 @@ interface bus68k (
     modport master(output write_strobe, as, lds, uds, data_out, addr, input bus_ack, data_in);
     modport slave(input write_strobe, as, lds, uds, data_out, addr, output bus_ack, data_in);
 
+endinterface
+
+
+interface pixelstream (
+    input clk
+);
+
+    bit write;
+    bit strobe;
+    bit [7:0] pixel;
+
+    modport source(output write, pixel, input strobe);
+    modport sink(input write, pixel, output strobe);
 endinterface
