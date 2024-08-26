@@ -16,7 +16,9 @@ module video_timing (
     output bit vblank,
     output bit new_line,
     output bit new_frame,
-    output bit new_pixel
+    output bit new_pixel,
+    output bit new_pixel_hires,
+    output bit new_pixel_lores
 );
 
     localparam bit [12:0] ClksPerCycle = 16;
@@ -101,23 +103,16 @@ module video_timing (
     end
 
     always_ff @(posedge clk) begin
-        if (reset) begin
-            hsync <= 0;
-            vsync <= 0;
-            new_frame <= 0;
-            new_line <= 0;
-            hblank <= 0;
-            vblank <= 0;
-        end else begin
-            hsync <= video_x < h_sync;
-            vsync <= video_y < v_sync;
-            new_frame <= video_x == 0 && video_y == 0;
-            new_line <= video_x == 0;
-            hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
-            vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
-        end
+        hsync <= video_x < h_sync;
+        vsync <= video_y < v_sync;
+        new_frame <= video_x == 0 && video_y == 0;
+        new_line <= video_x == 0;
+        hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
+        vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
     end
 
+    assign new_pixel_lores = video_x[1:0] == 1 && !hblank && !vblank;
+    assign new_pixel_hires = video_x[0] == 1 && !hblank && !vblank;
     assign new_pixel = (cm ? video_x[0] == 1 : video_x[1:0] == 1) && !hblank && !vblank;
 
 `ifdef VERILATOR

@@ -8,12 +8,12 @@ module cditop (
 
     input scandouble,
 
-    output reg ce_pix,
+    output bit ce_pix,
 
-    output reg HBlank,
-    output reg HSync,
-    output reg VBlank,
-    output reg VSync,
+    output bit HBlank,
+    output bit HSync,
+    output bit VBlank,
+    output bit VSync,
 
     output [7:0] r,
     output [7:0] g,
@@ -67,7 +67,6 @@ module cditop (
     wire attex_cs_nvram = addr_byte[23:16] == 8'h32;
 
     bit [15:0] data_in_q = 0;
-
     bit attex_cs_slave_q = 0;
 
     wire bus_err_ram_area1 = (addr_byte >= 24'h600000 && addr_byte < 24'hd00000);
@@ -77,7 +76,8 @@ module cditop (
     always_ff @(posedge clk30) begin
         data_in_q <= data_in;
 
-        ce_pix <= !ce_pix;
+        if (reset) ce_pix <= 0;
+        else ce_pix <= !ce_pix;
 
         if (bus_ack) begin
             if ((lds || uds) && attex_cs_cdic && write_strobe)
@@ -125,7 +125,7 @@ module cditop (
         .cs(attex_cs_mcd212),
         .r(r),
         .g(g),
-        .b,
+        .b(b),
         .hsync(HSync),
         .vsync(VSync),
         .hblank(HBlank),
@@ -158,6 +158,7 @@ module cditop (
     wire vsdc_intn = 1'b1;
     wire in2in;
 
+`ifndef DISABLE_MAIN_CPU
     scc68070 scc68070_0 (
         .clk(clk30),
         .reset(reset),  // External sync reset on emulated system
@@ -180,6 +181,7 @@ module cditop (
         .debug_uart_loopback,
         .debug_uart_fake_space
     );
+`endif
 
     bit [7:0] ddra;
     bit [7:0] ddrb;
@@ -245,6 +247,7 @@ module cditop (
     (* keep *) bit slave_irq;
     bit [7:0] irq_cooldown = 0;
 
+`ifndef DISABLE_SLAVE_UC
     uc68hc05 uc68hc05_0 (
         .clk30,
         .reset(reset),
@@ -264,6 +267,7 @@ module cditop (
         .worm_data(slave_worm_data),
         .worm_wr  (slave_worm_wr)
     );
+`endif
 
     u3090mg u3090mg (
         .clk(clk30),
@@ -282,6 +286,7 @@ module cditop (
             irq_cooldown <= 0;
             attex_cs_slave_q <= 0;
             dtackslaven_q <= 0;
+            in2in_q <= 1;
         end else begin
             attex_cs_slave_q <= attex_cs_slave;
             dtackslaven_q <= dtackslaven;

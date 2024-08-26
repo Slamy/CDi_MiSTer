@@ -466,14 +466,6 @@ module emu (
         .burstdata_valid(sdram_burstdata_valid)
     );
 
-`ifndef VERILATOR
-    (* noprune *) bit [15:0] SDRAM_DQ_in;
-
-    always_ff @(posedge clk_sys) begin
-        SDRAM_DQ_in <= SDRAM_DQ;
-    end
-`endif
-
 `ifdef VERILATOR
     bit [15:0] rom[262144]  /*verilator public_flat_rw*/;
     bit [15:0] ram[262144*2]  /*verilator public_flat_rw*/;

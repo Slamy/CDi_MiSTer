@@ -14,8 +14,8 @@ module ica_dca_ctrl (
     output [21:0] vsr
 );
 
-    localparam bit [21:0] odd_ica_start = 22'h400;
-    localparam bit [21:0] even_ica_start = 22'h404;
+    parameter bit [21:0] odd_ica_start = 22'h400;
+    parameter bit [21:0] even_ica_start = 22'h404;
 
     (* keep *) bit [21:0] ica_pointer;
     bit [21:0] dca_pointer;

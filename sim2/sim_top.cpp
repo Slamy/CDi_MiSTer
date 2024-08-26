@@ -135,14 +135,6 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
     do_trace = false;
     dut.rootp->emu__DOT__debug_uart_fake_space = false;
 
-    if (0) {
-        FILE *f = fopen("ramdump.bin", "rb");
-        assert(f);
-        fread(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
-        fclose(f);
-    }
-    // memset(&dut.rootp->emu__DOT__ram[0], 0x55, 1024 * 1024);
-
     /*
     fread(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256, f);
     fread(&dut.rootp->emu__DOT__ram[2 * 1024 * 128], 1, 1024 * 256, f);
@@ -159,11 +151,12 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
         clock(m_trace, dut);
     }
 
+    /*
     dut.rootp->emu__DOT__ioctl_download = 1;
     loadfile(0, "cdi200.rom", m_trace, dut);
     loadfile(0x0040, "zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206", m_trace, dut);
     dut.rootp->emu__DOT__ioctl_download = 0;
-
+    */
     dut.RESET = 0;
 
     // for (int y = 0; y < 780000; y++) {
