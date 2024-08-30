@@ -134,6 +134,7 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
     dut.eval();
     do_trace = false;
     dut.rootp->emu__DOT__debug_uart_fake_space = false;
+    dut.rootp->emu__DOT__tvmode_ntsc = false;
 
     /*
     fread(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256, f);

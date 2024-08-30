@@ -220,6 +220,7 @@ module emu (
         "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
         "O[2],UART Loopback,No,Yes;",
         "O[3],UART Fake Space,No,Yes;",
+        "O[4],TV Mode,PAL,NTSC;",
         "-;",
         "-;",
         "T[0],Reset;",
@@ -515,8 +516,16 @@ module emu (
     end
 `endif
 
+`ifdef VERILATOR
+    bit debug_uart_fake_space  /*verilator public_flat_rw*/;
+    bit tvmode_ntsc  /*verilator public_flat_rw*/;
+`else
+    // status seems to be all zero after reset
+    // Should be considered for defining the default
+    wire debug_uart_fake_space = status[3];
+    wire tvmode_ntsc = status[4];
+`endif
 
-    wire debug_uart_fake_space  /*verilator public_flat_rw*/ = status[3];
     wire HBlank;
     wire HSync;
     wire VBlank;
@@ -531,6 +540,7 @@ module emu (
         .reset(cditop_reset),
 
         .debug_uart_loopback(status[2]),
+        .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
         .scandouble(forced_scandoubler),
 

@@ -1,6 +1,5 @@
 // SCC68070
 // Uses https://github.com/Slamy/TG68K.C as a fork of TG68k core with some modifications
-// TODO UART implementation which can be used on a real MiSTer to run the selftest
 // TODO MMU (not required for system boot)
 // TODO DMA (not required for system boot)
 

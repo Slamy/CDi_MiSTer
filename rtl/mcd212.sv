@@ -8,8 +8,6 @@ typedef struct packed {
 } clut_entry;
 
 // MCD 212 - DRAM and Video
-// TODO Remove internal memory which cannot be synthesized. Replace with external bus
-// TODO Attach an SDRAM controller
 
 module mcd212 (
     input clk,
@@ -190,13 +188,13 @@ module mcd212 (
 
                     if (ica1_as) begin
                         sdram_addr[18:1] = ica1_adr[18:1];
-                        sdram_addr[19] = 1;  // TODO
+                        sdram_addr[19] = 1;  // TODO investigate
                         sdram_rd = !sdram_busy && !sdram_busy_q;
                     end
 
                     if (file1_as) begin
                         sdram_addr[18:1] = file1_adr[18:1];
-                        sdram_addr[19] = 1;  // TODO
+                        sdram_addr[19] = 1;  // TODO investigate
                         sdram_rd = !sdram_busy && !sdram_busy_q;
                         sdram_burst = 1;
                     end
@@ -676,7 +674,6 @@ module mcd212 (
     // color mixing
     always_comb begin
         // start with the backdrop color
-        // TODO implement correctly
         r = backdrop_color_register.r ? 8'hff : 0;
         g = backdrop_color_register.g ? 8'hff : 0;
         b = backdrop_color_register.b ? 8'hff : 0;
@@ -713,7 +710,6 @@ module mcd212 (
 
         // cursor
         if (cursor_pixel && inside_cursor_window && cursor_control_register.en) begin
-            // TODO correct color
             r = cursor_control_register.r ? 8'hff : 0;
             g = cursor_control_register.g ? 8'hff : 0;
             b = cursor_control_register.b ? 8'hff : 0;

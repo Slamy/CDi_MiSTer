@@ -3,6 +3,7 @@ module cditop (
     input clk30,
     input reset,
 
+    input tvmode_pal,
     input debug_uart_loopback,
     input debug_uart_fake_space,
 
@@ -183,6 +184,8 @@ module cditop (
     );
 `endif
 
+    wire stand = !tvmode_pal;  // 1 NTSC, 0 PAL
+
     bit [7:0] ddra;
     bit [7:0] ddrb;
     bit [7:0] ddrc;
@@ -191,7 +194,7 @@ module cditop (
     bit [7:0] porta_out;
     wire [7:0] portb_in = 8'hff;
     bit [7:0] portb_out;
-    wire [7:0] portc_in = {6'b111111, addr[2:1]};
+    wire [7:0] portc_in = {stand, 5'b11111, addr[2:1]};
     bit [7:0] portc_out;
     wire [7:0] portd_in = {!write_strobe, 7'b1111111};
 
@@ -202,8 +205,7 @@ module cditop (
         data_in = 0;
 
         if (attex_cs_slave) begin
-            if (porta_out == 8'h01) data_in = 16'h0202;  // TODO Slave has wrong answer
-            else data_in = {porta_out, porta_out};
+            data_in = {porta_out, porta_out};
             bus_ack = slave_bus_ack;
         end else if (attex_cs_cdic) begin
             data_in = cdic_dout;
