@@ -13,7 +13,6 @@ module u3090mg (
 
     localparam bit [6:0] SLAVE_ADR = 7'h38;
 
-
     bit [7:0] ram[16];
 
     enum bit [3:0] {
@@ -56,7 +55,7 @@ module u3090mg (
                     end
 
                     if (!scl && scl_q && cnt == 8) begin
-                        // $display("-- I2C Adr %x rw %d", shiftreg[7:1], shiftreg[0]);
+                        $display("-- I2C Adr %x rw %d", shiftreg[7:1], shiftreg[0]);
                         //assert (shiftreg[0] == 1);
 
                         if (shiftreg[7:1] == SLAVE_ADR) begin
@@ -69,7 +68,8 @@ module u3090mg (
                         state <= shiftreg[0] ? READ : WRITE;
 
                         //shiftreg <= 8'h55;  // for testing
-                        shiftreg <= 0;
+                        shiftreg <= 8'hff;
+                        // $display("-- I2C DATA %x rw %d", shiftreg[7:1]);
 
                         cnt <= 0;
                     end
@@ -84,12 +84,10 @@ module u3090mg (
                     end
 
                     if (!scl && scl_q && cnt == 8) begin
-                        // $display("-- I2C DATA %x rw %d", shiftreg[7:1], shiftreg[0]);
+                        $display("-- I2C DATA %x rw %d", shiftreg[7:1], shiftreg[0]);
                         // sda_out <= 0;  // ACK
                         cnt <= 0;
-                        shiftreg <= 8'h85;  // for testing
-                        //shiftreg <= 0;
-
+                        shiftreg <= 8'hff;
                     end
 
                     if (!scl && scl_q && cnt == 9) begin
@@ -104,7 +102,7 @@ module u3090mg (
                     end
 
                     if (!scl && scl_q && cnt == 8) begin
-                        // $display("-- I2C DATA %x", shiftreg[7:0]);
+                        $display("-- I2C DATA Write %x", shiftreg[7:0]);
                         //assert (shiftreg[0] == 1);
 
                         sda_out <= 0;  // ACK
@@ -113,7 +111,6 @@ module u3090mg (
                     if (!scl && scl_q && cnt == 9) begin
                         sda_out <= 1;  // ACK off
 
-                        //shiftreg <= 8'h55;  // for testing
                         shiftreg <= 0;
 
                         cnt <= 0;

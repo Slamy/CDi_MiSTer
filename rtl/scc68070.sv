@@ -83,7 +83,7 @@ module scc68070 (
     wire internal_lds = !internal_LDSn;
     wire internal_uds = !internal_UDSn;
 
-    assign as = !soc_periph && !skipFetch;
+    assign as = !soc_periph && !skipFetch && (internal_lds || internal_uds);
     assign lds = !soc_periph && internal_lds;
     assign uds = !soc_periph && internal_uds;
     assign write_strobe = !internal_nWr;

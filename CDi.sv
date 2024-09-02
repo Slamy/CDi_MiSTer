@@ -227,6 +227,9 @@ module emu (
         "R[0],Reset and close OSD;",
         "v,0;",  // [optional] config version 0-99. 
                  // If CONF_STR options are changed in incompatible way, then change version number too,
+        "J1,B1,B2;",
+        "jn,A,B;",
+        "jp,B,A;",
         // so all options will get default values on first start.
         "V,v",
         `BUILD_DATE
@@ -241,6 +244,8 @@ module emu (
     assign VIDEO_ARY = (ar == 0) ? 13'd3 : 13'd0;
 
     wire [10:0] ps2_key;
+
+    wire [15:0] JOY0  /*verilator public_flat_rw*/;
 
     wire        ioctl_download  /*verilator public_flat_rw*/;
     wire        ioctl_wr  /*verilator public_flat_rw*/;
@@ -274,7 +279,9 @@ module emu (
         .ioctl_dout(ioctl_dout),
         .ioctl_wait(ioctl_wait),
 
-        .ps2_key(ps2_key)
+        .ps2_key(ps2_key),
+
+        .joystick_0(JOY0)
     );
 `endif
 
@@ -535,6 +542,17 @@ module emu (
     wire [7:0] g  /*verilator public_flat_rd*/;
     wire [7:0] b  /*verilator public_flat_rd*/;
 
+    bytestream slave_serial_out ();
+    bytestream slave_serial_in ();
+    wire slave_rts;
+
+    maneuvering_device spoon (
+        .clk(clk_sys),
+        .mister_joystick(JOY0),
+        .rts(slave_rts),
+        .serial_out(slave_serial_in)
+    );
+
     cditop cditop (
         .clk30(clk_sys),
         .reset(cditop_reset),
@@ -570,7 +588,11 @@ module emu (
 
         .slave_worm_adr (slave_worm_adr),
         .slave_worm_data(slave_worm_data),
-        .slave_worm_wr  (slave_worm_wr)
+        .slave_worm_wr  (slave_worm_wr),
+
+        .slave_serial_in(slave_serial_in),
+        .slave_serial_out(slave_serial_out),
+        .slave_rts(slave_rts)
     );
 
 

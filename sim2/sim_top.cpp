@@ -173,11 +173,19 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
             break;
         }
 
+        if (y == 158300000) {
+            // Make the pointer device go up left
+            dut.rootp->emu__DOT__JOY0 = 0b01010; // first wrong event at frame 694
+
+            // Make the pointer device go down right
+            dut.rootp->emu__DOT__JOY0 = 0b00101; // first wrong event at frame 501
+        }
+
         /*
-        if (y == 600000)
+        if (y == 1040000)
             do_trace = true;
-        if (y == 700000)
-            break;
+        if (y == 1600000)
+            do_trace = false;
         */
 
         /*

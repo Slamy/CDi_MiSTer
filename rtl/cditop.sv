@@ -36,8 +36,14 @@ module cditop (
 
     input [12:0] slave_worm_adr,
     input [7:0] slave_worm_data,
-    input slave_worm_wr
+    input slave_worm_wr,
+
+    bytestream.source slave_serial_out,
+    bytestream.sink slave_serial_in,
+    output slave_rts
 );
+
+    parallelel_spi slave_servo_spi ();
 
     wire write_strobe;
     wire as;
@@ -63,9 +69,9 @@ module cditop (
     bit nvram_bus_ack;
 
     wire attex_cs_mcd212 = ((addr_byte <= 24'h27ffff) || (addr_byte >= 24'h400000)) && as && !addr[23];
-    wire attex_cs_cdic = addr_byte[23:16] == 8'h30;
-    wire attex_cs_slave = addr_byte[23:16] == 8'h31;
-    wire attex_cs_nvram = addr_byte[23:16] == 8'h32;
+    wire attex_cs_cdic = addr_byte[23:16] == 8'h30 && as;
+    wire attex_cs_slave = addr_byte[23:16] == 8'h31 && as;
+    wire attex_cs_nvram = addr_byte[23:16] == 8'h32 && as;
 
     bit [15:0] data_in_q = 0;
     bit attex_cs_slave_q = 0;
@@ -190,6 +196,7 @@ module cditop (
     bit [7:0] ddrb;
     bit [7:0] ddrc;
 
+    bit quirk_force_mode_fault;
     wire [7:0] porta_in = cpu_data_out[7:0];
     bit [7:0] porta_out;
     wire [7:0] portb_in = 8'hff;
@@ -234,6 +241,7 @@ module cditop (
 
     end
 
+    wire resetsys = ddrc[2] ? portc_out[2] : 1'b1;
     wire disdat_from_uc = ddrc[3] ? portc_out[3] : 1'b1;
     wire disdat_to_ic;
 
@@ -241,6 +249,7 @@ module cditop (
     wire disclk = ddrc[4] ? portc_out[4] : 1'b1;
 
     wire dtackslaven = ddrb[6] ? portb_out[6] : 1'b1;
+    assign slave_rts = ddrb[4] ? portb_out[4] : 1'b1;
     assign in2in = ddrb[5] ? portb_out[5] : 1'b1;
 
     bit dtackslaven_q = 0;
@@ -267,7 +276,12 @@ module cditop (
 
         .worm_adr (slave_worm_adr),
         .worm_data(slave_worm_data),
-        .worm_wr  (slave_worm_wr)
+        .worm_wr  (slave_worm_wr),
+
+        .serial_in(slave_serial_in),
+        .serial_out(slave_serial_out),
+        .spi(slave_servo_spi),
+        .quirk_force_mode_fault(quirk_force_mode_fault)
     );
 `endif
 
@@ -276,6 +290,12 @@ module cditop (
         .sda_in(disdat_from_uc),
         .sda_out(disdat_to_ic),
         .scl(disclk)
+    );
+
+    servo_hle servo (
+        .clk(clk30),
+        .spi(slave_servo_spi),
+        .quirk_force_mode_fault
     );
 
     always_comb begin
@@ -297,7 +317,7 @@ module cditop (
             if (!in2in && in2in_q) $display("SLAVE IRQ2 1");
             if (in2in && !in2in_q) $display("SLAVE IRQ2 0");
 
-            if (attex_cs_slave && !attex_cs_slave_q) irq_cooldown <= 20;
+            if (attex_cs_slave && !attex_cs_slave_q) irq_cooldown <= 40;
             else if (irq_cooldown != 0) irq_cooldown <= irq_cooldown - 1;
         end
 

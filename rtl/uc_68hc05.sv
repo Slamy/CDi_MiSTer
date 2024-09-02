@@ -21,8 +21,13 @@ module uc68hc05 (
     // ROM is implemented as a write once read many memory
     input [12:0] worm_adr,
     input [7:0] worm_data,
-    input worm_wr
+    input worm_wr,
 
+    bytestream.source serial_out,
+    bytestream.sink   serial_in,
+
+    parallelel_spi.master spi,
+    input quirk_force_mode_fault
 );
 
     bit [7:0] datain;
@@ -30,11 +35,11 @@ module uc68hc05 (
 
     (* keep *) wire [15:0] addr;
     bit [15:0] lastaddr;
-    wire wr;
+    wire wrn;
+    wire wr = !wrn;
     wire [3:0] state;
     wire [7:0] dataout;
 
-    bit fail = 0;
     bit [7:0] memory[8192]  /*verilator public_flat_rd*/;
 
 `ifdef VERILATOR
@@ -58,13 +63,25 @@ module uc68hc05 (
             assign portc_mix[i] = ddrc[i] ? portc_out[i] : portc_in[i];
         end
     endgenerate
+
     // lower 2 bit are invisible
     bit [17:0] free_running_counter = 0;
     bit [7:0] latched_counter = 0;
     bit timerirq = 0;
     bit [7:0] serial_periph_miso_data = 0;
+    bit [7:0] serial_periph_mosi_data = 0;
 
-    bit spi_transfer_complete = 0;
+    struct packed {
+        bit spie;
+        bit spe;
+        bit dw0m;
+        bit mstr;
+        bit cpol;
+        bit cpha;
+        bit [1:0] spr;
+    } serial_periph_control_register = 0;
+
+
     bit [15:0] output_capture = 0;
 
     struct packed {
@@ -82,6 +99,45 @@ module uc68hc05 (
         bit timer_overflow_flag;
         bit [4:0] reserved;
     } timer_status_register;
+
+
+    struct packed {
+        bit tdre;  // Transmit Data Register Empty
+        bit tc;  // Transmit Complete
+        bit rdrf;  // Receive Data Register Full
+        bit idle;  // Idle Line Detect
+        bit overrun;  // Overrun Error
+        bit nf;  // Noise Error
+        bit fe;  // Framing Error
+        bit reserved;
+    } serial_communications_status_register;
+
+    struct packed {
+        bit tie;   // Transmit Interrupt Enable
+        bit tcie;  // Transmit Complete Interrupt Enable
+        bit rie;   // Receive Interrupt Enable
+        bit ilie;  // Idle Line Interrupt Enable
+        bit te;    // Transmit Enable
+        bit re;    // Receive Enable
+        bit rwu;   // Receiver Wake-up
+        bit sbk;   // Send break
+    } serial_communications_control2_register;
+
+    bit [7:0] serial_communications_control1_register;
+    bit [7:0] serial_communications_baud_rate_register;
+
+    struct packed {
+        bit spif;
+        bit wcol;
+        bit reserved;
+        bit modf;
+        bit [3:0] reserved2;
+    } serial_peripheral_status_register;
+
+    wire sciirq = serial_communications_control2_register.rie ? serial_communications_status_register.rdrf : 0;
+
+    bit [7:0] serial_com_receive_data;
+    bit [7:0] serial_com_transmit_data;
 
     bit reset_after_memory_init = 0;
     bit [8:0] memory_reset_addr = 0;
@@ -107,7 +163,7 @@ module uc68hc05 (
 
     always_comb begin
         memory_in   = dataout;
-        memory_wr   = !wr && addr < 16'h0100;
+        memory_wr   = wr && addr < 16'h0100;
         memory_addr = addr[12:0];
 
         if (reset_after_memory_init && memory_reset_addr < 9'h0100) begin
@@ -129,6 +185,9 @@ module uc68hc05 (
     end
 
     always_comb begin
+        serial_out.data = 0;
+        serial_out.write = 0;
+
         datain = memory_readout;
         case (addr)
             16'h0000: begin
@@ -160,19 +219,33 @@ module uc68hc05 (
                 datain = ddrc;
                 // $display("DDRC %x %d", dataout, wr);
             end
+            16'h000a: begin
+                datain = serial_periph_control_register;
+            end
             16'h000b: begin
-
-                datain[6:0] = 0;
-                datain[7]   = spi_transfer_complete;
+                datain = serial_peripheral_status_register;
             end
 
             16'h000c: begin
                 datain = serial_periph_miso_data;
             end
-
+            16'h000d: begin
+                datain = serial_communications_baud_rate_register;
+            end
+            16'h000e: begin
+                datain = serial_communications_control1_register;
+            end
+            16'h000f: begin
+                datain = serial_communications_control2_register;
+            end
             16'h0010: begin
-                //$display("SERIAL COM STATUS %x %d", dataout, wr);
-                datain = 8'b11000000;
+                datain = serial_communications_status_register;
+            end
+
+            16'h0011: begin
+                datain = serial_com_receive_data;
+                serial_out.data = dataout;
+                serial_out.write = wr;
             end
 
             16'h0013: begin
@@ -187,16 +260,26 @@ module uc68hc05 (
             16'h001b: begin
                 datain = latched_counter;
             end
-            16'h0057: begin  // TODO Patch to avoid SPI access as slave is missing
-                datain = 8'hff;
-            end
-            16'h0099: begin  // TODO Patch to set fixed version when asked
-                datain = 8'hf0;
-            end
             default: begin  // do nothing
             end
         endcase
     end
+
+    UR6805 slave_core (
+        .clk(clk30),
+        .clken(clken),
+        .rst(!reset),
+        .extirq(irq),
+        .timerirq(!timerirq),
+        .sciirq(!sciirq),
+        .datain(datain),
+        .addr(addr),
+        .wr(wrn),
+        .state(state),
+        .dataout(dataout)
+    );
+
+
     always_ff @(posedge clk30) begin
         if (reset) begin
             lastaddr <= 0;
@@ -211,132 +294,174 @@ module uc68hc05 (
             ddrb <= 0;
             ddrc <= 0;
             latched_counter <= 0;
-            spi_transfer_complete <= 0;
             output_capture <= 0;
-        end else if (!clken) begin
-            lastaddr <= addr;
+            serial_communications_status_register <= 8'b11000000;
+            serial_periph_control_register <= 0;
+            serial_peripheral_status_register <= 0;
+        end else begin
+            if (!clken) begin
+                lastaddr <= addr;
 
-            free_running_counter <= free_running_counter + 1;
+                free_running_counter <= free_running_counter + 1;
 
-            if (free_running_counter[17:2] == output_capture && free_running_counter[1:0] == 0) begin
-                timer_status_register.output_compare_flag <= 1;
-                if (timer_control_register.output_capture_interrupt_enable) timerirq <= 1;
-            end else timerirq <= 0;
-
-
-            // only print. no affect
-            case (addr)
-                /*
-                16'h000a: $display("SERIAL PERIPH CONTROL %x %x", dataout, wr);
-                16'h000d: $display("SERIAL COM BAUD %x %x", dataout, wr);
-                16'h000e: $display("SERIAL COM CONTROL1 %x %x", dataout, wr);
-                16'h000f: $display("SERIAL COM CONTROL2 %x %x", dataout, wr);
-                16'h0011: $display("SERIAL COM DATA %x %x", dataout, wr);
-                */
-                16'h0012: begin
-                    // $display("TIMER CONTROL %x %x", dataout, wr);
-                    if (!wr) timer_control_register <= dataout;
-                end
-                16'h0014: $display("INPUT CAPTURE H %x %x", dataout, wr);
-                16'h0015: $display("INPUT CAPTURE L %x %x", dataout, wr);
-                16'h0016: begin
-                    //$display("OUTPUT CAPTURE H %x %x", dataout, wr);
-                    if (!wr) output_capture[15:8] <= dataout;
-                end
-                16'h0017: begin
-                    //$display("OUTPUT CAPTURE L %x %x", dataout, wr);
-                    if (!wr) begin
-                        output_capture[7:0] <= dataout;
-                        // TODO this is not correct. but might work anyway...
-                        timer_status_register.output_compare_flag <= 0;
+                if (free_running_counter[17:2] == output_capture && free_running_counter[1:0] == 0) begin
+                    timer_status_register.output_compare_flag <= 1;
+                    if (timer_control_register.output_capture_interrupt_enable) begin
+                        timerirq <= 1;
+                        //$display("SLAVE TIMER IRQ");
                     end
-                end
-                16'h0018: $display("TIMER MSB %x %x", dataout, wr);
-                16'h0019: $display("TIMER LSB %x %x", dataout, wr);
-                default:  ;
-            endcase
+                end else timerirq <= 0;
 
-            case (addr)
-                16'h0000: begin
-                    if (!wr) porta_out <= dataout;
-                    // $display("PORTA %x %d %x", dataout, wr, porta_mix);
-                end
-                16'h0001: begin
-                    if (!wr) portb_out <= dataout;
-                    // $display("PORTB %x %d %x", dataout, wr, portb_mix);
-                end
-                16'h0002: begin
-                    if (!wr) portc_out <= dataout;
-                    // $display("PORTC %x %d %x", dataout, wr, portc_mix);
-                end
-                16'h0003: begin
-                    // Only input for PORTD
-                    // $display("PORTD %x %d %x", dataout, wr, portd_in);
-                end
-                16'h0004: begin
-                    if (!wr) ddra <= dataout;
-                    // $display("DDRA %x %d", dataout, wr);
-                end
-                16'h0005: begin
-                    if (!wr) ddrb <= dataout;
-                    // $display("DDRB %x %d", dataout, wr);
-                end
-                16'h0006: begin
-                    if (!wr) ddrc <= dataout;
-                    // $display("DDRC %x %d", dataout, wr);
-                end
-                16'h000b: begin
-                    $display("SERIAL PERIPH STATUS %x %x %x %x", dataout, wr,
-                             spi_transfer_complete, lastaddr);
 
-                end
+                case (addr)
+                    16'h0000: begin
+                        if (wr) porta_out <= dataout;
+                        //$display("PORTA %x %d %x", dataout, wr, porta_mix);
+                    end
+                    16'h0001: begin
+                        if (wr) portb_out <= dataout;
+                        //$display("PORTB %x %d %x", dataout, wr, portb_mix);
 
-                16'h000c: begin
-                    $display("SERIAL PERIPH DATA %x %x %x", dataout, wr, serial_periph_miso_data);
+                        //if (wr) $display("RTS %d %d", dataout[4], ddrb[4]);
+                    end
+                    16'h0002: begin
+                        if (wr) portc_out <= dataout;
+                        //$display("PORTC %x %d %x", dataout, wr, portc_mix);
+                    end
+                    16'h0003: begin
+                        // Only input for PORTD
+                        //$display("PORTD %x %d %x", dataout, wr, portd_in);
+                    end
+                    16'h0004: begin
+                        if (wr) ddra <= dataout;
+                        //$display("DDRA %x %d", dataout, wr);
+                    end
+                    16'h0005: begin
+                        if (wr) ddrb <= dataout;
+                        //$display("DDRB %x %d", dataout, wr);
+                    end
+                    16'h0006: begin
+                        if (wr) ddrc <= dataout;
+                        //$display("DDRC %x %d", dataout, wr);
+                    end
+                    16'h000a: begin
+                        $display("SERIAL PERIPH CONTROL %x %x", dataout, wr);
+                        if (wr) begin
+                            serial_periph_control_register <= dataout;
+                            serial_peripheral_status_register.modf <= 0;
+                        end
+                    end
 
-                    if (!wr) begin
-                        spi_transfer_complete <= 1;
-                        if (dataout == 8'hdd) serial_periph_miso_data <= 8'hee;
-                    end  //else spi_transfer_complete <= 0;
-                end
+                    16'h000b: begin
+                        /*
+                        $display("SERIAL PERIPH STATUS %x %x %x %x", dataout, wr,
+                                 serial_peripheral_status_register, lastaddr);
+		                */
+                    end
 
-                16'h0010: begin
-                    //$display("SERIAL COM STATUS %x %d", dataout, wr);
-                end
+                    16'h000c: begin
 
-                16'h0013: begin
-                    //$display("TIMER STATUS %x %x", dataout, wr);
-                end
+                        $display("SERIAL PERIPH DATA %x %x %x", dataout, wr,
+                                 serial_periph_miso_data);
 
-                16'h001a: begin
-                    // Alternate counter High
-                    latched_counter <= free_running_counter[9:2];
-                end
-                16'h001b: begin
-                end
-                16'h0057: begin  // TODO Patch to avoid SPI access as slave is missing
-                end
-                16'h0099: begin  // TODO Patch to set fixed version when asked
-                end
-                default: begin
-                    // The rest is just RAM and ROM
-                    if (addr[15:13] != 0) fail <= 1;
-                end
-            endcase
+                        if (wr) begin
+                            serial_peripheral_status_register.spif <= 1;
+                            spi.write <= 1;
+                            spi.mosi <= dataout;
+                            $display("SLAVE SPI MOSI:%x MISO:%x", dataout, spi.miso);
+
+                        end else begin
+                            serial_peripheral_status_register.spif <= 0;
+                        end
+                    end
+
+                    16'h000d: begin
+                        $display("SERIAL COM BAUD %x %x", dataout, wr);
+                        if (wr) serial_communications_baud_rate_register <= dataout;
+                    end
+                    16'h000e: begin
+                        $display("SERIAL COM CONTROL1 %x %x", dataout, wr);
+                        if (wr) serial_communications_control1_register <= dataout;
+                    end
+                    16'h000f: begin
+                        $display("SERIAL COM CONTROL2 %x %x", dataout, wr);
+                        if (wr) serial_communications_control2_register <= dataout;
+                    end
+
+                    16'h0010: begin
+                        $display("SERIAL COM STATUS %x %x %d", datain, dataout, wr);
+                    end
+
+                    16'h0011: begin
+                        //if (wr) timer_control_register <= dataout;
+                        if (!wr) begin
+                            serial_communications_status_register.rdrf <= 0;
+                            $display("SERIAL COM DATA READ %x %x", datain, wr);
+                        end
+
+                        if (wr) begin
+                            $display("SERIAL COM DATA WRITE %x %x", dataout, wr);
+                        end
+                    end
+
+                    16'h0012: begin
+                        // $display("TIMER CONTROL %x %x", dataout, wr);
+                        if (wr) timer_control_register <= dataout;
+                    end
+
+                    16'h0013: begin
+                        //$display("TIMER STATUS %x %x", dataout, wr);
+                    end
+
+                    16'h0014: $display("INPUT CAPTURE H %x %x", dataout, wr);
+                    16'h0015: $display("INPUT CAPTURE L %x %x", dataout, wr);
+                    16'h0016: begin
+                        //$display("OUTPUT CAPTURE H %x %x", dataout, wr);
+                        if (wr) output_capture[15:8] <= dataout;
+                    end
+                    16'h0017: begin
+                        //$display("OUTPUT CAPTURE L %x %x", dataout, wr);
+                        if (wr) begin
+                            output_capture[7:0] <= dataout;
+                            // TODO this is not correct. but might work anyway...
+                            timer_status_register.output_compare_flag <= 0;
+                        end
+                    end
+                    16'h0018: $display("TIMER MSB %x %x", dataout, wr);
+                    16'h0019: $display("TIMER LSB %x %x", dataout, wr);
+
+                    16'h001a: begin
+                        // Alternate counter High
+                        latched_counter <= free_running_counter[9:2];
+                    end
+                    16'h001b: begin
+                        // Alternate counter Low
+                    end
+                    default: begin
+                        // The rest is just RAM and ROM. But check for out of bounds
+                        assert (addr[15:13] == 0);
+                    end
+                endcase
+            end
+
+            if (spi.write) begin
+                spi.write <= 0;
+                spi.mosi <= 0;
+                serial_periph_miso_data <= spi.miso;
+            end
+
+            if (serial_in.write) begin
+                serial_communications_status_register.rdrf <= 1;
+                serial_com_receive_data <= serial_in.data;
+            end
+
+            if (quirk_force_mode_fault) begin
+                serial_peripheral_status_register.modf <= 1;
+            end
         end
+
     end
 
-    UR6805 slave_core (
-        .clk(clk30),
-        .clken(clken),
-        .rst(!reset),
-        .extirq(irq),
-        .timerirq(timerirq),
-        .datain(datain),
-        .addr(addr),
-        .wr(wr),
-        .state(state),
-        .dataout(dataout)
-    );
+
 
 endmodule

@@ -34,30 +34,27 @@ Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` a
 * SLAVE
 	* Interface to main CPU implemented
 	* Answers to basic requests from main CPU
+	* Maneuvering device simulated with MiSTer controller input
+* SERVO
+	* High level behaviour simulation
 * MiSTer
 	* Rom loading via Menu functional
 	* Automatic rom loading for main cpu and slave
 
 Core Utilization:
 
-	Logic utilization (in ALMs)	11,174 / 41,910 ( 27 % )
-	Total block memory bits	629,810 / 5,662,720 ( 11 % )
-	Total DSP Blocks	39 / 112 ( 35 % )
+	Logic utilization (in ALMs)	11,535 / 41,910 ( 28 % )
+	Total block memory bits	630,196 / 5,662,720 ( 11 % )
+	Total DSP Blocks	45 / 112 ( 40 % )
 
 ## TODOs in order of priority
 
-* Attach MiSTer input system to the SLAVE controller
-* Add hardware cursor sprite
+* Fix spurious input data, making the cursor jump
 * Investigate why F$Sleep returns E$NoClk
 	* System clock not detected?
 * Added remaining ICA/DCA features
-* Implement functional video channel 1
-* Have the system menu usable on MiSTer
-* Evaluate wrong answer on PAL/NTSC status from SLAVE
-	* Right now, the expected answer 0x02 is inserted with glue logic
 * Implement the CDIC audio parts
 * Implement the CDIC CD parts
-* Implement SPI interface to CD controller on SLAVE
 * Fix I2C for the front display and show the display as picture in picture during changes?
 	* It might not even be required at all.
 * Have CD data available for the CDIC

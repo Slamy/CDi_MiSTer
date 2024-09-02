@@ -24,6 +24,9 @@ I assume the ATTEX limits the DRAM to 0x27fffe as these do now follow.
 0x4ffc00 to 0x4fffdf    MCD212 SystemIO (is this even used? at least not mentioned in MAME)
 0x4fffe0 to 0x4fffff    MCD212 according to MAME, channels 1+2 according to datasheet
 
+0xd00000 to 0xdfffff    DVC RAM block 1 (according to mame) 1MB
+0xe80000 to 0xefffff    DVC RAM block 2 (according to mame) 512kB
+
 ## CPU Internal
 
 0x80002011  UART Mode

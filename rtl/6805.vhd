@@ -133,16 +133,17 @@ USE ieee.numeric_std.all;
 
 ENTITY UR6805 IS
    PORT(
-     clk     : in  std_logic;
-     clken     : in  std_logic;
-     rst     : in  std_logic;
+     clk        : in  std_logic;
+     clken      : in  std_logic;
+     rst        : in  std_logic;
      extirq     : in  std_logic;
-     timerirq     : in  std_logic;
-     addr    : out std_logic_vector(15 downto 0);
-     wr      : out std_logic;
-     datain  : in  std_logic_vector(7 downto 0);
-     state   : out std_logic_vector(3 downto 0);
-     dataout : out std_logic_vector(7 downto 0)
+     timerirq   : in  std_logic;
+     sciirq     : in  std_logic;
+     addr       : out std_logic_vector(15 downto 0);
+     wr         : out std_logic;
+     datain     : in  std_logic_vector(7 downto 0);
+     state      : out std_logic_vector(3 downto 0);
+     dataout    : out std_logic_vector(7 downto 0)
    );
 END UR6805;
 
@@ -198,8 +199,11 @@ ARCHITECTURE behavior OF UR6805 IS
   signal prod     : std_logic_vector(15 downto 0);
   signal extirq_d      : std_logic;
   signal timerirq_d      : std_logic;
+  signal sciirq_d      : std_logic;
   signal extIrqRequest : std_logic;
   signal timerIrqRequest : std_logic;
+  signal sciIrqRequest : std_logic;
+  
 
   signal trace       : std_logic;
   signal trace_i     : std_logic;
@@ -277,13 +281,16 @@ begin
       addrMux <= addrTM;
       extirq_d   <= '1';
       timerirq_d   <= '1';
+      sciirq_d <= '1';
       extIrqRequest <= '0';
       timerIrqRequest <= '0';
+      sciIrqRequest <= '0';
       mainFSM <= "0000";
     else
       if rising_edge(clk) then
         extirq_d <= extirq;
         timerirq_d <= timerirq;
+        sciirq_d <= sciirq;
 
         if (extirq <= '0') and (extirq_d = '1') then -- irq falling edge ?
           extIrqRequest <= '1';
@@ -291,6 +298,10 @@ begin
 
         if (timerirq <= '0') and (timerirq_d = '1') then -- irq falling edge ?
           timerIrqRequest <= '1';
+        end if;
+        
+        if (sciirq <= '0') and (sciirq_d = '1') then
+          sciIrqRequest <= '1';
         end if;
 
       if clken = '1' then
@@ -311,7 +322,7 @@ begin
               traceOpCode <= datain;
               addrMux     <= addrSP;
               mainFSM     <= "0011";              
-            elsif extIrqRequest = '1' or  timerIrqRequest = '1'then
+            elsif extIrqRequest = '1' or  timerIrqRequest = '1' or sciIrqRequest = '1' then
               opcode      <= x"83"; -- special SWI interrupt
               addrMux     <= addrSP;
               mainFSM     <= "0011";              
@@ -1537,6 +1548,9 @@ begin
                   elsif timerIrqRequest = '1' then
                     timerIrqRequest <= '0';
                     temp    <= x"1FF8"; -- Timer IRQ vector
+                  elsif sciIrqRequest = '1' then
+                    sciIrqRequest <= '0';
+                    temp    <= x"1FF6"; -- SCI IRQ vector
                   else
                     temp    <= x"1FFC"; -- SWI vector
                   end if;

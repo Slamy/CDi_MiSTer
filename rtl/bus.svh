@@ -29,3 +29,23 @@ interface pixelstream (
     modport source(output write, pixel, input strobe);
     modport sink(input write, pixel, output strobe);
 endinterface
+
+interface bytestream ();
+    bit write;
+    bit [7:0] data;
+
+    modport source(output write, data);
+    modport sink(input write, data);
+endinterface
+
+interface parallelel_spi ();
+    bit [7:0] miso;
+    bit [7:0] mosi;
+    bit write;
+
+    modport master(output mosi, write, input miso);
+    modport slave(input mosi, write, output miso);
+endinterface
+
+
+
