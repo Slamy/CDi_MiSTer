@@ -5,4 +5,4 @@
 cd "$(dirname "$0")/../rtl"
 
 ghdl -a -fsynopsys -fexplicit 6805.vhd
-ghdl synth --out=verilog -fexplicit -fsynopsys --latches ur6805  > ur6805.v
+ghdl synth --out=verilog -fexplicit -fsynopsys --latches ur6805  > ../sim2/ur6805.v

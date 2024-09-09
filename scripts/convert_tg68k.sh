@@ -16,8 +16,8 @@ echo "// verilator lint_off UNOPTFLAT
 // verilator lint_off COMBDLY
 // verilator lint_off CASEINCOMPLETE
 // verilator lint_off UNSIGNED
-"  > ../rtl/tg68kdotc_verilog_wrapper.v
+"  > ../sim2/tg68kdotc_verilog_wrapper.v
 
-cat /tmp/tg68kdotc_verilog_wrapper.v >> ../rtl/tg68kdotc_verilog_wrapper.v
+cat /tmp/tg68kdotc_verilog_wrapper.v >> ../sim2/tg68kdotc_verilog_wrapper.v
 rm /tmp/tg68kdotc_verilog_wrapper.v
 
