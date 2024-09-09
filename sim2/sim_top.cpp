@@ -1,17 +1,21 @@
 // Include common routines
 #include <verilated.h>
+#include <verilated_fst_c.h>
 #include <verilated_vcd_c.h>
 
 // Include model header, generated from Verilating "top.v"
 #include "Vemu.h"
 #include "Vemu___024root.h"
 
+#include <chrono>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <png.h>
 
 #include "hle.h"
+
+typedef VerilatedFstC tracetype_t;
 
 uint64_t sim_time = 0;
 
@@ -69,7 +73,7 @@ void write_png_file(const char *filename) {
     png_destroy_write_struct(&png, &info);
 }
 
-void clock(VerilatedVcdC &m_trace, Vemu &dut) {
+void clock(tracetype_t &m_trace, Vemu &dut) {
 
     for (int i = 0; i < 2; i++) {
         dut.rootp->emu__DOT__clk_sys = (sim_time & 1);
@@ -81,7 +85,7 @@ void clock(VerilatedVcdC &m_trace, Vemu &dut) {
     }
 }
 
-void loadfile(uint16_t index, const char *path, VerilatedVcdC &m_trace, Vemu &dut) {
+void loadfile(uint16_t index, const char *path, tracetype_t &m_trace, Vemu &dut) {
 
     FILE *f = fopen(path, "rb");
     assert(f);
@@ -130,7 +134,7 @@ void printstate(Vemu &dut) {
     printf("\n");
 }
 
-void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
+void do_justwait(tracetype_t &m_trace, Vemu &dut) {
     dut.eval();
     do_trace = false;
     dut.rootp->emu__DOT__debug_uart_fake_space = false;
@@ -159,7 +163,7 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
     dut.rootp->emu__DOT__ioctl_download = 0;
     */
     dut.RESET = 0;
-
+    auto start = std::chrono::system_clock::now();
     // for (int y = 0; y < 780000; y++) {
     for (int y = 0;; y++) {
         clock(m_trace, dut);
@@ -174,19 +178,17 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
         }
 
         if (y == 158300000) {
+            //do_trace = true;
+
             // Make the pointer device go up left
-            dut.rootp->emu__DOT__JOY0 = 0b01010; // first wrong event at frame 694
+            // dut.rootp->emu__DOT__JOY0 = 0b01010; // first wrong event at frame 694
 
             // Make the pointer device go down right
             dut.rootp->emu__DOT__JOY0 = 0b00101; // first wrong event at frame 501
-        }
 
-        /*
-        if (y == 1040000)
-            do_trace = true;
-        if (y == 1600000)
-            do_trace = false;
-        */
+            // Make the pointer device go right
+            // dut.rootp->emu__DOT__JOY0 = 0b00001; // first wrong event at frame 692
+        }
 
         /*
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid) {
@@ -239,15 +241,13 @@ void do_justwait(VerilatedVcdC &m_trace, Vemu &dut) {
         if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {
             char filename[100];
 
-            if (frame_index == 251) {
-                // dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__file0__DOT__debug_print_file = 1;
-            }
-
             if (output_index > 100) {
+                auto current = std::chrono::system_clock::now();
+                std::chrono::duration<double> elapsed_seconds = current - start;
                 sprintf(filename, "video_%02d.png", frame_index);
                 write_png_file(filename);
                 printf("Written %s %d\n", filename, output_index);
-                fprintf(stderr, "Written %s\n", filename);
+                fprintf(stderr, "Written %s after %.2fs\n", filename, elapsed_seconds.count());
                 frame_index++;
             }
             output_index = 0;
@@ -287,7 +287,7 @@ int main(int argc, char **argv) {
     if (do_trace)
         Verilated::traceEverOn(true);
 
-    VerilatedVcdC m_trace;
+    tracetype_t m_trace;
     Vemu dut;
 
     if (signal(SIGINT, catch_function) == SIG_ERR) {

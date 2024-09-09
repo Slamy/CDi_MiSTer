@@ -134,12 +134,6 @@ module mcd212 (
         bit [4:0] reserved1;
     } status_register1;
 
-    always_comb begin
-        status_register1 = 0;
-        // TODO This might not be accurate
-        status_register1.da = video_y == 0;
-        status_register1.pa = parity;
-    end
 
     always_comb begin
         cpu_dout = 0;
@@ -329,6 +323,12 @@ module mcd212 (
     bit hblank_vt;
     bit hblank_vt_q;
 
+    always_comb begin
+        status_register1 = 0;
+        // TODO This might not be accurate
+        status_register1.da = video_y == 0;
+        status_register1.pa = parity;
+    end
 
     // we should have 8-9 refresh cycles per horizontal line
     // to fulfill 8192 refreshes per 64ms 

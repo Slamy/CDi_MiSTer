@@ -29,8 +29,24 @@ I assume the ATTEX limits the DRAM to 0x27fffe as these do now follow.
 
 ## CPU Internal
 
+0x80001001  LIR priority
 0x80002011  UART Mode
 0x80002013  UART Status
+0x80002019  UART Transmit Holding
+0x8000201B  UART Receive Holding
+0x80002020  Timer Status
+0x80002021  Timer Control
+0x80002022  Reload Register High
+0x80002023  Reload Register Low
+0x80002024  Timer 0 High
+0x80002025  Timer 0 Low
+0x80002026  Timer 1 High
+0x80002027  Timer 1 Low
+0x80002028  Timer 2 High
+0x80002029  Timer 2 Low
+0x80002035  PICR1
+0x80002037  PICR2
+
 
 ## Auto refresh
 

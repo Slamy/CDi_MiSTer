@@ -256,7 +256,6 @@ module cditop (
     bit in2in_q = 1;
 
     (* keep *) bit slave_irq;
-    bit [7:0] irq_cooldown = 0;
 
 `ifndef DISABLE_SLAVE_UC
     uc68hc05 uc68hc05_0 (
@@ -300,12 +299,11 @@ module cditop (
 
     always_comb begin
         slave_bus_ack = dtackslaven && !dtackslaven_q;
-        slave_irq = irq_cooldown == 1;
+        slave_irq = (attex_cs_slave && !attex_cs_slave_q);
     end
 
     always_ff @(posedge clk30) begin
         if (reset) begin
-            irq_cooldown <= 0;
             attex_cs_slave_q <= 0;
             dtackslaven_q <= 0;
             in2in_q <= 1;
@@ -316,9 +314,6 @@ module cditop (
 
             if (!in2in && in2in_q) $display("SLAVE IRQ2 1");
             if (in2in && !in2in_q) $display("SLAVE IRQ2 0");
-
-            if (attex_cs_slave && !attex_cs_slave_q) irq_cooldown <= 40;
-            else if (irq_cooldown != 0) irq_cooldown <= irq_cooldown - 1;
         end
 
     end

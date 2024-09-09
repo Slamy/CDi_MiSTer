@@ -322,7 +322,7 @@ begin
               traceOpCode <= datain;
               addrMux     <= addrSP;
               mainFSM     <= "0011";              
-            elsif extIrqRequest = '1' or  timerIrqRequest = '1' or sciIrqRequest = '1' then
+            elsif (extIrqRequest = '1' or  timerIrqRequest = '1' or sciIrqRequest = '1') and (flagI = '0') then
               opcode      <= x"83"; -- special SWI interrupt
               addrMux     <= addrSP;
               mainFSM     <= "0011";              

@@ -277,3 +277,19 @@ XXX Note 00015000 9CE32CC5 2422 F660 1189 68
 XXX Note 00015800 E3D61766 4F97 C961 1039 79 anders
 XXX Note 00016000 17A11B64 4F97 3263 1481 89
 XXX Note 00016800 4B00ACCA 4F97 28DC 3 100
+
+
+# Simulation speed
+
+Vcd:
+--trace
+Written video_00.png after 44.36s
+-rw-rw-r-- 1 andre andre 2,5G  9. Sep 13:04 /tmp/waveform.vcd
+
+Fst:
+--trace-fst
+Written video_00.png after 51.33
+-rw-rw-r-- 1 andre andre 49M  9. Sep 13:02 /tmp/waveform.vcd
+
+This means Fst is better as it is much smaller
+

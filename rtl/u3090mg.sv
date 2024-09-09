@@ -55,8 +55,7 @@ module u3090mg (
                     end
 
                     if (!scl && scl_q && cnt == 8) begin
-                        $display("-- I2C Adr %x rw %d", shiftreg[7:1], shiftreg[0]);
-                        //assert (shiftreg[0] == 1);
+                        // $display("-- I2C Adr %x rw %d", shiftreg[7:1], shiftreg[0]);
 
                         if (shiftreg[7:1] == SLAVE_ADR) begin
                             sda_out <= 0;  // ACK
@@ -67,7 +66,6 @@ module u3090mg (
                         sda_out <= 1;  // ACK off
                         state <= shiftreg[0] ? READ : WRITE;
 
-                        //shiftreg <= 8'h55;  // for testing
                         shiftreg <= 8'hff;
                         // $display("-- I2C DATA %x rw %d", shiftreg[7:1]);
 
@@ -78,20 +76,14 @@ module u3090mg (
                     sda_out <= shiftreg[7];
 
                     if (!scl && scl_q) begin
-                        //sda_out <= shiftreg[7];
                         cnt <= cnt + 1;
                         if (cnt <= 8) shiftreg[7:0] <= {shiftreg[6:0], 1'b1};
                     end
 
                     if (!scl && scl_q && cnt == 8) begin
-                        $display("-- I2C DATA %x rw %d", shiftreg[7:1], shiftreg[0]);
-                        // sda_out <= 0;  // ACK
+                        // $display("-- I2C DATA %x rw %d", shiftreg[7:1], shiftreg[0]);
                         cnt <= 0;
                         shiftreg <= 8'hff;
-                    end
-
-                    if (!scl && scl_q && cnt == 9) begin
-                        // sda_out <= 1;  // ACK off
                     end
                 end
                 WRITE: begin
@@ -102,17 +94,13 @@ module u3090mg (
                     end
 
                     if (!scl && scl_q && cnt == 8) begin
-                        $display("-- I2C DATA Write %x", shiftreg[7:0]);
-                        //assert (shiftreg[0] == 1);
-
+                        // $display("-- I2C DATA Write %x", shiftreg[7:0]);
                         sda_out <= 0;  // ACK
                     end
 
                     if (!scl && scl_q && cnt == 9) begin
                         sda_out <= 1;  // ACK off
-
                         shiftreg <= 0;
-
                         cnt <= 0;
                     end
                 end

@@ -139,10 +139,14 @@ start_delay:
 	move.b $310004,d0
 
 
+	move.l #slaveirq,$68
+	move.b #2,$80001001 ; LIR
+	move #$2000,SR  
+
 	; Activate Input Polling (0xf7)
 	move.b #$f7,$310006
 
-	bra endless2
+	bra endless
 
 	move.b #$f0,$310004
 
@@ -170,36 +174,6 @@ start_delay:
 	move.b #$00,$310002
 	move.b #$00,$310002
 
-endless2:
-
-	move #2000,d0
-	bsr wait
-
-	move.b $310000,d0
-	move.b $310000,d0
-	move.b $310000,d0
-	move.b $310002,d0
-	move.b $310002,d0
-	move.b $310002,d0
-	move.b $310004,d0
-	move.b $310004,d0
-	move.b $310004,d0
-
-	bra endless2
-
-	move.b #$f0,$310006
-
-	move #4000,d0
-	bsr wait
-
-	move.b $310000,d0
-	move.b $310002,d0
-	move.b $310004,d0
-	move.b $310004,d0
-	move.b $310004,d0
-	move.b $310004,d0
-	move.b $310004,d0
-
 endless:
 	bra endless
 
@@ -208,3 +182,14 @@ wait:
 	bne wait
 	rts
 	
+
+slaveirq:
+	move.b $310000,d0
+	move.b $310000,d0
+	move.b $310000,d0
+	move.b $310000,d0
+	move.b $310002,d0
+	move.b $310002,d0
+	move.b $310004,d0
+	move.b $310004,d0
+	rte

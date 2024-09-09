@@ -36,7 +36,9 @@ Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` a
 	* Answers to basic requests from main CPU
 	* Maneuvering device simulated with MiSTer controller input
 * SERVO
-	* High level behaviour simulation
+	* High level behaviour simulation of closed empty tray
+* CDIC
+	* N/A
 * MiSTer
 	* Rom loading via Menu functional
 	* Automatic rom loading for main cpu and slave
@@ -49,12 +51,13 @@ Core Utilization:
 
 ## TODOs in order of priority
 
-* Fix spurious input data, making the cursor jump
 * Investigate why F$Sleep returns E$NoClk
 	* System clock not detected?
+	* Date can not be changed in the system settings. Correlation? Only -1 and +1 possible
 * Added remaining ICA/DCA features
 * Implement the CDIC audio parts
 * Implement the CDIC CD parts
+* OSD setting for input device conformance (1200 baud)
 * Fix I2C for the front display and show the display as picture in picture during changes?
 	* It might not even be required at all.
 * Have CD data available for the CDIC
