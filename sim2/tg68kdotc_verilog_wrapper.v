@@ -6409,9 +6409,9 @@ module tg68k_alu_2_1_2_1
   /* TG68K_ALU.vhd:1282:17  */
   assign n12811_o = n12808_o ? 1'b1 : 1'b0;
   /* TG68K_ALU.vhd:1294:47  */
-  assign n12817_o = micro_state != 7'b1011010;
+  assign n12817_o = micro_state != 7'b1011110;
   /* TG68K_ALU.vhd:1298:47  */
-  assign n12820_o = micro_state == 7'b1010101;
+  assign n12820_o = micro_state == 7'b1011001;
   /* TG68K_ALU.vhd:1300:65  */
   assign n12821_o = dividend[63];
   /* TG68K_ALU.vhd:1300:53  */
@@ -6431,7 +6431,7 @@ module tg68k_alu_2_1_2_1
   /* TG68K_ALU.vhd:1298:33  */
   assign n12833_o = n12820_o ? 1'b0 : n12830_o;
   /* TG68K_ALU.vhd:1311:47  */
-  assign n12836_o = micro_state == 7'b1010110;
+  assign n12836_o = micro_state == 7'b1011010;
   /* TG68K_ALU.vhd:1312:72  */
   assign n12837_o = op2out[31];
   /* TG68K_ALU.vhd:1312:77  */
@@ -15372,9 +15372,9 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:794:43  */
   assign n685_o = exec[25];
   /* TG68KdotC_Kernel.vhd:797:50  */
-  assign n687_o = $unsigned(micro_state) >= $unsigned(7'b1000110);
+  assign n687_o = $unsigned(micro_state) >= $unsigned(7'b0110111);
   /* TG68KdotC_Kernel.vhd:797:74  */
-  assign n689_o = $unsigned(micro_state) <= $unsigned(7'b1011110);
+  assign n689_o = $unsigned(micro_state) <= $unsigned(7'b0111101);
   /* TG68KdotC_Kernel.vhd:797:58  */
   assign n690_o = n689_o & n687_o;
   /* TG68KdotC_Kernel.vhd:799:50  */
@@ -17025,7 +17025,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   assign n1938_o = n1929_o & n1928_o;
   assign n1940_o = n1909_o[40:39];
   /* TG68KdotC_Kernel.vhd:1517:17  */
-  assign n1943_o = n1928_o ? 7'b1000110 : 7'b0000000;
+  assign n1943_o = n1928_o ? 7'b0110111 : 7'b0000000;
   /* TG68KdotC_Kernel.vhd:1524:42  */
   assign n1945_o = ~trapd;
   /* TG68KdotC_Kernel.vhd:1524:33  */
@@ -17041,7 +17041,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:1525:39  */
   assign n1951_o = n1950_o & n1947_o;
   /* TG68KdotC_Kernel.vhd:1527:25  */
-  assign n1954_o = trap_addr_error ? 7'b1000110 : 7'b0110011;
+  assign n1954_o = trap_addr_error ? 7'b0110111 : 7'b0110011;
   /* TG68KdotC_Kernel.vhd:1525:25  */
   assign n1956_o = n1951_o ? 7'b0110010 : n1954_o;
   /* TG68KdotC_Kernel.vhd:1532:46  */
@@ -17473,7 +17473,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:1665:33  */
   assign n2212_o = n2204_o & decodeopc;
   /* TG68KdotC_Kernel.vhd:1665:33  */
-  assign n2214_o = decodeopc ? 7'b1001010 : n2180_o;
+  assign n2214_o = decodeopc ? 7'b1001110 : n2180_o;
   /* TG68KdotC_Kernel.vhd:1674:33  */
   assign n2217_o = setexecopc ? 1'b1 : 1'b0;
   /* TG68KdotC_Kernel.vhd:1678:42  */
@@ -17658,7 +17658,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:1721:73  */
   assign n2358_o = decodeopc ? 1'b1 : n2357_o;
   /* TG68KdotC_Kernel.vhd:1721:73  */
-  assign n2360_o = decodeopc ? 7'b0111001 : n2180_o;
+  assign n2360_o = decodeopc ? 7'b1000000 : n2180_o;
   assign n2363_o = n1909_o[42];
   /* TG68KdotC_Kernel.vhd:1726:73  */
   assign n2364_o = decodeopc ? 1'b1 : n2363_o;
@@ -17688,7 +17688,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:1731:73  */
   assign n2388_o = n2371_o ? 1'b1 : n2387_o;
   /* TG68KdotC_Kernel.vhd:1731:73  */
-  assign n2390_o = n2371_o ? 7'b0110111 : n2368_o;
+  assign n2390_o = n2371_o ? 7'b0111110 : n2368_o;
   /* TG68KdotC_Kernel.vhd:1720:65  */
   assign n2391_o = n2355_o ? n2026_o : n2377_o;
   /* TG68KdotC_Kernel.vhd:1720:65  */
@@ -17804,7 +17804,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:1746:57  */
   assign n2479_o = n2502_o ? 1'b1 : n2478_o;
   /* TG68KdotC_Kernel.vhd:1759:65  */
-  assign n2481_o = n2467_o ? 7'b1000001 : n2457_o;
+  assign n2481_o = n2467_o ? 7'b1001000 : n2457_o;
   /* TG68KdotC_Kernel.vhd:1746:57  */
   assign n2482_o = n2447_o ? n2449_o : n1921_o;
   /* TG68KdotC_Kernel.vhd:1746:57  */
@@ -20185,7 +20185,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:2267:81  */
   assign n4338_o = n4344_o ? 2'b01 : n2026_o;
   /* TG68KdotC_Kernel.vhd:2267:81  */
-  assign n4340_o = n4354_o ? 7'b1010100 : n4324_o;
+  assign n4340_o = n4354_o ? 7'b1011000 : n4324_o;
   /* TG68KdotC_Kernel.vhd:2267:81  */
   assign n4344_o = n4336_o & n4333_o;
   /* TG68KdotC_Kernel.vhd:2267:81  */
@@ -20277,7 +20277,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:2294:89  */
   assign n4407_o = n4404_o ? n4406_o : 1'b1;
   /* TG68KdotC_Kernel.vhd:2294:89  */
-  assign n4410_o = n4404_o ? 7'b1010101 : 7'b1010001;
+  assign n4410_o = n4404_o ? 7'b1011001 : 7'b1010101;
   /* TG68KdotC_Kernel.vhd:2282:73  */
   assign n4412_o = n4432_o ? 2'b01 : n2026_o;
   /* TG68KdotC_Kernel.vhd:2290:81  */
@@ -21485,7 +21485,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:2627:89  */
   assign n5442_o = decodeopc ? 1'b1 : n2151_o;
   /* TG68KdotC_Kernel.vhd:2627:89  */
-  assign n5444_o = decodeopc ? 7'b1001001 : n2180_o;
+  assign n5444_o = decodeopc ? 7'b1001101 : n2180_o;
   /* TG68KdotC_Kernel.vhd:2611:81  */
   assign n5446_o = n5420_o ? n1921_o : 2'b10;
   /* TG68KdotC_Kernel.vhd:2611:81  */
@@ -23632,7 +23632,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:2757:33  */
   assign n6201_o = n6455_o ? 2'b01 : n2026_o;
   /* TG68KdotC_Kernel.vhd:2758:41  */
-  assign n6203_o = n6239_o ? 7'b1010101 : n2180_o;
+  assign n6203_o = n6239_o ? 7'b1011001 : n2180_o;
   /* TG68KdotC_Kernel.vhd:2768:59  */
   assign n6204_o = ~z_error;
   /* TG68KdotC_Kernel.vhd:2768:78  */
@@ -24908,7 +24908,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3068:57  */
   assign n7286_o = n7275_o ? 1'b1 : n7285_o;
   /* TG68KdotC_Kernel.vhd:3068:57  */
-  assign n7288_o = n7275_o ? 7'b1010000 : n7197_o;
+  assign n7288_o = n7275_o ? 7'b1010100 : n7197_o;
   /* TG68KdotC_Kernel.vhd:3077:74  */
   assign n7289_o = opcode[10:8];
   /* TG68KdotC_Kernel.vhd:3077:87  */
@@ -27881,7 +27881,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3485:33  */
   assign n8480_o = micro_state == 7'b0011001;
   /* TG68KdotC_Kernel.vhd:3495:33  */
-  assign n8486_o = micro_state == 7'b1000001;
+  assign n8486_o = micro_state == 7'b1001000;
   /* TG68KdotC_Kernel.vhd:3504:50  */
   assign n8487_o = sndopc[15];
   /* TG68KdotC_Kernel.vhd:3507:58  */
@@ -27898,7 +27898,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3504:41  */
   assign n8500_o = n8490_o & n8487_o;
   /* TG68KdotC_Kernel.vhd:3502:33  */
-  assign n8505_o = micro_state == 7'b1000010;
+  assign n8505_o = micro_state == 7'b1001001;
   /* TG68KdotC_Kernel.vhd:3519:50  */
   assign n8507_o = sndopc[15];
   /* TG68KdotC_Kernel.vhd:3519:41  */
@@ -27912,19 +27912,19 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3527:41  */
   assign n8519_o = n8517_o ? 2'b01 : n8058_o;
   /* TG68KdotC_Kernel.vhd:3527:41  */
-  assign n8521_o = n8517_o ? 7'b1000100 : n8074_o;
+  assign n8521_o = n8517_o ? 7'b1001011 : n8074_o;
   /* TG68KdotC_Kernel.vhd:3516:33  */
-  assign n8523_o = micro_state == 7'b1000011;
+  assign n8523_o = micro_state == 7'b1001010;
   /* TG68KdotC_Kernel.vhd:3531:33  */
-  assign n8525_o = micro_state == 7'b1000100;
+  assign n8525_o = micro_state == 7'b1001011;
   /* TG68KdotC_Kernel.vhd:3535:49  */
   assign n8526_o = flags[0];
   /* TG68KdotC_Kernel.vhd:3535:41  */
   assign n8528_o = n8526_o ? 1'b1 : n8140_o;
   /* TG68KdotC_Kernel.vhd:3534:33  */
-  assign n8530_o = micro_state == 7'b1000101;
+  assign n8530_o = micro_state == 7'b1001100;
   /* TG68KdotC_Kernel.vhd:3540:33  */
-  assign n8532_o = micro_state == 7'b0110111;
+  assign n8532_o = micro_state == 7'b0111110;
   /* TG68KdotC_Kernel.vhd:3545:49  */
   assign n8533_o = flags[2];
   /* TG68KdotC_Kernel.vhd:3545:41  */
@@ -27953,15 +27953,15 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3545:41  */
   assign n8557_o = n8533_o ? 7'b0000001 : n8074_o;
   /* TG68KdotC_Kernel.vhd:3543:33  */
-  assign n8559_o = micro_state == 7'b0111000;
+  assign n8559_o = micro_state == 7'b0111111;
   /* TG68KdotC_Kernel.vhd:3559:63  */
   assign n8560_o = sndopc[15];
   /* TG68KdotC_Kernel.vhd:3557:33  */
-  assign n8563_o = micro_state == 7'b0111001;
+  assign n8563_o = micro_state == 7'b1000000;
   /* TG68KdotC_Kernel.vhd:3562:33  */
-  assign n8569_o = micro_state == 7'b0111010;
+  assign n8569_o = micro_state == 7'b1000001;
   /* TG68KdotC_Kernel.vhd:3570:33  */
-  assign n8572_o = micro_state == 7'b0111011;
+  assign n8572_o = micro_state == 7'b1000010;
   /* TG68KdotC_Kernel.vhd:3575:49  */
   assign n8573_o = flags[2];
   assign n8575_o = n1909_o[86];
@@ -27971,9 +27971,9 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3575:41  */
   assign n8578_o = n8573_o ? 1'b1 : n8577_o;
   /* TG68KdotC_Kernel.vhd:3574:33  */
-  assign n8584_o = micro_state == 7'b0111100;
+  assign n8584_o = micro_state == 7'b1000011;
   /* TG68KdotC_Kernel.vhd:3585:33  */
-  assign n8587_o = micro_state == 7'b0111101;
+  assign n8587_o = micro_state == 7'b1000100;
   /* TG68KdotC_Kernel.vhd:3590:49  */
   assign n8588_o = flags[2];
   /* TG68KdotC_Kernel.vhd:3594:71  */
@@ -28016,13 +28016,13 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3590:41  */
   assign n8625_o = n8588_o ? n8624_o : 1'b1;
   /* TG68KdotC_Kernel.vhd:3590:41  */
-  assign n8628_o = n8588_o ? 7'b0111111 : 7'b1000000;
+  assign n8628_o = n8588_o ? 7'b1000110 : 7'b1000111;
   /* TG68KdotC_Kernel.vhd:3589:33  */
-  assign n8630_o = micro_state == 7'b0111110;
+  assign n8630_o = micro_state == 7'b1000101;
   /* TG68KdotC_Kernel.vhd:3607:33  */
-  assign n8634_o = micro_state == 7'b0111111;
+  assign n8634_o = micro_state == 7'b1000110;
   /* TG68KdotC_Kernel.vhd:3614:33  */
-  assign n8638_o = micro_state == 7'b1000000;
+  assign n8638_o = micro_state == 7'b1000111;
   /* TG68KdotC_Kernel.vhd:3620:58  */
   assign n8639_o = last_data_read[15:0];
   /* TG68KdotC_Kernel.vhd:3620:71  */
@@ -28176,19 +28176,19 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3758:33  */
   assign n8787_o = micro_state == 7'b0110110;
   /* TG68KdotC_Kernel.vhd:3770:33  */
-  assign n8790_o = micro_state == 7'b1000110;
+  assign n8790_o = micro_state == 7'b0110111;
   /* TG68KdotC_Kernel.vhd:3776:33  */
-  assign n8793_o = micro_state == 7'b1000111;
+  assign n8793_o = micro_state == 7'b0111000;
   /* TG68KdotC_Kernel.vhd:3782:33  */
-  assign n8796_o = micro_state == 7'b1001000;
+  assign n8796_o = micro_state == 7'b0111001;
   /* TG68KdotC_Kernel.vhd:3788:33  */
-  assign n8799_o = micro_state == 7'b1011011;
+  assign n8799_o = micro_state == 7'b0111010;
   /* TG68KdotC_Kernel.vhd:3794:33  */
-  assign n8802_o = micro_state == 7'b1011100;
+  assign n8802_o = micro_state == 7'b0111011;
   /* TG68KdotC_Kernel.vhd:3800:33  */
-  assign n8805_o = micro_state == 7'b1011101;
+  assign n8805_o = micro_state == 7'b0111100;
   /* TG68KdotC_Kernel.vhd:3806:33  */
-  assign n8808_o = micro_state == 7'b1011110;
+  assign n8808_o = micro_state == 7'b0111101;
   /* TG68KdotC_Kernel.vhd:3826:62  */
   assign n8811_o = ~use_vbr_stackframe;
   /* TG68KdotC_Kernel.vhd:3826:76  */
@@ -28308,7 +28308,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3878:41  */
   assign n8906_o = n8899_o & n8897_o;
   /* TG68KdotC_Kernel.vhd:3875:33  */
-  assign n8908_o = micro_state == 7'b1001001;
+  assign n8908_o = micro_state == 7'b1001101;
   /* TG68KdotC_Kernel.vhd:3896:50  */
   assign n8912_o = opcode[6];
   assign n8914_o = n7915_o[1];
@@ -28324,7 +28324,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3899:41  */
   assign n8922_o = n8919_o ? 2'b10 : 2'b11;
   /* TG68KdotC_Kernel.vhd:3891:33  */
-  assign n8924_o = micro_state == 7'b1001010;
+  assign n8924_o = micro_state == 7'b1001110;
   /* TG68KdotC_Kernel.vhd:3906:50  */
   assign n8925_o = opcode[6];
   assign n8928_o = n7915_o[3];
@@ -28346,7 +28346,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3910:41  */
   assign n8940_o = n8937_o ? 2'b10 : 2'b11;
   /* TG68KdotC_Kernel.vhd:3905:33  */
-  assign n8942_o = micro_state == 7'b1001011;
+  assign n8942_o = micro_state == 7'b1001111;
   /* TG68KdotC_Kernel.vhd:3917:50  */
   assign n8943_o = opcode[6];
   /* TG68KdotC_Kernel.vhd:3921:58  */
@@ -28374,9 +28374,9 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3917:41  */
   assign n8963_o = n8943_o ? 1'b1 : n7951_o;
   /* TG68KdotC_Kernel.vhd:3917:41  */
-  assign n8965_o = n8943_o ? 7'b1001101 : n8074_o;
+  assign n8965_o = n8943_o ? 7'b1010001 : n8074_o;
   /* TG68KdotC_Kernel.vhd:3916:33  */
-  assign n8967_o = micro_state == 7'b1001100;
+  assign n8967_o = micro_state == 7'b1010000;
   /* TG68KdotC_Kernel.vhd:3931:50  */
   assign n8968_o = opcode[7];
   /* TG68KdotC_Kernel.vhd:3931:53  */
@@ -28384,9 +28384,9 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3931:41  */
   assign n8972_o = n8969_o ? 2'b10 : 2'b11;
   /* TG68KdotC_Kernel.vhd:3930:33  */
-  assign n8974_o = micro_state == 7'b1001101;
+  assign n8974_o = micro_state == 7'b1010001;
   /* TG68KdotC_Kernel.vhd:3937:33  */
-  assign n8976_o = micro_state == 7'b1001110;
+  assign n8976_o = micro_state == 7'b1010010;
   /* TG68KdotC_Kernel.vhd:3941:50  */
   assign n8977_o = opcode[15];
   /* TG68KdotC_Kernel.vhd:3941:59  */
@@ -28394,13 +28394,13 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3941:41  */
   assign n8982_o = n8979_o ? 6'b001110 : 6'b011110;
   /* TG68KdotC_Kernel.vhd:3940:33  */
-  assign n8984_o = micro_state == 7'b1010001;
+  assign n8984_o = micro_state == 7'b1010101;
   /* TG68KdotC_Kernel.vhd:3950:51  */
   assign n8987_o = rot_cnt == 6'b000001;
   /* TG68KdotC_Kernel.vhd:3950:41  */
-  assign n8990_o = n8987_o ? 7'b1010011 : 7'b1010010;
+  assign n8990_o = n8987_o ? 7'b1010111 : 7'b1010110;
   /* TG68KdotC_Kernel.vhd:3948:33  */
-  assign n8992_o = micro_state == 7'b1010010;
+  assign n8992_o = micro_state == 7'b1010110;
   /* TG68KdotC_Kernel.vhd:3957:50  */
   assign n8993_o = opcode[15];
   /* TG68KdotC_Kernel.vhd:3957:54  */
@@ -28418,7 +28418,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3962:41  */
   assign n9005_o = n9009_o ? 2'b01 : n8058_o;
   /* TG68KdotC_Kernel.vhd:3962:41  */
-  assign n9007_o = n9017_o ? 7'b1010100 : n8074_o;
+  assign n9007_o = n9017_o ? 7'b1011000 : n8074_o;
   /* TG68KdotC_Kernel.vhd:3962:41  */
   assign n9009_o = n9003_o & n9001_o;
   /* TG68KdotC_Kernel.vhd:3962:41  */
@@ -28434,11 +28434,11 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3962:41  */
   assign n9017_o = n9003_o & n9001_o;
   /* TG68KdotC_Kernel.vhd:3956:33  */
-  assign n9019_o = micro_state == 7'b1010011;
+  assign n9019_o = micro_state == 7'b1010111;
   /* TG68KdotC_Kernel.vhd:3972:33  */
-  assign n9024_o = micro_state == 7'b1010100;
+  assign n9024_o = micro_state == 7'b1011000;
   /* TG68KdotC_Kernel.vhd:3978:33  */
-  assign n9026_o = micro_state == 7'b1010101;
+  assign n9026_o = micro_state == 7'b1011001;
   /* TG68KdotC_Kernel.vhd:3982:51  */
   assign n9027_o = op2out[31:16];
   /* TG68KdotC_Kernel.vhd:3982:65  */
@@ -28458,9 +28458,9 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3982:41  */
   assign n9040_o = n9037_o ? 1'b1 : 1'b0;
   /* TG68KdotC_Kernel.vhd:3982:41  */
-  assign n9042_o = n9037_o ? n8074_o : 7'b1010111;
+  assign n9042_o = n9037_o ? n8074_o : 7'b1011011;
   /* TG68KdotC_Kernel.vhd:3981:33  */
-  assign n9045_o = micro_state == 7'b1010110;
+  assign n9045_o = micro_state == 7'b1011010;
   /* TG68KdotC_Kernel.vhd:3990:50  */
   assign n9046_o = opcode[15];
   /* TG68KdotC_Kernel.vhd:3990:59  */
@@ -28468,13 +28468,13 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:3990:41  */
   assign n9051_o = n9048_o ? 6'b001101 : 6'b011101;
   /* TG68KdotC_Kernel.vhd:3989:33  */
-  assign n9053_o = micro_state == 7'b1010111;
+  assign n9053_o = micro_state == 7'b1011011;
   /* TG68KdotC_Kernel.vhd:3999:51  */
   assign n9056_o = rot_cnt == 6'b000001;
   /* TG68KdotC_Kernel.vhd:3999:41  */
-  assign n9059_o = n9056_o ? 7'b1011001 : 7'b1011000;
+  assign n9059_o = n9056_o ? 7'b1011101 : 7'b1011100;
   /* TG68KdotC_Kernel.vhd:3997:33  */
-  assign n9061_o = micro_state == 7'b1011000;
+  assign n9061_o = micro_state == 7'b1011100;
   /* TG68KdotC_Kernel.vhd:4005:51  */
   assign n9062_o = ~z_error;
   /* TG68KdotC_Kernel.vhd:4005:70  */
@@ -28496,9 +28496,9 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:4008:41  */
   assign n9077_o = n9070_o ? 1'b1 : n7950_o;
   /* TG68KdotC_Kernel.vhd:4008:41  */
-  assign n9079_o = n9070_o ? 7'b1011010 : n8074_o;
+  assign n9079_o = n9070_o ? 7'b1011110 : n8074_o;
   /* TG68KdotC_Kernel.vhd:4004:33  */
-  assign n9082_o = micro_state == 7'b1011001;
+  assign n9082_o = micro_state == 7'b1011101;
   /* TG68KdotC_Kernel.vhd:4017:48  */
   assign n9083_o = exec[34];
   /* TG68KdotC_Kernel.vhd:4017:41  */
@@ -28510,7 +28510,7 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:4017:41  */
   assign n9090_o = n9083_o ? n9089_o : 1'b1;
   /* TG68KdotC_Kernel.vhd:4016:33  */
-  assign n9093_o = micro_state == 7'b1011010;
+  assign n9093_o = micro_state == 7'b1011110;
   /* TG68KdotC_Kernel.vhd:4026:50  */
   assign n9094_o = op2out[5:0];
   /* TG68KdotC_Kernel.vhd:4026:62  */
@@ -28523,9 +28523,9 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
   /* TG68KdotC_Kernel.vhd:4026:41  */
   assign n9101_o = n9096_o ? n9100_o : 1'b1;
   /* TG68KdotC_Kernel.vhd:4025:33  */
-  assign n9103_o = micro_state == 7'b1001111;
+  assign n9103_o = micro_state == 7'b1010011;
   /* TG68KdotC_Kernel.vhd:4032:33  */
-  assign n9105_o = micro_state == 7'b1010000;
+  assign n9105_o = micro_state == 7'b1010100;
   assign n9106_o = {n9105_o, n9103_o, n9093_o, n9082_o, n9061_o, n9053_o, n9045_o, n9026_o, n9024_o, n9019_o, n8992_o, n8984_o, n8976_o, n8974_o, n8967_o, n8942_o, n8924_o, n8908_o, n8863_o, n8860_o, n8858_o, n8856_o, n8839_o, n8837_o, n8822_o, n8808_o, n8805_o, n8802_o, n8799_o, n8796_o, n8793_o, n8790_o, n8787_o, n8783_o, n8780_o, n8774_o, n8758_o, n8755_o, n8752_o, n8749_o, n8746_o, n8742_o, n8734_o, n8726_o, n8724_o, n8709_o, n8699_o, n8692_o, n8664_o, n8638_o, n8634_o, n8630_o, n8587_o, n8584_o, n8572_o, n8569_o, n8563_o, n8559_o, n8532_o, n8530_o, n8525_o, n8523_o, n8505_o, n8486_o, n8480_o, n8462_o, n8460_o, n8453_o, n8451_o, n8442_o, n8423_o, n8405_o, n8401_o, n8352_o, n8349_o, n8303_o, n8301_o, n8281_o, n8264_o, n8261_o, n8212_o, n8209_o, n8158_o, n8155_o, n8152_o};
   /* TG68KdotC_Kernel.vhd:3263:25  */
   always @*
@@ -35206,18 +35206,18 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
       85'b0010000000000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n8074_o;
       85'b0001000000000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n9079_o;
       85'b0000100000000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n9059_o;
-      85'b0000010000000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1011000;
+      85'b0000010000000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1011100;
       85'b0000001000000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n9042_o;
-      85'b0000000100000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1010110;
+      85'b0000000100000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1011010;
       85'b0000000010000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n8074_o;
       85'b0000000001000000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n9007_o;
       85'b0000000000100000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n8990_o;
-      85'b0000000000010000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1010010;
+      85'b0000000000010000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1010110;
       85'b0000000000001000000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n8074_o;
-      85'b0000000000000100000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1001110;
+      85'b0000000000000100000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1010010;
       85'b0000000000000010000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n8965_o;
-      85'b0000000000000001000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1001100;
-      85'b0000000000000000100000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1001011;
+      85'b0000000000000001000000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1010000;
+      85'b0000000000000000100000000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1001111;
       85'b0000000000000000010000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n8074_o;
       85'b0000000000000000001000000000000000000000000000000000000000000000000000000000000000000: n9473_o = n8074_o;
       85'b0000000000000000000100000000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0110001;
@@ -35227,12 +35227,12 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
       85'b0000000000000000000000010000000000000000000000000000000000000000000000000000000000000: n9473_o = n8835_o;
       85'b0000000000000000000000001000000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0101100;
       85'b0000000000000000000000000100000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0110011;
-      85'b0000000000000000000000000010000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1011110;
-      85'b0000000000000000000000000001000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1011101;
-      85'b0000000000000000000000000000100000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1011100;
-      85'b0000000000000000000000000000010000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1011011;
-      85'b0000000000000000000000000000001000000000000000000000000000000000000000000000000000000: n9473_o = 7'b1001000;
-      85'b0000000000000000000000000000000100000000000000000000000000000000000000000000000000000: n9473_o = 7'b1000111;
+      85'b0000000000000000000000000010000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0111101;
+      85'b0000000000000000000000000001000000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0111100;
+      85'b0000000000000000000000000000100000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0111011;
+      85'b0000000000000000000000000000010000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0111010;
+      85'b0000000000000000000000000000001000000000000000000000000000000000000000000000000000000: n9473_o = 7'b0111001;
+      85'b0000000000000000000000000000000100000000000000000000000000000000000000000000000000000: n9473_o = 7'b0111000;
       85'b0000000000000000000000000000000010000000000000000000000000000000000000000000000000000: n9473_o = 7'b0011000;
       85'b0000000000000000000000000000000001000000000000000000000000000000000000000000000000000: n9473_o = 7'b0110110;
       85'b0000000000000000000000000000000000100000000000000000000000000000000000000000000000000: n9473_o = 7'b0110101;
@@ -35253,18 +35253,18 @@ module tg68kdotc_kernel_2_2_2_2_2_2_1_1
       85'b0000000000000000000000000000000000000000000000000100000000000000000000000000000000000: n9473_o = n8074_o;
       85'b0000000000000000000000000000000000000000000000000010000000000000000000000000000000000: n9473_o = 7'b0011000;
       85'b0000000000000000000000000000000000000000000000000001000000000000000000000000000000000: n9473_o = n8628_o;
-      85'b0000000000000000000000000000000000000000000000000000100000000000000000000000000000000: n9473_o = 7'b0111110;
-      85'b0000000000000000000000000000000000000000000000000000010000000000000000000000000000000: n9473_o = 7'b0111101;
-      85'b0000000000000000000000000000000000000000000000000000001000000000000000000000000000000: n9473_o = 7'b0111100;
-      85'b0000000000000000000000000000000000000000000000000000000100000000000000000000000000000: n9473_o = 7'b0111011;
-      85'b0000000000000000000000000000000000000000000000000000000010000000000000000000000000000: n9473_o = 7'b0111010;
+      85'b0000000000000000000000000000000000000000000000000000100000000000000000000000000000000: n9473_o = 7'b1000101;
+      85'b0000000000000000000000000000000000000000000000000000010000000000000000000000000000000: n9473_o = 7'b1000100;
+      85'b0000000000000000000000000000000000000000000000000000001000000000000000000000000000000: n9473_o = 7'b1000011;
+      85'b0000000000000000000000000000000000000000000000000000000100000000000000000000000000000: n9473_o = 7'b1000010;
+      85'b0000000000000000000000000000000000000000000000000000000010000000000000000000000000000: n9473_o = 7'b1000001;
       85'b0000000000000000000000000000000000000000000000000000000001000000000000000000000000000: n9473_o = n8557_o;
-      85'b0000000000000000000000000000000000000000000000000000000000100000000000000000000000000: n9473_o = 7'b0111000;
+      85'b0000000000000000000000000000000000000000000000000000000000100000000000000000000000000: n9473_o = 7'b0111111;
       85'b0000000000000000000000000000000000000000000000000000000000010000000000000000000000000: n9473_o = n8074_o;
-      85'b0000000000000000000000000000000000000000000000000000000000001000000000000000000000000: n9473_o = 7'b1000101;
+      85'b0000000000000000000000000000000000000000000000000000000000001000000000000000000000000: n9473_o = 7'b1001100;
       85'b0000000000000000000000000000000000000000000000000000000000000100000000000000000000000: n9473_o = n8521_o;
-      85'b0000000000000000000000000000000000000000000000000000000000000010000000000000000000000: n9473_o = 7'b1000011;
-      85'b0000000000000000000000000000000000000000000000000000000000000001000000000000000000000: n9473_o = 7'b1000010;
+      85'b0000000000000000000000000000000000000000000000000000000000000010000000000000000000000: n9473_o = 7'b1001010;
+      85'b0000000000000000000000000000000000000000000000000000000000000001000000000000000000000: n9473_o = 7'b1001001;
       85'b0000000000000000000000000000000000000000000000000000000000000000100000000000000000000: n9473_o = n8471_o;
       85'b0000000000000000000000000000000000000000000000000000000000000000010000000000000000000: n9473_o = 7'b0000001;
       85'b0000000000000000000000000000000000000000000000000000000000000000001000000000000000000: n9473_o = 7'b0011000;

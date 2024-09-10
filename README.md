@@ -51,16 +51,15 @@ Core Utilization:
 
 ## TODOs in order of priority
 
-* Investigate why F$Sleep returns E$NoClk
-	* System clock not detected?
-	* Date can not be changed in the system settings. Correlation? Only -1 and +1 possible
+* Implement the CDIC CD parts
+* Have CD data available for the CDIC from MiSTer application
 * Added remaining ICA/DCA features
 * Implement the CDIC audio parts
-* Implement the CDIC CD parts
+* Fix NTSC mode
+* Add alternative input devices (a mouse)
 * OSD setting for input device conformance (1200 baud)
 * Fix I2C for the front display and show the display as picture in picture during changes?
 	* It might not even be required at all.
-* Have CD data available for the CDIC
 * Use the MiSTer framework to save the NVRAM to sdcard
 	* Only when changes are detected and when the OSD is opened
 	* The N64 core does it like that to
