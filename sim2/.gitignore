@@ -2,3 +2,7 @@
 video_*.png
 log
 log2
+*.CUE
+*.BIN
+*.rom
+

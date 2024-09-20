@@ -216,7 +216,8 @@ module emu (
     localparam CONF_STR = {
         "CD-i;UART115200;",
         "-;",
-        "F1,BIN;",
+        "S0,CUECHD,Insert Disc;",
+        "F1,ROM,Replace Boot ROM;",
         "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
         "O[2],UART Loopback,No,Yes;",
         "O[3],UART Fake Space,No,Yes;",
@@ -256,10 +257,24 @@ module emu (
 
     (* keep *)wire        clk_sys  /*verilator public_flat_rw*/;
 
+
+    reg  [31:0] sd_lba0;
+    wire        sd_rd  /*verilator public_flat_rd*/;
+    wire        sd_wr;
+    wire        sd_ack  /*verilator public_flat_rw*/;
+    wire [ 7:0] sd_buff_addr;
+    wire [15:0] sd_buff_dout  /*verilator public_flat_rw*/;
+    wire [15:0] sd_buff_din0;
+    wire        sd_buff_wr  /*verilator public_flat_rw*/;
+    wire        img_mounted;
+    wire        img_readonly;
+    wire [63:0] img_size;
+
 `ifndef VERILATOR
     hps_io #(
         .CONF_STR(CONF_STR),
-        .WIDE(1)
+        .WIDE(1),
+        .BLKSZ(3)
     ) hps_io (
         .clk_sys  (clk_sys),
         .HPS_BUS  (HPS_BUS),
@@ -278,6 +293,20 @@ module emu (
         .ioctl_addr(ioctl_addr),
         .ioctl_dout(ioctl_dout),
         .ioctl_wait(ioctl_wait),
+
+        .sd_lba('{sd_lba0}),
+        .sd_blk_cnt('{0}),
+        .sd_rd(sd_rd),
+        .sd_wr(sd_wr),
+        .sd_ack(sd_ack),
+        .sd_buff_addr(sd_buff_addr),
+        .sd_buff_dout(sd_buff_dout),
+        .sd_buff_din('{sd_buff_din0}),
+        .sd_buff_wr(sd_buff_wr),
+
+        .img_mounted(img_mounted),
+        .img_readonly(img_readonly),
+        .img_size(img_size),
 
         .ps2_key(ps2_key),
 
@@ -592,7 +621,15 @@ module emu (
 
         .slave_serial_in(slave_serial_in),
         .slave_serial_out(slave_serial_out),
-        .slave_rts(slave_rts)
+        .slave_rts(slave_rts),
+
+        .cd_hps_req(sd_rd),
+        .cd_hps_lba(sd_lba0),
+        .cd_hps_ack(sd_ack),
+        .cd_hps_data_valid(sd_buff_wr),
+        // MiSTer uses little endian on linux. Swap over to big endian
+        // to actually fit the way the 68k wants it
+        .cd_hps_data({sd_buff_dout[7:0], sd_buff_dout[15:8]})
     );
 
 

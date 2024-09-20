@@ -40,7 +40,14 @@ module cditop (
 
     bytestream.source slave_serial_out,
     bytestream.sink slave_serial_in,
-    output slave_rts
+    output slave_rts,
+
+    output [31:0] cd_hps_lba,
+    output cd_hps_req,
+    input cd_hps_ack,
+    input cd_hps_data_valid,
+    input [15:0] cd_hps_data
+
 );
 
     parallelel_spi slave_servo_spi ();
@@ -118,12 +125,13 @@ module cditop (
         end
     end
 
+    wire vdsc_int;
 
     mcd212 mcd212_inst (
         .clk(clk30),
         .reset,
         .cpu_address(addr[22:1]),
-        .cpu_din(cpu_data_out),
+        .cpu_din(cdic_dma_ack ? cdic_dout : cpu_data_out),
         .cpu_dout(mcd212_dout),
         .cpu_bus_ack(mcd212_bus_ack),
         .cpu_uds(uds),
@@ -146,8 +154,21 @@ module cditop (
         .sdram_busy(sdram_busy),
         .sdram_burst(sdram_burst),
         .sdram_refresh(sdram_refresh),
-        .sdram_burstdata_valid
+        .sdram_burstdata_valid,
+        .irq(vdsc_int)
     );
+
+    wire in2in;
+    wire in4in;
+    wire iack2;
+    wire iack4;
+    wire iack5;
+    wire cdic_dma_req;
+    wire cdic_dma_ack;
+    wire cdic_dma_rdy;
+    wire cdic_dma_dtc;
+    wire cdic_dma_done_in;
+    wire cdic_dma_done_out;
 
     cdic cdic_inst (
         .clk(clk30),
@@ -159,35 +180,65 @@ module cditop (
         .lds(lds),
         .write_strobe(write_strobe),
         .cs(attex_cs_cdic),
-        .bus_ack(cdic_bus_ack)
+        .bus_ack(cdic_bus_ack),
+        .intreq(in4in),
+        .intack(iack4),
+        .req(cdic_dma_req),
+        .ack(cdic_dma_ack),
+        .rdy(cdic_dma_rdy),
+        .dtc(cdic_dma_dtc),
+        .done_in(cdic_dma_done_out),
+        .done_out(cdic_dma_done_in),
+        .cd_hps_lba,
+        .cd_hps_req,
+        .cd_hps_ack,
+        .cd_hps_data_valid,
+        .cd_hps_data
     );
 
-    wire vsdc_intn = 1'b1;
-    wire in2in;
+
+    // TODO might not be correct
+    // CDIC seems to want manual vector
+    // For the SLAVE we must use autovectoring
+    wire av = iack2;
 
 `ifndef DISABLE_MAIN_CPU
+
     scc68070 scc68070_0 (
         .clk(clk30),
         .reset(reset),  // External sync reset on emulated system
-        .write_strobe,
-        .as,
-        .lds,
-        .uds,
+        .write_strobe(write_strobe),
+        .as(as),
+        .lds(lds),
+        .uds(uds),
         .bus_ack(bus_ack),
         .bus_err,
-        .int1(!vsdc_intn),
+        .int1(vdsc_int),
         .int2(1'b0),  // unconnected in CDi MONO1
-        .in2(!in2in),
-        .in4(1'b0),
+        .in2(!in2in),  // TODO fix polarity
+        .in4(in4in),
         .in5(1'b0),
+        .iack2(iack2),
+        .iack4(iack4),
+        .iack5(iack5),
+        .av(av),
         .data_in(data_in),
         .data_out(cpu_data_out),
-        .addr,
+        .addr(addr),
         .uart_tx(scc68_uart_tx),
         .uart_rx(scc68_uart_rx),
         .debug_uart_loopback,
-        .debug_uart_fake_space
+        .debug_uart_fake_space,
+        .req1(cdic_dma_req),
+        .req2(0),
+        .ack1(cdic_dma_ack),
+        .ack2(),
+        .rdy(cdic_dma_rdy),
+        .dtc(cdic_dma_dtc),
+        .done_in(cdic_dma_done_in),
+        .done_out(cdic_dma_done_out)
     );
+
 `endif
 
     wire stand = !tvmode_pal;  // 1 NTSC, 0 PAL
@@ -224,6 +275,11 @@ module cditop (
             data_in = mcd212_dout;
             bus_ack = mcd212_bus_ack;
         end
+
+        if (iack4) begin
+            data_in = cdic_dout;
+            bus_ack = 1;
+        end
     end
 
     always_ff @(posedge clk30) begin
@@ -255,9 +311,10 @@ module cditop (
     bit dtackslaven_q = 0;
     bit in2in_q = 1;
 
-    (* keep *) bit slave_irq;
+    (* keep *)bit slave_irq;
 
 `ifndef DISABLE_SLAVE_UC
+    /*verilator tracing_off*/
     uc68hc05 uc68hc05_0 (
         .clk30,
         .reset(reset),
@@ -282,6 +339,8 @@ module cditop (
         .spi(slave_servo_spi),
         .quirk_force_mode_fault(quirk_force_mode_fault)
     );
+    /*verilator tracing_on*/
+
 `endif
 
     u3090mg u3090mg (

@@ -38,7 +38,9 @@ module mcd212 (
     input             sdram_busy,
     output bit        sdram_burst,
     output bit        sdram_refresh,
-    input             sdram_burstdata_valid
+    input             sdram_burstdata_valid,
+
+    output irq
 );
 
     // Memory Swapping according to chapter 3.4
@@ -134,6 +136,34 @@ module mcd212 (
         bit [4:0] reserved1;
     } status_register1;
 
+    struct packed {
+        bit [7:0] reserved3;
+        bit [4:0] reserved;
+        bit it1;  // Channel 0 Interrupt Pending
+        bit it2;  // Channel 1 Interrupt Pending
+        bit be;
+    } status_register2;
+
+    // according to chapter 3.8 INTERRUPT GENERATION
+    assign irq = (status_register2.it1 && !control_register_crsr1w_di1) || 
+                    (status_register2.it2 && !control_register_crsr2w_di2);
+
+`ifdef VERILATOR
+    bit irq_q = 0;
+    always_ff @(posedge clk) begin
+        irq_q <= irq;
+
+        if (irq && !irq_q) $display("VIDEO IRQ 1");
+        if (!irq && irq_q) $display("VIDEO IRQ 0");
+    end
+`endif
+
+    always_comb begin
+        status_register1 = 0;
+        // TODO This might not be accurate
+        status_register1.da = video_y == 0;
+        status_register1.pa = parity;
+    end
 
     always_comb begin
         cpu_dout = 0;
@@ -255,6 +285,9 @@ module mcd212 (
             endcase
         end else if (cs_channel2) begin
             case (cpu_addressb[7:0])
+                8'he0: begin
+                    cpu_dout = status_register2;
+                end
                 default: cpu_dout = 16'h0;
             endcase
         end
@@ -323,12 +356,6 @@ module mcd212 (
     bit hblank_vt;
     bit hblank_vt_q;
 
-    always_comb begin
-        status_register1 = 0;
-        // TODO This might not be accurate
-        status_register1.da = video_y == 0;
-        status_register1.pa = parity;
-    end
 
     // we should have 8-9 refresh cycles per horizontal line
     // to fulfill 8192 refreshes per 64ms 
@@ -379,15 +406,23 @@ module mcd212 (
         bit [5:0] adr;
     } command_register_dcr2;
 
+    bit control_register_crsr1w_di1;
+    bit control_register_crsr2w_di2;
 
     always_ff @(posedge clk) begin
         if (reset) begin
             command_register_dcr1 <= 0;
             command_register_dcr2 <= 0;
+            control_register_crsr1w_di1 <= 0;
+            control_register_crsr2w_di2 <= 0;
         end else begin
             if ((cpu_lds || cpu_uds) && cs_channel1 && cpu_write_strobe) begin
                 if (cpu_addressb[3:0] == 4'h2) begin
                     command_register_dcr1 <= cpu_din;
+                end
+
+                if (cpu_addressb[3:0] == 4'h0) begin
+                    control_register_crsr1w_di1 <= cpu_din[15];
                 end
             end
 
@@ -395,7 +430,17 @@ module mcd212 (
                 if (cpu_addressb[3:0] == 4'h2) begin
                     command_register_dcr2 <= cpu_din;
                 end
+                if (cpu_addressb[3:0] == 4'h0) begin
+                    control_register_crsr2w_di2 <= cpu_din[15];
+                end
             end
+
+            if (cpu_lds && cs_channel2 && !cpu_write_strobe && cpu_addressb[3:0] == 0) begin
+                status_register2 <= 0;
+            end
+
+            if (ica0_irq) status_register2.it1 <= 1;
+            if (ica1_irq) status_register2.it2 <= 1;
         end
     end
 
@@ -426,12 +471,12 @@ module mcd212 (
     clut_dual_port_memory clutmem (
         .clk(clk),
         .data_a(clut_wr_data0),
-        .data_b(clut_wr_data1),
         .addr_a(clut_addr0),
-        .addr_b(clut_addr1),
         .we_a(clut_we0),
-        .we_b(clut_we1),
         .q_a(clut_out0),
+        .data_b(clut_wr_data1),
+        .addr_b(clut_addr1),
+        .we_b(clut_we1),
         .q_b(clut_out1)
     );
 
@@ -449,6 +494,7 @@ module mcd212 (
 
     bit ica0_reload_vsr;
     bit [21:0] ica0_vsr;
+    bit ica0_irq;
 
     bit [6:0] ch1_register_adr;
     bit [23:0] ch1_register_data;
@@ -456,6 +502,7 @@ module mcd212 (
 
     bit ica1_reload_vsr;
     bit [21:0] ica1_vsr;
+    bit ica1_irq;
 
     ica_dca_ctrl #(
         .odd_ica_start (22'h400),
@@ -471,7 +518,8 @@ module mcd212 (
         .register_data(ch0_register_data),
         .register_write(ch0_register_write),
         .reload_vsr(ica0_reload_vsr),
-        .vsr(ica0_vsr)
+        .vsr(ica0_vsr),
+        .irq(ica0_irq)
     );
 
     ica_dca_ctrl #(
@@ -488,7 +536,8 @@ module mcd212 (
         .register_data(ch1_register_data),
         .register_write(ch1_register_write),
         .reload_vsr(ica1_reload_vsr),
-        .vsr(ica1_vsr)
+        .vsr(ica1_vsr),
+        .irq(ica1_irq)
     );
 
     wire [15:0] file0_din = sdram_dout;

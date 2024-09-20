@@ -4,6 +4,7 @@ sim2/obj_dir/
 *.mem
 *.pdf
 *.bin
+*.cue
 
 cdi200.rom
 cdi220.rom

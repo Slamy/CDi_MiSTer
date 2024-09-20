@@ -26,8 +26,21 @@ main:
 
 	move.b #'C',$80002019
 
+	move #$2000,SR  
+	move.l #videoirq,$f4
+	move.b #$d8,$80001001 ; LIR
+
 endless:
 	bra endless
+
+videoirq:
+	move.b #'I',$80002019
+	; First reset IRQ in videochip
+	move.b $4fffe1,d0
+
+	; Then reset pending IRQ for latched IRQ
+	move.b #$d8,$80001001 ; LIR
+	rte
 
 copy:
 	move.l (a0)+,(a1)+

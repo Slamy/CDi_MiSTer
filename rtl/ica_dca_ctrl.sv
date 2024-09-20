@@ -11,7 +11,9 @@ module ica_dca_ctrl (
     output register_write,
 
     output reload_vsr,
-    output [21:0] vsr
+    output [21:0] vsr,
+
+    output bit irq
 );
 
     parameter bit [21:0] odd_ica_start = 22'h400;
@@ -48,6 +50,7 @@ module ica_dca_ctrl (
     bit ft2;
 
     always_ff @(posedge clk) begin
+        irq <= 0;
 
         if (reset) begin
             ica_pointer <= odd_ica_start;
@@ -126,6 +129,7 @@ module ica_dca_ctrl (
                             // interrupt
                             $display("INTERRUPT");
                             state <= IDLE;
+                            irq   <= 1;
                         end
                         7: begin
                             // reload display parameters

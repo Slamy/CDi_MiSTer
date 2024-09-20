@@ -9,11 +9,11 @@
 
 #include <chrono>
 #include <csignal>
-#include <cstdio>
-#include <cstdlib>
+#include <cstdint>
 #include <png.h>
 
 #include "hle.h"
+#include <byteswap.h>
 
 typedef VerilatedFstC tracetype_t;
 
@@ -27,7 +27,7 @@ static void catch_function(int signo) {
     status = signo;
 }
 const int width = 120 * 16;
-const int height = 600;
+const int height = 312;
 const int size = width * height * 3;
 
 uint8_t output_image[size] = {0};
@@ -119,6 +119,10 @@ void loadfile(uint16_t index, const char *path, tracetype_t &m_trace, Vemu &dut)
     fclose(f);
 }
 
+template <typename T, typename U> constexpr T BIT(T x, U n) noexcept {
+    return (x >> n) & T(1);
+}
+
 void printstate(Vemu &dut) {
 
     static uint32_t regfile[16];
@@ -134,19 +138,44 @@ void printstate(Vemu &dut) {
     printf("\n");
 }
 
+// got from mame
+uint32_t lba_from_time(uint32_t m_time) {
+    const uint8_t bcd_mins = (m_time >> 24) & 0xff;
+    const uint8_t mins_upper_digit = bcd_mins >> 4;
+    const uint8_t mins_lower_digit = bcd_mins & 0xf;
+    const uint8_t raw_mins = (mins_upper_digit * 10) + mins_lower_digit;
+
+    const uint8_t bcd_secs = (m_time >> 16) & 0xff;
+    const uint8_t secs_upper_digit = bcd_secs >> 4;
+    const uint8_t secs_lower_digit = bcd_secs & 0xf;
+    const uint8_t raw_secs = (secs_upper_digit * 10) + secs_lower_digit;
+
+    uint32_t lba = ((raw_mins * 60) + raw_secs) * 75;
+
+    const uint8_t bcd_frac = (m_time >> 8) & 0xff;
+    const bool even_second = BIT(bcd_frac, 7);
+    if (!even_second) {
+        const uint8_t frac_upper_digit = bcd_frac >> 4;
+        const uint8_t frac_lower_digit = bcd_frac & 0xf;
+        const uint8_t raw_frac = (frac_upper_digit * 10) + frac_lower_digit;
+        lba += raw_frac;
+    }
+
+    if (lba >= 150)
+        lba -= 150;
+
+    return lba;
+}
+
 void do_justwait(tracetype_t &m_trace, Vemu &dut) {
     dut.eval();
     do_trace = false;
     dut.rootp->emu__DOT__debug_uart_fake_space = false;
     dut.rootp->emu__DOT__tvmode_ntsc = false;
 
-    /*
-    fread(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256, f);
-    fread(&dut.rootp->emu__DOT__ram[2 * 1024 * 128], 1, 1024 * 256, f);
-    fread(&dut.rootp->emu__DOT__ram[1 * 1024 * 128], 1, 1024 * 256, f);
-    fread(&dut.rootp->emu__DOT__ram[3 * 1024 * 128], 1, 1024 * 256, f);
-    */
-    // 0x7FFB0  0xCD04 0xC1B9
+    // FILE *f_cd_bin = fopen("images/Zelda Wand of Gamelon.bin", "rb");
+    FILE *f_cd_bin = fopen("images/FROG.BIN", "rb");
+    assert(f_cd_bin);
 
     dut.RESET = 1;
     dut.UART_RXD = 1;
@@ -164,6 +193,14 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
     */
     dut.RESET = 0;
     auto start = std::chrono::system_clock::now();
+
+    int sd_rd_q;
+    static constexpr uint32_t kSectorHeaderSize{12};
+    static constexpr uint32_t kSectorSize{0x930};
+
+    uint16_t sector_buffer[0x1000];
+    uint16_t sector_buffer_index = 0;
+
     // for (int y = 0; y < 780000; y++) {
     for (int y = 0;; y++) {
         clock(m_trace, dut);
@@ -172,23 +209,47 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
             printf("%d\n", y);
         }
 
+        // Abort on illegal Instructions
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__trap_illegal) {
-            fprintf(stderr, "NOPE!\n");
+            fprintf(stderr, "Illegal Instruction!\n");
             break;
         }
 
-        if (y == 158300000) {
-            //do_trace = true;
+        // Simulate CD data delivery from HPS
+        if (dut.rootp->emu__DOT__sd_rd && sd_rd_q == 0) {
+            assert(dut.rootp->emu__DOT__sd_ack == 0);
+            dut.rootp->emu__DOT__sd_ack = 1;
 
-            // Make the pointer device go up left
-            // dut.rootp->emu__DOT__JOY0 = 0b01010; // first wrong event at frame 694
+            uint32_t lba = dut.rootp->emu__DOT__sd_lba0;
+            uint32_t m_time = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__time_register;
 
-            // Make the pointer device go down right
-            dut.rootp->emu__DOT__JOY0 = 0b00101; // first wrong event at frame 501
+            uint32_t reference_lba = lba_from_time(m_time);
+            // assert(lba == reference_lba);
 
-            // Make the pointer device go right
-            // dut.rootp->emu__DOT__JOY0 = 0b00001; // first wrong event at frame 692
+            uint32_t file_offset = (lba - 150) * kSectorSize;
+
+            printf("Request Sector %x %x\n", m_time, lba, file_offset);
+
+            int res = fseek(f_cd_bin, file_offset, SEEK_SET);
+            assert(res == 0);
+
+            fread(sector_buffer, 1, 0x930, f_cd_bin);
+            sector_buffer_index = 0;
         }
+
+        dut.rootp->emu__DOT__sd_buff_wr = 0;
+        if (dut.rootp->emu__DOT__sd_ack && (y & 0xf) == 0) {
+            if (sector_buffer_index == kSectorSize / 2) {
+                dut.rootp->emu__DOT__sd_ack = 0;
+                printf("Sector transferred!\n");
+            } else {
+                dut.rootp->emu__DOT__sd_buff_dout = sector_buffer[sector_buffer_index];
+                dut.rootp->emu__DOT__sd_buff_wr = 1;
+                sector_buffer_index++;
+            }
+        }
+
+        sd_rd_q = dut.rootp->emu__DOT__sd_rd;
 
         /*
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid) {
@@ -200,6 +261,7 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
         static uint32_t prevpc = 0;
         static uint32_t leave_sys_callpc = 0;
 
+        // Trace System Calls
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
             dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in) {
 
@@ -223,23 +285,28 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
             prevpc = m_pc;
         }
 
+        // Trace CPU state
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
             print_instructions && dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in) {
 
             printstate(dut);
-
-            // d1 = dut.rootp->fx68k_tb__DOT__d1;
-            /*
-            printf("%x %x %x %x %x %x\n", pc, dut.rootp->fx68k_tb__DOT__d0, dut.rootp->fx68k_tb__DOT__d1,
-                   regfile[8 + 0], regfile[8 + 2], regfile[8 + 6]);
-            */
         }
 
         static int output_index = 0;
         static int frame_index = 0;
 
+        // Simulate television
         if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {
             char filename[100];
+
+            if (frame_index == 283) {
+                printf("Press a button!\n");
+                dut.rootp->emu__DOT__JOY0 = 0b10000;
+            }
+            if (frame_index == 284) {
+                printf("Release a button!\n");
+                dut.rootp->emu__DOT__JOY0 = 0b00000;
+            }
 
             if (output_index > 100) {
                 auto current = std::chrono::system_clock::now();
@@ -268,16 +335,15 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
         if (status == SIGINT)
             break;
     }
+    fclose(f_cd_bin);
 
     if (1) {
         printf("Writing rampdump!\n");
-        FILE *f = fopen("slavedump.bin", "wb");
+        FILE *f = fopen("ramdump2.bin", "wb");
         assert(f);
-        fwrite(&dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__memory[0], 1, 1024 * 8, f);
+        fwrite(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
         fclose(f);
     }
-
-    // printf("ICA1 %x\n",dut.rootp->fx68k_tb__DOT__mcd212_inst__DOT__testram[ica1>>1]);
 }
 
 int main(int argc, char **argv) {
@@ -300,10 +366,6 @@ int main(int argc, char **argv) {
     if (do_trace)
         m_trace.open("/tmp/waveform.vcd");
 
-    // do_selftest_dram(m_trace, dut);
-    //  do_selftest_lowlevelpcb(m_trace, dut);
-    //  do_selftest_cdic(m_trace, dut);
-    //  do_selftest_slave(m_trace, dut);
     do_justwait(m_trace, dut);
 
     fprintf(stderr, "Closing...\n");
