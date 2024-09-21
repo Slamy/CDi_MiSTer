@@ -1,11 +1,16 @@
 `include "bus.svh"
 
-
 typedef struct packed {
     bit [5:0] r;
     bit [5:0] g;
     bit [5:0] b;
 } clut_entry;
+
+typedef struct {
+    bit [7:0] r;
+    bit [7:0] g;
+    bit [7:0] b;
+} rgb888;
 
 // MCD 212 - DRAM and Video
 
@@ -21,9 +26,9 @@ module mcd212 (
     output bit cpu_bus_ack,
     input cs,
 
-    output bit [7:0] r,
-    output bit [7:0] g,
-    output bit [7:0] b,
+    output     [7:0] r,
+    output     [7:0] g,
+    output     [7:0] b,
     output           hsync,
     output           vsync,
     output bit       hblank,
@@ -406,8 +411,28 @@ module mcd212 (
         bit [5:0] adr;
     } command_register_dcr2;
 
+    struct {
+        bit mf1;
+        bit mf2;
+        bit ft1;
+        bit ft2;
+        bit [5:0] adr;
+    } display_decoder_register_ddr1;
+
+    struct {
+        bit mf1;
+        bit mf2;
+        bit ft1;
+        bit ft2;
+        bit [5:0] adr;
+    } display_decoder_register_ddr2;
+
     bit control_register_crsr1w_di1;
     bit control_register_crsr2w_di2;
+
+    display_parameters_s ica0_disp_param_out;
+    display_parameters_s ica1_disp_param_out;
+
 
     always_ff @(posedge clk) begin
         if (reset) begin
@@ -416,6 +441,23 @@ module mcd212 (
             control_register_crsr1w_di1 <= 0;
             control_register_crsr2w_di2 <= 0;
         end else begin
+
+            if (ica0_disp_param_out.strobe) begin
+                display_decoder_register_ddr1.mf1 <= ica0_disp_param_out.mf1;
+                display_decoder_register_ddr1.mf2 <= ica0_disp_param_out.mf2;
+                display_decoder_register_ddr1.ft1 <= ica0_disp_param_out.ft1;
+                display_decoder_register_ddr1.ft2 <= ica0_disp_param_out.ft2;
+                command_register_dcr1.cm1 <= ica0_disp_param_out.cm;
+            end
+
+            if (ica1_disp_param_out.strobe) begin
+                display_decoder_register_ddr2.mf1 <= ica1_disp_param_out.mf1;
+                display_decoder_register_ddr2.mf2 <= ica1_disp_param_out.mf2;
+                display_decoder_register_ddr2.ft1 <= ica1_disp_param_out.ft1;
+                display_decoder_register_ddr2.ft2 <= ica1_disp_param_out.ft2;
+                command_register_dcr2.cm2 <= ica1_disp_param_out.cm;
+            end
+
             if ((cpu_lds || cpu_uds) && cs_channel1 && cpu_write_strobe) begin
                 if (cpu_addressb[3:0] == 4'h2) begin
                     command_register_dcr1 <= cpu_din;
@@ -505,8 +547,7 @@ module mcd212 (
     bit ica1_irq;
 
     ica_dca_ctrl #(
-        .odd_ica_start (22'h400),
-        .even_ica_start(22'h404)
+        .unit_index(0)
     ) ica0 (
         .clk,
         .reset(new_frame || reset || !command_register_dcr1.ic1),
@@ -519,12 +560,12 @@ module mcd212 (
         .register_write(ch0_register_write),
         .reload_vsr(ica0_reload_vsr),
         .vsr(ica0_vsr),
-        .irq(ica0_irq)
+        .irq(ica0_irq),
+        .disp_params(ica0_disp_param_out)
     );
 
     ica_dca_ctrl #(
-        .odd_ica_start (22'h200400),
-        .even_ica_start(22'h200404)
+        .unit_index(1)
     ) ica1 (
         .clk,
         .reset(new_frame || reset || !command_register_dcr2.ic2),
@@ -537,7 +578,8 @@ module mcd212 (
         .register_write(ch1_register_write),
         .reload_vsr(ica1_reload_vsr),
         .vsr(ica1_vsr),
-        .irq(ica1_irq)
+        .irq(ica1_irq),
+        .disp_params(ica1_disp_param_out)
     );
 
     wire [15:0] file0_din = sdram_dout;
@@ -592,24 +634,34 @@ module mcd212 (
     );
 
     pixelstream rle0out (.clk);
+    pixelstream rle1out (.clk);
 
-    clut_rle rle (
+    clut_rle rle0 (
         .clk,
         .reset(vblank || reset),
-        .src  (file0out),
-        .dst  (rle0out)
+        .src(file0out),
+        .dst(rle0out),
+        .passthrough(!display_decoder_register_ddr1.ft1)
     );
-    assign rle0out.strobe  = new_pixel;
 
-    assign file1out.strobe = new_pixel;
+    clut_rle rle1 (
+        .clk,
+        .reset(vblank || reset),
+        .src(file1out),
+        .dst(rle1out),
+        .passthrough(!display_decoder_register_ddr2.ft1)
+    );
 
+
+    assign rle0out.strobe = new_pixel;
+    assign rle1out.strobe = new_pixel;
 
     bit [7:0] synchronized_pixel0;
     bit [7:0] synchronized_pixel1;
     bit fail = 0;
 
     always_comb begin
-        clut_addr0 = synchronized_pixel0;
+        clut_addr0 = {1'b0, synchronized_pixel0[6:0]};
 
         // Setting highest bit according to Figure 7-2 for CLUT7
         // TODO Might not be correct
@@ -628,7 +680,7 @@ module mcd212 (
             synchronized_pixel1 <= 0;
         end else begin
             if (rle0out.write && rle0out.strobe) synchronized_pixel0 <= rle0out.pixel;
-            if (file1out.write && file1out.strobe) synchronized_pixel1 <= file1out.pixel;
+            if (rle1out.write && rle1out.strobe) synchronized_pixel1 <= rle1out.pixel;
         end
 
     end
@@ -691,7 +743,7 @@ module mcd212 (
     bit [15:0] active_cursor_line;
     bit cursor_pixel;
     bit inside_cursor_window;
-
+    bit plane_b_in_front_of_a;
 
     // mouse cursor
     always_ff @(posedge clk) begin
@@ -721,53 +773,73 @@ module mcd212 (
     end
 
     // color mixing
+    rgb888 plane_a;
+    rgb888 plane_b;
+    rgb888 vidout;
+
+    assign {r, g, b} = {vidout.r, vidout.g, vidout.b};
+
+    bit plane_a_visible;
+    bit plane_b_visible;
+
+    always_comb begin
+        bit [7:0] r, g, b;
+
+        r = {clut_out0.r, 2'b00};
+        g = {clut_out0.g, 2'b00};
+        b = {clut_out0.b, 2'b00};
+
+        plane_a.r = 8'((15'(r) * (15'(weight_a) + 15'd1)) >> 6);
+        plane_a.g = 8'((15'(g) * (15'(weight_a) + 15'd1)) >> 6);
+        plane_a.b = 8'((15'(b) * (15'(weight_a) + 15'd1)) >> 6);
+
+        plane_a_visible = (clut_out0 != trans_color_plane_a);
+    end
+
+    always_comb begin
+        bit [7:0] r, g, b;
+        r = {clut_out1.r, 2'b00};
+        g = {clut_out1.g, 2'b00};
+        b = {clut_out1.b, 2'b00};
+
+        plane_b.r = 8'((15'(r) * (15'(weight_b) + 15'd1)) >> 6);
+        plane_b.g = 8'((15'(g) * (15'(weight_b) + 15'd1)) >> 6);
+        plane_b.b = 8'((15'(b) * (15'(weight_b) + 15'd1)) >> 6);
+
+        plane_b_visible = (clut_out1 != trans_color_plane_b);
+    end
+
     always_comb begin
         // start with the backdrop color
-        r = backdrop_color_register.r ? 8'hff : 0;
-        g = backdrop_color_register.g ? 8'hff : 0;
-        b = backdrop_color_register.b ? 8'hff : 0;
+        vidout.r = backdrop_color_register.r ? 8'hff : 0;
+        vidout.g = backdrop_color_register.g ? 8'hff : 0;
+        vidout.b = backdrop_color_register.b ? 8'hff : 0;
         if (!backdrop_color_register.y) begin
             // Half brightness
-            r[7] = 0;
-            g[7] = 0;
-            b[7] = 0;
+            vidout.r[7] = 0;
+            vidout.g[7] = 0;
+            vidout.b[7] = 0;
         end
 
-        // file0
-        if (clut_out0 != trans_color_plane_a) begin
-            r = {clut_out0.r, 2'b00};
-            g = {clut_out0.g, 2'b00};
-            b = {clut_out0.b, 2'b00};
-
-            r = 8'((15'(r) * (15'(weight_a) + 15'd1)) >> 6);
-            g = 8'((15'(g) * (15'(weight_a) + 15'd1)) >> 6);
-            b = 8'((15'(b) * (15'(weight_a) + 15'd1)) >> 6);
+        if (plane_b_in_front_of_a) begin
+            if (plane_a_visible) vidout = plane_a;
+            if (plane_b_visible) vidout = plane_b;
+        end else begin
+            if (plane_b_visible) vidout = plane_b;
+            if (plane_a_visible) vidout = plane_a;
         end
-
-        // file1
-        if (clut_out1 != trans_color_plane_b) begin
-            r = {clut_out1.r, 2'b00};
-            g = {clut_out1.g, 2'b00};
-            b = {clut_out1.b, 2'b00};
-
-            r = 8'((15'(r) * (15'(weight_b) + 15'd1)) >> 6);
-            g = 8'((15'(g) * (15'(weight_b) + 15'd1)) >> 6);
-            b = 8'((15'(b) * (15'(weight_b) + 15'd1)) >> 6);
-        end
-
-        // if (inside_cursor_window) g = 100;
 
         // cursor
         if (cursor_pixel && inside_cursor_window && cursor_control_register.en) begin
-            r = cursor_control_register.r ? 8'hff : 0;
-            g = cursor_control_register.g ? 8'hff : 0;
-            b = cursor_control_register.b ? 8'hff : 0;
+            vidout.r = cursor_control_register.r ? 8'hff : 0;
+            vidout.g = cursor_control_register.g ? 8'hff : 0;
+            vidout.b = cursor_control_register.b ? 8'hff : 0;
 
             if (!cursor_control_register.y) begin
                 // Half brightness
-                r[7] = 0;
-                g[7] = 0;
-                b[7] = 0;
+                vidout.r[7] = 0;
+                vidout.g[7] = 0;
+                vidout.b[7] = 0;
             end
         end
     end
@@ -805,6 +877,7 @@ module mcd212 (
                     end
                     7'h42: begin
                         // Plane Order
+                        plane_b_in_front_of_a <= ch0_register_data[0];
                         if (ch0_register_data[0]) $display("Plane B in front of Plane A");
                         else $display("Plane A in front of Plane B");
                     end
@@ -992,7 +1065,7 @@ module clut_dual_port_memory (
     output clut_entry q_b
 );
     // Declare the RAM variable
-    clut_entry ram[256];
+    clut_entry ram[256]  /*verilator public_flat_rw*/;
 
     // Port A 
     always @(posedge clk) begin

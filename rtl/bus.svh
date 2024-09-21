@@ -1,4 +1,5 @@
-
+`ifndef BUS_SVH
+`define BUS_SVH
 
 interface bus68k (
     input clk
@@ -48,4 +49,14 @@ interface parallelel_spi ();
 endinterface
 
 
+typedef struct {
+    bit cm;
+    bit mf1;
+    bit mf2;
+    bit ft1;
+    bit ft2;
 
+    bit strobe;  // used to force an overwrite
+} display_parameters_s;
+
+`endif

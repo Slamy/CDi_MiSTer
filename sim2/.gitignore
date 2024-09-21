@@ -1,5 +1,5 @@
 /cdi200.mem
-video_*.png
+*.png
 log
 log2
 *.CUE

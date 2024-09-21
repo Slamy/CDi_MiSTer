@@ -4,7 +4,8 @@ module clut_rle (
     input clk,
     input reset,
     pixelstream.sink src,
-    pixelstream.source dst
+    pixelstream.source dst,
+    input passthrough
 );
 
     enum bit [3:0] {
@@ -30,10 +31,14 @@ module clut_rle (
         src.strobe = 0;
         dst.pixel  = {1'b0, stored_pixel};
 
-        if (!reset) begin
+        if (passthrough || reset) begin
+            dst.pixel  = src.pixel;
+            src.strobe = dst.strobe;
+            dst.write  = src.write;
+        end else begin
             case (state)
                 SINGLE: begin
-                    if (src.pixel[7]) begin
+                    if (src.pixel[7] || passthrough) begin
                         src.strobe = src.write;
                     end else begin
                         dst.pixel  = {1'b0, src.pixel[6:0]};
@@ -59,7 +64,7 @@ module clut_rle (
     end
 
     always_ff @(posedge clk) begin
-        if (reset) begin
+        if (reset || passthrough) begin
             state <= SINGLE;
             rle_counter <= 0;
         end else begin

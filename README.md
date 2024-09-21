@@ -56,6 +56,7 @@ Core Utilization:
 * Add remaining ICA/DCA features
 * Implement the CDIC audio parts
 * Fix NTSC video mode
+* Fix servo behaviour of always detecting a disc
 * Add alternative input devices (a mouse)
 * OSD setting for input device conformance (1200 baud)
 * Refurbish I2C for the front display and show the content as picture in picture during changes?

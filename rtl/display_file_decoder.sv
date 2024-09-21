@@ -19,7 +19,7 @@ module display_file_decoder (
 
     bit debug_print_file  /*verilator public_flat_rw*/ = 0;
 
-    bit [21:0] vsr = 22'h0076370;
+    bit [21:0] vsr = 0;
     wire [21:0] vsr_next = vsr + 2;
 
     assign address = vsr;
@@ -39,7 +39,7 @@ module display_file_decoder (
         if (reset) begin
             as <= 0;
             state <= IDLE;
-            vsr <= 22'h0076370;
+            vsr <= 0;
             burst_overflow <= 0;
         end else if (reload_vsr) begin
             state <= IDLE;
