@@ -250,7 +250,8 @@ module scc68070 (
         end
     end
 
-    bit [6:0] timer0_internal_cnt = 0;
+    localparam bit [7:0] kTicksPerTimer0Digit = (96 * 2);
+    bit [7:0] timer0_internal_cnt = 0;
 
     always_ff @(posedge clk) begin
         if (reset) begin
@@ -264,7 +265,7 @@ module scc68070 (
             timer0 <= data_out;
             timer0_internal_cnt <= 0;
             $display("Load Timer 0 with %x", data_out);
-        end else if (timer0_internal_cnt == 95) begin
+        end else if (timer0_internal_cnt == kTicksPerTimer0Digit - 1) begin
             timer0 <= timer0 + 1;
             timer0_internal_cnt <= 0;
         end else begin
