@@ -37,29 +37,47 @@ module display_file_decoder (
         READ
     } state = IDLE;
 
+    // Number of words in the FIFO
     bit [2:0] count;
+
+    // A high level shall indicate that a minimum of 4 words can be stored
     wire fifo_can_hold_burst = count < 4 && !reset;
 
-    bit burst_overflow = 0;
+    // A high state represents the current burstdata to be a wrapped around one
+    // It has to be ignored
+    bit burst_overflow;
+
+    // Current position in burst
+    bit [2:0] burst_index;
+
     wire din_valid = !burst_overflow && burstdata_valid;
+
+    always_comb begin
+        burst_overflow = 0;
+        // After wraparound of a burst, the following data
+        // is not the next, but the previous. It must be ignored.
+        if (burst_index > 0 && vsr[2:1] == 0) burst_overflow = burstdata_valid;
+    end
 
     always_ff @(posedge clk) begin
         if (reset) begin
             as <= 0;
             state <= IDLE;
             vsr <= 0;
-            burst_overflow <= 0;
+            burst_index <= 0;
         end else if (reload_vsr) begin
             state <= IDLE;
             vsr <= vsr_in;
-            burst_overflow <= 0;
+            burst_index <= 0;
         end else begin
+            if (burstdata_valid) burst_index <= burst_index + 1;
+
             case (state)
                 IDLE: begin
                     if (read_pixels && fifo_can_hold_burst) begin
                         state <= READ;
                         as <= 1;
-                        burst_overflow <= 0;
+                        burst_index <= 0;
                         if (debug_print_file) $display("%s: read %x", unit_name, vsr);
                     end
                 end
@@ -68,10 +86,6 @@ module display_file_decoder (
                         as <= 0;
                         state <= IDLE;
                     end
-
-                    // After wraparound of a burst, the following data
-                    // is not the next, but the previous. It must be ignored.
-                    if (vsr_next[2:1] == 0) burst_overflow <= 1;
 
                     if (din_valid) vsr <= vsr_next;
                 end
