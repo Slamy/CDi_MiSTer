@@ -189,7 +189,7 @@ module cditop (
         .dtc(cdic_dma_dtc),
         .done_in(cdic_dma_done_out),
         .done_out(cdic_dma_done_in),
-        .cd_hps_lba,
+        .cd_hps_lba(cd_hps_lba),
         .cd_hps_req,
         .cd_hps_ack,
         .cd_hps_data_valid,

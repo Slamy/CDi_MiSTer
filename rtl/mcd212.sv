@@ -422,7 +422,7 @@ module mcd212 (
 
     struct packed {
         bit [3:0] reserved1;
-        bit cm2; // Pixel frequency
+        bit cm2;  // Pixel frequency
         bit reserved2;
         bit ic2;
         bit dc2;
@@ -430,7 +430,7 @@ module mcd212 (
         bit [5:0] adr;
     } command_register_dcr2;
 
-    struct {
+    struct packed {
         bit mf1;
         bit mf2;
         bit ft1;
@@ -438,7 +438,7 @@ module mcd212 (
         bit [5:0] adr;
     } display_decoder_register_ddr1;
 
-    struct {
+    struct packed {
         bit mf1;
         bit mf2;
         bit ft1;
@@ -449,7 +449,7 @@ module mcd212 (
     struct packed {
         bit di1;
         bit st;
-    } control_register_crsr1w;
+    } control_register_crsr1w  /*verilator public_flat_rw*/;
 
     struct packed {bit di2;} control_register_crsr2w;
 
@@ -458,10 +458,13 @@ module mcd212 (
 
     always_ff @(posedge clk) begin
         if (reset) begin
-            command_register_dcr1   <= 0;
-            command_register_dcr2   <= 0;
+            command_register_dcr1 <= 0;
+            command_register_dcr2 <= 0;
             control_register_crsr1w <= 0;
             control_register_crsr2w <= 0;
+            display_decoder_register_ddr1 <= 0;
+            display_decoder_register_ddr2 <= 0;
+            status_register2 <= 0;
         end else begin
 
             if (ica0_disp_param_out.strobe) begin
@@ -483,11 +486,17 @@ module mcd212 (
             if ((cpu_lds || cpu_uds) && cs_channel1 && cpu_write_strobe) begin
                 if (cpu_addressb[3:0] == 4'h2) begin
                     command_register_dcr1 <= cpu_din;
+                    assert (cpu_lds && cpu_uds);
                 end
 
-                if (cpu_addressb[3:0] == 4'h0) begin
+                if (cpu_addressb[3:0] == 4'h0 && cpu_uds) begin
                     control_register_crsr1w.di1 <= cpu_din[15];
-                    control_register_crsr1w.st  <= cpu_din[1];
+                    assert (cpu_lds && cpu_uds);
+                end
+
+                if (cpu_addressb[3:0] == 4'h0 && cpu_lds) begin
+                    control_register_crsr1w.st <= cpu_din[1];
+                    assert (cpu_lds && cpu_uds);
                 end
             end
 
@@ -569,6 +578,7 @@ module mcd212 (
     bit [21:0] ica1_vsr;
     bit ica1_irq;
 
+    wire dca0_read = hblank_vt && !hblank_vt_q && !vblank && command_register_dcr1.dc1;
     ica_dca_ctrl #(
         .unit_index(0)
     ) ica0 (
@@ -587,9 +597,10 @@ module mcd212 (
         .irq(ica0_irq),
         .disp_params(ica0_disp_param_out),
         // Fire at end of visible lines
-        .dca_read(hblank_vt && !hblank_vt_q && !vblank && command_register_dcr1.dc1)
+        .dca_read(dca0_read)
     );
 
+    wire dca1_read = hblank_vt && !hblank_vt_q && !vblank && command_register_dcr2.dc2;
     ica_dca_ctrl #(
         .unit_index(1)
     ) ica1 (
@@ -608,7 +619,7 @@ module mcd212 (
         .irq(ica1_irq),
         .disp_params(ica1_disp_param_out),
         // Fire at end of visible lines
-        .dca_read(hblank_vt && !hblank_vt_q && !vblank && command_register_dcr2.dc2)
+        .dca_read(dca1_read)
     );
 
     wire [15:0] file0_din = sdram_dout;
@@ -631,7 +642,8 @@ module mcd212 (
 
     pixelstream file0out (.clk);
 
-    display_file_decoder  #(
+    // Plane A Display File Decoder
+    display_file_decoder #(
         .unit_index(0)
     ) file0 (
         .clk,
@@ -644,13 +656,13 @@ module mcd212 (
         .burstdata_valid(file0_burstdata_valid),
         .vsr_in(ica0_vsr),
         .out(file0out),
-        .read_pixels(!vblank)
+        .read_pixels(!vblank && image_coding_method_register.cm13_10_planea != 0)
     );
 
 
     pixelstream file1out (.clk);
 
-    display_file_decoder  #(
+    display_file_decoder #(
         .unit_index(1)
     ) file1 (
         .clk,
@@ -663,7 +675,7 @@ module mcd212 (
         .burstdata_valid(file1_burstdata_valid),
         .vsr_in(ica1_vsr),
         .out(file1out),
-        .read_pixels(!vblank)
+        .read_pixels(!vblank && image_coding_method_register.cm23_20_planeb != 0)
     );
 
     pixelstream rle0out (.clk);
@@ -719,6 +731,9 @@ module mcd212 (
 
     always_ff @(posedge clk) begin
         if (ica0_reload_vsr) $display("Reload VSR %x", ica0_vsr);
+
+        if (dca0_read) $display("Start DCA0 on line %d", video_y);
+        if (dca1_read) $display("Start DCA1 on line %d", video_y);
     end
 
     bit [15:0] cursor[16];
@@ -825,7 +840,7 @@ module mcd212 (
         plane_a.g = 8'((15'(g) * (15'(weight_a) + 15'd1)) >> 6);
         plane_a.b = 8'((15'(b) * (15'(weight_a) + 15'd1)) >> 6);
 
-        plane_a_visible = (clut_out0 != trans_color_plane_a) && command_register_dcr1.ic1;
+        plane_a_visible = (clut_out0 != trans_color_plane_a) && command_register_dcr1.ic1 && image_coding_method_register.cm13_10_planea != 0;
     end
 
     always_comb begin
@@ -838,7 +853,7 @@ module mcd212 (
         plane_b.g = 8'((15'(g) * (15'(weight_b) + 15'd1)) >> 6);
         plane_b.b = 8'((15'(b) * (15'(weight_b) + 15'd1)) >> 6);
 
-        plane_b_visible = (clut_out1 != trans_color_plane_b) && command_register_dcr2.ic2;
+        plane_b_visible = (clut_out1 != trans_color_plane_b) && command_register_dcr2.ic2 && image_coding_method_register.cm23_20_planeb != 0;
     end
 
     always_comb begin

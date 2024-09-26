@@ -273,91 +273,95 @@ module scc68070 (
         end
     end
 
-    bit debug_print_active  /*verilator public_flat_rw*/ = 0;
+    bit  debug_print_active  /*verilator public_flat_rw*/ = 0;
 
     wire memory_access = !skipFetch && bus_ack && (internal_lds || internal_uds);
 
     always_ff @(posedge clk) begin
         if (reset) begin
-            lir <= 0;
-        end else if (lir_cs && internal_lds && write_strobe) begin
-            lir.int2n_ipl <= data_out[2:0];
-            lir.int1n_ipl <= data_out[6:4];
-        end
+            lir   <= 0;
+            picr1 <= 0;
+            picr2 <= 0;
+        end else begin
 
-        if (debug_print_active) begin
-            if (memory_access && !write_strobe && !reset) begin
-                $display("CPU Read Access %x %x", internal_addr, internal_data_in);
+            if (lir_cs && internal_lds && write_strobe) begin
+                lir.int2n_ipl <= data_out[2:0];
+                lir.int1n_ipl <= data_out[6:4];
             end
 
-            if (memory_access && write_strobe && !reset) begin
-                $display("CPU Write Access %x %x", internal_addr, data_out);
+            if (debug_print_active) begin
+                if (memory_access && !write_strobe && !reset) begin
+                    $display("CPU Read Access %x %x", internal_addr, internal_data_in);
+                end
+
+                if (memory_access && write_strobe && !reset) begin
+                    $display("CPU Write Access %x %x", internal_addr, data_out);
+                end
             end
-        end
 
-        if (lir_cs && (internal_lds || internal_uds)) begin
-            $display("LIR Access %x %x %d %d %d", addr[3:1], data_out[7:0], write_strobe,
-                     internal_uds, internal_lds);
-        end
-        if (picr2_cs && (internal_lds || internal_uds)) begin
-            $display("PICR2 Access %x %x %d %d %d", addr[3:1], data_out[7:0], write_strobe,
-                     internal_uds, internal_lds);
-
-            if (write_strobe && internal_lds) begin
-                picr2.uart_rx_ipl <= data_out[5:3];
-                picr2.uart_tx_ipl <= data_out[2:0];
+            if (lir_cs && (internal_lds || internal_uds)) begin
+                $display("LIR Access %x %x %d %d %d", addr[3:1], data_out[7:0], write_strobe,
+                         internal_uds, internal_lds);
             end
-        end
-        if (picr1_cs && (internal_lds || internal_uds)) begin
-            $display("PICR1 Access %x %x %d %d %d", addr[3:1], data_out[7:0], write_strobe,
-                     internal_uds, internal_lds);
+            if (picr2_cs && (internal_lds || internal_uds)) begin
+                $display("PICR2 Access %x %x %d %d %d", addr[3:1], data_out[7:0], write_strobe,
+                         internal_uds, internal_lds);
 
-            if (write_strobe && internal_lds) begin
-                picr1.i2c_ipl   <= data_out[5:3];
-                picr1.timer_ipl <= data_out[2:0];
-                $display("Timer IPL set to %d", data_out[2:0]);
+                if (write_strobe && internal_lds) begin
+                    picr2.uart_rx_ipl <= data_out[5:3];
+                    picr2.uart_tx_ipl <= data_out[2:0];
+                end
             end
-        end
-        if (i2c_cs && (internal_lds || internal_uds)) begin
-            $display("I2C Access %x %x %d", addr[3:1], data_out[7:0], write_strobe);
-        end
-        if (timer_cs && (internal_lds || internal_uds) && write_strobe) begin
-            $display("Timer Write %x %x %d %d %d", addr[3:1], data_out, write_strobe, internal_uds,
-                     internal_lds);
+            if (picr1_cs && (internal_lds || internal_uds)) begin
+                $display("PICR1 Access %x %x %d %d %d", addr[3:1], data_out[7:0], write_strobe,
+                         internal_uds, internal_lds);
 
-            if (write_strobe && addr[3:1] == 3'b1 && internal_uds)
-                timer_reload_register[15:8] <= data_out[15:8];
-            if (write_strobe && addr[3:1] == 3'b1 && internal_lds)
-                timer_reload_register[7:0] <= data_out[7:0];
-        end
-        if (timer_cs && (internal_lds || internal_uds) && !write_strobe) begin
-            $display("Timer Read %x %x %d %d %d", addr[3:1], internal_data_in, write_strobe,
-                     internal_uds, internal_lds);
-        end
-        if (dma_cs && (internal_lds || internal_uds)) begin
+                if (write_strobe && internal_lds) begin
+                    picr1.i2c_ipl   <= data_out[5:3];
+                    picr1.timer_ipl <= data_out[2:0];
+                    $display("Timer IPL set to %d", data_out[2:0]);
+                end
+            end
+            if (i2c_cs && (internal_lds || internal_uds)) begin
+                $display("I2C Access %x %x %d", addr[3:1], data_out[7:0], write_strobe);
+            end
+            if (timer_cs && (internal_lds || internal_uds) && write_strobe) begin
+                $display("Timer Write %x %x %d %d %d", addr[3:1], data_out, write_strobe,
+                         internal_uds, internal_lds);
 
-            if (write_strobe)
-                $display(
-                    "DMA Write ADDR:%x DATA:%x LDS:%d UDS:%d",
-                    addr[7:1],
-                    data_out,
-                    internal_lds,
-                    internal_uds
-                );
-            if (!write_strobe && clkena_in)
-                $display(
-                    "DMA Read ADDR:%x DATA:%x LDS:%d UDS:%d",
-                    addr[7:1],
-                    internal_data_in,
-                    internal_lds,
-                    internal_uds
-                );
-        end
-        if (mmu_cs && (internal_lds || internal_uds)) begin
-            $display("MMU Access %x %x %d", addr[3:1], data_out[7:0], write_strobe);
-        end
+                if (write_strobe && addr[3:1] == 3'b1 && internal_uds)
+                    timer_reload_register[15:8] <= data_out[15:8];
+                if (write_strobe && addr[3:1] == 3'b1 && internal_lds)
+                    timer_reload_register[7:0] <= data_out[7:0];
+            end
+            if (timer_cs && (internal_lds || internal_uds) && !write_strobe) begin
+                $display("Timer Read %x %x %d %d %d", addr[3:1], internal_data_in, write_strobe,
+                         internal_uds, internal_lds);
+            end
+            if (dma_cs && (internal_lds || internal_uds)) begin
 
-        /* UART Memory map A[3:1]
+                if (write_strobe)
+                    $display(
+                        "DMA Write ADDR:%x DATA:%x LDS:%d UDS:%d",
+                        addr[7:1],
+                        data_out,
+                        internal_lds,
+                        internal_uds
+                    );
+                if (!write_strobe && clkena_in)
+                    $display(
+                        "DMA Read ADDR:%x DATA:%x LDS:%d UDS:%d",
+                        addr[7:1],
+                        internal_data_in,
+                        internal_lds,
+                        internal_uds
+                    );
+            end
+            if (mmu_cs && (internal_lds || internal_uds)) begin
+                $display("MMU Access %x %x %d", addr[3:1], data_out[7:0], write_strobe);
+            end
+
+            /* UART Memory map A[3:1]
            0 Mode Register
            1 Status Register
            2 Clock Select Register
@@ -365,20 +369,21 @@ module scc68070 (
            4 Transmit Holding Register
            5 Receive Holding Register
         */
-        if (uart_cs && internal_lds && write_strobe) begin
-            $display("UART Write %x %x %x", addr[3:1], data_out[7:0], {addr, 1'b0});
+            if (uart_cs && internal_lds && write_strobe) begin
+                $display("UART Write %x %x %x", addr[3:1], data_out[7:0], {addr, 1'b0});
 
-            case (addr[3:1])
-                3'd0: uart_mode_register <= data_out[7:0];
-                3'd4: begin
-                    $display("UART char %c", data_out[7:0]);
-                end
-                default: ;
-            endcase
-        end
+                case (addr[3:1])
+                    3'd0: uart_mode_register <= data_out[7:0];
+                    3'd4: begin
+                        $display("UART char %c", data_out[7:0]);
+                    end
+                    default: ;
+                endcase
+            end
 
-        if (uart_cs && internal_lds && !write_strobe) begin
-            //$display("UART Read %x %x", addr[3:1], internal_data_in[7:0]);
+            if (uart_cs && internal_lds && !write_strobe) begin
+                //$display("UART Read %x %x", addr[3:1], internal_data_in[7:0]);
+            end
         end
     end
 
@@ -497,6 +502,12 @@ module scc68070 (
 
     always_ff @(posedge clk) begin
         if (reset) begin
+            dma_ch0_channel_control <= 0;
+            dma_ch0_device_control <= 0;
+            dma_ch0_operation_control <= 0;
+            dma_ch0_sequence_control <= 0;
+            dma_ch0_error <= 0;
+            dma_ch0_status <= 0;
         end else begin
             if (done_out) begin
                 dma_ch0_status.channel_active <= 0;

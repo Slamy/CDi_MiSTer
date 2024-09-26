@@ -75,12 +75,6 @@ module ica_dca_ctrl (
             );
     end
 
-    bit cm;
-    bit mf1;
-    bit mf2;
-    bit ft1;
-    bit ft2;
-
     bit ica_ended;
     bit dca_active;
 
@@ -237,13 +231,15 @@ module ica_dca_ctrl (
                         dca_pointer <= instruction[21:0];
                         next_line_dca_pointer <= instruction[21:0];
                         dca_active <= 0;
-                        $display("%s Reload DCP and STOP %x", unit_name, instruction[21:0]);
                         ica_ended <= 1;
+                        $display("%s Reload DCP and STOP %x", unit_name, instruction[21:0]);
                     end
                     4: begin
                         // reload ica pointer
                         ica_pointer <= instruction[21:0];
-                        $display("%s Reload ICA %x", unit_name, instruction[21:0]);
+
+                        if (ica_ended) $display("%s Reload VSR %x", unit_name, instruction[21:0]);
+                        else $display("%s Reload ICA %x", unit_name, instruction[21:0]);
                     end
                     5: begin
                         // reload vsr pointer and stop

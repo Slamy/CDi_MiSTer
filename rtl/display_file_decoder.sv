@@ -18,7 +18,7 @@ module display_file_decoder (
 );
     parameter bit unit_index = 0;
 
-    bit debug_print_file  /*verilator public_flat_rw*/ = 1;
+    bit debug_print_file  /*verilator public_flat_rw*/ = 0;
 
 `ifdef VERILATOR
     string unit_name;

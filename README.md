@@ -4,10 +4,7 @@ A repo dedicated to create an FPGA implementation of the Philips CD-i to be usab
 
 This repository is very experimental! Use at your own risk!
 
-The first milestone of having the boot ROM usable, is reached. The startup menu can be used with a gamepad.
-It requires no CDIC to function.
-
-The second milestone will be a working CDIC which can read CD data and play homebrew games.
+The first games are booting. Graphics are glitched and the audio is still missing.
 
 ## Usage
 
@@ -46,22 +43,24 @@ Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` a
 
 Core Utilization:
 
-	Logic utilization (in ALMs)	11,956 / 41,910 ( 29 % )
-	Total block memory bits	631,988 / 5,662,720 ( 11 % )
+	Logic utilization (in ALMs)	12,066 / 41,910 ( 29 % )
+	Total block memory bits	632,004 / 5,662,720 ( 11 % )
 	Total DSP Blocks	47 / 112 ( 42 % )
 
 ## TODOs in order of priority
 
+* Fix graphical glitches on bootup
 * Implement the CDIC audio parts
-* Fix NTSC video mode
+* Fix DYUV (e.g. Tetris intro)
+* Simulate seeking time
 * Fix servo behaviour of always detecting a disc
+* Use the MiSTer framework to save the NVRAM to sdcard
+	* Only when changes are detected and when the OSD is opened
+	* The N64 core does it like that too
 * Add alternative input devices (a mouse)
 * OSD setting for input device conformance (1200 baud)
 * Refurbish I2C for the front display and show the content as picture in picture during changes?
 	* It might not even be required at all.
-* Use the MiSTer framework to save the NVRAM to sdcard
-	* Only when changes are detected and when the OSD is opened
-	* The N64 core does it like that too
 * Fix timekeeper initial time
 
 ## Expected checksums of roms

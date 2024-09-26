@@ -22,7 +22,7 @@ module cdic (
     input done_in,
     output done_out,
 
-    output [31:0] cd_hps_lba,
+    output bit [31:0] cd_hps_lba,
     output cd_hps_req,
     input cd_hps_ack,
     input cd_hps_data_valid,
@@ -138,6 +138,10 @@ module cdic (
             file_register <= 0;
             audio_channel_register <= 0;
             sector_word_index <= 0;
+            channel_register <= 0;
+            cd_reading_active <= 0;
+            cd_hps_lba <= 0;
+            cd_data_target_adr <= 0;
         end else begin
             if (cd_hps_ack) cd_hps_req <= 0;
 
