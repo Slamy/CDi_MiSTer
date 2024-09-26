@@ -52,8 +52,6 @@ Core Utilization:
 
 ## TODOs in order of priority
 
-* Make Frog Feast playable as first game
-* Add remaining ICA/DCA features
 * Implement the CDIC audio parts
 * Fix NTSC video mode
 * Fix servo behaviour of always detecting a disc

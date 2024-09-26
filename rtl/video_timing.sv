@@ -4,7 +4,7 @@ module video_timing (
     input clk,
     input reset,
     input sm,  // scan mode, 1 = interlaced, 0 = non-interlaced
-    input cf,  // crystal, 0 = 28 MHz for NTSC monitors, 1 = 30 MHz for TV
+    input cf,  // crystal, 0 = 28 MHz for NTSC monitors, 1 = 30 MHz for PAL and NTSC TV
     input st,  // standard, 1=360/720 pixels per line, 0=384/768
     input cm,  // color mode, 0 = 4 clocks per pixel, 1 = 2 clocks per pixel
     input fd,  // frame duration, 0=50 Hz, 1=60 Hz

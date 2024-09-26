@@ -16,10 +16,18 @@ module display_file_decoder (
 
     pixelstream.source out
 );
+    parameter bit unit_index = 0;
 
-    bit debug_print_file  /*verilator public_flat_rw*/ = 0;
+    bit debug_print_file  /*verilator public_flat_rw*/ = 1;
 
-    bit [21:0] vsr = 0;
+`ifdef VERILATOR
+    string unit_name;
+    initial begin
+        $sformat(unit_name, "FILE%d", unit_index);
+    end
+`endif
+
+    bit  [21:0] vsr = 0;
     wire [21:0] vsr_next = vsr + 2;
 
     assign address = vsr;
@@ -52,7 +60,7 @@ module display_file_decoder (
                         state <= READ;
                         as <= 1;
                         burst_overflow <= 0;
-                        if (debug_print_file) $display("FILE0: read %x", vsr);
+                        if (debug_print_file) $display("%s: read %x", unit_name, vsr);
                     end
                 end
                 READ: begin
@@ -112,7 +120,7 @@ module display_file_decoder (
             if (din_valid) begin
                 mem[write_index] <= din;
                 write_index <= write_index + 1;
-                if (debug_print_file) $display("FILE0: got %x", din);
+                if (debug_print_file) $display("%s: got %x", unit_name, din);
 
             end
 

@@ -84,6 +84,7 @@ module mcd212 (
     bit [21:0] ica0_adr;
     bit ica0_as;
     bit ica0_bus_ack;
+    bit ica0_burstdata_valid;
 
     bit [21:0] file0_adr;
     bit file0_as;
@@ -93,6 +94,7 @@ module mcd212 (
     bit [21:0] ica1_adr;
     bit ica1_as;
     bit ica1_bus_ack;
+    bit ica1_burstdata_valid;
 
     bit [21:0] file1_adr;
     bit file1_as;
@@ -103,10 +105,12 @@ module mcd212 (
     wire sdram_refresh_request;
 
     typedef enum bit [3:0] {
-        REFRESH,  // most important
-        VIDEO0,
-        VIDEO1,
-        CPU       // least important
+        REFRESH,   // most important
+        ICA_DCA0,
+        ICA_DCA1,
+        FILE0,
+        FILE1,
+        CPU        // least important
     } e_arbit_target;
 
     // must only be changed if sdram_busy == false
@@ -123,8 +127,10 @@ module mcd212 (
 
     always_comb begin
         sdram_owner_next = CPU;
-        if (file0_as || ica0_as) sdram_owner_next = VIDEO0;
-        if (file1_as || ica1_as) sdram_owner_next = VIDEO1;
+        if (file0_as) sdram_owner_next = FILE0;
+        if (file1_as) sdram_owner_next = FILE1;
+        if (ica0_as) sdram_owner_next = ICA_DCA0;
+        if (ica1_as) sdram_owner_next = ICA_DCA1;
         if (sdram_refresh_request) sdram_owner_next = REFRESH;
 
         if (sdram_busy) sdram_owner = sdram_owner_q;
@@ -150,8 +156,8 @@ module mcd212 (
     } status_register2;
 
     // according to chapter 3.8 INTERRUPT GENERATION
-    assign irq = (status_register2.it1 && !control_register_crsr1w_di1) || 
-                    (status_register2.it2 && !control_register_crsr2w_di2);
+    assign irq = (status_register2.it1 && !control_register_crsr1w.di1) || 
+                    (status_register2.it2 && !control_register_crsr2w.di2);
 
 `ifdef VERILATOR
     bit irq_q = 0;
@@ -178,12 +184,14 @@ module mcd212 (
         // per default everything is acked but not SDRAM
         cpu_bus_ack = !cpu_sdram_access;
         file0_bus_ack = 0;
-        ica0_bus_ack = 0;
         file0_burstdata_valid = 0;
+        ica0_bus_ack = 0;
+        ica0_burstdata_valid = 0;
 
         file1_bus_ack = 0;
-        ica1_bus_ack = 0;
         file1_burstdata_valid = 0;
+        ica1_bus_ack = 0;
+        ica1_burstdata_valid = 0;
 
         sdram_rd = 0;
         sdram_wr = 0;
@@ -197,29 +205,37 @@ module mcd212 (
                     sdram_refresh = 1;
                     sdram_rd = !sdram_busy;
                 end
-                VIDEO0: begin
+                ICA_DCA0: begin
                     sdram_word = 1;
 
                     if (ica0_as) begin
                         sdram_addr[19:1] = ica0_adr[19:1];
                         sdram_rd = !sdram_busy && !sdram_busy_q;
+                        sdram_burst = 1;
                     end
+
+                end
+                FILE0: begin
+                    sdram_word = 1;
 
                     if (file0_as) begin
                         sdram_addr[19:1] = file0_adr[19:1];
                         sdram_rd = !sdram_busy && !sdram_busy_q;
                         sdram_burst = 1;
                     end
-
                 end
-                VIDEO1: begin
+                ICA_DCA1: begin
                     sdram_word = 1;
 
                     if (ica1_as) begin
                         sdram_addr[18:1] = ica1_adr[18:1];
                         sdram_addr[19] = 1;  // TODO investigate
                         sdram_rd = !sdram_busy && !sdram_busy_q;
+                        sdram_burst = 1;
                     end
+                end
+                FILE1: begin
+                    sdram_word = 1;
 
                     if (file1_as) begin
                         sdram_addr[18:1] = file1_adr[18:1];
@@ -227,7 +243,6 @@ module mcd212 (
                         sdram_rd = !sdram_busy && !sdram_busy_q;
                         sdram_burst = 1;
                     end
-
                 end
                 CPU: begin
                     if (cpu_sdram_access) begin
@@ -257,19 +272,30 @@ module mcd212 (
                         cpu_bus_ack = !sdram_busy && sdram_busy_q;
                     end
                 end
-                VIDEO0: begin
+                FILE0: begin
                     if (file0_as) begin
                         file0_bus_ack = !sdram_busy && sdram_busy_q;
                         file0_burstdata_valid = sdram_burstdata_valid;
                     end
-                    if (ica0_as) ica0_bus_ack = !sdram_busy && sdram_busy_q;
                 end
-                VIDEO1: begin
+                ICA_DCA0: begin
+                    if (ica0_as) begin
+                        ica0_bus_ack = !sdram_busy && sdram_busy_q;
+                        ica0_burstdata_valid = sdram_burstdata_valid;
+                    end
+                end
+                FILE1: begin
                     if (file1_as) begin
                         file1_bus_ack = !sdram_busy && sdram_busy_q;
                         file1_burstdata_valid = sdram_burstdata_valid;
                     end
-                    if (ica1_as) ica1_bus_ack = !sdram_busy && sdram_busy_q;
+
+                end
+                ICA_DCA1: begin
+                    if (ica1_as) begin
+                        ica1_bus_ack = !sdram_busy && sdram_busy_q;
+                        ica1_burstdata_valid = sdram_burstdata_valid;
+                    end
                 end
                 default: begin
                 end
@@ -308,11 +334,11 @@ module mcd212 (
             sdram_owner_q <= sdram_owner;
 
             if (file0_as && ica0_as) video_fail <= 1;
-            if (file1_as && ica1_as) video_fail <= 1;
+            //if (file1_as && ica1_as) video_fail <= 1;
 
             // Ensure ICA list has ended before FILE access
-            assert (!(file0_as && ica0_as));
-            assert (!(file1_as && ica1_as));
+            //assert (!(file0_as && ica0_as));
+            //assert (!(file1_as && ica1_as));
         end
 
         /*
@@ -345,12 +371,6 @@ module mcd212 (
             $display("Write Channel 2 %x %x", cpu_addressb, cpu_din);
     end
 
-
-    bit sm = 0;
-    bit cf = 1;
-    bit st = 0;
-    bit fd = 0;
-    bit cm = 0;
     wire [8:0] video_y;
     wire [12:0] video_x;
     wire new_frame  /*verilator public_flat_rd*/;
@@ -361,19 +381,18 @@ module mcd212 (
     bit hblank_vt;
     bit hblank_vt_q;
 
-
     // we should have 8-9 refresh cycles per horizontal line
     // to fulfill 8192 refreshes per 64ms 
-    assign sdram_refresh_request = video_x < 80;
+    assign sdram_refresh_request = video_x < 80 && video_x > 20;
 
     video_timing vt (
         .clk,
         .reset,
-        .sm(sm),
-        .cf(cf),
-        .st(st),
-        .cm(cm),
-        .fd(fd),
+        .sm(command_register_dcr1.sm),
+        .cf(command_register_dcr1.cf),
+        .st(control_register_crsr1w.st),
+        .cm(0),  // TODO correct source
+        .fd(command_register_dcr1.fd),
         .video_y(video_y),
         .video_x(video_x),
         .hsync(hsync),
@@ -390,10 +409,10 @@ module mcd212 (
 
     struct packed {
         bit de;
-        bit cf;
-        bit fd;
-        bit sm;
-        bit cm1;
+        bit cf;  // 0=28MHz, 1=30 MHz in PAL and 30.2097 MHz in NTSC
+        bit fd;  // 0=50 Hz, 1=60 Hz
+        bit sm;  // 0=Non-interlace, 1=Interlace
+        bit cm1;  // Probably ignored..
         bit reserved1;
         bit ic1;
         bit dc1;
@@ -403,7 +422,7 @@ module mcd212 (
 
     struct packed {
         bit [3:0] reserved1;
-        bit cm2;
+        bit cm2; // Pixel frequency
         bit reserved2;
         bit ic2;
         bit dc2;
@@ -427,19 +446,22 @@ module mcd212 (
         bit [5:0] adr;
     } display_decoder_register_ddr2;
 
-    bit control_register_crsr1w_di1;
-    bit control_register_crsr2w_di2;
+    struct packed {
+        bit di1;
+        bit st;
+    } control_register_crsr1w;
+
+    struct packed {bit di2;} control_register_crsr2w;
 
     display_parameters_s ica0_disp_param_out;
     display_parameters_s ica1_disp_param_out;
 
-
     always_ff @(posedge clk) begin
         if (reset) begin
-            command_register_dcr1 <= 0;
-            command_register_dcr2 <= 0;
-            control_register_crsr1w_di1 <= 0;
-            control_register_crsr2w_di2 <= 0;
+            command_register_dcr1   <= 0;
+            command_register_dcr2   <= 0;
+            control_register_crsr1w <= 0;
+            control_register_crsr2w <= 0;
         end else begin
 
             if (ica0_disp_param_out.strobe) begin
@@ -464,7 +486,8 @@ module mcd212 (
                 end
 
                 if (cpu_addressb[3:0] == 4'h0) begin
-                    control_register_crsr1w_di1 <= cpu_din[15];
+                    control_register_crsr1w.di1 <= cpu_din[15];
+                    control_register_crsr1w.st  <= cpu_din[1];
                 end
             end
 
@@ -473,7 +496,7 @@ module mcd212 (
                     command_register_dcr2 <= cpu_din;
                 end
                 if (cpu_addressb[3:0] == 4'h0) begin
-                    control_register_crsr2w_di2 <= cpu_din[15];
+                    control_register_crsr2w.di2 <= cpu_din[15];
                 end
             end
 
@@ -555,13 +578,16 @@ module mcd212 (
         .as(ica0_as),
         .din(ica0_din),
         .bus_ack(ica0_bus_ack),
+        .burstdata_valid(ica0_burstdata_valid),
         .register_adr(ch0_register_adr),
         .register_data(ch0_register_data),
         .register_write(ch0_register_write),
         .reload_vsr(ica0_reload_vsr),
         .vsr(ica0_vsr),
         .irq(ica0_irq),
-        .disp_params(ica0_disp_param_out)
+        .disp_params(ica0_disp_param_out),
+        // Fire at end of visible lines
+        .dca_read(hblank_vt && !hblank_vt_q && !vblank && command_register_dcr1.dc1)
     );
 
     ica_dca_ctrl #(
@@ -573,13 +599,16 @@ module mcd212 (
         .as(ica1_as),
         .din(ica1_din),
         .bus_ack(ica1_bus_ack),
+        .burstdata_valid(ica1_burstdata_valid),
         .register_adr(ch1_register_adr),
         .register_data(ch1_register_data),
         .register_write(ch1_register_write),
         .reload_vsr(ica1_reload_vsr),
         .vsr(ica1_vsr),
         .irq(ica1_irq),
-        .disp_params(ica1_disp_param_out)
+        .disp_params(ica1_disp_param_out),
+        // Fire at end of visible lines
+        .dca_read(hblank_vt && !hblank_vt_q && !vblank && command_register_dcr2.dc2)
     );
 
     wire [15:0] file0_din = sdram_dout;
@@ -602,7 +631,9 @@ module mcd212 (
 
     pixelstream file0out (.clk);
 
-    display_file_decoder file0 (
+    display_file_decoder  #(
+        .unit_index(0)
+    ) file0 (
         .clk,
         .reset(new_frame || reset || !command_register_dcr1.ic1),
         .address(file0_adr),
@@ -619,7 +650,9 @@ module mcd212 (
 
     pixelstream file1out (.clk);
 
-    display_file_decoder file1 (
+    display_file_decoder  #(
+        .unit_index(1)
+    ) file1 (
         .clk,
         .reset(new_frame || reset || !command_register_dcr2.ic2),
         .address(file1_adr),
@@ -638,7 +671,7 @@ module mcd212 (
 
     clut_rle rle0 (
         .clk,
-        .reset(vblank || reset),
+        .reset(vblank || reset || ica0_reload_vsr),
         .src(file0out),
         .dst(rle0out),
         .passthrough(!display_decoder_register_ddr1.ft1)
@@ -646,7 +679,7 @@ module mcd212 (
 
     clut_rle rle1 (
         .clk,
-        .reset(vblank || reset),
+        .reset(vblank || reset || ica1_reload_vsr),
         .src(file1out),
         .dst(rle1out),
         .passthrough(!display_decoder_register_ddr2.ft1)
@@ -672,8 +705,7 @@ module mcd212 (
     end
 
     always_ff @(posedge clk) begin
-        if (reset) fail <= 0;
-        else if (new_pixel && !file1out.write) fail <= 1;
+
 
         if (new_line) begin
             synchronized_pixel0 <= 0;
@@ -793,7 +825,7 @@ module mcd212 (
         plane_a.g = 8'((15'(g) * (15'(weight_a) + 15'd1)) >> 6);
         plane_a.b = 8'((15'(b) * (15'(weight_a) + 15'd1)) >> 6);
 
-        plane_a_visible = (clut_out0 != trans_color_plane_a);
+        plane_a_visible = (clut_out0 != trans_color_plane_a) && command_register_dcr1.ic1;
     end
 
     always_comb begin
@@ -806,7 +838,7 @@ module mcd212 (
         plane_b.g = 8'((15'(g) * (15'(weight_b) + 15'd1)) >> 6);
         plane_b.b = 8'((15'(b) * (15'(weight_b) + 15'd1)) >> 6);
 
-        plane_b_visible = (clut_out1 != trans_color_plane_b);
+        plane_b_visible = (clut_out1 != trans_color_plane_b) && command_register_dcr2.ic2;
     end
 
     always_comb begin
