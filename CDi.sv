@@ -222,6 +222,7 @@ module emu (
         "O[2],UART Loopback,No,Yes;",
         "O[3],UART Fake Space,No,Yes;",
         "O[4],TV Mode,PAL,NTSC;",
+        "O[5],Overclock input device,No,Yes;",
         "-;",
         "-;",
         "T[0],Reset;",
@@ -553,13 +554,15 @@ module emu (
 `endif
 
 `ifdef VERILATOR
-    bit debug_uart_fake_space  /*verilator public_flat_rw*/;
-    bit tvmode_ntsc  /*verilator public_flat_rw*/;
+    bit  debug_uart_fake_space  /*verilator public_flat_rw*/;
+    bit  tvmode_ntsc  /*verilator public_flat_rw*/;
+    wire overclock_maneuvering_device = 1;
 `else
     // status seems to be all zero after reset
     // Should be considered for defining the default
     wire debug_uart_fake_space = status[3];
     wire tvmode_ntsc = status[4];
+    wire overclock_maneuvering_device = status[5];
 `endif
 
     wire HBlank;
@@ -579,7 +582,8 @@ module emu (
         .clk(clk_sys),
         .mister_joystick(JOY0),
         .rts(slave_rts),
-        .serial_out(slave_serial_in)
+        .serial_out(slave_serial_in),
+        .overclock(overclock_maneuvering_device)
     );
 
     cditop cditop (
