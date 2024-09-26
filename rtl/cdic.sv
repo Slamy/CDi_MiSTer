@@ -98,8 +98,8 @@ module cdic (
     bit [15:0] file_register = 0;
 
     // When clocked at 30 MHz and a sector rate of 75 Hz
-    // 30^6/75 = 9720000
-    localparam bit [23:0] kSectorPeriod = 300000; // TODO check again!
+    // 30e6/75 = 400000
+    localparam bit [23:0] kSectorPeriod = 400000;
     // 2352 bytes per sector. Always.
     localparam bit [13:0] kWordsPerSector = 2352 / 2;
     // Simulates the speed of a CD
