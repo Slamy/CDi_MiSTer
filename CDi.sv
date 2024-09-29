@@ -252,6 +252,7 @@ module emu (
     wire [10:0] ps2_key;
 
     wire [15:0] JOY0  /*verilator public_flat_rw*/;
+    wire [15:0] JOY0_ANALOG  /*verilator public_flat_rw*/;
 
     wire        ioctl_download  /*verilator public_flat_rw*/;
     wire        ioctl_wr  /*verilator public_flat_rw*/;
@@ -334,6 +335,7 @@ module emu (
 
         .ps2_key(ps2_key),
 
+        .joystick_l_analog_0(JOY0_ANALOG),
         .joystick_0(JOY0)
     );
 `endif
@@ -624,6 +626,7 @@ module emu (
     pointing_device spoon (
         .clk(clk_sys),
         .mister_joystick(JOY0),
+        .mister_joystick_analog(JOY0_ANALOG),
         .rts(slave_rts),
         .serial_out(slave_serial_in),
         .overclock(overclock_pointing_device)

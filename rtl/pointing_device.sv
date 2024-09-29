@@ -1,6 +1,7 @@
 module pointing_device (
     input clk,
     input wire [15:0] mister_joystick,
+    input wire [15:0] mister_joystick_analog,
     input rts,
     input overclock,
     bytestream.source serial_out
@@ -36,6 +37,9 @@ module pointing_device (
 
     bit signed [7:0] speed;
 
+    bit signed [7:0] x_analog;
+    bit signed [7:0] y_analog;
+
     bit signed [7:0] x;
     bit signed [7:0] y;
 
@@ -60,6 +64,37 @@ module pointing_device (
         if (mister_joystick[2]) y = speed;
         if (mister_joystick[1]) x = -speed;
         if (mister_joystick[3]) y = -speed;
+
+        x_analog = mister_joystick_analog[7:0];
+        y_analog = mister_joystick_analog[15:8];
+
+        // map analog input to -18..+18 with a deadzone of 28x28
+
+        if (x_analog > 14)
+            x_analog = x_analog - 14;
+        else if (x_analog < -14)
+            x_analog = x_analog + 14;
+        else
+            x_analog = 0;
+
+        x_analog = x_analog / 6;
+
+        if (y_analog > 14)
+            y_analog = y_analog - 14;
+        else if (y_analog < -14)
+            y_analog = y_analog + 14;
+        else
+            y_analog = 0;
+
+        y_analog = y_analog / 6;
+
+        // prioritize analog>digital
+
+        if ((x_analog != 0) || (y_analog != 0)) begin
+            x = x_analog;
+            y = y_analog;
+        end
+
         // Only transmit when buttons have changed or when we are moving the cursor
         // Even so, the speed is not changed, we must transmit permanently.
         perform_transmit = (b1 != b1_q) || (b2 != b2_q) || (x != x_q) || (y != y_q) || (x !=0 ) || (y !=0 );
