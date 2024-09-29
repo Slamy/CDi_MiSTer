@@ -383,13 +383,13 @@ module mcd212 (
 
     // we should have 8-9 refresh cycles per horizontal line
     // to fulfill 8192 refreshes per 64ms 
-    assign sdram_refresh_request = video_x < 80 && video_x > 20;
+    assign sdram_refresh_request = video_x < 75;
 
     video_timing vt (
         .clk,
         .reset,
         .sm(command_register_dcr1.sm),
-        .cf(command_register_dcr1.cf),
+        .cf(1),  // TODO Only accept TV resolutions for now
         .st(control_register_crsr1w.st),
         .cm(0),  // TODO correct source
         .fd(command_register_dcr1.fd),

@@ -39,7 +39,7 @@ module ica_dca_ctrl (
     (* keep *) bit [21:0] ica_pointer;
     bit [21:0] dca_pointer;
     bit [21:0] next_line_dca_pointer;
-    bit [2:0] dca_burst_cnt;
+    bit [3:0] dca_burst_cnt;
     (* keep *) bit [31:0] instruction;
 
     enum bit [3:0] {
@@ -79,6 +79,11 @@ module ica_dca_ctrl (
     bit dca_active;
 
     bit execute_instruction;
+    // A high level indicates a DCA access was not aligned on a 64 bit boundary
+    // We need to ignore the second instruction of the first and last burst to
+    // fix this. Also we need one additional burst
+    bit dca_misaligned;
+
 
     always_ff @(posedge clk) begin
         irq <= 0;
@@ -92,6 +97,7 @@ module ica_dca_ctrl (
             ica_ended <= 0;
             dca_burst_cnt <= 0;
             dca_active <= 0;
+            dca_misaligned <= 0;
 
             disp_params.cm <= 0;
             disp_params.mf1 <= 0;
@@ -101,7 +107,6 @@ module ica_dca_ctrl (
             instruction <= 0;
         end else begin
 
-
             case (state)
                 IDLE: begin
                     if (!ica_ended) begin
@@ -110,6 +115,8 @@ module ica_dca_ctrl (
                         // Read one instruction of 4 byte
                         ica_pointer <= ica_pointer + 4;
                         $display("ICA%d Start reading at %x", unit_index, ica_pointer);
+                        // check for alignment on 32 bit boundary
+                        assert (ica_pointer[1:0] == 0);
                         as <= 1;
                     end else if (dca_read) begin
                         dca_active <= 1;
@@ -117,15 +124,28 @@ module ica_dca_ctrl (
                         state <= DCA_READ0;
                         as <= 1;
                         address <= dca_pointer;
-                        // We need to read 16 instructions from DCA
-                        // Always read in bursts of 4. This causes 2 instructions
-                        // per burst.
-                        // We need 8 bursts to complete the line
-                        dca_pointer <= dca_pointer + 8;
-                        next_line_dca_pointer <= dca_pointer + 8 * 8;
-                        dca_burst_cnt <= 7;
+                        // check at least for alignment on 32 bit boundary
+                        assert (dca_pointer[1:0] == 0);
+
+                        if (dca_pointer[2]) begin
+                            // This is bad. The access is not on a 64 bit boundary
+                            // Only use the first 2 words on the first and last burst
+                            // Also we need one more additional burst
+                            dca_pointer <= dca_pointer + 4;
+                            dca_burst_cnt <= 8;
+                            dca_misaligned <= 1;
+                        end else begin
+                            // We need to read 16 instructions from DCA
+                            // Always read in bursts of 4. This causes 2 instructions
+                            // per burst.
+                            // We need 8 bursts to complete the line
+                            dca_pointer <= dca_pointer + 8;
+                            dca_burst_cnt <= 7;
+                            dca_misaligned <= 0;
+                        end
                         $sformat(unit_name, "DCA%d", unit_index);
                         $display("DCA%d Start reading at %x", unit_index, dca_pointer);
+                        next_line_dca_pointer <= dca_pointer + 8 * 8;
                     end
                 end
                 ICA_READ0: begin
@@ -171,8 +191,17 @@ module ica_dca_ctrl (
                 end
                 DCA_READ3: begin
                     if (burstdata_valid) begin
-                        instruction[15:0]   <= din;
-                        execute_instruction <= dca_active;
+                        instruction[15:0] <= din;
+                        if (dca_misaligned) begin
+                            // With DCA not aligned on 64 bit boundary, we must throw away the second word of the first and
+                            // the last burst
+                            execute_instruction <= dca_active && dca_burst_cnt != 8 && dca_burst_cnt != 0;
+                        end else begin
+                            execute_instruction <= dca_active;
+                        end
+
+                        if (dca_burst_cnt == 8)
+                            assert (dca_misaligned);  // check for the simulation
                     end
 
                     if (bus_ack) begin

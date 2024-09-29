@@ -514,12 +514,15 @@ module emu (
     end
 
     reg [3:0] burstindex = 0;
+    wire [22:0] burstwrap_corrected_address = {
+        sdram_real_addr[22:2], sdram_real_addr[1:0] + burstindex[1:0]
+    };
 
     always_comb begin
         SDRAM_DQ_in = 0;
 
-        if (sdram_real_addr[21]) SDRAM_DQ_in = rom[sdram_real_addr[17:0]+18'(burstindex)];
-        else SDRAM_DQ_in = ram[sdram_real_addr[18:0]+19'(burstindex)];
+        if (sdram_real_addr[21]) SDRAM_DQ_in = rom[burstwrap_corrected_address[17:0]];
+        else SDRAM_DQ_in = ram[burstwrap_corrected_address[18:0]];
     end
 
     bit SDRAM_nWE_q;
@@ -543,12 +546,14 @@ module emu (
             //if (!SDRAM_nWE_q) assert (ioctl_download);
 
             if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
-                rom[sdram_real_addr[17:0]][15:8] <= SDRAM_DQ_out[15:8];
-            if (!SDRAM_nWE_q && !SDRAM_DQML_q) rom[sdram_real_addr[17:0]][7:0] <= SDRAM_DQ_out[7:0];
+                rom[burstwrap_corrected_address[17:0]][15:8] <= SDRAM_DQ_out[15:8];
+            if (!SDRAM_nWE_q && !SDRAM_DQML_q)
+                rom[burstwrap_corrected_address[17:0]][7:0] <= SDRAM_DQ_out[7:0];
         end else begin
             if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
-                ram[sdram_real_addr[18:0]][15:8] <= SDRAM_DQ_out[15:8];
-            if (!SDRAM_nWE_q && !SDRAM_DQML_q) ram[sdram_real_addr[18:0]][7:0] <= SDRAM_DQ_out[7:0];
+                ram[burstwrap_corrected_address[18:0]][15:8] <= SDRAM_DQ_out[15:8];
+            if (!SDRAM_nWE_q && !SDRAM_DQML_q)
+                ram[burstwrap_corrected_address[18:0]][7:0] <= SDRAM_DQ_out[7:0];
         end
     end
 `endif

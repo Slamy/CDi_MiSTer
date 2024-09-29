@@ -49,11 +49,14 @@ Core Utilization:
 
 ## TODOs in order of priority
 
-* Fix graphical glitches on bootup
-* Implement the CDIC audio parts
+* Implement the CDIC XA audio 
+* Implement the CDIC audio map (sound effects)
+* Implement the CDIC CDDA for audio cd tracks
 * Fix DYUV (e.g. Tetris intro)
 * Simulate seeking time
-* Fix servo behaviour of always detecting a disc
+* Fix reset behaviour / Core is unstable
+* Fix unexpected hang when an application exits
+* Fix servo behaviour of always detecting a CD-i disc
 * Use the MiSTer framework to save the NVRAM to sdcard
 	* Only when changes are detected and when the OSD is opened
 	* The N64 core does it like that too
