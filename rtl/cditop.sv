@@ -283,18 +283,19 @@ module cditop (
     end
 
     always_ff @(posedge clk30) begin
+        nvram_bus_ack <= 0;
 
-        if (attex_cs_nvram) begin
+        if (!reset && attex_cs_nvram) begin
             if (uds && write_strobe) begin
                 nvram[addr[13:1]] <= cpu_data_out[15:8];
+                $display("NVRAM Written %x %x", addr[13:1], cpu_data_out[15:8]);
             end else begin
                 nvram_readout <= nvram[addr[13:1]];
 
-                if (nvram_bus_ack) nvram_bus_ack <= 0;
-                else nvram_bus_ack <= 1;
+                // nvram_readout takes one cycle, apply that to the bus_ack 
+                if (!nvram_bus_ack) nvram_bus_ack <= 1;
             end
         end
-
     end
 
     wire resetsys = ddrc[2] ? portc_out[2] : 1'b1;

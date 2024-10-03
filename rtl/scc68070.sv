@@ -279,9 +279,11 @@ module scc68070 (
 
     always_ff @(posedge clk) begin
         if (reset) begin
-            lir   <= 0;
+            lir <= 0;
             picr1 <= 0;
             picr2 <= 0;
+            timer_reload_register <= 0;
+            uart_mode_register <= 0;
         end else begin
 
             if (lir_cs && internal_lds && write_strobe) begin

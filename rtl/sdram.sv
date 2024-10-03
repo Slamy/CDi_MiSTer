@@ -130,7 +130,7 @@ module sdram (
             end
         end
 
-        if (burst && state == STATE_READY + 3 && busy) begin
+        if (state == STATE_READY + 3 && busy) begin
             ram_req <= 0;
             we <= 0;
             busy <= 0;
@@ -157,7 +157,7 @@ module sdram (
         if (mode != MODE_NORMAL || state != STATE_IDLE || reset != 0) begin
             state <= state + 1'd1;
             if (!burst && state == STATE_LAST) state <= STATE_IDLE;
-            if (burst && state == STATE_LAST + 3) state <= STATE_IDLE;
+            if (state == STATE_LAST + 3) state <= STATE_IDLE;
         end
     end
 

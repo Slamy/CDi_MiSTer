@@ -127,10 +127,10 @@ module mcd212 (
 
     always_comb begin
         sdram_owner_next = CPU;
-        if (file0_as) sdram_owner_next = FILE0;
         if (file1_as) sdram_owner_next = FILE1;
-        if (ica0_as) sdram_owner_next = ICA_DCA0;
+        if (file0_as) sdram_owner_next = FILE0;
         if (ica1_as) sdram_owner_next = ICA_DCA1;
+        if (ica0_as) sdram_owner_next = ICA_DCA0;
         if (sdram_refresh_request) sdram_owner_next = REFRESH;
 
         if (sdram_busy) sdram_owner = sdram_owner_q;
@@ -383,7 +383,7 @@ module mcd212 (
 
     // we should have 8-9 refresh cycles per horizontal line
     // to fulfill 8192 refreshes per 64ms 
-    assign sdram_refresh_request = video_x < 75;
+    assign sdram_refresh_request = video_x < 190 && video_x > 130;
 
     video_timing vt (
         .clk,
@@ -597,7 +597,8 @@ module mcd212 (
         .irq(ica0_irq),
         .disp_params(ica0_disp_param_out),
         // Fire at end of visible lines
-        .dca_read(dca0_read)
+        .dca_read(dca0_read),
+        .hblank(hblank)
     );
 
     wire dca1_read = hblank_vt && !hblank_vt_q && !vblank && command_register_dcr2.dc2;
@@ -619,7 +620,8 @@ module mcd212 (
         .irq(ica1_irq),
         .disp_params(ica1_disp_param_out),
         // Fire at end of visible lines
-        .dca_read(dca1_read)
+        .dca_read(dca1_read),
+        .hblank(hblank)
     );
 
     wire [15:0] file0_din = sdram_dout;
