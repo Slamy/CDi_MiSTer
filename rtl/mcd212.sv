@@ -391,9 +391,9 @@ module mcd212 (
         .clk,
         .reset,
         .sm(command_register_dcr1.sm),
-        .cf(1),  // TODO Only accept TV resolutions for now
+        .cf(1),  // TODO CF=1 Only accept TV resolutions for now
         .st(control_register_crsr1w.st),
-        .cm(0),  // TODO correct source
+        .cm(0),  // TODO Correct source
         .fd(command_register_dcr1.fd),
         .video_y(video_y),
         .video_x(video_x),

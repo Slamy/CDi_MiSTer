@@ -15,127 +15,25 @@
 #include "hle.h"
 #include <byteswap.h>
 
+#define SCC68070
+
 typedef VerilatedFstC tracetype_t;
 
-uint64_t sim_time = 0;
-
-static bool do_trace{true};
-
+static bool do_trace{false};
 volatile sig_atomic_t status = 0;
 
-static void catch_function(int signo) {
-    status = signo;
-}
 const int width = 120 * 16;
 const int height = 312;
 const int size = width * height * 3;
 
-uint8_t output_image[size] = {0};
-
-void write_png_file(const char *filename) {
-    int y;
-
-    FILE *fp = fopen(filename, "wb");
-    if (!fp)
-        abort();
-
-    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png)
-        abort();
-
-    png_infop info = png_create_info_struct(png);
-    if (!info)
-        abort();
-
-    if (setjmp(png_jmpbuf(png)))
-        abort();
-
-    png_init_io(png, fp);
-
-    // Output is 8bit depth, RGBA format.
-    png_set_IHDR(png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-                 PNG_FILTER_TYPE_DEFAULT);
-    png_write_info(png, info);
-
-    png_bytepp row_pointers = (png_bytepp)png_malloc(png, sizeof(png_bytepp) * height);
-
-    for (int i = 0; i < height; i++) {
-        row_pointers[i] = &output_image[width * 3 * i];
-    }
-
-    png_write_image(png, row_pointers);
-    png_write_end(png, NULL);
-
-    free(row_pointers);
-
-    fclose(fp);
-
-    png_destroy_write_struct(&png, &info);
-}
-
-void clock(tracetype_t &m_trace, Vemu &dut) {
-
-    for (int i = 0; i < 2; i++) {
-        dut.rootp->emu__DOT__clk_sys = (sim_time & 1);
-        dut.eval();
-        if (do_trace) {
-            m_trace.dump(sim_time);
-        }
-        sim_time++;
-    }
-}
-
-void loadfile(uint16_t index, const char *path, tracetype_t &m_trace, Vemu &dut) {
-
-    FILE *f = fopen(path, "rb");
-    assert(f);
-
-    uint16_t transferword;
-
-    dut.rootp->emu__DOT__ioctl_addr = 0;
-    dut.rootp->emu__DOT__ioctl_index = index;
-
-    // make some clocks before starting
-    for (int y = 0; y < 300; y++) {
-        clock(m_trace, dut);
-    }
-
-    while (fread(&transferword, 2, 1, f) == 1) {
-        dut.rootp->emu__DOT__ioctl_wr = 1;
-        dut.rootp->emu__DOT__ioctl_dout = transferword;
-
-        clock(m_trace, dut);
-        dut.rootp->emu__DOT__ioctl_wr = 0;
-
-        // make some clocks to avoid asking for busy
-        // the real MiSTer has 31 clocks between writes
-        // we are going for ~20 to put more stress on it.
-        for (int i = 0; i < 20; i++) {
-            clock(m_trace, dut);
-        }
-        dut.rootp->emu__DOT__ioctl_addr += 2;
-        clock(m_trace, dut);
-    }
-    fclose(f);
-}
+FILE *f_cd_bin{nullptr};
 
 template <typename T, typename U> constexpr T BIT(T x, U n) noexcept {
     return (x >> n) & T(1);
 }
 
-void printstate(Vemu &dut) {
-
-    static uint32_t regfile[16];
-
-    uint32_t pc = dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__exe_pc;
-    // d0 = dut.rootp->fx68k_tb__DOT__d0;
-    memcpy(regfile, &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[0],
-           sizeof(regfile));
-
-    printf("%x", pc);
-    for (int i = 0; i < 16; i++)
-        printf(" %x", regfile[i]);
-    printf("\n");
+static void catch_function(int signo) {
+    status = signo;
 }
 
 // got from mame
@@ -167,53 +65,150 @@ uint32_t lba_from_time(uint32_t m_time) {
     return lba;
 }
 
-void do_justwait(tracetype_t &m_trace, Vemu &dut) {
-    dut.eval();
-    do_trace = false;
-    dut.rootp->emu__DOT__debug_uart_fake_space = false;
-    dut.rootp->emu__DOT__tvmode_ntsc = false;
+class CDi {
+  public:
+    Vemu dut;
+    uint64_t step = 0;
+    uint64_t sim_time = 0;
+    int frame_index = 0;
 
-    // FILE *f_cd_bin = fopen("images/Zelda Wand of Gamelon.bin", "rb");
-    FILE *f_cd_bin = fopen("images/FROG.BIN", "rb");
-    assert(f_cd_bin);
+  private:
+    uint8_t output_image[size] = {0};
+    uint32_t regfile[16];
 
-    dut.RESET = 1;
-    dut.UART_RXD = 1;
+    tracetype_t m_trace;
 
-    // wait for SDRAM to initialize
-    for (int y = 0; y < 300; y++) {
-        clock(m_trace, dut);
-    }
+    uint32_t print_instructions = 0;
+    uint32_t prevpc = 0;
+    uint32_t leave_sys_callpc = 0;
 
-    /*
-    dut.rootp->emu__DOT__ioctl_download = 1;
-    loadfile(0, "cdi200.rom", m_trace, dut);
-    loadfile(0x0040, "zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206", m_trace, dut);
-    dut.rootp->emu__DOT__ioctl_download = 0;
-    */
-    dut.RESET = 0;
-    auto start = std::chrono::system_clock::now();
-
-    int sd_rd_q;
-    static constexpr uint32_t kSectorHeaderSize{12};
-    static constexpr uint32_t kSectorSize{0x930};
+    int pixel_index = 0;
 
     uint16_t sector_buffer[0x1000];
     uint16_t sector_buffer_index = 0;
 
-    // for (int y = 0; y < 780000; y++) {
-    for (int y = 0;; y++) {
-        clock(m_trace, dut);
+    int instanceid;
 
-        if ((y % 100000) == 0) {
-            printf("%d\n", y);
+    std::chrono::_V2::system_clock::time_point start;
+    int sd_rd_q;
+    static constexpr uint32_t kSectorHeaderSize{12};
+    static constexpr uint32_t kSectorSize{0x930};
+
+    void write_png_file(const char *filename) {
+        FILE *fp = fopen(filename, "wb");
+        if (!fp)
+            abort();
+
+        png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+        if (!png)
+            abort();
+
+        png_infop info = png_create_info_struct(png);
+        if (!info)
+            abort();
+
+        if (setjmp(png_jmpbuf(png)))
+            abort();
+
+        png_init_io(png, fp);
+
+        // Output is 8bit depth, RGBA format.
+        png_set_IHDR(png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+                     PNG_FILTER_TYPE_DEFAULT);
+        png_write_info(png, info);
+
+        png_bytepp row_pointers = (png_bytepp)png_malloc(png, sizeof(png_bytepp) * height);
+
+        for (int i = 0; i < height; i++) {
+            row_pointers[i] = &output_image[width * 3 * i];
         }
 
+        png_write_image(png, row_pointers);
+        png_write_end(png, NULL);
+
+        free(row_pointers);
+
+        fclose(fp);
+
+        png_destroy_write_struct(&png, &info);
+    }
+
+    void clock() {
+
+        for (int i = 0; i < 2; i++) {
+            dut.rootp->emu__DOT__clk_sys = (sim_time & 1);
+            dut.eval();
+            if (do_trace) {
+                m_trace.dump(sim_time);
+            }
+            sim_time++;
+        }
+    }
+
+  public:
+    void loadfile(uint16_t index, const char *path) {
+
+        FILE *f = fopen(path, "rb");
+        assert(f);
+
+        uint16_t transferword;
+
+        dut.rootp->emu__DOT__ioctl_addr = 0;
+        dut.rootp->emu__DOT__ioctl_index = index;
+
+        // make some clocks before starting
+        for (int step = 0; step < 300; step++) {
+            clock();
+        }
+
+        while (fread(&transferword, 2, 1, f) == 1) {
+            dut.rootp->emu__DOT__ioctl_wr = 1;
+            dut.rootp->emu__DOT__ioctl_dout = transferword;
+
+            clock();
+            dut.rootp->emu__DOT__ioctl_wr = 0;
+
+            // make some clocks to avoid asking for busy
+            // the real MiSTer has 31 clocks between writes
+            // we are going for ~20 to put more stress on it.
+            for (int i = 0; i < 20; i++) {
+                clock();
+            }
+            dut.rootp->emu__DOT__ioctl_addr += 2;
+            clock();
+        }
+        fclose(f);
+    }
+
+    void printstate() {
+#ifdef SCC68070
+        uint32_t pc = dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__exe_pc;
+        // d0 = dut.rootp->fx68k_tb__DOT__d0;
+        memcpy(regfile, &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[0],
+               sizeof(regfile));
+
+        printf("%x", pc);
+        for (int i = 0; i < 16; i++)
+            printf(" %x", regfile[i]);
+        printf("\n");
+#endif
+    }
+
+    void modelstep() {
+        step++;
+        clock();
+
+        if ((step % 100000) == 0) {
+            printf("%d\n", step);
+        }
+
+#ifdef SCC68070
         // Abort on illegal Instructions
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__trap_illegal) {
             fprintf(stderr, "Illegal Instruction!\n");
-            break;
+            exit(1);
         }
+#endif
 
         // Simulate CD data delivery from HPS
         if (dut.rootp->emu__DOT__sd_rd && sd_rd_q == 0) {
@@ -238,7 +233,7 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
         }
 
         dut.rootp->emu__DOT__sd_buff_wr = 0;
-        if (dut.rootp->emu__DOT__sd_ack && (y & 0xf) == 0) {
+        if (dut.rootp->emu__DOT__sd_ack && (step & 0xf) == 0) {
             if (sector_buffer_index == kSectorSize / 2) {
                 dut.rootp->emu__DOT__sd_ack = 0;
                 printf("Sector transferred!\n");
@@ -257,9 +252,6 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
             dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid = 0;
         }
         */
-        static uint32_t print_instructions = 0;
-        static uint32_t prevpc = 0;
-        static uint32_t leave_sys_callpc = 0;
 
         // Trace System Calls
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
@@ -279,7 +271,7 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
                 printf("Return from Syscall %x %x\n",
                        dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__flags,
                        dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__flagssr);
-                printstate(dut);
+                printstate();
             }
 
             prevpc = m_pc;
@@ -289,11 +281,8 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
             print_instructions && dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in) {
 
-            printstate(dut);
+            printstate();
         }
-
-        static int output_index = 0;
-        static int frame_index = 0;
 
         // Simulate television
         if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {
@@ -308,43 +297,65 @@ void do_justwait(tracetype_t &m_trace, Vemu &dut) {
                 dut.rootp->emu__DOT__JOY0 = 0b00000;
             }
 
-            if (output_index > 100) {
+            if (pixel_index > 100) {
                 auto current = std::chrono::system_clock::now();
                 std::chrono::duration<double> elapsed_seconds = current - start;
-                sprintf(filename, "video_%02d.png", frame_index);
+                sprintf(filename, "%d/video_%03d.png", instanceid, frame_index);
                 write_png_file(filename);
-                printf("Written %s %d\n", filename, output_index);
+                printf("Written %s %d\n", filename, pixel_index);
+                printf("We are at step=%ld\n", step);
                 fprintf(stderr, "Written %s after %.2fs\n", filename, elapsed_seconds.count());
                 frame_index++;
             }
-            output_index = 0;
+            pixel_index = 0;
         }
 
-        if (output_index < size - 6) {
+        if (pixel_index < size - 6) {
             if (dut.VGA_DE) {
-                output_image[output_index++] = dut.VGA_R;
-                output_image[output_index++] = dut.VGA_G;
-                output_image[output_index++] = dut.VGA_B;
+                output_image[pixel_index++] = dut.VGA_R;
+                output_image[pixel_index++] = dut.VGA_G;
+                output_image[pixel_index++] = dut.VGA_B;
             } else {
-                output_image[output_index++] = do_trace ? 80 : 10;
-                output_image[output_index++] = 10;
-                output_image[output_index++] = 10;
+                output_image[pixel_index++] = do_trace ? 80 : 10;
+                output_image[pixel_index++] = 10;
+                output_image[pixel_index++] = 10;
             }
         }
-
-        if (status == SIGINT)
-            break;
     }
-    fclose(f_cd_bin);
 
-    if (1) {
-        printf("Writing rampdump!\n");
-        FILE *f = fopen("ramdump2.bin", "wb");
-        assert(f);
-        fwrite(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
-        fclose(f);
+    CDi(int i, const char *tracepath) {
+
+        dut.trace(&m_trace, 5);
+
+        if (do_trace)
+            m_trace.open(tracepath);
+
+        instanceid = i;
+
+        dut.eval();
+        // do_trace = false;
+        dut.rootp->emu__DOT__debug_uart_fake_space = false;
+        // dut.rootp->emu__DOT__tvmode_ntsc = true;
+
+        dut.RESET = 1;
+        dut.UART_RXD = 1;
+
+        for (int y = 0; y < 300; y++) {
+            // wait for SDRAM to initialize
+            clock();
+        }
+
+        dut.RESET = 0;
+
+        start = std::chrono::system_clock::now();
     }
-}
+
+    void reset() {
+        dut.RESET = 1;
+        clock();
+        dut.RESET = 0;
+    }
+};
 
 int main(int argc, char **argv) {
     // Initialize Verilators variables
@@ -353,20 +364,21 @@ int main(int argc, char **argv) {
     if (do_trace)
         Verilated::traceEverOn(true);
 
-    tracetype_t m_trace;
-    Vemu dut;
-
     if (signal(SIGINT, catch_function) == SIG_ERR) {
         fputs("An error occurred while setting a signal handler.\n", stderr);
         return EXIT_FAILURE;
     }
 
-    dut.trace(&m_trace, 5);
+    f_cd_bin = fopen("images/FROG.BIN", "rb");
+    assert(f_cd_bin);
 
-    if (do_trace)
-        m_trace.open("/tmp/waveform.vcd");
+    CDi machine(0, "/tmp/waveform0.vcd");
 
-    do_justwait(m_trace, dut);
+    while (status == 0) {
+        machine.modelstep();
+    }
+
+    fclose(f_cd_bin);
 
     fprintf(stderr, "Closing...\n");
     fflush(stdout);
