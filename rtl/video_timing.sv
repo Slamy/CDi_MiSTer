@@ -18,7 +18,8 @@ module video_timing (
     output bit new_frame,
     output bit new_pixel,
     output bit new_pixel_hires,
-    output bit new_pixel_lores
+    output bit new_pixel_lores,
+    output bit display_active
 );
 
     localparam bit [12:0] ClksPerCycle = 16;
@@ -109,6 +110,7 @@ module video_timing (
         new_line <= video_x == 0;
         hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
         vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
+        display_active <= video_y < (v_start + v_active);
     end
 
     assign new_pixel_lores = video_x[1:0] == 1 && !hblank && !vblank;
