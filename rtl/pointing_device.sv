@@ -1,4 +1,4 @@
-module maneuvering_device (
+module pointing_device (
     input clk,
     input wire [15:0] mister_joystick,
     input rts,
