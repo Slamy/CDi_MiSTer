@@ -48,7 +48,8 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,284 / 41,910 ( 32 % )
+    Logic utilization (in ALMs)  13,438 / 41,910 ( 32 % )
+    Total registers              15409
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
     Total DSP Blocks             65 / 112 ( 58 % )
 
