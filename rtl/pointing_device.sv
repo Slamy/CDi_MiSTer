@@ -2,6 +2,7 @@ module pointing_device (
     input clk,
     input wire [15:0] mister_joystick,
     input wire [15:0] mister_joystick_analog,
+    input wire [24:0] mister_mouse,
     input rts,
     input overclock,
     bytestream.source serial_out
@@ -24,14 +25,21 @@ module pointing_device (
         BYTE2  // 1 0 Y5 Y4 Y3 Y2 Y1 Y0
     } e_state;
 
+    typedef enum bit {
+        MANEUVERING,
+        RELATIVE
+    } e_device_type;
+
+    e_device_type device_type;
+
     e_state state;
     bit [18:0] cnt;
     bit [7:0] frame[3];
 
     bit perform_transmit;
 
-    wire b1 = mister_joystick[5];
-    wire b2 = mister_joystick[4];
+    bit b1;
+    bit b2;
 
     bit b1_q, b2_q;
 
@@ -47,9 +55,32 @@ module pointing_device (
     bit signed [7:0] y_q;
     bit [3:0] accel;
 
+    bit mouse_event_prev;
+    wire mouse_event = mister_mouse[24];
+
+    bit mouse_movement;
+    bit digital_movement;
+    bit analog_movement;
+
+    // how many bits we need to accumulate before we send out the
+    // next bytes?
+    bit signed [8:0] x_mouse_inc;
+    bit signed [8:0] y_mouse_inc;
+
+    bit signed [15:0] x_mouse_acc;
+    bit signed [15:0] y_mouse_acc;
+
+    bit signed [7:0] x_mouse;
+    bit signed [7:0] y_mouse;
+
     always_comb begin
         x = 0;
         y = 0;
+
+        // combine joystick and mouse buttons
+
+        b1 = mister_joystick[5] | mister_mouse[0];
+        b2 = mister_joystick[4] | mister_mouse[1];
 
         // The spoon has a short amount of time where it moves 2 ticks per frame
         // After a while it switches itself to 8 ticks per frame
@@ -88,9 +119,32 @@ module pointing_device (
 
         y_analog = y_analog / 6;
 
-        // prioritize analog>digital
+        // set mouse coordinates
 
-        if ((x_analog != 0) || (y_analog != 0)) begin
+        if (x_mouse_acc > 127)
+            x_mouse = 127;
+        else if (x_mouse_acc < -127)
+            x_mouse = -127;
+        else
+            x_mouse = x_mouse_acc;
+
+        if (y_mouse_acc > 127)
+            y_mouse = 127;
+        else if (y_mouse_acc < -127)
+            y_mouse = -127;
+        else
+            y_mouse = y_mouse_acc;
+
+        digital_movement = (x != 0) || (y != 0);
+        analog_movement = (x_analog != 0) || (y_analog != 0);
+        mouse_movement = (x_mouse != 0) || (y_mouse != 0);
+
+        // prioritize mouse>analog>digital
+
+        if (mouse_movement) begin
+            x = x_mouse;
+            y = y_mouse;
+        end else if (analog_movement) begin
             x = x_analog;
             y = y_analog;
         end
@@ -106,6 +160,21 @@ module pointing_device (
     always_ff @(posedge clk) begin
         serial_out.write <= 0;
 
+        // accumulation of mouse movement
+
+        x_mouse_acc <= x_mouse_acc + x_mouse_inc;
+        y_mouse_acc <= y_mouse_acc + y_mouse_inc;
+
+        x_mouse_inc <= 0;
+        y_mouse_inc <= 0;
+
+        if (mouse_event != mouse_event_prev) begin
+            x_mouse_inc <= {mister_mouse[4], mister_mouse[15:8]};
+            y_mouse_inc <= -{mister_mouse[5], mister_mouse[23:16]};
+        end
+
+        mouse_event_prev <= mouse_event;
+
         if (rts) begin
             state <= DEVICE_ID;
             cnt   <= kTicksPerByte;
@@ -116,7 +185,11 @@ module pointing_device (
 
             case (state)
                 DEVICE_ID: begin
-                    serial_out.data <= ("J" | (1 << 7)); // maneuvering
+                    if (device_type == RELATIVE)
+                        serial_out.data <= ("M" | (1 << 7)); // relative
+                    else
+                        serial_out.data <= ("J" | (1 << 7)); // maneuvering
+
                     state <= IDLE;
                     serial_out.write <= 1;
 
@@ -149,8 +222,15 @@ module pointing_device (
 
         // change whole frame at the same time before transmitting the next
         if (cnt == 1 && state == IDLE) begin
-            // setup transmission of pointing device data
-            if (perform_transmit) begin
+            // setup transmission of pointing device data, send correct
+            // device ID first if required.
+            if (mouse_movement && (device_type != RELATIVE)) begin
+                device_type <= RELATIVE;
+                state <= DEVICE_ID;
+            end else if (!mouse_movement && (digital_movement || analog_movement) && (device_type != MANEUVERING)) begin
+                device_type <= MANEUVERING;
+                state <= DEVICE_ID;
+            end else if (perform_transmit) begin
                 // store for next comparsion
                 x_q <= x;
                 y_q <= y;
@@ -162,6 +242,11 @@ module pointing_device (
                 frame[2] <= {2'b10, y[5:0]};
 
                 state <= BYTE0;
+
+                // clear mouse accumulators (but don't lose the current
+                // increment, in case it happened this clock tick)
+                x_mouse_acc <= x_mouse_inc;
+                y_mouse_acc <= x_mouse_inc;
             end
 
             if (mister_joystick[3:0] == 0) begin
