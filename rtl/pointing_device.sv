@@ -116,7 +116,7 @@ module pointing_device (
 
             case (state)
                 DEVICE_ID: begin
-                    serial_out.data <= 8'hCA;
+                    serial_out.data <= ("J" | (1 << 7)); // maneuvering
                     state <= IDLE;
                     serial_out.write <= 1;
 
