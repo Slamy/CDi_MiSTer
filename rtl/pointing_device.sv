@@ -113,7 +113,7 @@ module pointing_device (
 
 
         // change whole frame at the same time before transmitting the next
-        if (cnt == 10 && state == IDLE) begin
+        if (cnt == 1 && state == IDLE) begin
             // setup transmission of pointing device data
             if (perform_transmit) begin
                 // store for next comparsion
