@@ -15,8 +15,9 @@ module pointing_device (
     // For overclocking: 30e6 / 50 Hz video / 3 = 200000
     wire [18:0] kTicksPerByte = overclock ? 200000 : 250000;
 
-    typedef enum bit [1:0] {
+    typedef enum bit [2:0] {
         DEVICE_ID,  // Always start with this after RTS is asserted
+        IDLE,
         BYTE0,  // 1 1 B1 B2 Y7 Y6 X7 X6
         BYTE1,  // 1 0 X5 X4 X3 X2 X1 X0
         BYTE2  // 1 0 Y5 Y4 Y3 Y2 Y1 Y0
@@ -81,22 +82,19 @@ module pointing_device (
             case (state)
                 DEVICE_ID: begin
                     serial_out.data <= 8'hCA;
-                    state <= BYTE0;
+                    state <= IDLE;
                     serial_out.write <= 1;
 
                 end
-                BYTE0: begin
-                    if (perform_transmit) begin
-                        serial_out.data <= frame[0];
-                        state <= BYTE1;
-                        serial_out.write <= 1;
+                IDLE: begin
+                    // do nothing
 
-                        // store for next comparsion
-                        x_q <= x;
-                        y_q <= y;
-                        b1_q <= b1;
-                        b2_q <= b2;
-                    end
+                end
+                BYTE0: begin
+                    serial_out.data <= frame[0];
+                    state <= BYTE1;
+                    serial_out.write <= 1;
+
                 end
                 BYTE1: begin
                     serial_out.data <= frame[1];
@@ -106,7 +104,7 @@ module pointing_device (
                 end
                 BYTE2: begin
                     serial_out.data <= frame[2];
-                    state <= BYTE0;
+                    state <= IDLE;
                     serial_out.write <= 1;
 
                 end
@@ -115,10 +113,21 @@ module pointing_device (
 
 
         // change whole frame at the same time before transmitting the next
-        if (cnt == 10 && state == BYTE0) begin
-            frame[0] <= {2'b11, b1, b2, y[7:6], x[7:6]};
-            frame[1] <= {2'b10, x[5:0]};
-            frame[2] <= {2'b10, y[5:0]};
+        if (cnt == 10 && state == IDLE) begin
+            // setup transmission of pointing device data
+            if (perform_transmit) begin
+                // store for next comparsion
+                x_q <= x;
+                y_q <= y;
+                b1_q <= b1;
+                b2_q <= b2;
+
+                frame[0] <= {2'b11, b1, b2, y[7:6], x[7:6]};
+                frame[1] <= {2'b10, x[5:0]};
+                frame[2] <= {2'b10, y[5:0]};
+
+                state <= BYTE0;
+            end
 
             if (mister_joystick[3:0] == 0) begin
                 accel <= 0;
