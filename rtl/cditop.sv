@@ -1,11 +1,13 @@
 
 module cditop (
     input clk30,
+    input clk_audio,
     input reset,
 
     input tvmode_pal,
     input debug_uart_loopback,
     input debug_uart_fake_space,
+    input debug_disable_sector_filter,
 
     input scandouble,
 
@@ -46,7 +48,10 @@ module cditop (
     output cd_hps_req,
     input cd_hps_ack,
     input cd_hps_data_valid,
-    input [15:0] cd_hps_data
+    input [15:0] cd_hps_data,
+
+    output signed [15:0] audio_left,
+    output signed [15:0] audio_right
 
 );
 
@@ -172,6 +177,7 @@ module cditop (
 
     cdic cdic_inst (
         .clk(clk30),
+        .clk_audio(clk_audio),
         .reset,
         .address(addr),
         .din(cpu_data_out),
@@ -193,7 +199,10 @@ module cditop (
         .cd_hps_req,
         .cd_hps_ack,
         .cd_hps_data_valid,
-        .cd_hps_data
+        .cd_hps_data,
+        .audio_left,
+        .audio_right,
+        .debug_disable_sector_filter
     );
 
 
@@ -352,8 +361,9 @@ module cditop (
     );
 
     servo_hle servo (
-        .clk(clk30),
-        .spi(slave_servo_spi),
+        .clk  (clk30),
+        .reset(reset),
+        .spi  (slave_servo_spi),
         .quirk_force_mode_fault
     );
 

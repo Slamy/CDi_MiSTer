@@ -1,6 +1,7 @@
 
 module servo_hle (
     input clk,
+    input reset,
     parallelel_spi.slave spi,
     output bit quirk_force_mode_fault
 );
@@ -51,41 +52,48 @@ module servo_hle (
     end
 
     always_ff @(posedge clk) begin
-        if (perform_mode_fault != 0) begin
-            mode_fault_cnt <= perform_mode_fault;
-        end else if (mode_fault_cnt != 0) begin
-            mode_fault_cnt <= mode_fault_cnt - 1;
-        end
 
-        quirk_force_mode_fault <= mode_fault_cnt == 1;
+        if (reset) begin
+            mode_fault_cnt <= 0;
+            quirk_force_mode_fault <= 0;
+            state <= IDLE;
+        end else begin
+            if (perform_mode_fault != 0) begin
+                mode_fault_cnt <= perform_mode_fault;
+            end else if (mode_fault_cnt != 0) begin
+                mode_fault_cnt <= mode_fault_cnt - 1;
+            end
 
-        case (state)
-            IDLE: begin
-                if (spi.write && spi.mosi == 8'hb0) begin
-                    state <= PROVIDE_B0_0;
-                    $display("SERVO was asked B0");
+            quirk_force_mode_fault <= mode_fault_cnt == 1;
+
+            case (state)
+                IDLE: begin
+                    if (spi.write && spi.mosi == 8'hb0) begin
+                        state <= PROVIDE_B0_0;
+                        $display("SERVO was asked B0");
+                    end
                 end
-            end
 
-            // MOSI 0xB0 00 00 00
-            // MISO 0x55 61 01 01
-            PROVIDE_B0_0: if (spi.write) state <= PROVIDE_B0_1;
-            PROVIDE_B0_1: if (spi.write) state <= PROVIDE_B0_2;
-            PROVIDE_B0_2: if (spi.write) state <= PROVIDE_B0_3;
-            PROVIDE_B0_3: if (mode_fault_cnt == 0) state <= PROVIDE_B0_10;
+                // MOSI 0xB0 00 00 00
+                // MISO 0x55 61 01 01
+                PROVIDE_B0_0: if (spi.write) state <= PROVIDE_B0_1;
+                PROVIDE_B0_1: if (spi.write) state <= PROVIDE_B0_2;
+                PROVIDE_B0_2: if (spi.write) state <= PROVIDE_B0_3;
+                PROVIDE_B0_3: if (mode_fault_cnt == 0) state <= PROVIDE_B0_10;
 
-            // MOSI 0xAA AA AA AA AA
-            // MISO 0x03 B0 00 02 15 to fake closed try with CD-i inside
-            PROVIDE_B0_10: if (spi.write) state <= PROVIDE_B0_11;
-            PROVIDE_B0_11: if (spi.write) state <= PROVIDE_B0_12;
-            PROVIDE_B0_12: if (spi.write) state <= PROVIDE_B0_13;
-            PROVIDE_B0_13: if (spi.write) state <= PROVIDE_B0_14;
-            PROVIDE_B0_14: if (spi.write) state <= PROVIDE_B0_15;
-            PROVIDE_B0_15: if (mode_fault_cnt == 0) state <= IDLE;
+                // MOSI 0xAA AA AA AA AA
+                // MISO 0x03 B0 00 02 15 to fake closed try with CD-i inside
+                PROVIDE_B0_10: if (spi.write) state <= PROVIDE_B0_11;
+                PROVIDE_B0_11: if (spi.write) state <= PROVIDE_B0_12;
+                PROVIDE_B0_12: if (spi.write) state <= PROVIDE_B0_13;
+                PROVIDE_B0_13: if (spi.write) state <= PROVIDE_B0_14;
+                PROVIDE_B0_14: if (spi.write) state <= PROVIDE_B0_15;
+                PROVIDE_B0_15: if (mode_fault_cnt == 0) state <= IDLE;
 
-            default: begin
-            end
-        endcase
+                default: begin
+                end
+            endcase
+        end
     end
 
 endmodule

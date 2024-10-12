@@ -1,5 +1,7 @@
 set_global_assignment -name SDC_FILE CDi.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE CDi.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/audiofifo.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/audioplayer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/cdic.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/cditop.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/clut_rle.sv

@@ -1,6 +1,12 @@
 {
     "files.associations": {
         "cstdlib": "cpp",
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "span": "cpp",
+        "regex": "cpp",
+        "algorithm": "cpp",
+        "queue": "cpp"
     }
 }

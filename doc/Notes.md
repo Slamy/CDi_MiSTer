@@ -17,6 +17,10 @@ make SOURCES=src/mame/philips/cdi.cpp REGENIE=1 -j8
 
     scp 68ktest.rom root@mister:/media/fat/games/CD-i
 
+# Convert CUE/BIN to CHD
+
+    chdman createcd -i a.cue -o a.chd
+
 ## Simulation speed
 
 Vcd:

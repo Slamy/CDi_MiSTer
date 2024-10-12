@@ -43,16 +43,21 @@ Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` a
 
 Core Utilization:
 
-	Logic utilization (in ALMs)	12,066 / 41,910 ( 29 % )
-	Total block memory bits	632,004 / 5,662,720 ( 11 % )
-	Total DSP Blocks	47 / 112 ( 42 % )
+	Logic utilization (in ALMs)  12,363 / 41,910 ( 29 % )
+	Total block memory bits      634,052 / 5,662,720 ( 11 % )
+	Total DSP Blocks             49 / 112 ( 44 % )
 
 ## TODOs in order of priority
 
-* Implement the CDIC XA audio 
+* Implement CDIC 8Bit XA audio
+* Fix clicks and pops during playback
+* Check proper sector filtering
+* Fix DYUV (e.g. Tetris intro)
 * Implement the CDIC audio map (sound effects)
 * Implement the CDIC CDDA for audio cd tracks
-* Fix DYUV (e.g. Tetris intro)
+* CDIC Fetch TOC (The Apprentice)
+* CDIC Descrambler (The Apprentice)
+* CDIC Byteswap (The Apprentice)
 * Simulate seeking time
 * Fix reset behaviour / Core is unstable
 * Fix unexpected hang when an application exits

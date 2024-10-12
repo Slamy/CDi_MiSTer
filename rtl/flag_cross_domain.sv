@@ -1,21 +1,21 @@
 // from https://www.fpga4fun.com/CrossClockDomain2.html
 
-module Flag_CrossDomain (
-    input  clkA,
-    input  FlagIn_clkA,  // this is a one-clock pulse from the clkA domain
-    input  clkB,
-    output FlagOut_clkB  // from which we generate a one-clock pulse in clkB domain
+module flag_cross_domain (
+    input  clk_a,
+    input  flag_in_clk_a,  // this is a one-clock pulse from the clk_a domain
+    input  clk_b,
+    output flag_out_clk_b  // from which we generate a one-clock pulse in clk_b domain
 );
 
-    reg FlagToggle_clkA;
-    always_ff @(posedge clkA)
-        FlagToggle_clkA <= FlagToggle_clkA ^ FlagIn_clkA;  // when flag is asserted, this signal toggles (clkA domain)
+    reg flagtoggle_clk_a;
+    always_ff @(posedge clk_a)
+        flagtoggle_clk_a <= flagtoggle_clk_a ^ flag_in_clk_a;  // when flag is asserted, this signal toggles (clk_a domain)
 
-    reg [2:0] SyncA_clkB;
-    always_ff @(posedge clkB)
-        SyncA_clkB <= {
-            SyncA_clkB[1:0], FlagToggle_clkA
+    reg [2:0] synca_clk_b;
+    always_ff @(posedge clk_b)
+        synca_clk_b <= {
+            synca_clk_b[1:0], flagtoggle_clk_a
         };  // now we cross the clock domains
 
-    assign FlagOut_clkB = (SyncA_clkB[2] ^ SyncA_clkB[1]);  // and create the clkB flag
+    assign flag_out_clk_b = (synca_clk_b[2] ^ synca_clk_b[1]);  // and create the clk_b flag
 endmodule

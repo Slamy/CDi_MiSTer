@@ -1,17 +1,18 @@
 `timescale 1 ns / 1 ns
 
-module videofifo (
+module audiofifo (
     input clk,
     input reset,
-    pixelstream.sink in,
-    pixelstream.source out
+    audiostream.sink in,
+    audiostream.source out,
+    output nearly_full
 );
 
-    bit [7:0] mem[8];
-    bit [2:0] read_index_d;
-    bit [2:0] read_index_q;
-    bit [2:0] write_index;
-    bit [2:0] count;
+    bit signed [15:0] mem[64];
+    bit [5:0] read_index_d;
+    bit [5:0] read_index_q;
+    bit [5:0] write_index;
+    bit [6:0] count;
 
     // The memory introduces one cycle delay. This is an issue
     // when the FIFO is empty. We want to avoid using the memory readout
@@ -19,12 +20,19 @@ module videofifo (
     bit indizes_equal_during_write_d;
     bit indizes_equal_during_write_q;
 
-    assign out.write = count != 0 && !reset && !indizes_equal_during_write_q;
-    assign in.strobe = count < 7 && !reset && in.write;
+    assign out.write   = count != 0 && !reset && !indizes_equal_during_write_q;
+    assign in.strobe   = count < 60 && !reset && in.write;
+
+    // Always a minimum of 28 XA samples per block
+    // We go for 48 just to be safe
+    assign nearly_full = count >= 48;
 
     always_comb begin
         read_index_d = read_index_q;
-        if (out.strobe) read_index_d = read_index_q + 1;
+        if (out.strobe) begin
+            assert (out.write);  // strobe without a write?
+            read_index_d = read_index_q + 1;
+        end
 
         indizes_equal_during_write_d = write_index == read_index_d && in.write;
     end
@@ -39,11 +47,11 @@ module videofifo (
             count <= 0;
         end else begin
             if (in.write && in.strobe) begin
-                mem[write_index] <= in.pixel;
+                mem[write_index] <= in.sample;
                 write_index <= write_index + 1;
             end
 
-            out.pixel <= mem[read_index_d];
+            out.sample <= mem[read_index_d];
             read_index_q <= read_index_d;
             indizes_equal_during_write_q <= indizes_equal_during_write_d;
         end

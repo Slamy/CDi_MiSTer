@@ -4,10 +4,11 @@
 
 Coming from https://github.com/cdifan/cdichips/blob/master/ims66490cdic.md
 
-    0000 - 09FF 	DATA buffer 0
-    0A00 - 13FF 	DATA buffer 1
-    2800 - 31FF 	ADPCM buffer 0
-    3200 - 3BFF 	ADPCM buffer 1
+    0000 - 09FF 	DATA buffer 0  (0xa00 (2560) in size)
+    0A00 - 13FF 	DATA buffer 1  (0xa00 (2560) in size)
+    1400 - 27ff     Unknown ?      (0x1400 (5120) in size)
+    2800 - 31FF 	ADPCM buffer 0 (0xa00 (2560) in size)
+    3200 - 3BFF 	ADPCM buffer 1 (0xa00 (2560) in size)
     3C00 - 3FFE 	Register area
 
 ## MAME behaviour
@@ -134,3 +135,112 @@ PSX:
                readLBA_buffer    <= readLBA;
                      lastReadSector    <= readLBA_buffer;
     cd_hps_lba       <= std_logic_vector(to_unsigned(lastReadSector, 32));
+
+
+## Usage by games
+
+* Tetris
+    * decode_4bit_xa_unit (Philips logo and ingame)
+* Zelda - Wand of Gamelon
+    * decode_4bit_xa_unit (Philips logo, ingame and FMV)
+* Frog Feast
+    * decode_8bit_xa_unit (Menu music)
+* The Apprentice
+    * decode_4bit_xa_unit (Philips logo)
+    * play_cdda_sector (ingame)
+
+ ## XA in PSX core
+
+[rtl/cd_xa.vhd:](https://github.com/MiSTer-devel/PSX_MiSTer/blob/main/rtl/cd_xa.vhd)
+
+   case (RamIn_dataB(5 downto 4)) is
+     when "00" => filterPos <=   0; filterNeg <= 0;
+     when "01" => filterPos <=  60; filterNeg <= 0;
+     when "10" => filterPos <= 115; filterNeg <= -52;
+     when "11" => filterPos <=  98; filterNeg <= -55;
+     when others => null;
+  end case;
+
+Filter in MAME:
+
+	const int16_t cdicdic_device::s_xa_filter_coef[4][2] =
+	{
+		{ 0x000,  0x000 },
+		{ 0x0F0,  0x000 }, 240
+		{ 0x1CC, -0x0D0 }, 460   -208
+		{ 0x188, -0x0DC }  392   -220
+	};
+
+The same, but *4 ! Cool
+
+## Frog Feast
+
+[:cdic] ':maincpu' (0042A2D6): cdic_w: File Register = 0100 & ffff
+[:cdic] ':maincpu' (0042A2DC): cdic_w: Channel Register (MSW) = 0000 & ffff
+[:cdic] ':maincpu' (0042A2DC): cdic_w: Channel Register (LSW) = 0001 & ffff
+[:cdic] ':maincpu' (0042A2EC): cdic_w: Audio Channel Register = 0001 & ffff
+[:cdic] ':maincpu' (0042A304): cdic_w: Time Register (MSW) = 0035 & ffff
+[:cdic] ':maincpu' (0042A304): cdic_w: Time Register (LSW) = 4400 & ffff
+
+
+CDIC CD Data 0500     0 00ff WE:0
+CDIC CD Data 0500     1 ffff WE:0
+CDIC CD Data 0500     2 ffff WE:0
+CDIC CD Data 0500     3 ffff WE:0
+CDIC CD Data 0500     4 ffff WE:0
+CDIC CD Data 0500     5 ff00 WE:0
+CDIC CD Data 0500     6 0035 WE:1 Time Code    Time Code
+CDIC CD Data 0501     7 4402 WE:1 Time Code     Mode 2
+CDIC CD Data 0502     8 0100 WE:1 File           Channel
+CDIC CD Data 0503     9 6411 WE:1 Submode Audio   Coding 8 bps, stereo
+CDIC CD Data 0504    10 0100 WE:1 Repeat Above
+CDIC CD Data 0505    11 6411 WE:1 Repeat Above
+Switching to Audio k8Bps k37Khz kStereo
+CDIC CD Data 1e00    12 0808 WE:1
+CDIC CD Data 1e01    13 0808 WE:1
+CDIC CD Data 1e02    14 0808 WE:1
+CDIC CD Data 1e03    15 0808 WE:1
+CDIC CD Data 1e04    16 0808 WE:1
+CDIC CD Data 1e05    17 0808 WE:1
+CDIC CD Data 1e06    18 0808 WE:1
+CDIC CD Data 1e07    19 0808 WE:1
+CDIC CD Data 1e08    20 00ff WE:1
+CDIC CD Data 1e09    21 0000 WE:1
+
+
+For Audio,
+* High byte of File Register must match file field in header
+* check the sub mode. It has to be audio
+* Channel byte selects a bit in the mask. For channel 0, the lowest bit must be set.
+* The same again for Audio Channel Mask
+* Afterwards processing can start
+
+One CD sector is 2352 bytes in size.
+One XA Group consists of 128 byte. 18 of them fit in a sector.
+
+There are 28 samples on 8 blocks in 18 groups when it comes to 4 BPS.
+
+
+## Experience
+
+### Real CDI 450
+The Apprentice. CDDA is Stereo while Audio is Mono?
+Zelda Wand of Gamelon. XA BGM is Mono on Left and Right. SFX is Mono on Left and Right.
+
+### Real CD-i 210
+Zelda Wand of Gamelon. XA BGM is Mono on Left and Right. SFX is Mono on Left and Right.
+
+### MAME
+Zelda Wand of Gamelon. XA BGM is Mono on Left. SFX is Mono on Right.
+This feels wrong.
+
+
+## Tools
+
+aplay -f cd -c 1 -r 37800 < audio_right.bin
+aplay -f cd -c 1 -r 37800 < audio_left.bin 
+
+aplay -f cd -c 1 -r 18900 < audio_right.bin
+aplay -f cd -c 1 -r 18900 < audio_left.bin 
+
+

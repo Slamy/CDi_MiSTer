@@ -201,9 +201,7 @@ module emu (
     assign HDMI_FREEZE = 0;
     assign HDMI_BLACKOUT = 0;
 
-    assign AUDIO_S = 0;
-    assign AUDIO_L = 0;
-    assign AUDIO_R = 0;
+    assign AUDIO_S = 1;
     assign AUDIO_MIX = 0;
 
     assign LED_DISK = 0;
@@ -219,7 +217,7 @@ module emu (
         "S0,CUECHD,Insert Disc;",
         "F1,ROM,Replace Boot ROM;",
         "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-        "O[2],UART Loopback,No,Yes;",
+        "O[2],Disable MODE2 Filter,No,Yes;",
         "O[3],UART Fake Space,No,Yes;",
         "O[4],TV Mode,PAL,NTSC;",
         "O[5],Overclock input device,No,Yes;",
@@ -257,9 +255,10 @@ module emu (
     wire        ioctl_wait  /*verilator public_flat_rw*/ = 0;
 
     (* keep *)wire        clk_sys  /*verilator public_flat_rw*/;
+    (* keep *)wire        clk_audio  /*verilator public_flat_rw*/;
 
 
-    reg  [31:0] sd_lba0;
+    wire [31:0] sd_lba0;
     wire        sd_rd  /*verilator public_flat_rd*/;
     wire        sd_wr;
     wire        sd_ack  /*verilator public_flat_rw*/;
@@ -321,7 +320,8 @@ module emu (
     pll pll (
         .refclk(CLK_50M),
         .rst(0),
-        .outclk_0(clk_sys)  // 30 MHz
+        .outclk_0(clk_sys),  // 30 MHz
+        .outclk_1(clk_audio)  // 22.2264 MHz
     );
 `endif
 
@@ -513,7 +513,7 @@ module emu (
         //$readmemh("ramdump.mem", ram);
     end
 
-    reg [3:0] burstindex = 0;
+    bit [3:0] burstindex = 0;
     wire [22:0] burstwrap_corrected_address = {
         sdram_real_addr[22:2], sdram_real_addr[1:0] + burstindex[1:0]
     };
@@ -593,9 +593,11 @@ module emu (
 
     cditop cditop (
         .clk30(clk_sys),
+        .clk_audio(clk_audio),
         .reset(cditop_reset),
 
-        .debug_uart_loopback(status[2]),
+        .debug_uart_loopback(0),
+        .debug_disable_sector_filter(status[2]),
         .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
         .scandouble(forced_scandoubler),
@@ -638,7 +640,11 @@ module emu (
         .cd_hps_data_valid(sd_buff_wr),
         // MiSTer uses little endian on linux. Swap over to big endian
         // to actually fit the way the 68k wants it
-        .cd_hps_data({sd_buff_dout[7:0], sd_buff_dout[15:8]})
+        .cd_hps_data({sd_buff_dout[7:0], sd_buff_dout[15:8]}),
+
+        .audio_left (AUDIO_L),
+        .audio_right(AUDIO_R)
+
     );
 
 

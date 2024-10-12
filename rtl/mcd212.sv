@@ -531,7 +531,6 @@ module mcd212 (
 
     region_entry region_control[8];
 
-
     clut_entry clut_out0;
     clut_entry clut_out1;
 
@@ -905,6 +904,10 @@ module mcd212 (
             backdrop_color_register <= 0;
             image_coding_method_register <= 0;
             transparency_control_register <= 0;
+            trans_color_plane_a <= 0;
+            mask_color_plane_a <= 0;
+            weight_a <= 0;
+            plane_b_in_front_of_a <= 0;
         end else begin
             if (ch0_register_write) begin
                 case (ch0_register_adr)
@@ -1032,6 +1035,9 @@ module mcd212 (
     always_ff @(posedge clk) begin
         if (reset) begin
             clut_bank1 <= 0;
+            trans_color_plane_b <= 0;
+            mask_color_plane_b <= 0;
+            weight_b <= 0;
         end else begin
 
             if (ch1_register_write) begin

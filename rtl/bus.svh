@@ -49,6 +49,15 @@ interface parallelel_spi ();
 endinterface
 
 
+interface audiostream ();
+    bit write;
+    bit strobe;
+    bit signed [15:0] sample;
+
+    modport source(output write, sample, input strobe);
+    modport sink(input write, sample, output strobe);
+endinterface
+
 typedef struct {
     bit cm;
     bit mf1;
