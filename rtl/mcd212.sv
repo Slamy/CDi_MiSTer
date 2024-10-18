@@ -1,16 +1,5 @@
 `include "bus.svh"
-
-typedef struct packed {
-    bit [5:0] r;
-    bit [5:0] g;
-    bit [5:0] b;
-} clut_entry;
-
-typedef struct {
-    bit [7:0] r;
-    bit [7:0] g;
-    bit [7:0] b;
-} rgb888;
+`include "videotypes.svh"
 
 // MCD 212 - DRAM and Video
 
@@ -531,11 +520,11 @@ module mcd212 (
 
     region_entry region_control[8];
 
-    clut_entry clut_out0;
-    clut_entry clut_out1;
+    clut_entry_s clut_out0;
+    clut_entry_s clut_out1;
 
-    clut_entry clut_wr_data0;
-    clut_entry clut_wr_data1;
+    clut_entry_s clut_wr_data0;
+    clut_entry_s clut_wr_data1;
     bit [7:0] clut_wr_addr0;
     bit [7:0] clut_wr_addr1;
 
@@ -556,10 +545,10 @@ module mcd212 (
         .q_b(clut_out1)
     );
 
-    clut_entry trans_color_plane_a;
-    clut_entry trans_color_plane_b;
-    clut_entry mask_color_plane_a;
-    clut_entry mask_color_plane_b;
+    clut_entry_s trans_color_plane_a;
+    clut_entry_s trans_color_plane_b;
+    clut_entry_s mask_color_plane_a;
+    clut_entry_s mask_color_plane_b;
 
     wire [15:0] ica0_din = sdram_dout;
     wire [15:0] ica1_din = sdram_dout;
@@ -644,7 +633,7 @@ module mcd212 (
 
     end
 
-    pixelstream file0out (.clk);
+    pixelstream file0_out (.clk);
 
     // Plane A Display File Decoder
     display_file_decoder #(
@@ -659,12 +648,12 @@ module mcd212 (
         .reload_vsr(ica0_reload_vsr),
         .burstdata_valid(file0_burstdata_valid),
         .vsr_in(ica0_vsr),
-        .out(file0out),
+        .out(file0_out),
         .read_pixels(!vblank && image_coding_method_register.cm13_10_planea != 0)
     );
 
 
-    pixelstream file1out (.clk);
+    pixelstream file1_out (.clk);
 
     display_file_decoder #(
         .unit_index(1)
@@ -678,39 +667,94 @@ module mcd212 (
         .reload_vsr(ica1_reload_vsr),
         .burstdata_valid(file1_burstdata_valid),
         .vsr_in(ica1_vsr),
-        .out(file1out),
+        .out(file1_out),
         .read_pixels(!vblank && image_coding_method_register.cm23_20_planeb != 0)
     );
 
-    pixelstream rle0out (.clk);
-    pixelstream rle1out (.clk);
+    pixelstream dyuv0_in (.clk);
+    pixelstream dyuv1_in (.clk);
+    pixelstream rle0_in (.clk);
+    pixelstream rle1_in (.clk);
+
+    pixelstream_demux demux0 (
+        .use_b(image_coding_method_register.cm13_10_planea == 4'b0101),
+        .in(file0_out),
+        .b(dyuv0_in),
+        .a(rle0_in)
+    );
+
+    pixelstream_demux demux1 (
+        .use_b(image_coding_method_register.cm23_20_planeb == 4'b0101),
+        .in(file1_out),
+        .b(dyuv1_in),
+        .a(rle1_in)
+    );
+
+    pixelstream rle0_out (.clk);
+    pixelstream rle1_out (.clk);
 
     clut_rle rle0 (
         .clk,
         .reset(vblank || reset || ica0_reload_vsr),
-        .src(file0out),
-        .dst(rle0out),
+        .src(rle0_in),
+        .dst(rle0_out),
         .passthrough(!display_decoder_register_ddr1.ft1)
     );
 
     clut_rle rle1 (
         .clk,
         .reset(vblank || reset || ica1_reload_vsr),
-        .src(file1out),
-        .dst(rle1out),
+        .src(rle1_in),
+        .dst(rle1_out),
         .passthrough(!display_decoder_register_ddr2.ft1)
     );
 
 
-    assign rle0out.strobe = new_pixel;
-    assign rle1out.strobe = new_pixel;
+    rgb888_s dyuv0_out;
+    rgb888_s dyuv1_out;
+    yuv_s dyuv0_abs_start;
+    yuv_s dyuv1_abs_start;
+    wire dyuv0_write;
+    wire dyuv0_strobe;
+    wire dyuv1_write;
+    wire dyuv1_strobe;
+
+    delta_yuv_decoder dyuv0 (
+        .clk,
+        .reset(reset || ica0_reload_vsr || vblank || new_line),
+        .absolute_start_yuv(dyuv0_abs_start),
+        .src(dyuv0_in),
+        .rgb_out(dyuv0_out),
+        .write(dyuv0_write),
+        .strobe(dyuv0_strobe)
+    );
+
+    delta_yuv_decoder dyuv1 (
+        .clk,
+        .reset(reset || ica1_reload_vsr || vblank || new_line),
+        .absolute_start_yuv(dyuv1_abs_start),
+        .src(dyuv1_in),
+        .rgb_out(dyuv1_out),
+        .write(dyuv1_write),
+        .strobe(dyuv1_strobe)
+    );
+
+    assign rle0_out.strobe = new_pixel;
+    assign rle1_out.strobe = new_pixel;
+    assign dyuv0_strobe = new_pixel;
+    assign dyuv1_strobe = new_pixel;
 
     bit [7:0] synchronized_pixel0;
     bit [7:0] synchronized_pixel1;
     bit fail = 0;
 
     always_comb begin
+        // CLUT7
         clut_addr0 = {1'b0, synchronized_pixel0[6:0]};
+
+        // CLUT8
+        if (image_coding_method_register.cm13_10_planea == 4'b0001)
+            clut_addr0 = synchronized_pixel0;
 
         // Setting highest bit according to Figure 7-2 for CLUT7
         // TODO Might not be correct
@@ -721,24 +765,23 @@ module mcd212 (
     end
 
     always_ff @(posedge clk) begin
-
-
         if (new_line) begin
             synchronized_pixel0 <= 0;
             synchronized_pixel1 <= 0;
         end else begin
-            if (rle0out.write && rle0out.strobe) synchronized_pixel0 <= rle0out.pixel;
-            if (rle1out.write && rle1out.strobe) synchronized_pixel1 <= rle1out.pixel;
+            if (rle0_out.write && rle0_out.strobe) synchronized_pixel0 <= rle0_out.pixel;
+            if (rle1_out.write && rle1_out.strobe) synchronized_pixel1 <= rle1_out.pixel;
         end
 
     end
-
+    /*
     always_ff @(posedge clk) begin
         if (ica0_reload_vsr) $display("Reload VSR %x", ica0_vsr);
 
         if (dca0_read) $display("Start DCA0 on line %d", video_y);
         if (dca1_read) $display("Start DCA1 on line %d", video_y);
     end
+    */
 
     bit [15:0] cursor[16];
     bit [1:0] clut_bank0;
@@ -824,9 +867,9 @@ module mcd212 (
     end
 
     // color mixing
-    rgb888 plane_a;
-    rgb888 plane_b;
-    rgb888 vidout;
+    rgb888_s plane_a;
+    rgb888_s plane_b;
+    rgb888_s vidout;
 
     assign {r, g, b} = {vidout.r, vidout.g, vidout.b};
 
@@ -840,11 +883,24 @@ module mcd212 (
         g = {clut_out0.g, 2'b00};
         b = {clut_out0.b, 2'b00};
 
+        if (image_coding_method_register.cm13_10_planea == 4'b0101) begin
+            r = dyuv0_out.r;
+            g = dyuv0_out.g;
+            b = dyuv0_out.b;
+        end
+
         plane_a.r = 8'((15'(r) * (15'(weight_a) + 15'd1)) >> 6);
         plane_a.g = 8'((15'(g) * (15'(weight_a) + 15'd1)) >> 6);
         plane_a.b = 8'((15'(b) * (15'(weight_a) + 15'd1)) >> 6);
 
-        plane_a_visible = (clut_out0 != trans_color_plane_a) && command_register_dcr1.ic1 && image_coding_method_register.cm13_10_planea != 0;
+        plane_a_visible = 0;
+        if (image_coding_method_register.cm13_10_planea != 0 && command_register_dcr1.ic1) begin
+            if (transparency_control_register.ta == 4'b1000) plane_a_visible = 1;
+
+            if (transparency_control_register.ta == 4'b0001)
+                plane_a_visible = (clut_out0 != trans_color_plane_a);
+        end
+
     end
 
     always_comb begin
@@ -853,11 +909,23 @@ module mcd212 (
         g = {clut_out1.g, 2'b00};
         b = {clut_out1.b, 2'b00};
 
+        if (image_coding_method_register.cm23_20_planeb == 4'b0101) begin
+            r = dyuv1_out.r;
+            g = dyuv1_out.g;
+            b = dyuv1_out.b;
+        end
+
         plane_b.r = 8'((15'(r) * (15'(weight_b) + 15'd1)) >> 6);
         plane_b.g = 8'((15'(g) * (15'(weight_b) + 15'd1)) >> 6);
         plane_b.b = 8'((15'(b) * (15'(weight_b) + 15'd1)) >> 6);
 
-        plane_b_visible = (clut_out1 != trans_color_plane_b) && command_register_dcr2.ic2 && image_coding_method_register.cm23_20_planeb != 0;
+        plane_b_visible = 0;
+        if (image_coding_method_register.cm23_20_planeb != 0 && command_register_dcr2.ic2) begin
+            if (transparency_control_register.tb == 4'b1000) plane_b_visible = 1;
+
+            if (transparency_control_register.tb == 4'b0001)
+                plane_b_visible = (clut_out1 != trans_color_plane_b);
+        end
     end
 
     always_comb begin
@@ -960,6 +1028,9 @@ module mcd212 (
                     end
                     7'h4a: begin
                         // DYUV Abs. Start Value for Plane A
+                        dyuv0_abs_start <= ch0_register_data;
+                        $display("DYUV Abs. Start Plane A %d %d %d", ch0_register_data[23:16],
+                                 ch0_register_data[15:8], ch0_register_data[7:0]);
                     end
                     7'h4d: begin
                         // Cursor Position
@@ -993,16 +1064,16 @@ module mcd212 (
                         $display("Weight A %d", ch0_register_data[5:0]);
                     end
                     default: begin
-                        /*
-                    if (register_adr >= 7'h40) begin
-                        $display("Ignored %x", register_adr);
+                        
+                    if (ch0_register_adr >= 7'h40) begin
+                        $display("Ignored %x", ch0_register_adr);
                     end
-                    */
+                    
                     end
                 endcase
 
                 if (ch0_register_adr[6:3] == 4'b1010) begin
-                    //$display("Region %d %b", register_adr[2:0], ch0_register_data);
+                    $display("Region %d %b", ch0_register_adr[2:0], ch0_register_data);
                     region_control[ch0_register_adr[2:0]] <= {
                         ch0_register_data[23:20], ch0_register_data[16:0]
                     };
@@ -1069,6 +1140,9 @@ module mcd212 (
                     end
                     7'h4b: begin
                         // DYUV Abs. Start Value for Plane B
+                        dyuv1_abs_start <= ch1_register_data;
+                        $display("DYUV Abs. Start Plane B %d %d %d", ch1_register_data[23:16],
+                                 ch1_register_data[15:8], ch1_register_data[7:0]);
                     end
 
                     7'h5c: begin
@@ -1078,16 +1152,16 @@ module mcd212 (
                     end
 
                     default: begin
-                        /*
-                    if (register_adr >= 7'h40) begin
-                        $display("Ignored %x", register_adr);
+                        
+                    if (ch1_register_adr >= 7'h40) begin
+                        $display("Ignored %x", ch1_register_adr);
                     end
-                    */
+                    
                     end
                 endcase
 
                 if (ch1_register_adr[6:3] == 4'b1010) begin
-                    //$display("Region %d %b", register_adr[2:0], ch1_register_data);
+                    $display("Region %d %b", ch1_register_adr[2:0], ch1_register_data);
                     region_control[ch1_register_adr[2:0]] <= {
                         ch1_register_data[23:20], ch1_register_data[16:0]
                     };
@@ -1107,23 +1181,52 @@ module mcd212 (
 
 endmodule
 
+module pixelstream_mux (
+    input use_b,
+    pixelstream.sink a,
+    pixelstream.sink b,
+    pixelstream.source dst
+);
+    assign a.strobe  = !use_b ? dst.strobe : 1'b0;
+    assign b.strobe  = use_b ? dst.strobe : 1'b0;
+
+    assign dst.write = use_b ? b.write : a.write;
+    assign dst.pixel = use_b ? b.pixel : a.pixel;
+endmodule
+
+
+module pixelstream_demux (
+    input use_b,
+    pixelstream.sink in,
+    pixelstream.source a,
+    pixelstream.source b
+);
+    assign b.pixel   = in.pixel;
+    assign b.write   = use_b && in.write;
+
+    assign a.pixel   = in.pixel;
+    assign a.write   = !use_b && in.write;
+
+    assign in.strobe = use_b ? b.strobe : a.strobe;
+endmodule
+
 
 // According to
 // https://www.intel.com/content/www/us/en/docs/programmable/683082/22-1/true-dual-port-synchronous-ram.html
 // to ensure that this is indeed a True Dual-Port RAM with Single Clock
 module clut_dual_port_memory (
     input clk,
-    input clut_entry data_a,
-    input clut_entry data_b,
+    input clut_entry_s data_a,
+    input clut_entry_s data_b,
     input [7:0] addr_a,
     input [7:0] addr_b,
     input we_a,
     input we_b,
-    output clut_entry q_a,
-    output clut_entry q_b
+    output clut_entry_s q_a,
+    output clut_entry_s q_b
 );
     // Declare the RAM variable
-    clut_entry ram[256]  /*verilator public_flat_rw*/;
+    clut_entry_s ram[256]  /*verilator public_flat_rw*/;
 
     // Port A 
     always @(posedge clk) begin

@@ -148,6 +148,8 @@ PSX:
 * The Apprentice
     * decode_4bit_xa_unit (Philips logo)
     * play_cdda_sector (ingame)
+* Defender of the Crown
+    * decode_8bit_xa_unit (ingame and intro, maybe always?)
 
  ## XA in PSX core
 

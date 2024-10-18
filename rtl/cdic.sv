@@ -115,7 +115,7 @@ module cdic (
     wire [15:0] mem_cpu_data = din;
     wire mem_cpu_we = address[13:1] <= 13'h1E3F && access && write_strobe && bus_ack;
 
-    // Cut of the sync pattern by starting with the sixth word
+    // Cut off the sync pattern by starting with the sixth word
     // A real CDIC also does that
     wire mem_cd_hps_we = cd_hps_data_valid && sector_word_index >= 6 && use_sector_data;
 
