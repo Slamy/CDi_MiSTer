@@ -1064,11 +1064,9 @@ module mcd212 (
                         $display("Weight A %d", ch0_register_data[5:0]);
                     end
                     default: begin
-                        
-                    if (ch0_register_adr >= 7'h40) begin
-                        $display("Ignored %x", ch0_register_adr);
-                    end
-                    
+                        if (ch0_register_adr >= 7'h40) begin
+                            $display("Ignored %x", ch0_register_adr);
+                        end
                     end
                 endcase
 
@@ -1152,11 +1150,11 @@ module mcd212 (
                     end
 
                     default: begin
-                        
-                    if (ch1_register_adr >= 7'h40) begin
-                        $display("Ignored %x", ch1_register_adr);
-                    end
-                    
+
+                        if (ch1_register_adr >= 7'h40) begin
+                            $display("Ignored %x", ch1_register_adr);
+                        end
+
                     end
                 endcase
 

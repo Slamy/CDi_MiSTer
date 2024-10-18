@@ -132,56 +132,75 @@ module delta_yuv_decoder (
         end
     end
 
-    yuv_s storage_color;
+    // T0 is always refreshed with the newest data
+    yuv_s t0;
+    // T1 and T2 are the previous values.
+    // With a combination of all 3, the correct data
+    // can be reassembled
+    yuv_s t1;
+    yuv_s t2;
+
+    bit [1:0] delayed_write;
 
     always_ff @(posedge clk) begin
         if (strobe) write <= 0;
 
         if (reset) begin
             state <= IDLE;
+            write <= 0;
+            delayed_write <= 0;
         end else begin
-
             case (state)
                 IDLE: begin
                     if (src.write && wordcnt != 0) begin
                         //When the first data arrives we can be sure that ICA/DCA has
                         // updated the Absolute Start YUV
                         current_color <= absolute_start_yuv;
-                        storage_color <= absolute_start_yuv;
+                        t0 <= absolute_start_yuv;
+                        t1 <= absolute_start_yuv;
+                        t2 <= absolute_start_yuv;
 
+                        delayed_write <= 0;
                         state <= STATE_UY;
                     end
                 end
                 STATE_UY: begin
-                    if (src.write && !write && wordcnt != 0) begin
+                    if (src.write && !write) begin
                         // First byte contains U0 and Y0
+                        t0.y <= t0.y + dyuv_deltas[src.pixel[3:0]];
+                        t1.y <= t0.y;
+                        t2.y <= t1.y;
 
-                        // delay Y and U with storage
-                        storage_color.y <= storage_color.y + dyuv_deltas[src.pixel[3:0]];
-                        storage_color.u <= storage_color.u + dyuv_deltas[src.pixel[7:4]];
-                        current_color.y <= storage_color.y;
+                        t0.u <= t0.u + dyuv_deltas[src.pixel[7:4]];
+                        t1.u <= t0.u;
+                        t2.u <= t1.u;
 
-                        // update U and V from interpolation
-                        current_color.u <= 8'(({1'b0,storage_color.u + dyuv_deltas[src.pixel[7:4]]} + {1'b0,storage_color.u})>>1);
-                        //current_color.v <= 0;
-                        write <= 1;
+                        current_color.y <= t2.y;
+                        current_color.u <= t1.u;
+                        current_color.v <= t1.v;
+
+                        {write, delayed_write} <= {delayed_write, 1'b1};
                         state <= STATE_VY;
                     end
                 end
                 STATE_VY: begin
                     if (src.write && !write) begin
                         // Second byte contains V0 and Y1
+                        t0.y <= t0.y + dyuv_deltas[src.pixel[3:0]];
+                        t1.y <= t0.y;
+                        t2.y <= t1.y;
 
-                        // activate storage Y and U with current V
-                        // update all 3 components
-                        current_color.y <= storage_color.y;
-                        current_color.u <= storage_color.u;
-                        current_color.v <= current_color.v + dyuv_deltas[src.pixel[7:4]];
+                        t0.v <= t0.v + dyuv_deltas[src.pixel[7:4]];
+                        t1.v <= t0.v;
+                        t2.v <= t1.v;
 
-                        // put Y into storage
-                        storage_color.y <= storage_color.y + dyuv_deltas[src.pixel[3:0]];
-                        storage_color.v <= current_color.v + dyuv_deltas[src.pixel[7:4]];
-                        write <= 1;
+                        // Y is always defined
+                        current_color.y <= t2.y;
+                        // perform interpolation
+                        current_color.u <= 8'(({1'b0, t2.u} + {1'b0, t1.u}) >> 1);
+                        current_color.v <= 8'(({1'b0, t0.v} + {1'b0, t1.v}) >> 1);
+
+                        {write, delayed_write} <= {delayed_write, 1'b1};
                         state <= STATE_UY;
                     end
                 end

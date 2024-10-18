@@ -49,7 +49,6 @@ Core Utilization:
 
 ## TODOs in order of priority
 
-* Fix DYUV Interpolation
 * Add Interlacing
 * Implement CDIC 8Bit XA audio
 * Fix clicks and pops during playback
