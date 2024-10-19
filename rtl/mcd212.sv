@@ -752,15 +752,25 @@ module mcd212 (
         // CLUT7
         clut_addr0 = {1'b0, synchronized_pixel0[6:0]};
 
-        // CLUT8
+        // CLUT8 (only on Plane A)
         if (image_coding_method_register.cm13_10_planea == 4'b0001)
             clut_addr0 = synchronized_pixel0;
 
-        // Setting highest bit according to Figure 7-2 for CLUT7
-        // TODO Might not be correct
-        clut_addr1 = {1'b1, synchronized_pixel1[6:0]};
+        // CLUT4
+        if (image_coding_method_register.cm13_10_planea == 4'b1011)
+            clut_addr0 = {4'b0000, synchronized_pixel0[7:4]};
 
         if (clut_we0) clut_addr0 = clut_wr_addr0;
+    end
+
+    always_comb begin
+        // Setting highest bit according to Figure 7-2 for CLUT7
+        clut_addr1 = {1'b1, synchronized_pixel1[6:0]};
+
+        // CLUT4
+        if (image_coding_method_register.cm23_20_planeb == 4'b1011)
+            clut_addr1 = {4'b1000, synchronized_pixel1[7:4]};
+
         if (clut_we1) clut_addr1 = clut_wr_addr1;
     end
 
@@ -771,6 +781,13 @@ module mcd212 (
         end else begin
             if (rle0_out.write && rle0_out.strobe) synchronized_pixel0 <= rle0_out.pixel;
             if (rle1_out.write && rle1_out.strobe) synchronized_pixel1 <= rle1_out.pixel;
+
+            // Implement CLUT4 shifting
+            if (image_coding_method_register.cm13_10_planea == 4'b1011 && new_pixel_hires && !new_pixel_lores)
+                synchronized_pixel0[7:4] <= synchronized_pixel0[3:0];
+            if (image_coding_method_register.cm23_20_planeb == 4'b1011 && new_pixel_hires && !new_pixel_lores)
+                synchronized_pixel1[7:4] <= synchronized_pixel1[3:0];
+
         end
 
     end
@@ -1031,8 +1048,8 @@ module mcd212 (
                 case (ch0_register_adr)
                     7'h40: begin
                         // Image Coding Method
-                        $display("Line %3d Coding %b %b", video_y, ch0_register_data[11:8],
-                                 ch0_register_data[3:0]);
+                        $display("Line %3d Coding A:%b B:%b", video_y, ch0_register_data[3:0],
+                                 ch0_register_data[11:8]);
                         image_coding_method_register.cs <= ch0_register_data[22];
                         image_coding_method_register.nr <= ch0_register_data[19];
                         image_coding_method_register.ev <= ch0_register_data[18];

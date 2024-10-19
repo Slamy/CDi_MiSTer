@@ -1,15 +1,17 @@
 # CDi_MiSTer
 
-A repo dedicated to create an FPGA implementation of the Philips CD-i to be usable for the MiSTer project
+A repo dedicated to create an FPGA implementation of the Philips CD-i to be usable for the MiSTer FPGA project
 
 This repository is very experimental! Use at your own risk!
 
-The first games are booting. Graphics are glitched and the audio is still missing.
+The first games are booting. Graphics are glitched and audio is broken.
 
 ## Usage
 
 Place `cdi200.rom` as `boot0.rom` in `/media/fat/games/CD-i`.
 Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` as `boot1.rom` next to it.
+
+Keep in mind that - for now - a special [MiSTer Main application](https://github.com/Slamy/Main_MiSTer) is required for the CD drive emulation.
 
 ## Status
 
@@ -43,9 +45,9 @@ Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` a
 
 Core Utilization:
 
-	Logic utilization (in ALMs)  12,363 / 41,910 ( 29 % )
+	Logic utilization (in ALMs)  12,724 / 41,910 ( 30 % )
 	Total block memory bits      634,052 / 5,662,720 ( 11 % )
-	Total DSP Blocks             49 / 112 ( 44 % )
+	Total DSP Blocks             65 / 112 ( 58 % )
 
 ## TODOs in order of priority
 
@@ -53,7 +55,6 @@ Core Utilization:
 * Implement CDIC 8Bit XA audio
 * Fix clicks and pops during playback
 * Check proper sector filtering
-* Add CLUT4 (required for "Photo CD Sample Disc")
 * Implement the CDIC audio map (sound effects)
 * Fix DYUV Test on "Validation Disc" (CLUT8 colors wrong)
 * Implement the CDIC CDDA for audio cd tracks
@@ -81,7 +82,6 @@ This core is tested with these ROMs:
 	3d20cf7550f1b723158b42a1fd5bac62  zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206
 
 Due to legal reasons, these files must be sourced separately.
-
 
 ## Used resources
 
