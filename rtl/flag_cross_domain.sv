@@ -7,11 +7,11 @@ module flag_cross_domain (
     output flag_out_clk_b  // from which we generate a one-clock pulse in clk_b domain
 );
 
-    reg flagtoggle_clk_a;
+    bit flagtoggle_clk_a;
     always_ff @(posedge clk_a)
         flagtoggle_clk_a <= flagtoggle_clk_a ^ flag_in_clk_a;  // when flag is asserted, this signal toggles (clk_a domain)
 
-    reg [2:0] synca_clk_b;
+    bit [2:0] synca_clk_b;
     always_ff @(posedge clk_b)
         synca_clk_b <= {
             synca_clk_b[1:0], flagtoggle_clk_a
