@@ -895,12 +895,22 @@ module mcd212 (
 
         plane_a_visible = 0;
         if (image_coding_method_register.cm13_10_planea != 0 && command_register_dcr1.ic1) begin
-            if (transparency_control_register.ta == 4'b1000) plane_a_visible = 1;
+            // Use only the lower 3 bits first as the highest bit just inverts the result
 
-            if (transparency_control_register.ta == 4'b0001)
-                plane_a_visible = (clut_out0 != trans_color_plane_a);
+            // TODO Add Regions
+            case (transparency_control_register.ta[2:0])
+                // Color Key = True
+                3'b001:  plane_a_visible = (clut_out0 != trans_color_plane_a);
+                // Region Flag 0 or Color Key = True
+                3'b101:  plane_a_visible = (clut_out0 != trans_color_plane_a);
+                // Region Flag 1 or Color Key = True
+                3'b110:  plane_a_visible = (clut_out0 != trans_color_plane_a);
+                default: plane_a_visible = 0;
+            endcase
+
+            // Invert original result
+            if (transparency_control_register.ta[3]) plane_a_visible = !plane_a_visible;
         end
-
     end
 
     always_comb begin
@@ -921,10 +931,21 @@ module mcd212 (
 
         plane_b_visible = 0;
         if (image_coding_method_register.cm23_20_planeb != 0 && command_register_dcr2.ic2) begin
-            if (transparency_control_register.tb == 4'b1000) plane_b_visible = 1;
+            // Use only the lower 3 bits first as the highest bit just inverts the result
 
-            if (transparency_control_register.tb == 4'b0001)
-                plane_b_visible = (clut_out1 != trans_color_plane_b);
+            // TODO Add Regions
+            case (transparency_control_register.tb[2:0])
+                // Color Key = True
+                3'b001:  plane_b_visible = (clut_out1 != trans_color_plane_b);
+                // Region Flag 0 or Color Key = True
+                3'b101:  plane_b_visible = (clut_out1 != trans_color_plane_b);
+                // Region Flag 1 or Color Key = True
+                3'b110:  plane_b_visible = (clut_out1 != trans_color_plane_b);
+                default: plane_b_visible = 0;
+            endcase
+
+            // Invert original result
+            if (transparency_control_register.tb[3]) plane_b_visible = !plane_b_visible;
         end
     end
 
@@ -997,6 +1018,9 @@ module mcd212 (
                         transparency_control_register.tb <= ch0_register_data[11:8];
                         transparency_control_register.ta <= ch0_register_data[3:0];
 
+                        // To find games which use these
+                        assert (ch0_register_data[3:0] != 4'b0010);
+                        assert (ch0_register_data[11:8] != 4'b0010);
                     end
                     7'h42: begin
                         // Plane Order
@@ -1071,7 +1095,7 @@ module mcd212 (
                 endcase
 
                 if (ch0_register_adr[6:3] == 4'b1010) begin
-                    $display("Region %d %b", ch0_register_adr[2:0], ch0_register_data);
+                    $display("Region A %d %b", ch0_register_adr[2:0], ch0_register_data);
                     region_control[ch0_register_adr[2:0]] <= {
                         ch0_register_data[23:20], ch0_register_data[16:0]
                     };
@@ -1159,7 +1183,7 @@ module mcd212 (
                 endcase
 
                 if (ch1_register_adr[6:3] == 4'b1010) begin
-                    $display("Region %d %b", ch1_register_adr[2:0], ch1_register_data);
+                    $display("Region B %d %b", ch1_register_adr[2:0], ch1_register_data);
                     region_control[ch1_register_adr[2:0]] <= {
                         ch1_register_data[23:20], ch1_register_data[16:0]
                     };
