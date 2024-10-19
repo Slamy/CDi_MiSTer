@@ -677,14 +677,14 @@ module mcd212 (
     pixelstream rle1_in (.clk);
 
     pixelstream_demux demux0 (
-        .use_b(image_coding_method_register.cm13_10_planea == 4'b0101),
+        .use_b(plane_a_dyuv_active),
         .in(file0_out),
         .b(dyuv0_in),
         .a(rle0_in)
     );
 
     pixelstream_demux demux1 (
-        .use_b(image_coding_method_register.cm23_20_planeb == 4'b0101),
+        .use_b(plane_b_dyuv_active),
         .in(file1_out),
         .b(dyuv1_in),
         .a(rle1_in)
@@ -873,8 +873,15 @@ module mcd212 (
 
     assign {r, g, b} = {vidout.r, vidout.g, vidout.b};
 
-    bit plane_a_visible;
-    bit plane_b_visible;
+    bit  plane_a_visible;
+    bit  plane_b_visible;
+
+    wire plane_a_dyuv_active = image_coding_method_register.cm13_10_planea == 4'b0101;
+    wire plane_b_dyuv_active = image_coding_method_register.cm23_20_planeb == 4'b0101;
+
+    // Ignore Color Key for DYUV. Use it only for CLUT!
+    wire plane_a_color_key_match = (clut_out0 != trans_color_plane_a) || plane_a_dyuv_active;
+    wire plane_b_color_key_match = (clut_out1 != trans_color_plane_b) || plane_b_dyuv_active;
 
     always_comb begin
         bit [7:0] r, g, b;
@@ -883,7 +890,7 @@ module mcd212 (
         g = {clut_out0.g, 2'b00};
         b = {clut_out0.b, 2'b00};
 
-        if (image_coding_method_register.cm13_10_planea == 4'b0101) begin
+        if (plane_a_dyuv_active) begin
             r = dyuv0_out.r;
             g = dyuv0_out.g;
             b = dyuv0_out.b;
@@ -900,11 +907,11 @@ module mcd212 (
             // TODO Add Regions
             case (transparency_control_register.ta[2:0])
                 // Color Key = True
-                3'b001:  plane_a_visible = (clut_out0 != trans_color_plane_a);
+                3'b001:  plane_a_visible = plane_a_color_key_match;
                 // Region Flag 0 or Color Key = True
-                3'b101:  plane_a_visible = (clut_out0 != trans_color_plane_a);
+                3'b101:  plane_a_visible = plane_a_color_key_match;
                 // Region Flag 1 or Color Key = True
-                3'b110:  plane_a_visible = (clut_out0 != trans_color_plane_a);
+                3'b110:  plane_a_visible = plane_a_color_key_match;
                 default: plane_a_visible = 0;
             endcase
 
@@ -919,7 +926,7 @@ module mcd212 (
         g = {clut_out1.g, 2'b00};
         b = {clut_out1.b, 2'b00};
 
-        if (image_coding_method_register.cm23_20_planeb == 4'b0101) begin
+        if (plane_b_dyuv_active) begin
             r = dyuv1_out.r;
             g = dyuv1_out.g;
             b = dyuv1_out.b;
@@ -930,17 +937,18 @@ module mcd212 (
         plane_b.b = 8'((15'(b) * (15'(weight_b) + 15'd1)) >> 6);
 
         plane_b_visible = 0;
+
         if (image_coding_method_register.cm23_20_planeb != 0 && command_register_dcr2.ic2) begin
             // Use only the lower 3 bits first as the highest bit just inverts the result
 
             // TODO Add Regions
             case (transparency_control_register.tb[2:0])
                 // Color Key = True
-                3'b001:  plane_b_visible = (clut_out1 != trans_color_plane_b);
+                3'b001:  plane_b_visible = plane_b_color_key_match;
                 // Region Flag 0 or Color Key = True
-                3'b101:  plane_b_visible = (clut_out1 != trans_color_plane_b);
+                3'b101:  plane_b_visible = plane_b_color_key_match;
                 // Region Flag 1 or Color Key = True
-                3'b110:  plane_b_visible = (clut_out1 != trans_color_plane_b);
+                3'b110:  plane_b_visible = plane_b_color_key_match;
                 default: plane_b_visible = 0;
             endcase
 
@@ -948,6 +956,12 @@ module mcd212 (
             if (transparency_control_register.tb[3]) plane_b_visible = !plane_b_visible;
         end
     end
+
+    function automatic [7:0] clamped_mix(input [7:0] a, input [7:0] b);
+        bit [8:0] sum = a + b;
+        if (sum > 255) clamped_mix = 255;
+        else clamped_mix = sum[7:0];
+    endfunction
 
     always_comb begin
         // start with the backdrop color
@@ -961,12 +975,26 @@ module mcd212 (
             vidout.b[7] = 0;
         end
 
-        if (plane_b_in_front_of_a) begin
-            if (plane_a_visible) vidout = plane_a;
-            if (plane_b_visible) vidout = plane_b;
+        if (transparency_control_register.mx) begin
+            // No Mix. Only overlay
+            if (plane_b_in_front_of_a) begin
+                if (plane_a_visible) vidout = plane_a;
+                if (plane_b_visible) vidout = plane_b;
+            end else begin
+                if (plane_b_visible) vidout = plane_b;
+                if (plane_a_visible) vidout = plane_a;
+            end
         end else begin
-            if (plane_b_visible) vidout = plane_b;
-            if (plane_a_visible) vidout = plane_a;
+            // Perform mixing
+            if (plane_a_visible && plane_b_visible) begin
+                vidout.r = clamped_mix(plane_a.r, plane_b.r);
+                vidout.g = clamped_mix(plane_a.g, plane_b.g);
+                vidout.b = clamped_mix(plane_a.b, plane_b.b);
+            end else if (plane_a_visible) begin
+                vidout = plane_a;
+            end else if (plane_b_visible) begin
+                vidout = plane_b;
+            end
         end
 
         // cursor
@@ -982,6 +1010,7 @@ module mcd212 (
                 vidout.b[7] = 0;
             end
         end
+
     end
 
     // Implementation of Table 5-13 Register Map
@@ -1002,7 +1031,8 @@ module mcd212 (
                 case (ch0_register_adr)
                     7'h40: begin
                         // Image Coding Method
-                        $display("Coding %b %b", ch0_register_data[11:8], ch0_register_data[3:0]);
+                        $display("Line %3d Coding %b %b", video_y, ch0_register_data[11:8],
+                                 ch0_register_data[3:0]);
                         image_coding_method_register.cs <= ch0_register_data[22];
                         image_coding_method_register.nr <= ch0_register_data[19];
                         image_coding_method_register.ev <= ch0_register_data[18];
@@ -1011,8 +1041,9 @@ module mcd212 (
                     end
                     7'h41: begin
                         // Transparency Control
-                        $display("Transparency Control MX:%b TB:%b TA:%b", ch0_register_data[23],
-                                 ch0_register_data[11:8], ch0_register_data[3:0]);
+                        $display("Line %3d Transparency Control MX:%b TB:%b TA:%b", video_y,
+                                 ch0_register_data[23], ch0_register_data[11:8],
+                                 ch0_register_data[3:0]);
 
                         transparency_control_register.mx <= ch0_register_data[23];
                         transparency_control_register.tb <= ch0_register_data[11:8];

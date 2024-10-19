@@ -53,6 +53,7 @@ Core Utilization:
 * Implement CDIC 8Bit XA audio
 * Fix clicks and pops during playback
 * Check proper sector filtering
+* Add CLUT4 (required for "Photo CD Sample Disc")
 * Implement the CDIC audio map (sound effects)
 * Fix DYUV Test on "Validation Disc" (CLUT8 colors wrong)
 * Implement the CDIC CDDA for audio cd tracks
