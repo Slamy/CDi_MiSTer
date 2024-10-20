@@ -888,6 +888,12 @@ module mcd212 (
     rgb888_s plane_b;
     rgb888_s vidout;
 
+    function clut_entry_s RGB888ToClut(input rgb888_s rgb);
+        RGB888ToClut.r = rgb.r[7:2];
+        RGB888ToClut.g = rgb.g[7:2];
+        RGB888ToClut.b = rgb.b[7:2];
+    endfunction
+
     assign {r, g, b} = {vidout.r, vidout.g, vidout.b};
 
     bit  plane_a_visible;
@@ -934,6 +940,11 @@ module mcd212 (
 
             // Invert original result
             if (transparency_control_register.ta[3]) plane_a_visible = !plane_a_visible;
+
+            // Jeopardy Hack for Plane A just in case it's used elsewhere
+            // This case is not defined in the datasheet
+            if (transparency_control_register.ta == 4'b1001 && plane_a_dyuv_active)
+                plane_a_visible = 1;
         end
     end
 
@@ -971,6 +982,11 @@ module mcd212 (
 
             // Invert original result
             if (transparency_control_register.tb[3]) plane_b_visible = !plane_b_visible;
+
+            // Jeopardy Hack
+            // This case is not defined in the datasheet
+            if (transparency_control_register.tb == 4'b1001 && plane_b_dyuv_active)
+                plane_b_visible = 1;
         end
     end
 
@@ -1027,7 +1043,6 @@ module mcd212 (
                 vidout.b[7] = 0;
             end
         end
-
     end
 
     // Implementation of Table 5-13 Register Map
@@ -1151,10 +1166,9 @@ module mcd212 (
 
                 if (ch0_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
-                    /*
-                $display("CLUT  %d  %d %d %d", {clut_bank, register_adr[5:0]},
-                         ch0_register_data[23:18], ch0_register_data[15:10], ch0_register_data[7:2]);
-                         */
+                    $display("CLUT A  %d  %d %d %d", {clut_bank0, ch0_register_adr[5:0]},
+                             ch0_register_data[23:18], ch0_register_data[15:10],
+                             ch0_register_data[7:2]);
                 end
             end
         end
@@ -1239,10 +1253,9 @@ module mcd212 (
 
                 if (ch1_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
-
-                    /*$display("CLUT  %d  %d %d %d", {clut_bank1, ch1_register_adr[5:0]},
-                         ch1_register_data[23:18], ch1_register_data[15:10],
-                         ch1_register_data[7:2]);*/
+                    $display("CLUT B  %d  %d %d %d", {clut_bank1, ch1_register_adr[5:0]},
+                             ch1_register_data[23:18], ch1_register_data[15:10],
+                             ch1_register_data[7:2]);
                 end
             end
         end
