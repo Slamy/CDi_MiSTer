@@ -15,6 +15,13 @@ typedef enum bit [1:0] {
     k44Khz
 } rate_e;
 
+typedef enum bit [1:0] {
+    k4Bps,
+    k8Bps,
+    k16Bps,
+    kMpegBps
+} bps_e;
+
 typedef struct packed {
     bit eof;
     bit rt;
@@ -28,13 +35,8 @@ typedef struct packed {
 
 typedef struct packed {
     bit [1:0] reserved;
-    enum bit [1:0] {
-        k4Bps,
-        k8Bps,
-        k16Bps,
-        kMpegBps
-    } bps;
 
+    bps_e  bps;
     rate_e rate;
     chan_e chan;
 

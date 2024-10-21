@@ -10,7 +10,9 @@ vector:
 main:
 	move.b #'A',$80002019
 
-	move.w #$ffff,$4ffff2
+	move.w #$C300,$4ffff2
+	move.w #$C300,$4fffe2
+	move.w #$0000,$4ffff0
 
 	lea.l icalist,a0
 	move.l #$400,a1

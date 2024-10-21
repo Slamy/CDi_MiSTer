@@ -45,19 +45,22 @@ Keep in mind that - for now - a special [MiSTer Main application](https://github
 
 Core Utilization:
 
-	Logic utilization (in ALMs)  12,724 / 41,910 ( 30 % )
+	Logic utilization (in ALMs)  12,824 / 41,910 ( 31 % )
 	Total block memory bits      634,052 / 5,662,720 ( 11 % )
 	Total DSP Blocks             65 / 112 ( 58 % )
 
 ## TODOs in order of priority
 
-* Add Interlacing
-* Implement CDIC 8Bit XA audio
-* Fix clicks and pops during playback
-* Check proper sector filtering
 * Implement the CDIC audio map (sound effects)
-* Fix DYUV Test on "Validation Disc" (CLUT8 colors wrong)
-* Implement the CDIC CDDA for audio cd tracks
+* Check proper sector filtering
+* Fix clicks and pops during playback
+* Add Interlacing
+* MCD212 Add Regions
+	* Fixes graphics in P.A.W.S.
+	* Fixes graphics in Tangram
+* Add RGB555
+	* Fixes DYUV Test on "Validation Disc"
+* Implement CDIC CDDA for audio cd tracks
 * CDIC Fetch TOC (The Apprentice)
 * CDIC Descrambler (The Apprentice)
 * CDIC Byteswap (The Apprentice)
@@ -84,6 +87,11 @@ This core is tested with these ROMs:
 Due to legal reasons, these files must be sourced separately.
 
 ## Used resources
+
+This MiSTer core would've probably never been possible without the reverse engineering efforts of certain people.
+Thanks to [CD-i Fan](https://www.cdiemu.org/) for the insights into his closed source CD-i Emulator.
+Also thanks to MooglyGuy, which took on the task of implementing a CD-i emulator into MAME, which I used to analyse
+the program flow of the CD-i boot process.
 
 * https://github.com/TobiFlex/TG68K.C
 * https://opencores.org/projects/68hc05

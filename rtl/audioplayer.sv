@@ -45,14 +45,38 @@ module audioplayer (
     bit [13:0] block_addr;
     bit [4:0] group_cnt;  // 18 groups per sector
     bit [3:0] block_cnt;  // counts to 8 for 4BPS and to 4 for 8BPS
-    bit [7:0] data_cnt;  // counts to 28
+    bit [5:0] data_cnt;  // counts to 28
 
     header_coding_s playback_coding;
     assign playback_coding_out = playback_coding;
 
     // Those are byte addresses
-    localparam bit [13:0] s_4bit_header_offsets[8] = '{0, 1, 2, 3, 8, 9, 10, 11};
-    localparam bit [13:0] s_4bit_data_offsets[8] = '{16, 16, 17, 17, 18, 18, 19, 19};
+    localparam bit [13:0] HEADER_OFFSETS_4BIT[8] = '{0, 1, 2, 3, 8, 9, 10, 11};
+    localparam bit [13:0] DATA_OFFSETS_4BIT[8] = '{16, 16, 17, 17, 18, 18, 19, 19};
+    localparam bit [13:0] HEADER_OFFSETS_8BIT[4] = '{0, 1, 2, 3};
+    localparam bit [13:0] DATA_OFFSETS_8BIT[4] = '{16, 17, 18, 19};
+
+    localparam bit [4:0] LAST_GROUP_INDEX = 17;
+    localparam bit [5:0] SAMPLES_PER_BLOCK = 28;
+    localparam bit [13:0] BLOCK_SIZE = 128;
+
+    bit [13:0] header_offset;
+    bit [13:0] data_offset;
+    bit [ 3:0] gain_shift_offset;
+    bit [ 3:0] last_block_index;
+    always_comb begin
+        if (playback_coding.bps == k8Bps) begin
+            header_offset = HEADER_OFFSETS_8BIT[block_cnt[1:0]];
+            data_offset = DATA_OFFSETS_8BIT[block_cnt[1:0]];
+            gain_shift_offset = 8;
+            last_block_index = 3;
+        end else begin
+            header_offset = HEADER_OFFSETS_4BIT[block_cnt[2:0]];
+            data_offset = DATA_OFFSETS_4BIT[block_cnt[2:0]];
+            gain_shift_offset = 12;
+            last_block_index = 7;
+        end
+    end
 
     // Stolen from MAME
     localparam bit signed [11:0] s_xa_filter_coef[4][2] = '{
@@ -92,7 +116,7 @@ module audioplayer (
 
         case (adpcm_state)
             EVALHEADER: begin
-                mem_addr_byte = block_addr + s_4bit_header_offsets[block_cnt[2:0]];
+                mem_addr_byte = block_addr + header_offset;
                 mem_rd = 1;
             end
             EVALHEADER2: begin
@@ -146,7 +170,7 @@ module audioplayer (
                 end
                 EVALHEADER: begin
                     if (mem_ack) begin
-                        data_addr <= block_addr + s_4bit_data_offsets[block_cnt[2:0]];
+                        data_addr <= block_addr + data_offset;
                         adpcm_state <= EVALHEADER2;
                         data_cnt <= 0;
                     end
@@ -154,7 +178,7 @@ module audioplayer (
                 EVALHEADER2: begin
                     if (mem_ack_q) begin
                         $display("Coding param: %x", mem_data_byte);
-                        gain_shift   <= 12 - mem_data_byte[3:0];
+                        gain_shift   <= gain_shift_offset - mem_data_byte[3:0];
                         filter_index <= mem_data_byte[5:4];
                     end
 
@@ -164,7 +188,12 @@ module audioplayer (
                 end
                 READ_SAMPLE: begin
                     if (mem_ack_q) begin
-                        sample <= 32'(signed'(mem_data_byte_nibbles[!block_cnt[0]])) <<< gain_shift;
+
+                        if (playback_coding.bps == k8Bps)
+                            sample <= 32'(signed'(mem_data_byte)) <<< gain_shift;
+                        else
+                            sample <= 32'(signed'(mem_data_byte_nibbles[!block_cnt[0]])) <<< gain_shift;
+
                         data_addr <= data_addr + 4;
                         data_cnt <= data_cnt + 1;
                         adpcm_state <= APPLY_FILTER1;
@@ -189,12 +218,12 @@ module audioplayer (
                     old_samples[sample_channel][1] <= old_samples[sample_channel][0];
                     old_samples[sample_channel][0] <= sample16;
                     out.write <= 1;
-                    if (data_cnt == 28) begin
-                        if (block_cnt == 7) begin
-                            if (group_cnt == 17) begin
+                    if (data_cnt == SAMPLES_PER_BLOCK) begin
+                        if (block_cnt == last_block_index) begin
+                            if (group_cnt == LAST_GROUP_INDEX) begin
                                 adpcm_state <= IDLE;
                             end else begin
-                                block_addr  <= block_addr + 128;  // group has 128 byte size
+                                block_addr  <= block_addr + BLOCK_SIZE;  // group has 128 byte size
                                 adpcm_state <= EVALHEADER;
                                 block_cnt   <= 0;
                                 group_cnt   <= group_cnt + 1;
