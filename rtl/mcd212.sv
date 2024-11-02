@@ -787,9 +787,7 @@ module mcd212 (
                 synchronized_pixel0[7:4] <= synchronized_pixel0[3:0];
             if (image_coding_method_register.cm23_20_planeb == 4'b1011 && new_pixel_hires && !new_pixel_lores)
                 synchronized_pixel1[7:4] <= synchronized_pixel1[3:0];
-
         end
-
     end
     /*
     always_ff @(posedge clk) begin
@@ -906,6 +904,14 @@ module mcd212 (
     wire plane_a_color_key_match = (clut_out0 != trans_color_plane_a) || plane_a_dyuv_active;
     wire plane_b_color_key_match = (clut_out1 != trans_color_plane_b) || plane_b_dyuv_active;
 
+    function automatic [7:0] WeightCalc(input [7:0] rgb, input [5:0] weight);
+        if (weight == 0) begin
+            WeightCalc = 0;
+        end else begin
+            WeightCalc = 8'((15'(rgb) * (15'(weight) + 15'd1)) >> 6);
+        end
+    endfunction
+
     always_comb begin
         bit [7:0] r, g, b;
 
@@ -919,9 +925,9 @@ module mcd212 (
             b = dyuv0_out.b;
         end
 
-        plane_a.r = 8'((15'(r) * (15'(weight_a) + 15'd1)) >> 6);
-        plane_a.g = 8'((15'(g) * (15'(weight_a) + 15'd1)) >> 6);
-        plane_a.b = 8'((15'(b) * (15'(weight_a) + 15'd1)) >> 6);
+        plane_a.r = WeightCalc(r, weight_a);
+        plane_a.g = WeightCalc(g, weight_a);
+        plane_a.b = WeightCalc(b, weight_a);
 
         plane_a_visible = 0;
         if (image_coding_method_register.cm13_10_planea != 0 && command_register_dcr1.ic1) begin
@@ -960,12 +966,11 @@ module mcd212 (
             b = dyuv1_out.b;
         end
 
-        plane_b.r = 8'((15'(r) * (15'(weight_b) + 15'd1)) >> 6);
-        plane_b.g = 8'((15'(g) * (15'(weight_b) + 15'd1)) >> 6);
-        plane_b.b = 8'((15'(b) * (15'(weight_b) + 15'd1)) >> 6);
+        plane_b.r = WeightCalc(r, weight_b);
+        plane_b.g = WeightCalc(g, weight_b);
+        plane_b.b = WeightCalc(b, weight_b);
 
         plane_b_visible = 0;
-
         if (image_coding_method_register.cm23_20_planeb != 0 && command_register_dcr2.ic2) begin
             // Use only the lower 3 bits first as the highest bit just inverts the result
 
@@ -1130,13 +1135,11 @@ module mcd212 (
                         cursor_control_register <= ch0_register_data;
                         $display("Cursor Control %b", ch0_register_data);
                     end
-
                     7'h4f: begin
                         // Cursor Pattern
                         cursor[ch0_register_data[19:16]] <= ch0_register_data[15:0];
                         $display("Cursor %x %b", ch0_register_data[19:16], ch0_register_data[15:0]);
                     end
-
                     7'h58: begin
                         // Backdrop Color
                         $display("Backdrop Color %b", ch0_register_data[3:0]);
@@ -1228,19 +1231,15 @@ module mcd212 (
                         $display("DYUV Abs. Start Plane B %d %d %d", ch1_register_data[23:16],
                                  ch1_register_data[15:8], ch1_register_data[7:0]);
                     end
-
                     7'h5c: begin
                         // Weight Factor for Plane B
                         weight_b <= ch1_register_data[5:0];
                         $display("Weight B %d", ch1_register_data[5:0]);
                     end
-
                     default: begin
-
                         if (ch1_register_adr >= 7'h40) begin
                             $display("Ignored %x", ch1_register_adr);
                         end
-
                     end
                 endcase
 
