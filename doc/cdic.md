@@ -72,6 +72,33 @@ The sector header seems to match. Endianess must still be swapped though.
     0a0a 00 09
     0a0c 00
 
+### Access of CDIC RAM by CPU
+
+Not many locations in CDIC memory are actually used by the CPU without DMA
+
+List extracted using
+
+    cat log | grep ram_r | cut -f5 -d" " | sort | uniq
+
+These are checked during operation by the CDIC driver:
+
+    0000 DATA0   Time Code MinSec
+    0002 DATA0   Time Code Frac & Mode
+    0008 DATA0   File & Channel (second pair)
+    000a DATA0   Submode & Coding (second pair)
+    0016 DATA0   ???
+    0a00 DATA1   Time Code MinSec
+    0a02 DATA1   Time Code Frac
+    0a08 DATA1   File & Channel (second pair)
+    0a0a DATA1   Submode & Coding (second pair)
+    0a16 DATA1   ???
+    1400 ???     Selftest, not relevant for operation
+    1402 ???     Selftest, not relevant for operation
+    2808 ADPCM0  File & Channel (second pair)
+    280a ADPCM0  Submode & Coding (second pair)
+    3208 ADPCM1  File & Channel (second pair)
+    320a ADPCM1  Submode & Coding (second pair)
+
 ### Commands
 
 When bit 15 in the Data Buffer Register is set, the command is parsed and the bit is reset automatically.
@@ -222,6 +249,20 @@ One XA Group consists of 128 byte. 18 of them fit in a sector.
 
 There are 28 samples on 8 blocks in 18 groups when it comes to 4 BPS.
 
+
+## Sector interval
+
+CDDA has sample data on every sector. Even the highest rate for ADPCM
+uses an interval of 2 sectors.
+XA Mono doubles the interval compared to Stereo
+XA 18 KHz doubles the interval compared to 37.8 kHz
+XA 4 BPS doubles the the interval compared to 8 BPS
+
+    Interval   BPS      Channels     Rate
+    1          CDDA     Stereo       44.1 kHz
+    2          8 BPS    Stereo       37.8 kHz
+    4          4 BPS    Stereo       37.8 kHz
+    8          4 BPS    Mono         37.8 kHz
 
 ## Experience
 

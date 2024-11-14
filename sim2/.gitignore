@@ -1,7 +1,6 @@
 /cdi200.mem
 *.png
-log
-log2
+log*
 *.CUE
 *.BIN
 *.rom

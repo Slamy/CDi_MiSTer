@@ -217,7 +217,6 @@ module emu (
         "S0,CUECHD,Insert Disc;",
         "F1,ROM,Replace Boot ROM;",
         "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-        "O[2],Disable MODE2 Filter,No,Yes;",
         "O[3],UART Fake Space,No,Yes;",
         "O[4],TV Mode,PAL,NTSC;",
         "O[5],Overclock input device,No,Yes;",
@@ -591,13 +590,15 @@ module emu (
         .overclock(overclock_maneuvering_device)
     );
 
+    wire fail_not_enough_words;
+    wire fail_too_much_data;
+
     cditop cditop (
         .clk30(clk_sys),
         .clk_audio(clk_audio),
         .reset(cditop_reset),
 
         .debug_uart_loopback(0),
-        .debug_disable_sector_filter(status[2]),
         .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
         .scandouble(forced_scandoubler),
@@ -643,7 +644,10 @@ module emu (
         .cd_hps_data({sd_buff_dout[7:0], sd_buff_dout[15:8]}),
 
         .audio_left (AUDIO_L),
-        .audio_right(AUDIO_R)
+        .audio_right(AUDIO_R),
+
+        .fail_not_enough_words(fail_not_enough_words),
+        .fail_too_much_data(fail_too_much_data)
 
     );
 

@@ -45,15 +45,19 @@ Keep in mind that - for now - a special [MiSTer Main application](https://github
 
 Core Utilization:
 
-	Logic utilization (in ALMs)  12,824 / 41,910 ( 31 % )
+	Logic utilization (in ALMs)  12,908 / 41,910 ( 31 % )
 	Total block memory bits      634,052 / 5,662,720 ( 11 % )
 	Total DSP Blocks             65 / 112 ( 58 % )
 
 ## TODOs in order of priority
 
-* Implement the CDIC audio map (sound effects)
-* Check proper sector filtering
-* Fix clicks and pops during playback
+* Investigate Hotel Mario hanging on score screen (Audio related?)
+	* [Does happen on MAME too](https://mametesters.org/view.php?id=8833)
+* Investigate "Frog Feast" hanging during gameplay (Audio related?)
+* Investigate "Zelda's Adventure" sound hiccups
+* Implement audio mixing and panning
+* Investigate flicker of graphics in Hotel Mario (CPU speed?)
+* Investigate wrong frame in intro of Hotel Mario (probably fixed?)
 * Add Interlacing
 * MCD212 Add Regions
 	* Fixes graphics in P.A.W.S.
@@ -64,18 +68,23 @@ Core Utilization:
 * CDIC Fetch TOC (The Apprentice)
 * CDIC Descrambler (The Apprentice)
 * CDIC Byteswap (The Apprentice)
-* Simulate seeking time
 * Fix reset behaviour / Core is unstable
 * Fix unexpected hang when an application exits
+	* Probably related to missing connection between SLAVE GPIO and CPU Reset
 * Fix servo behaviour of always detecting a CD-i disc
-* Use the MiSTer framework to save the NVRAM to sdcard
+* Use the MiSTer framework to save the NvRAM to mass storage
 	* Only when changes are detected and when the OSD is opened
 	* The N64 core does it like that too
 * Add alternative input devices (a mouse)
 * OSD setting for input device conformance (1200 baud)
+* Add SNAC support (IR remote + wired controller)
 * Refurbish I2C for the front display and show the content as picture in picture during changes?
 	* It might not even be required at all.
 * Fix timekeeper initial time
+* Playback of Audio CDs
+	* Difficult, as no existing software emulator can do that yet
+	* Analysis of real hardware probably required
+	* Other MiSTer cores can do that too, so it would be cool: (PSX, MegaCD, Saturn, PCE)
 
 ## Expected checksums of roms
 
@@ -90,7 +99,7 @@ Due to legal reasons, these files must be sourced separately.
 
 This MiSTer core would've probably never been possible without the reverse engineering efforts of certain people.
 Thanks to [CD-i Fan](https://www.cdiemu.org/) for the insights into his closed source CD-i Emulator.
-Also thanks to MooglyGuy, which took on the task of implementing a CD-i emulator into MAME, which I used to analyse
+Also Thanks to MooglyGuy, which took on the task of implementing a CD-i emulator into MAME, which I used to analyse
 the program flow of the CD-i boot process.
 
 * https://github.com/TobiFlex/TG68K.C

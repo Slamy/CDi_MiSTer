@@ -1,5 +1,9 @@
 # Slave Controller
 
+## Pinout
+
+![Pinout of the DIL variant of a 68HC05](slave.svg)
+
 ## Memory Map
 
 $0050 RAM Start

@@ -73,6 +73,9 @@ class CDi {
     int frame_index = 0;
 
   private:
+    FILE *f_audio_left{nullptr};
+    FILE *f_audio_right{nullptr};
+
     uint8_t output_image[size] = {0};
     uint32_t regfile[16];
 
@@ -93,6 +96,14 @@ class CDi {
     int sd_rd_q;
     static constexpr uint32_t kSectorHeaderSize{12};
     static constexpr uint32_t kSectorSize{0x930};
+
+    uint32_t get_pixel_value(uint32_t x, uint32_t y) {
+        uint8_t *pixel = &output_image[(width * y + x) * 3];
+        uint32_t r = static_cast<uint32_t>(*pixel++) << 16;
+        uint32_t g = static_cast<uint32_t>(*pixel++) << 8;
+        uint32_t b = static_cast<uint32_t>(*pixel++);
+        return r | g | b;
+    }
 
     void write_png_file(const char *filename) {
         FILE *fp = fopen(filename, "wb");
@@ -137,6 +148,7 @@ class CDi {
 
         for (int i = 0; i < 2; i++) {
             dut.rootp->emu__DOT__clk_sys = (sim_time & 1);
+            dut.rootp->emu__DOT__clk_audio = (sim_time & 1);
             dut.eval();
             if (do_trace) {
                 m_trace.dump(sim_time);
@@ -223,7 +235,7 @@ class CDi {
 
             uint32_t file_offset = (lba - 150) * kSectorSize;
 
-            printf("Request Sector %x %x\n", m_time, lba, file_offset);
+            printf("Request Sector %x %x %x\n", m_time, lba, file_offset);
 
             int res = fseek(f_cd_bin, file_offset, SEEK_SET);
             assert(res == 0);
@@ -233,7 +245,7 @@ class CDi {
         }
 
         dut.rootp->emu__DOT__sd_buff_wr = 0;
-        if (dut.rootp->emu__DOT__sd_ack && (step & 0xf) == 0) {
+        if (dut.rootp->emu__DOT__sd_ack && (step % 200) == 15) {
             if (sector_buffer_index == kSectorSize / 2) {
                 dut.rootp->emu__DOT__sd_ack = 0;
                 printf("Sector transferred!\n");
@@ -265,6 +277,12 @@ class CDi {
                 uint32_t call = dut.rootp->emu__DOT__rom[callpos];
                 printf("Syscall %x %x %s\n", prevpc, call, systemCallNameToString(static_cast<SystemCallType>(call)));
                 leave_sys_callpc = prevpc + 4;
+
+                // SysDbg ? Just give up!
+                if (static_cast<SystemCallType>(call) == F_SysDbg) {
+                    fprintf(stderr, "System halted and debugger calted!\n");
+                    exit(1);
+                }
             }
 
             if (m_pc == leave_sys_callpc) {
@@ -288,13 +306,14 @@ class CDi {
         if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {
             char filename[100];
 
-            if (frame_index == 283) {
+            // Start game
+            if (frame_index == 247) {
                 printf("Press a button!\n");
-                dut.rootp->emu__DOT__JOY0 = 0b10000;
+                dut.rootp->emu__DOT__JOY0 = 0b100000;
             }
-            if (frame_index == 284) {
+            if (frame_index == 250) {
                 printf("Release a button!\n");
-                dut.rootp->emu__DOT__JOY0 = 0b00000;
+                dut.rootp->emu__DOT__JOY0 = 0b000000;
             }
 
             if (pixel_index > 100) {
@@ -310,6 +329,14 @@ class CDi {
             pixel_index = 0;
         }
 
+        // Simulate Audio
+        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick37) {
+            int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_left;
+            int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;
+            fwrite(&sample_l, 2, 1, f_audio_left);
+            fwrite(&sample_r, 2, 1, f_audio_right);
+        }
+
         if (pixel_index < size - 6) {
             if (dut.VGA_DE) {
                 output_image[pixel_index++] = dut.VGA_R;
@@ -323,14 +350,29 @@ class CDi {
         }
     }
 
-    CDi(int i, const char *tracepath) {
+    virtual ~CDi() {
+        fclose(f_audio_right);
+        fclose(f_audio_left);
+    }
+    CDi(int i) {
+        instanceid = i;
+
+        char filename[100];
+        sprintf(filename, "%d/audio_left.bin", instanceid);
+        fprintf(stderr, "Writing to %s\n", filename);
+        f_audio_left = fopen(filename, "wb");
+
+        sprintf(filename, "%d/audio_right.bin", instanceid);
+        fprintf(stderr, "Writing to %s\n", filename);
+        f_audio_right = fopen(filename, "wb");
 
         dut.trace(&m_trace, 5);
 
-        if (do_trace)
-            m_trace.open(tracepath);
-
-        instanceid = i;
+        if (do_trace) {
+            sprintf(filename, "/tmp/waveform%d.vcd", instanceid);
+            fprintf(stderr, "Writing to %s\n", filename);
+            m_trace.open(filename);
+        }
 
         dut.eval();
         // do_trace = false;
@@ -355,6 +397,16 @@ class CDi {
         clock();
         dut.RESET = 0;
     }
+
+    void dump_memory() {
+        char filename[100];
+        sprintf(filename, "%d/ramdump.bin", instanceid);
+        printf("Writing %s!\n", filename);
+        FILE *f = fopen(filename, "wb");
+        assert(f);
+        fwrite(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
+        fclose(f);
+    }
 };
 
 int main(int argc, char **argv) {
@@ -369,14 +421,43 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    f_cd_bin = fopen("images/FROG.BIN", "rb");
+    int machineindex = 0;
+
+    if (argc == 2) {
+        machineindex = atoi(argv[1]);
+        fprintf(stderr, "Machine is %d\n", machineindex);
+    }
+
+    switch (machineindex) {
+    case 0:
+        f_cd_bin = fopen("images/Zelda Wand of Gamelon.bin", "rb");
+        break;
+    case 1:
+        f_cd_bin = fopen("images/Hotel Mario.bin", "rb");
+        break;
+    case 2:
+        f_cd_bin = fopen("images/tetris.bin", "rb");
+        break;
+    case 3:
+        f_cd_bin = fopen("images/Nobelia (USA).bin", "rb");
+        break;
+    case 4:
+        f_cd_bin = fopen("images/Hotel Mario.bin", "rb");
+        break;
+    }
+
     assert(f_cd_bin);
 
-    CDi machine(0, "/tmp/waveform0.vcd");
+    CDi machine(machineindex);
 
     while (status == 0) {
         machine.modelstep();
     }
+    
+    machine.modelstep();
+    machine.modelstep();
+    machine.modelstep();
+    machine.dump_memory();
 
     fclose(f_cd_bin);
 

@@ -7,27 +7,50 @@
 // inspired by https://github.com/MiSTer-devel/PSX_MiSTer/blob/main/rtl/cd_xa.vhd
 // inspired by https://github.com/dankan1890/mewui/blob/master/src/mame/machine/cdicdic.cpp
 
-module audioplayer (
+
+function automatic [3:0] get_sector_count_for_coding(input header_coding_s coding);
+    bit [3:0] base_count = 2;
+
+    if (coding.bps == k4Bps) base_count *= 2;  // Twice as many 4bpp audio frames fit as usual
+    if (coding.rate == k18Khz)
+        base_count *= 2;  // Twice as many half-rate audio frames fit as usual
+    if (coding.chan == kMono) base_count *= 2;  // Twice as many mono audio frames fit vs. stereo
+
+    $display("get_sector_count_for_coding %d", base_count);
+    get_sector_count_for_coding = base_count - 1;
+endfunction
+
+module audiodecoder (
     input clk,
     input reset,
+    input reset_filter_on_start,
+    input ignore_playback_delay,
 
     output bit [12:0] mem_addr,
     output bit mem_rd,
     input [15:0] mem_data,
-    input mem_ack,
-    input mem_ack_q,
+    input mem_ack,  // Flag indicates that the memory request was accepted
+    input mem_ack_q,  // Flag indicates that mem_data is valid
 
     audiostream.source out,
     output bit sample_channel,
 
+    input use_external_coding,  // don't read coding from memory, use parameter
+    input header_coding_s cd_audio_coding,  // used when external_coding set
     input start_playback,
-    input header_coding_s playback_coding_in,
+    input audio_tick,  // CD sector tick rate 75 Hz
     output header_coding_s playback_coding_out,
-    input [12:0] playback_addr
+    input [12:0] playback_addr,
+
+    output idle,
+    output bit disable_audiomap  // flag, when 0xff coding is detected
 );
 
     enum {
         IDLE,
+        DETECT_CODING,
+        DETECT_CODING2,
+        WAIT_AUDIO_TICKS,
         EVALHEADER,
         EVALHEADER2,
         READ_SAMPLE,
@@ -39,6 +62,8 @@ module audioplayer (
         NEXT_SAMPLE
     } adpcm_state;
 
+    assign idle = adpcm_state == IDLE;
+
     bit [13:0] current_addr;
     bit [13:0] data_addr;
     bit [13:0] header_addr;
@@ -47,6 +72,7 @@ module audioplayer (
     bit [3:0] block_cnt;  // counts to 8 for 4BPS and to 4 for 8BPS
     bit [5:0] data_cnt;  // counts to 28
 
+    bit [3:0] tick_wait_cnt;
     header_coding_s playback_coding;
     assign playback_coding_out = playback_coding;
 
@@ -86,7 +112,7 @@ module audioplayer (
         '{12'h188, -12'h0DC}
     };
 
-    // TODO reduce size
+    // TODO reduce width of register. 32 bit is rather large for 16 bit
     bit signed [31:0] sample  /*verilator public_flat_rd*/;
     bit signed [15:0] sample16;
 
@@ -115,17 +141,21 @@ module audioplayer (
         else if (sample > 32767) sample16 = 32767;
 
         case (adpcm_state)
+            DETECT_CODING: begin
+                mem_addr_byte = block_addr + 11;
+                mem_rd = 1;
+            end
             EVALHEADER: begin
-                mem_addr_byte = block_addr + header_offset;
+                mem_addr_byte = block_addr + header_offset + 12;
                 mem_rd = 1;
             end
             EVALHEADER2: begin
+                mem_addr_byte = data_addr + 12;
                 mem_rd = 1;
-                mem_addr_byte = data_addr;
             end
             NEXT_SAMPLE: begin
+                mem_addr_byte = data_addr + 12;
                 mem_rd = 1;
-                mem_addr_byte = data_addr;
             end
         endcase
 
@@ -141,6 +171,7 @@ module audioplayer (
     wire inbetween  /*verilator public_flat_rd*/ = adpcm_state == APPLY_FILTER1;
 
     always_ff @(posedge clk) begin
+        disable_audiomap <= 0;
 
         // catch overflow during simulation
         if (start_playback) assert (adpcm_state == IDLE);
@@ -155,18 +186,82 @@ module audioplayer (
         if (reset) begin
             adpcm_state <= IDLE;
             old_samples <= '{'{0, 0}, '{0, 0}};
-            group_cnt   <= 0;
-            out.write   <= 0;
+            group_cnt <= 0;
+            out.write <= 0;
+            tick_wait_cnt <= 0;
         end else begin
+            if (audio_tick && !idle) begin
+                if (tick_wait_cnt == 0)
+                    tick_wait_cnt <= get_sector_count_for_coding(playback_coding);
+                else tick_wait_cnt <= tick_wait_cnt - 1;
+            end
+
             case (adpcm_state)
                 IDLE: begin
                     if (start_playback) begin
+                        // Coding can be read from memory or forced
+                        if (use_external_coding) begin
+                            // Don't read coding from memory.
+                            // Use cd_audio_coding
+
+                            block_cnt <= 0;
+                            group_cnt <= 0;
+                            $display("EXTERNAL CODING %x", cd_audio_coding);
+
+                            playback_coding <= cd_audio_coding;
+                            adpcm_state <= WAIT_AUDIO_TICKS;
+                            if (tick_wait_cnt == 0) begin
+                                if (ignore_playback_delay) tick_wait_cnt <= 1;
+                                else tick_wait_cnt <= get_sector_count_for_coding(cd_audio_coding);
+                            end
+                        end else begin
+                            // Read coding from sector header
+                            adpcm_state <= DETECT_CODING;
+                        end
+
                         block_addr <= {playback_addr, 1'b0};
-                        playback_coding <= playback_coding_in;
-                        adpcm_state <= EVALHEADER;
+                        $display("Start Decoder at %x", {playback_addr, 1'b0});
+
+                        if (reset_filter_on_start) begin
+                            $display("Reset audio filters");
+                            old_samples <= '{'{0, 0}, '{0, 0}};
+
+                            // TODO Why this again?
+                            if (!use_external_coding) tick_wait_cnt <= 0;
+                        end
+                    end
+                end
+                DETECT_CODING: begin
+                    if (mem_ack) begin
+                        adpcm_state <= DETECT_CODING2;
+                    end
+                end
+                DETECT_CODING2: begin
+                    if (mem_ack_q) begin
                         block_cnt <= 0;
                         group_cnt <= 0;
+                        $display("DETECT_CODING2 %x", mem_data_byte);
+                        assert (mem_data_byte != 0);  // plausible?
+
+                        if (mem_data_byte == 8'hff) begin
+                            // special coding to stop the decoder?
+                            adpcm_state <= IDLE;
+                            disable_audiomap <= 1;
+                        end else begin
+                            playback_coding <= mem_data_byte;
+                            adpcm_state <= WAIT_AUDIO_TICKS;
+                            if (tick_wait_cnt == 0) begin
+                                if (ignore_playback_delay) tick_wait_cnt <= 1;
+                                else tick_wait_cnt <= get_sector_count_for_coding(mem_data_byte);
+                            end
+
+                            assert (mem_data_byte != 0);  // plausible?
+                        end
+
                     end
+                end
+                WAIT_AUDIO_TICKS: begin
+                    if (tick_wait_cnt == 0) adpcm_state <= EVALHEADER;
                 end
                 EVALHEADER: begin
                     if (mem_ack) begin

@@ -7,7 +7,6 @@ module cditop (
     input tvmode_pal,
     input debug_uart_loopback,
     input debug_uart_fake_space,
-    input debug_disable_sector_filter,
 
     input scandouble,
 
@@ -51,7 +50,10 @@ module cditop (
     input [15:0] cd_hps_data,
 
     output signed [15:0] audio_left,
-    output signed [15:0] audio_right
+    output signed [15:0] audio_right,
+
+    output fail_not_enough_words,
+    output fail_too_much_data
 
 );
 
@@ -65,9 +67,11 @@ module cditop (
     (* keep *) bit bus_ack  /*verilator public_flat_rd*/;
 
     (* keep *) bit [15:0] data_in;
-    wire [15:0] cpu_data_out;
+    (* keep *) wire [15:0] cpu_data_out;
     (* keep *) wire [23:1] addr;
     wire [23:0] addr_byte = {addr[23:1], 1'b0};
+
+    (* noprune *) wire [15:0] cpu_data = write_strobe ? cpu_data_out : data_in;
 
     // 8 kB of NVRAM
     bit [7:0] nvram[8192]  /*verilator public_flat_rw*/;
@@ -180,7 +184,7 @@ module cditop (
         .clk_audio(clk_audio),
         .reset,
         .address(addr),
-        .din(cpu_data_out),
+        .din(cdic_dma_ack ? mcd212_dout : cpu_data_out),
         .dout(cdic_dout),
         .uds(uds),
         .lds(lds),
@@ -196,15 +200,15 @@ module cditop (
         .done_in(cdic_dma_done_out),
         .done_out(cdic_dma_done_in),
         .cd_hps_lba(cd_hps_lba),
-        .cd_hps_req,
+        .cd_hps_req(cd_hps_req),
         .cd_hps_ack,
         .cd_hps_data_valid,
         .cd_hps_data,
         .audio_left,
         .audio_right,
-        .debug_disable_sector_filter
+        .fail_not_enough_words(fail_not_enough_words),
+        .fail_too_much_data(fail_too_much_data)
     );
-
 
     // TODO might not be correct
     // CDIC seems to want manual vector

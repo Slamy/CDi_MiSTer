@@ -7,6 +7,7 @@
         "span": "cpp",
         "regex": "cpp",
         "algorithm": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "compare": "cpp"
     }
 }
