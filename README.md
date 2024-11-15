@@ -69,8 +69,6 @@ Core Utilization:
 * CDIC Descrambler (The Apprentice)
 * CDIC Byteswap (The Apprentice)
 * Fix reset behaviour / Core is unstable
-* Fix unexpected hang when an application exits
-	* Probably related to missing connection between SLAVE GPIO and CPU Reset
 * Fix servo behaviour of always detecting a CD-i disc
 * Use the MiSTer framework to save the NvRAM to mass storage
 	* Only when changes are detected and when the OSD is opened

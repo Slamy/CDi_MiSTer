@@ -596,7 +596,7 @@ module emu (
     cditop cditop (
         .clk30(clk_sys),
         .clk_audio(clk_audio),
-        .reset(cditop_reset),
+        .external_reset(cditop_reset),
 
         .debug_uart_loopback(0),
         .tvmode_pal(!tvmode_ntsc),

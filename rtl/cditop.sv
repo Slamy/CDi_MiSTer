@@ -2,7 +2,7 @@
 module cditop (
     input clk30,
     input clk_audio,
-    input reset,
+    input external_reset,
 
     input tvmode_pal,
     input debug_uart_loopback,
@@ -56,6 +56,8 @@ module cditop (
     output fail_too_much_data
 
 );
+
+    wire reset;
 
     parallelel_spi slave_servo_spi ();
 
@@ -311,7 +313,7 @@ module cditop (
         end
     end
 
-    wire resetsys = ddrc[2] ? portc_out[2] : 1'b1;
+    wire resetsys = ddrc[2] ? portc_out[2] : 1'b0;
     wire disdat_from_uc = ddrc[3] ? portc_out[3] : 1'b1;
     wire disdat_to_ic;
 
@@ -326,6 +328,8 @@ module cditop (
     bit in2in_q = 1;
 
     (* keep *)bit slave_irq;
+
+    assign reset = external_reset || resetsys;
 
 `ifndef DISABLE_SLAVE_UC
     /*verilator tracing_off*/
