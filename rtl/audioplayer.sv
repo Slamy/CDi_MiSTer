@@ -172,6 +172,9 @@ module audioplayer (
     // with Tetris
     bit playback_active_next_sample_tick;
 
+    // Used to delay the IRQ until the next sector tick
+    bit latched_audiomap_finished_playback;
+
     always_ff @(posedge clk) begin
         dc_bias_cnt <= !dc_bias_cnt;
 
@@ -186,6 +189,7 @@ module audioplayer (
             playback_active_next_sample_tick <= 0;
             xa_fifo_out[0].strobe <= 0;
             xa_fifo_out[1].strobe <= 0;
+            latched_audiomap_finished_playback <= 0;
         end else begin
 
             if (fifo_nearly_full == 2'b11 && sample_tick37) begin
@@ -194,7 +198,12 @@ module audioplayer (
             end
 
             if (playback_active && decoder_idle && !decoder_idle_q && audiomap_active)
+                latched_audiomap_finished_playback <= 1;
+
+            if (latched_audiomap_finished_playback && audio_tick) begin
                 audiomap_finished_playback <= 1;
+                latched_audiomap_finished_playback <= 0;
+            end
 
             if (xa_fifo_out[0].write == 0 && xa_fifo_out[0].write == 0) begin
                 playback_active <= 0;

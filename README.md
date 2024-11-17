@@ -45,15 +45,12 @@ Keep in mind that - for now - a special [MiSTer Main application](https://github
 
 Core Utilization:
 
-	Logic utilization (in ALMs)  12,908 / 41,910 ( 31 % )
+	Logic utilization (in ALMs)  12,923 / 41,910 ( 31 % )
 	Total block memory bits      634,052 / 5,662,720 ( 11 % )
 	Total DSP Blocks             65 / 112 ( 58 % )
 
 ## TODOs in order of priority
 
-* Investigate Hotel Mario hanging on score screen (Audio related?)
-	* [Does happen on MAME too](https://mametesters.org/view.php?id=8833)
-* Investigate "Frog Feast" hanging during gameplay (Audio related?)
 * Investigate "Zelda's Adventure" sound hiccups
 * Implement audio mixing and panning
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
@@ -64,6 +61,7 @@ Core Utilization:
 	* Fixes graphics in Tangram
 * Add RGB555
 	* Fixes DYUV Test on "Validation Disc"
+* Investigate red bars in Hotel Mario intro
 * Implement CDIC CDDA for audio cd tracks
 * CDIC Fetch TOC (The Apprentice)
 * CDIC Descrambler (The Apprentice)

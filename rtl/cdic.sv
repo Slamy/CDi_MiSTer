@@ -772,6 +772,14 @@ module cdic (
             if (access) begin
                 bus_ack <= !bus_ack;
 
+                // Indicate an inactive audiomap by toggling the lowest bit on read.
+                // Do it with !bus_ack to ensure we are reading
+                // the already toggled state.
+                if (!write_strobe && !bus_ack) begin
+                    if (!audiomap_active && address[13:1] == 13'h1FFD)
+                        audio_control_register[0] <= !audio_control_register[0];
+                end
+
                 if (write_strobe && bus_ack) begin
                     case (address[13:1])
                         13'h1E00: begin  // 0x3C00 Command Register
