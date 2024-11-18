@@ -598,7 +598,6 @@ module emu (
         .clk_audio(clk_audio),
         .external_reset(cditop_reset),
 
-        .debug_uart_loopback(0),
         .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
         .scandouble(forced_scandoubler),

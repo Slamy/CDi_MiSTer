@@ -44,8 +44,7 @@ module scc68070 (
     input  uart_rx,
 
     // Debugging
-    input debug_uart_loopback,
-    input debug_uart_fake_space
+    input debug_uart_fake_space  // fake permanent receival of spaces to force self test
 );
 
     wire nResetOut;
@@ -123,6 +122,11 @@ module scc68070 (
     bit autovector_q;
     bit on_chip_autovector;
 
+    struct {
+        bit receiver_enabled;
+        bit transmitter_enabled;
+    } uart_command_register;
+
     always_comb begin
         ipl = 0;
         autovector_lut = 8'hff;
@@ -140,15 +144,31 @@ module scc68070 (
         if (in5) begin
             ipl = 5;
         end
+
         if (int1 && lir.int1n_ipl != 0) begin
             ipl = lir.int1n_ipl;
             // external int1 always on chip auto vector
             autovector_lut[ipl] = 0;
             on_chip_autovector = 1;
         end
+
         if (int2 && lir.int2n_ipl != 0) begin
             ipl = lir.int2n_ipl;
             // external int1 always on chip auto vector
+            autovector_lut[ipl] = 0;
+            on_chip_autovector = 1;
+        end
+
+        if (uart_command_register.receiver_enabled && uart_receive_holding_valid && picr2.uart_rx_ipl != 0) begin
+            ipl = picr2.uart_rx_ipl;
+            // always on chip auto vector by manually providing a vector
+            autovector_lut[ipl] = 0;
+            on_chip_autovector = 1;
+        end
+
+        if (uart_command_register.transmitter_enabled && !uart_transmit_holding_valid && picr2.uart_tx_ipl != 0) begin
+            ipl = picr2.uart_tx_ipl;
+            // always on chip auto vector by manually providing a vector
             autovector_lut[ipl] = 0;
             on_chip_autovector = 1;
         end
@@ -310,7 +330,7 @@ module scc68070 (
                          internal_uds, internal_lds);
 
                 if (write_strobe && internal_lds) begin
-                    picr2.uart_rx_ipl <= data_out[5:3];
+                    picr2.uart_rx_ipl <= data_out[6:4];
                     picr2.uart_tx_ipl <= data_out[2:0];
                 end
             end
@@ -319,7 +339,7 @@ module scc68070 (
                          internal_uds, internal_lds);
 
                 if (write_strobe && internal_lds) begin
-                    picr1.i2c_ipl   <= data_out[5:3];
+                    picr1.i2c_ipl   <= data_out[6:4];
                     picr1.timer_ipl <= data_out[2:0];
                     $display("Timer IPL set to %d", data_out[2:0]);
                 end
@@ -341,7 +361,6 @@ module scc68070 (
                          internal_uds, internal_lds);
             end
             if (dma_cs && (internal_lds || internal_uds)) begin
-
                 if (write_strobe)
                     $display(
                         "DMA Write ADDR:%x DATA:%x LDS:%d UDS:%d",
@@ -364,18 +383,22 @@ module scc68070 (
             end
 
             /* UART Memory map A[3:1]
-           0 Mode Register
-           1 Status Register
-           2 Clock Select Register
-           3 Command Register
-           4 Transmit Holding Register
-           5 Receive Holding Register
-        */
+               0 Mode Register
+               1 Status Register
+               2 Clock Select Register
+               3 Command Register
+               4 Transmit Holding Register
+               5 Receive Holding Register
+            */
             if (uart_cs && internal_lds && write_strobe) begin
                 $display("UART Write %x %x %x", addr[3:1], data_out[7:0], {addr, 1'b0});
 
                 case (addr[3:1])
                     3'd0: uart_mode_register <= data_out[7:0];
+                    3'd3: begin
+                        uart_command_register.receiver_enabled <= data_out[1:0] == 2'b01;
+                        uart_command_register.transmitter_enabled <= data_out[3:2] == 2'b01;
+                    end
                     3'd4: begin
                         $display("UART char %c", data_out[7:0]);
                     end
@@ -400,6 +423,9 @@ module scc68070 (
         if (reset) begin
             debug_uart_fake_space_cnt <= 0;
         end else if (debug_uart_fake_space_cnt < 40000) begin
+            // This is a small hack to force the ROM into the self test
+            // as this early in the lifetime of the machine,
+            // the HPS is unable to provide this character
             debug_uart_fake_space_cnt   <= debug_uart_fake_space_cnt + 1;
             debug_uart_fake_space_timed <= debug_uart_fake_space;
         end else begin
@@ -425,8 +451,8 @@ module scc68070 (
     ) uart_tx_inst (
         .clk(clk),
         .rst_n(!reset),
-        .tx_data(debug_uart_loopback ? uart_rx_data : uart_transmit_holding_register),
-        .tx_data_valid(debug_uart_loopback ? uart_rx_data_valid : (uart_transmit_holding_valid && uart_tx_data_ready)),
+        .tx_data(uart_transmit_holding_register),
+        .tx_data_valid(uart_transmit_holding_valid && uart_tx_data_ready),
         .tx_data_ready(uart_tx_data_ready),
         .tx_pin(uart_tx)
     );
@@ -439,20 +465,26 @@ module scc68070 (
             uart_transmit_holding_register <= 0;
         end else begin
             if (debug_uart_fake_space_timed) begin
-                uart_receive_holding_register <= 8'h20;
+                // This is a small hack to force the ROM into the self test,
+                // as this early in the lifetime of the machine,
+                // the HPS is unable to provide this character.
+                uart_receive_holding_register <= 8'h20;  // ASCII Space
                 uart_receive_holding_valid <= 1;
             end else if (uart_rx_data_valid) begin
                 uart_receive_holding_register <= uart_rx_data;
                 uart_receive_holding_valid <= 1;
             end else if (uart_cs && addr[3:1] == 3'd5 && internal_lds && !write_strobe) begin
+                // Reading the register will reset the status flag
                 uart_receive_holding_valid <= 0;
             end
 
             if (uart_cs && addr[3:1] == 3'd4 && internal_lds && write_strobe) begin
                 uart_transmit_holding_register <= data_out[7:0];
                 uart_transmit_holding_valid <= 1;
-            end else if (uart_transmit_holding_valid && uart_tx_data_ready)
+            end else if (uart_transmit_holding_valid && uart_tx_data_ready) begin
+                // Transmit Register was taken by the UART
                 uart_transmit_holding_valid <= 0;
+            end
         end
     end
 

@@ -32,6 +32,8 @@ I assume the ATTEX limits the DRAM to 0x27fffe as these do now follow.
     0x80001001  LIR priority
     0x80002011  UART Mode
     0x80002013  UART Status
+    0x80002015  UART Clock Select
+    0x80002017  UART Command
     0x80002019  UART Transmit Holding
     0x8000201B  UART Receive Holding
     0x80002020  Timer Status
@@ -44,8 +46,8 @@ I assume the ATTEX limits the DRAM to 0x27fffe as these do now follow.
     0x80002027  Timer 1 Low
     0x80002028  Timer 2 High
     0x80002029  Timer 2 Low
-    0x80002035  PICR1
-    0x80002037  PICR2
+    0x80002045  PICR1
+    0x80002047  PICR2
     0x80004000  DMA Channel 0 Status
     0x80004001  DMA Channel 0 Error
     0x80004004  DMA Channel 0 Device Control

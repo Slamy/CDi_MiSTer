@@ -5,7 +5,6 @@ module cditop (
     input external_reset,
 
     input tvmode_pal,
-    input debug_uart_loopback,
     input debug_uart_fake_space,
 
     input scandouble,
@@ -242,7 +241,6 @@ module cditop (
         .addr(addr),
         .uart_tx(scc68_uart_tx),
         .uart_rx(scc68_uart_rx),
-        .debug_uart_loopback,
         .debug_uart_fake_space,
         .req1(cdic_dma_req),
         .req2(0),

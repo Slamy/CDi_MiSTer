@@ -17,10 +17,10 @@ start_delay:
 	move.l #524288,d1
 loop:
 
-wait_til_ready:
+wait_till_ready:
 	move.b $80002013,d0
 	btst.l #$2,d0
-	beq wait_til_ready
+	beq wait_till_ready
 
 	move.b (a0),d0
 	move.b d0,$80002019

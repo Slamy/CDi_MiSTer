@@ -10,6 +10,7 @@ vasmm68k_mot -Fbin -m68000 slavetest.asm -o slavetest.rom
 vasmm68k_mot -Fbin -m68000 cdic_audiomap.asm -o cdic_audiomap.rom
 vasmm68k_mot -Fbin -m68000 cdic_audioplay.asm -o cdic_audioplay.rom
 vasmm68k_mot -Fbin -m68000 cdic_data.asm -o cdic_data.rom
+vasmm68k_mot -Fbin -m68000 uarttest.asm -o uarttest.rom
 
 xxd -p -c2 cdic_audiomap.rom cdi200.mem
 xxd -p -c1 ../sim/cdimono1/zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206 slave.mem
