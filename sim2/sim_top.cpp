@@ -508,17 +508,14 @@ class CDi {
             sector_buffer_index = 0;
         }
 
-        dut.rootp->emu__DOT__sd_buff_wr_verilator = 0;
-        // if (dut.rootp->emu__DOT__sd_ack && (step % 500) == 15) {
-        // if (dut.rootp->emu__DOT__sd_ack && (step & 0xf) == 0) {
+        dut.rootp->emu__DOT__sd_buff_wr = 0;
         if (dut.rootp->emu__DOT__sd_ack && (step % 200) == 15) {
-
             if (sector_buffer_index == kSectorSize / 2) {
                 dut.rootp->emu__DOT__sd_ack = 0;
                 printf("Sector transferred!\n");
             } else {
                 dut.rootp->emu__DOT__sd_buff_dout = sector_buffer[sector_buffer_index];
-                dut.rootp->emu__DOT__sd_buff_wr_verilator = 1;
+                dut.rootp->emu__DOT__sd_buff_wr = 1;
                 sector_buffer_index++;
             }
         }

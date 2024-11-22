@@ -180,6 +180,9 @@ module cditop (
     wire cdic_dma_done_in;
     wire cdic_dma_done_out;
 
+    wire signed [15:0] cdic_audio_left;
+    wire signed [15:0] cdic_audio_right;
+
     cdic cdic_inst (
         .clk(clk30),
         .clk_audio(clk_audio),
@@ -205,8 +208,8 @@ module cditop (
         .cd_hps_ack,
         .cd_hps_data_valid,
         .cd_hps_data,
-        .audio_left,
-        .audio_right,
+        .audio_left(cdic_audio_left),
+        .audio_right(cdic_audio_right),
         .fail_not_enough_words(fail_not_enough_words),
         .fail_too_much_data(fail_too_much_data)
     );
@@ -322,6 +325,11 @@ module cditop (
     assign slave_rts = ddrb[4] ? portb_out[4] : 1'b1;
     assign in2in = ddrb[5] ? portb_out[5] : 1'b1;
 
+    wire datadac = ddrb[0] ? portb_out[0] : 1'b0;
+    wire clkdac = ddrb[1] ? portb_out[1] : 1'b0;
+    wire csdac1n = ddrb[2] ? portb_out[2] : 1'b1;
+    wire csdac2n = ddrb[3] ? portb_out[3] : 1'b1;
+
     bit dtackslaven_q = 0;
     bit in2in_q = 1;
 
@@ -358,6 +366,18 @@ module cditop (
     /*verilator tracing_on*/
 
 `endif
+
+    dual_ad7528_attenuation att (
+        .clk(clk30),
+        .datadac(datadac),
+        .csdacn({csdac1n, csdac2n}),
+        .clkdac(clkdac),
+
+        .audio_left_in  (cdic_audio_left),
+        .audio_right_in (cdic_audio_right),
+        .audio_left_out (audio_left),
+        .audio_right_out(audio_right)
+    );
 
     u3090mg u3090mg (
         .clk(clk30),
