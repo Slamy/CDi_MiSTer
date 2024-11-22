@@ -18,11 +18,6 @@ main:
 	move.w #$2480,$303FFC ; Interrupt Vector
 	move.w #$002a,$303C00 ; Read Mode 2
 
-	; Tetris
-	; move.w #$0100,$303C06 ; File Register
-	; move.l #$8000,$303C08 ; Channel Register
-	; move.w #$8000,$303C0C ; Audio Channel Register
-
 	; Hotel Mario Intro
 	move.w #$0100,$303C06 ; File Register
 	move.l #$8000,$303C08 ; Channel Register
@@ -33,6 +28,18 @@ main:
 	move.l #$4000,$303C08 ; Channel Register
 	move.w #$4000,$303C0C ; Audio Channel Register
 	move.l #$07494800,$303C02 ; Timer Register
+
+	; Tetris - Philips Logo
+	move.w #$0100,$303C06 ; File Register
+	move.l #$8000,$303C08 ; Channel Register
+	move.w #$8000,$303C0C ; Audio Channel Register
+	move.l #$00356800,$303C02 ; Timer Register
+
+	; Tetris - Main Menu with Level 0 Song select
+	move.w #$0100,$303C06 ; File Register
+	move.l #$ffff,$303C08 ; Channel Register
+	move.w #$0001,$303C0C ; Audio Channel Register
+	move.l #$01426700,$303C02 ; Timer Register
 
 	; Tetris 00 35 68 00356800 Philips Logo   Coding 01, 2 channels, 4 bits, 000093a8 frequency
 	; Tetris 01 42 67 01426700 Main Menu      Coding 05, 2 channels, 4 bits, 000049d4 frequency

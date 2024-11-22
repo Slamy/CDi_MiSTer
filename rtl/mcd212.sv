@@ -153,8 +153,6 @@ module mcd212 (
     always_ff @(posedge clk) begin
         irq_q <= irq;
 
-        if (irq && !irq_q) $display("VIDEO IRQ 1");
-        if (!irq && irq_q) $display("VIDEO IRQ 0");
     end
 `endif
 
@@ -789,14 +787,6 @@ module mcd212 (
                 synchronized_pixel1[7:4] <= synchronized_pixel1[3:0];
         end
     end
-    /*
-    always_ff @(posedge clk) begin
-        if (ica0_reload_vsr) $display("Reload VSR %x", ica0_vsr);
-
-        if (dca0_read) $display("Start DCA0 on line %d", video_y);
-        if (dca1_read) $display("Start DCA1 on line %d", video_y);
-    end
-    */
 
     bit [15:0] cursor[16];
     bit [1:0] clut_bank0;
@@ -1068,8 +1058,6 @@ module mcd212 (
                 case (ch0_register_adr)
                     7'h40: begin
                         // Image Coding Method
-                        $display("Line %3d Coding A:%b B:%b", video_y, ch0_register_data[3:0],
-                                 ch0_register_data[11:8]);
                         image_coding_method_register.cs <= ch0_register_data[22];
                         image_coding_method_register.nr <= ch0_register_data[19];
                         image_coding_method_register.ev <= ch0_register_data[18];
@@ -1078,10 +1066,6 @@ module mcd212 (
                     end
                     7'h41: begin
                         // Transparency Control
-                        $display("Line %3d Transparency Control MX:%b TB:%b TA:%b", video_y,
-                                 ch0_register_data[23], ch0_register_data[11:8],
-                                 ch0_register_data[3:0]);
-
                         transparency_control_register.mx <= ch0_register_data[23];
                         transparency_control_register.tb <= ch0_register_data[11:8];
                         transparency_control_register.ta <= ch0_register_data[3:0];
@@ -1093,16 +1077,12 @@ module mcd212 (
                     7'h42: begin
                         // Plane Order
                         plane_b_in_front_of_a <= ch0_register_data[0];
-                        if (ch0_register_data[0]) $display("Plane B in front of Plane A");
-                        else $display("Plane A in front of Plane B");
                     end
                     7'h43: begin
                         // CLUT Bank
                         clut_bank0 <= ch0_register_data[1:0];
                     end
                     7'h44: begin
-                        $display("Trans Color Plane A %d %d %d", ch0_register_data[23:18],
-                                 ch0_register_data[15:10], ch0_register_data[7:2]);
                         trans_color_plane_a <= {
                             ch0_register_data[23:18],
                             ch0_register_data[15:10],
@@ -1110,8 +1090,6 @@ module mcd212 (
                         };
                     end
                     7'h47: begin
-                        $display("Mask Color Plane A %d %d %d", ch0_register_data[23:18],
-                                 ch0_register_data[15:10], ch0_register_data[7:2]);
                         mask_color_plane_a <= {
                             ch0_register_data[23:18],
                             ch0_register_data[15:10],
@@ -1121,28 +1099,21 @@ module mcd212 (
                     7'h4a: begin
                         // DYUV Abs. Start Value for Plane A
                         dyuv0_abs_start <= ch0_register_data;
-                        $display("DYUV Abs. Start Plane A %d %d %d", ch0_register_data[23:16],
-                                 ch0_register_data[15:8], ch0_register_data[7:0]);
                     end
                     7'h4d: begin
                         // Cursor Position
                         cursor_position_reg <= ch0_register_data;
-                        $display("Cursor X:%d Y:%d", ch0_register_data[9:0],
-                                 ch0_register_data[21:12]);
                     end
                     7'h4e: begin
                         // Cursor Control
                         cursor_control_register <= ch0_register_data;
-                        $display("Cursor Control %b", ch0_register_data);
                     end
                     7'h4f: begin
                         // Cursor Pattern
                         cursor[ch0_register_data[19:16]] <= ch0_register_data[15:0];
-                        $display("Cursor %x %b", ch0_register_data[19:16], ch0_register_data[15:0]);
                     end
                     7'h58: begin
                         // Backdrop Color
-                        $display("Backdrop Color %b", ch0_register_data[3:0]);
                         backdrop_color_register <= ch0_register_data[3:0];
                     end
                     7'h59: begin
@@ -1151,17 +1122,15 @@ module mcd212 (
                     7'h5b: begin
                         // Weight Factor for Plane A
                         weight_a <= ch0_register_data[5:0];
-                        $display("Weight A %d", ch0_register_data[5:0]);
+                        //$display("Weight A %d", ch0_register_data[5:0]);
                     end
                     default: begin
                         if (ch0_register_adr >= 7'h40) begin
-                            $display("Ignored %x", ch0_register_adr);
                         end
                     end
                 endcase
 
                 if (ch0_register_adr[6:3] == 4'b1010) begin
-                    $display("Region A %d %b", ch0_register_adr[2:0], ch0_register_data);
                     region_control[ch0_register_adr[2:0]] <= {
                         ch0_register_data[23:20], ch0_register_data[16:0]
                     };
@@ -1169,9 +1138,6 @@ module mcd212 (
 
                 if (ch0_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
-                    $display("CLUT A  %d  %d %d %d", {clut_bank0, ch0_register_adr[5:0]},
-                             ch0_register_data[23:18], ch0_register_data[15:10],
-                             ch0_register_data[7:2]);
                 end
             end
         end
@@ -1208,8 +1174,6 @@ module mcd212 (
                         assert (ch1_register_data[1]);
                     end
                     7'h46: begin
-                        $display("Trans Color Plane B %d %d %d", ch1_register_data[23:18],
-                                 ch1_register_data[15:10], ch1_register_data[7:2]);
                         trans_color_plane_b <= {
                             ch1_register_data[23:18],
                             ch1_register_data[15:10],
@@ -1217,8 +1181,6 @@ module mcd212 (
                         };
                     end
                     7'h49: begin
-                        $display("Mask Color Plane B %d %d %d", ch1_register_data[23:18],
-                                 ch1_register_data[15:10], ch1_register_data[7:2]);
                         mask_color_plane_b <= {
                             ch1_register_data[23:18],
                             ch1_register_data[15:10],
@@ -1228,23 +1190,18 @@ module mcd212 (
                     7'h4b: begin
                         // DYUV Abs. Start Value for Plane B
                         dyuv1_abs_start <= ch1_register_data;
-                        $display("DYUV Abs. Start Plane B %d %d %d", ch1_register_data[23:16],
-                                 ch1_register_data[15:8], ch1_register_data[7:0]);
                     end
                     7'h5c: begin
                         // Weight Factor for Plane B
                         weight_b <= ch1_register_data[5:0];
-                        $display("Weight B %d", ch1_register_data[5:0]);
                     end
                     default: begin
                         if (ch1_register_adr >= 7'h40) begin
-                            $display("Ignored %x", ch1_register_adr);
                         end
                     end
                 endcase
 
                 if (ch1_register_adr[6:3] == 4'b1010) begin
-                    $display("Region B %d %b", ch1_register_adr[2:0], ch1_register_data);
                     region_control[ch1_register_adr[2:0]] <= {
                         ch1_register_data[23:20], ch1_register_data[16:0]
                     };
@@ -1252,9 +1209,6 @@ module mcd212 (
 
                 if (ch1_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
-                    $display("CLUT B  %d  %d %d %d", {clut_bank1, ch1_register_adr[5:0]},
-                             ch1_register_data[23:18], ch1_register_data[15:10],
-                             ch1_register_data[7:2]);
                 end
             end
         end

@@ -6,10 +6,11 @@ Coming from https://github.com/cdifan/cdichips/blob/master/ims66490cdic.md
 
     0000 - 09FF 	DATA buffer 0  (0xa00 (2560) in size)
     0A00 - 13FF 	DATA buffer 1  (0xa00 (2560) in size)
-    1400 - 27ff     Unknown ?      (0x1400 (5120) in size)
+    1400 - 1DFF     Unknown ?      (0xa00 (2560) in size)
+    1E00 - 27ff     Unknown ?      (0xa00 (2560) in size)
     2800 - 31FF 	ADPCM buffer 0 (0xa00 (2560) in size)
     3200 - 3BFF 	ADPCM buffer 1 (0xa00 (2560) in size)
-    3C00 - 3FFE 	Register area
+    3C00 - 3FFE 	Register area  (0x400 (1024) in size)
 
 ## MAME behaviour
 
@@ -280,8 +281,8 @@ This feels wrong.
 
 ## Tools
 
-aplay -f cd -c 1 -r 37800 < audio_right.bin
-aplay -f cd -c 1 -r 37800 < audio_left.bin 
+aplay -f cd -c 1 -r 37800 < 1/audio_right.bin
+aplay -f cd -c 1 -r 37800 < 1/audio_left.bin 
 
 aplay -f cd -c 1 -r 18900 < audio_right.bin
 aplay -f cd -c 1 -r 18900 < audio_left.bin 
