@@ -143,10 +143,21 @@ start_delay:
 	move.b #2,$80001001 ; LIR
 	move #$2000,SR  
 
-	; Activate Input Polling (0xf7)
-	move.b #$f7,$310006
+
+	move.b #'A',$80002019
+
+	move.b #$ca,$310004
+	move.b #$7f,$310004
+	move.b #$01,$310004
+	move.b #$7f,$310004
+	move.b #$01,$310004
+
+	move.b #'B',$80002019
 
 	bra endless
+
+	; Activate Input Polling (0xf7)
+	move.b #$f7,$310006
 
 	move.b #$f0,$310004
 
@@ -156,7 +167,7 @@ start_delay:
 	move.b #$00,$310002
 	move.b #$00,$310002
 	
-	move.b #$0f,$310002; D
+	move.b #$0f,$310002 ;D
 	move.b #$21,$310002
 
 	move.b #$38,$310002 ;L

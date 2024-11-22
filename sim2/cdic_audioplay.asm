@@ -53,6 +53,13 @@ main:
 
 	jsr waitforirq
 	jsr waitforirq
+
+	move.b #$ca,$310004
+	move.b #$7f,$310004
+	move.b #$01,$310004
+	move.b #$7f,$310004
+	move.b #$01,$310004
+
 	jsr waitforirq
 	jsr waitforirq
 	jsr waitforirq

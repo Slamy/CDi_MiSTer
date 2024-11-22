@@ -259,17 +259,17 @@ module cditop (
 
     wire stand = !tvmode_pal;  // 1 NTSC, 0 PAL
 
-    bit [7:0] ddra;
-    bit [7:0] ddrb;
-    bit [7:0] ddrc;
+    wire [7:0] ddra;
+    wire [7:0] ddrb;
+    wire [7:0] ddrc;
 
-    bit quirk_force_mode_fault;
+    wire quirk_force_mode_fault;
     wire [7:0] porta_in = cpu_data_out[7:0];
-    bit [7:0] porta_out;
+    wire [7:0] porta_out;
     wire [7:0] portb_in = 8'hff;
-    bit [7:0] portb_out;
+    wire [7:0] portb_out;
     wire [7:0] portc_in = {stand, 5'b11111, addr[2:1]};
-    bit [7:0] portc_out;
+    wire [7:0] portc_out;
     wire [7:0] portd_in = {!write_strobe, 7'b1111111};
 
     (* keep *) bit slave_bus_ack;
@@ -343,16 +343,16 @@ module cditop (
         .clk30,
         .reset(reset),
         .porta_in,
-        .porta_out,
+        .porta_out(porta_out),
         .portb_in,
-        .portb_out,
+        .portb_out(portb_out),
         .portc_in({portc_in[7:5], disclk, disdat_to_ic, portc_in[2:0]}),
-        .portc_out,
+        .portc_out(portc_out),
         .portd_in,
         .irq(!slave_irq),
-        .ddra,
-        .ddrb,
-        .ddrc,
+        .ddra(ddra),
+        .ddrb(ddrb),
+        .ddrc(ddrc),
 
         .worm_adr (slave_worm_adr),
         .worm_data(slave_worm_data),
@@ -390,7 +390,7 @@ module cditop (
         .clk  (clk30),
         .reset(reset),
         .spi  (slave_servo_spi),
-        .quirk_force_mode_fault
+        .quirk_force_mode_fault(quirk_force_mode_fault)
     );
 
     always_comb begin
