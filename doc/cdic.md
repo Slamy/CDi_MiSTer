@@ -281,8 +281,8 @@ This feels wrong.
 
 ## Tools
 
-aplay -f cd -c 1 -r 37800 < 1/audio_right.bin
-aplay -f cd -c 1 -r 37800 < 1/audio_left.bin 
+aplay -f cd -c 1 -r 37800 < 2/audio_right.bin
+aplay -f cd -c 1 -r 37800 < 2/audio_left.bin 
 
 aplay -f cd -c 1 -r 18900 < audio_right.bin
 aplay -f cd -c 1 -r 18900 < audio_left.bin 

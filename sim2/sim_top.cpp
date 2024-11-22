@@ -530,6 +530,7 @@ class CDi {
         */
 
         // Trace System Calls
+#ifdef SCC68070
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
             dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in) {
 
@@ -565,6 +566,7 @@ class CDi {
 
             printstate();
         }
+#endif
 
         // Simulate television
         if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {

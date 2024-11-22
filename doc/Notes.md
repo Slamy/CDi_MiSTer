@@ -35,3 +35,7 @@ Written video_00.png after 51.33
 
 This means Fst is better as it is much smaller
 
+# Don't use these ROMs
+
+3b710cc3f60cce0f5640b50d75e09ba5  boot0.rom   philips__cdi-220_ph3_r1.2.rom
+fb3554749b3f76c18ab0ba064b823133  boot1.rom   zc405352p__slave_cdi_4.1__0d67p__lltr9403.mc68hc705c8a.7206
