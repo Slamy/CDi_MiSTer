@@ -794,7 +794,10 @@ class CDi {
 
     void reset() {
         dut.RESET = 1;
-        clock();
+
+        for (int i = 0; i < 40; i++)
+            clock();
+        
         dut.RESET = 0;
     }
 
@@ -865,7 +868,20 @@ int main(int argc, char **argv) {
 
     while (status == 0) {
         machine.modelstep();
+        if (machine.frame_index == 20)
+            break;
     }
+
+    machine.reset();
+    fprintf(stderr, "Reset!\n");
+
+    while (status == 0) {
+        machine.modelstep();
+        if (machine.frame_index == 40)
+            break;
+    }
+
+
     machine.modelstep();
     machine.modelstep();
     machine.modelstep();
