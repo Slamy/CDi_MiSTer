@@ -52,6 +52,7 @@ Core Utilization:
 ## TODOs in order of priority
 
 * Investigate "Zelda's Adventure" sound hiccups
+* Investigate "Zelda - Wand of Gameleon" Help Cutscene CDIC Hangup
 * Implement audio mixing and panning
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
 * Investigate wrong frame in intro of Hotel Mario (probably fixed?)

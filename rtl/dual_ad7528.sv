@@ -30,15 +30,19 @@ module dual_ad7528_attenuation (
         end
     end
 
-    // for both AD7528, the input A is Audio Right from DAC
-    // while B is Audio Left from DAC
+    // for both AD7528, the input A is the same side while the input B is the other side
+    // 7530 AD7528 produces Audio Right
+    //    VrefA is DAC Right
+    //    VrefB is DAC Left
+    // 7550 AD7528 produces Audio Left
+    //    VrefA is DAC Left
+    //    VrefB is DAC Right
     bit [7:0] factor_left_a;
     bit [7:0] factor_left_b;
     bit [7:0] factor_right_a;
     bit [7:0] factor_right_b;
 
     always_ff @(posedge clk) begin
-        // 7530 AD7528 for output to Audio
         if (!csdacn[0]) begin
             $display("DAC Left %d %d", datadac, shiftreg);
             if (!datadac) factor_left_a <= shiftreg;
@@ -62,21 +66,21 @@ module dual_ad7528_attenuation (
                 audio_right_out <= temp[23:8];
 
                 state <= LEFT_B;
-                temp <= signed'({1'b0, factor_left_a}) * audio_left_in;
+                temp <= signed'({1'b0, factor_left_a[7:1]}) * audio_left_in;
             end
             LEFT_B: begin
                 state <= RIGHT_A;
-                temp  <= temp + signed'({1'b0, factor_left_b}) * audio_right_in;
+                temp  <= temp + signed'({1'b0, factor_left_b[7:1]}) * audio_right_in;
             end
             RIGHT_A: begin
                 audio_left_out <= temp[23:8];
 
                 state <= RIGHT_B;
-                temp <= signed'({1'b0, factor_right_a}) * audio_left_in;
+                temp <= signed'({1'b0, factor_right_a[7:1]}) * audio_right_in;
             end
             RIGHT_B: begin
                 state <= LEFT_A;
-                temp  <= temp + signed'({1'b0, factor_right_b}) * audio_right_in;
+                temp  <= temp + signed'({1'b0, factor_right_b[7:1]}) * audio_left_in;
             end
         endcase
     end

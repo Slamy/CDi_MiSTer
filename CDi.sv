@@ -217,6 +217,7 @@ module emu (
         "S0,CUECHD,Insert Disc;",
         "F1,ROM,Replace Boot ROM;",
         "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
+        "O[2],Disable Audio Att.,No,Yes;",
         "O[3],UART Fake Space,No,Yes;",
         "O[4],TV Mode,PAL,NTSC;",
         "O[5],Overclock input device,No,Yes;",
@@ -600,6 +601,7 @@ module emu (
 
         .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
+        .debug_disable_audio_attenuation(status[2]),
         .scandouble(forced_scandoubler),
 
         .ce_pix(ce_pix),

@@ -146,13 +146,84 @@ start_delay:
 
 	move.b #'A',$80002019
 
-	move.b #$ca,$310004
-	move.b #$7f,$310004
-	move.b #$01,$310004
-	move.b #$7f,$310004
-	move.b #$01,$310004
+	; Wand of Gameleon - Ingame damped
+	move.b #$c0,$310004
+	move.b #$0c,$310004
+	move.b #$0c,$310004
+	move.b #$0c,$310004
+	move.b #$0c,$310004
 
 	move.b #'B',$80002019
+
+	move #4000,d0
+	bsr wait
+
+
+	move.b #'A',$80002019
+
+	; Wand of Gameleon - Philips Logo (Stereo XA)
+	; Wand of Gameleon - Map screen (Stereo XA)
+	move.b #$ca,$310004
+	move.b #$7f,$310004
+	move.b #$00,$310004
+	move.b #$7f,$310004
+	move.b #$00,$310004
+
+	move.b #'B',$80002019
+
+	move #4000,d0
+	bsr wait
+
+
+	move.b #'A',$80002019
+
+	; Wand of Gamelon - I wonder whats for dinner (Mono XA)
+	; Wand of Gamelon - Ingame (expected to make it Mono (BGM + SFX))
+	; Wand of Gamelon - Intro Logo
+	move.b #$c0,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+
+	move.b #'B',$80002019
+
+
+	move #4000,d0
+	bsr wait
+
+	move.b #'F',$80002019
+
+	; Frog Feast - Title Music (Stereo XA)
+	; Frog Feast - Ingame (Mono XA)
+	; sc_atten(Sound, 0x00800080);
+	move.b #$c5,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+
+	move #4000,d0
+	bsr wait
+
+	move.b #'F',$80002019
+
+	; Just a thought
+	move.b #$ca,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+
+	; Zelda's Adventure - Screen Transition
+	move #4000,d0
+	bsr wait
+
+	move.b #$cf,$310004
+	move.b #$08,$310004
+	move.b #$08,$310004
+	move.b #$08,$310004
+	move.b #$08,$310004
 
 	bra endless
 

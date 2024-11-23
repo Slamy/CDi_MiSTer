@@ -6,6 +6,7 @@ module cditop (
 
     input tvmode_pal,
     input debug_uart_fake_space,
+    input debug_disable_audio_attenuation,
 
     input scandouble,
 
@@ -330,10 +331,10 @@ module cditop (
     wire csdac1n = ddrb[2] ? portb_out[2] : 1'b1;
     wire csdac2n = ddrb[3] ? portb_out[3] : 1'b1;
 
-    bit dtackslaven_q = 0;
-    bit in2in_q = 1;
+    bit  dtackslaven_q = 0;
+    bit  in2in_q = 1;
 
-    (* keep *)bit slave_irq;
+    (* keep *)bit  slave_irq;
 
     assign reset = external_reset || resetsys;
 
@@ -366,18 +367,23 @@ module cditop (
     /*verilator tracing_on*/
 
 `endif
+    wire signed [15:0] att_audio_left;
+    wire signed [15:0] att_audio_right;
 
     dual_ad7528_attenuation att (
         .clk(clk30),
         .datadac(datadac),
-        .csdacn({csdac1n, csdac2n}),
+        .csdacn({csdac2n, csdac1n}),
         .clkdac(clkdac),
 
         .audio_left_in  (cdic_audio_left),
         .audio_right_in (cdic_audio_right),
-        .audio_left_out (audio_left),
-        .audio_right_out(audio_right)
+        .audio_left_out (att_audio_left),
+        .audio_right_out(att_audio_right)
     );
+
+    assign audio_left = debug_disable_audio_attenuation ? cdic_audio_left : att_audio_left;
+    assign audio_right = debug_disable_audio_attenuation ? cdic_audio_right : att_audio_right;
 
     u3090mg u3090mg (
         .clk(clk30),
@@ -387,9 +393,9 @@ module cditop (
     );
 
     servo_hle servo (
-        .clk  (clk30),
+        .clk(clk30),
         .reset(reset),
-        .spi  (slave_servo_spi),
+        .spi(slave_servo_spi),
         .quirk_force_mode_fault(quirk_force_mode_fault)
     );
 

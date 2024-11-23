@@ -20,7 +20,7 @@
 
 typedef VerilatedFstC tracetype_t;
 
-static bool do_trace{false};
+static bool do_trace{true};
 volatile sig_atomic_t status = 0;
 
 const int width = 120 * 16;
