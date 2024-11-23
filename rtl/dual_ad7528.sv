@@ -1,8 +1,9 @@
 module dual_ad7528_attenuation (
     input clk,
     input datadac,  // Selects DAC A/B and is data for shift register
-    input [1:0] csdacn,  // Latches DAC for attenuation of left/right Audio
-    input clkdac,  // Clocks shift register
+    input csdac2n,  // Latches DAC for attenuation of right Audio
+    input csdac1n,  // Latches DAC for attenuation of left Audio
+    input clkdac,   // Clocks shift register
     //input kill, // grounds audio if true
 
     input signed [15:0] audio_left_in,
@@ -42,14 +43,20 @@ module dual_ad7528_attenuation (
     bit [7:0] factor_right_a;
     bit [7:0] factor_right_b;
 
+    bit csdac1n_q;
+    bit csdac2n_q;
+
     always_ff @(posedge clk) begin
-        if (!csdacn[0]) begin
+        csdac1n_q <= csdac1n;
+        csdac2n_q <= csdac2n;
+
+        if (!csdac1n && csdac1n_q) begin
             $display("DAC Left %d %d", datadac, shiftreg);
             if (!datadac) factor_left_a <= shiftreg;
             else factor_left_b <= shiftreg;
         end
 
-        if (!csdacn[1]) begin
+        if (!csdac2n && csdac2n_q) begin
             $display("DAC Right %d %d", datadac, shiftreg);
             if (!datadac) factor_right_a <= shiftreg;
             else factor_right_b <= shiftreg;

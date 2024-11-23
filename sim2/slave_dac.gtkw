@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.120 (w)1999-2024 BSI
-[*] Sat Nov 23 18:34:38 2024
+[*] Sat Nov 23 21:51:18 2024
 [*]
 [dumpfile] "/tmp/waveform2.vcd"
-[dumpfile_mtime] "Sat Nov 23 18:34:37 2024"
-[dumpfile_size] 99317451
+[dumpfile_mtime] "Sat Nov 23 21:51:18 2024"
+[dumpfile_size] 4220096
 [savefile] "/home/andre/GIT/scc68070/sim2/slave_dac.gtkw"
-[timestart] 1790000
+[timestart] 0
 [size] 1464 973
 [pos] -1 -1
-*-19.766798 3814000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-20.771339 3141000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.emu.
 [treeopen] TOP.emu.cditop.
@@ -17,35 +17,14 @@
 [signals_width] 337
 [sst_expanded] 1
 [sst_vpaned_height] 284
-@28
-TOP.emu.cditop.att.clkdac
-TOP.emu.cditop.scc68070_0.uart_cs
-@800028
-TOP.emu.cditop.att.csdacn[1:0]
-@28
-(0)TOP.emu.cditop.att.csdacn[1:0]
-(1)TOP.emu.cditop.att.csdacn[1:0]
-@1001200
--group_end
-@28
-TOP.emu.cditop.att.datadac
-@22
-TOP.emu.cditop.att.shiftreg[7:0]
-@8420
-TOP.emu.cditop.cdic_inst.audio_left[15:0]
-TOP.emu.cditop.cdic_inst.audio_right[15:0]
-TOP.emu.cditop.att.audio_left_in[15:0]
-TOP.emu.cditop.att.audio_right_in[15:0]
-TOP.emu.cditop.att.audio_right_out[15:0]
-TOP.emu.cditop.att.audio_left_out[15:0]
-@420
-TOP.emu.cditop.att.temp[23:0]
-@100000028
-TOP.emu.cditop.att.state
-@25
+@8023
 TOP.emu.cditop.att.factor_left_a[7:0]
 TOP.emu.cditop.att.factor_left_b[7:0]
 TOP.emu.cditop.att.factor_right_a[7:0]
 TOP.emu.cditop.att.factor_right_b[7:0]
+@28
+TOP.emu.cditop.att.clkdac
+TOP.emu.cditop.att.csdac1n
+TOP.emu.cditop.att.csdac2n
 [pattern_trace] 1
 [pattern_trace] 0

@@ -373,7 +373,8 @@ module cditop (
     dual_ad7528_attenuation att (
         .clk(clk30),
         .datadac(datadac),
-        .csdacn({csdac2n, csdac1n}),
+        .csdac2n(csdac2n),
+        .csdac1n(csdac1n),
         .clkdac(clkdac),
 
         .audio_left_in  (cdic_audio_left),

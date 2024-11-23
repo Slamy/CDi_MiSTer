@@ -602,6 +602,8 @@ class CDi {
                     printf("Release a button!\n");
                     dut.rootp->emu__DOT__JOY0 = 0b000000;
                 }
+
+                // And just stay like this
             } else if (instanceid == 1 && frame_index > 300) { // Hotel Mario
                 if (frame_index < 910) {
                     // Before ingame
@@ -629,6 +631,16 @@ class CDi {
                 } else {
                     // Press down left during ingame to kill mario to cause audiomap restart
                     dut.rootp->emu__DOT__JOY0 = 0b000110;
+                }
+            } else if (frame_index > 290) {
+                if ((frame_index % 25) == 20) {
+                    printf("Press a button!\n");
+                    dut.rootp->emu__DOT__JOY0 = 0b100000;
+                }
+
+                if ((frame_index % 25) == 23) {
+                    printf("Release a button!\n");
+                    dut.rootp->emu__DOT__JOY0 = 0b000000;
                 }
             }
 
@@ -799,7 +811,7 @@ class CDi {
 
         for (int i = 0; i < 40; i++)
             clock();
-        
+
         dut.RESET = 0;
     }
 
@@ -832,10 +844,6 @@ int main(int argc, char **argv) {
         machineindex = atoi(argv[1]);
         fprintf(stderr, "Machine is %d\n", machineindex);
     }
-
-    // f_cd_bin = fopen("images/Frog Feast (USA) (Unl).bin", "rb");
-    // f_cd_bin = fopen("images/tetris.bin", "rb");
-    // f_cd_bin = fopen("images/FROG.BIN", "rb");
 
     switch (machineindex) {
     case 0:
@@ -870,19 +878,7 @@ int main(int argc, char **argv) {
 
     while (status == 0) {
         machine.modelstep();
-        if (machine.frame_index == 20)
-            break;
     }
-
-    machine.reset();
-    fprintf(stderr, "Reset!\n");
-
-    while (status == 0) {
-        machine.modelstep();
-        if (machine.frame_index == 40)
-            break;
-    }
-
 
     machine.modelstep();
     machine.modelstep();

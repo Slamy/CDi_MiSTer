@@ -174,56 +174,26 @@ start_delay:
 	move #4000,d0
 	bsr wait
 
+	move.b #'B',$80002019
+	move.b #$82,$310004 ; Mute
 
-	move.b #'A',$80002019
+	move #4000,d0
+	bsr wait
 
-	; Wand of Gamelon - I wonder whats for dinner (Mono XA)
-	; Wand of Gamelon - Ingame (expected to make it Mono (BGM + SFX))
-	; Wand of Gamelon - Intro Logo
+	move.b #'B',$80002019
 	move.b #$c0,$310004
 	move.b #$00,$310004
 	move.b #$00,$310004
 	move.b #$00,$310004
 	move.b #$00,$310004
 
-	move.b #'B',$80002019
-
-
 	move #4000,d0
 	bsr wait
 
-	move.b #'F',$80002019
-
-	; Frog Feast - Title Music (Stereo XA)
-	; Frog Feast - Ingame (Mono XA)
-	; sc_atten(Sound, 0x00800080);
-	move.b #$c5,$310004
-	move.b #$00,$310004
-	move.b #$00,$310004
-	move.b #$00,$310004
-	move.b #$00,$310004
+	move.b #$83,$310004 ; Unmute
 
 	move #4000,d0
 	bsr wait
-
-	move.b #'F',$80002019
-
-	; Just a thought
-	move.b #$ca,$310004
-	move.b #$00,$310004
-	move.b #$00,$310004
-	move.b #$00,$310004
-	move.b #$00,$310004
-
-	; Zelda's Adventure - Screen Transition
-	move #4000,d0
-	bsr wait
-
-	move.b #$cf,$310004
-	move.b #$08,$310004
-	move.b #$08,$310004
-	move.b #$08,$310004
-	move.b #$08,$310004
 
 	bra endless
 
