@@ -213,6 +213,14 @@ class CDi {
 #endif
     }
 
+    void printslavestate() {
+        uint32_t rega = dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__slave_core__DOT__rega;
+        uint32_t regx = dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__slave_core__DOT__regx;
+        uint32_t regpc = dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__slave_core__DOT__regpc;
+
+        printf("%04x %02x %02x\n", regpc, rega, regx);
+    }
+
     enum : uint8_t { DISC_NONE, DISC_MODE1, DISC_MODE2, DISC_CDDA, DISC_TOC };
 
     enum {
@@ -566,6 +574,11 @@ class CDi {
 
             printstate();
         }
+
+        if (dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__clken) {
+            printslavestate();
+        }
+
 #endif
 
         // Simulate television
@@ -642,6 +655,15 @@ class CDi {
                     printf("Release a button!\n");
                     dut.rootp->emu__DOT__JOY0 = 0b000000;
                 }
+            }
+
+            if (frame_index == 4 || frame_index==8) {
+                // dut.rootp->emu__DOT__cditop__DOT__servo__DOT__provide_status = 1;
+                //dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__memory[0x53] |= 0x10; // set bit 4
+                //dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__memory[0x56] &= 0xfe; // clear bit 0
+                
+                
+                //dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__memory[0x63] |= 0x10; // set bit 4
             }
 
             if (pixel_index > 100) {
@@ -815,13 +837,33 @@ class CDi {
         dut.RESET = 0;
     }
 
-    void dump_memory() {
+    void dump_system_memory() {
         char filename[100];
         sprintf(filename, "%d/ramdump.bin", instanceid);
         printf("Writing %s!\n", filename);
         FILE *f = fopen(filename, "wb");
         assert(f);
         fwrite(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
+        fclose(f);
+    }
+
+    void dump_slave_memory() {
+        char filename[100];
+        sprintf(filename, "%d/ramdump_slave.bin", instanceid);
+        printf("Writing %s!\n", filename);
+        FILE *f = fopen(filename, "wb");
+        assert(f);
+        fwrite(&dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__memory[0], 1, 8192, f);
+        fclose(f);
+    }
+
+    void dump_cdic_memory() {
+        char filename[100];
+        sprintf(filename, "%d/ramdump_cdic.bin", instanceid);
+        printf("Writing %s!\n", filename);
+        FILE *f = fopen(filename, "wb");
+        assert(f);
+        fwrite(&dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__mem__DOT__ram[0], 2, 8192, f);
         fclose(f);
     }
 };
@@ -883,7 +925,8 @@ int main(int argc, char **argv) {
     machine.modelstep();
     machine.modelstep();
     machine.modelstep();
-    machine.dump_memory();
+    machine.dump_system_memory();
+    machine.dump_slave_memory();
 
     fclose(f_cd_bin);
 

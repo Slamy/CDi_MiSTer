@@ -143,7 +143,6 @@ start_delay:
 	move.b #2,$80001001 ; LIR
 	move #$2000,SR  
 
-
 	move.b #'A',$80002019
 
 	; Wand of Gameleon - Ingame damped
@@ -187,44 +186,21 @@ start_delay:
 	move.b #$00,$310004
 	move.b #$00,$310004
 
-	move #4000,d0
+	move #8000,d0
 	bsr wait
 
 	move.b #$83,$310004 ; Unmute
 
-	move #4000,d0
+	move #18000,d0
 	bsr wait
 
-	bra endless
+	;move.b #$82,$310004 ; Mute
 
-	; Activate Input Polling (0xf7)
-	move.b #$f7,$310006
+	move #18000,d0
+	bsr wait
 
-	move.b #$f0,$310004
+	;move.b #$82,$310004 ; Mute
 
-	move.b #$07,$310002
-	move.b #$00,$310002
-	
-	move.b #$00,$310002
-	move.b #$00,$310002
-	
-	move.b #$0f,$310002 ;D
-	move.b #$21,$310002
-
-	move.b #$38,$310002 ;L
-	move.b #$00,$310002
-
-	move.b #$73,$310002 ;R
-	move.b #$2c,$310002
-
-	move.b #$3f,$310002 ;O
-	move.b #$00,$310002
-
-	move.b #$36,$310002 ;W
-	move.b #$38,$310002
-
-	move.b #$00,$310002
-	move.b #$00,$310002
 
 endless:
 	bra endless

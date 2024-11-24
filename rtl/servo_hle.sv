@@ -17,19 +17,27 @@ module servo_hle (
         PROVIDE_B0_12,
         PROVIDE_B0_13,
         PROVIDE_B0_14,
-        PROVIDE_B0_15
+        PROVIDE_B0_15,
+        PROVIDE_A0_0,
+        PROVIDE_A0_1,
+        PROVIDE_A0_2,
+        PROVIDE_A0_3,
+        PROVIDE_A0_4,
+        PROVIDE_A0_5
     } e_state;
 
     e_state state;
     bit [14:0] mode_fault_cnt = 0;
     bit [14:0] perform_mode_fault;
 
+    bit provide_status  /*verilator public_flat_rw*/ = 0;
+
     always_comb begin
         spi.miso = 8'hff;
         perform_mode_fault = 0;
 
         if (state == IDLE && spi.write && spi.mosi == 8'hdd) begin
-            // After some 0xff, the first requerst by SLAVE is 0xDD. We answer with 0xEE
+            // After some 0xff, the first request by SLAVE is 0xDD. We answer with 0xEE
             spi.miso = 8'hee;
         end
 
@@ -47,6 +55,13 @@ module servo_hle (
         if (state == PROVIDE_B0_12 && spi.write) begin spi.miso = 8'h00; perform_mode_fault = 80; end
         if (state == PROVIDE_B0_13 && spi.write) begin spi.miso = 8'h02; perform_mode_fault = 80; end
         if (state == PROVIDE_B0_14 && spi.write) begin spi.miso = 8'h15; perform_mode_fault = 80; end
+
+        if (state == PROVIDE_A0_0 && spi.write) begin spi.miso = 8'hA0; perform_mode_fault = 80; end
+        if (state == PROVIDE_A0_1 && spi.write) begin spi.miso = 8'h03; perform_mode_fault = 80; end
+        if (state == PROVIDE_A0_2 && spi.write) begin spi.miso = 8'h00; perform_mode_fault = 80; end
+        if (state == PROVIDE_A0_3 && spi.write) begin spi.miso = 8'h00; perform_mode_fault = 80; end
+        if (state == PROVIDE_A0_4 && spi.write) begin spi.miso = 8'h00; perform_mode_fault = 80; end
+
         // verilog_format: on
         if (spi.write) $display("SERVO %x %x", spi.mosi, spi.miso);
     end
@@ -72,6 +87,12 @@ module servo_hle (
                         state <= PROVIDE_B0_0;
                         $display("SERVO was asked B0");
                     end
+
+                    if (provide_status) begin
+                        state <= PROVIDE_A0_0;
+                        provide_status <= 0;
+                        quirk_force_mode_fault <= 1;
+                    end
                 end
 
                 // MOSI 0xB0 00 00 00
@@ -89,6 +110,13 @@ module servo_hle (
                 PROVIDE_B0_13: if (spi.write) state <= PROVIDE_B0_14;
                 PROVIDE_B0_14: if (spi.write) state <= PROVIDE_B0_15;
                 PROVIDE_B0_15: if (mode_fault_cnt == 0) state <= IDLE;
+
+                PROVIDE_A0_0: if (spi.write) state <= PROVIDE_A0_1;
+                PROVIDE_A0_1: if (spi.write) state <= PROVIDE_A0_2;
+                PROVIDE_A0_2: if (spi.write) state <= PROVIDE_A0_3;
+                PROVIDE_A0_3: if (spi.write) state <= PROVIDE_A0_4;
+                PROVIDE_A0_4: if (spi.write) state <= PROVIDE_A0_5;
+                PROVIDE_A0_5: if (mode_fault_cnt == 0) state <= IDLE;
 
                 default: begin
                 end

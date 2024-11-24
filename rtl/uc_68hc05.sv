@@ -146,7 +146,7 @@ module uc68hc05 (
     bit [7:0] memory_in;
     bit memory_wr;
 
-    bit clken = 0;
+    bit clken  /*verilator public_flat_rd*/ = 0;
 
     always_ff @(posedge clk30) begin
         if (reset) begin
@@ -179,6 +179,14 @@ module uc68hc05 (
         end
     end
 
+`ifdef VERILATOR
+
+    always_ff @(posedge clk30) begin
+        if (wr && addr >= 16'h0050 && clken) $display("SLAVE RAM Write %x %x", addr, dataout);
+        if (!wr && addr >= 16'h0050 && addr < 16'h0100 && clken) $display("SLAVE RAM Read %x %x", addr, datain);
+    end
+    
+`endif
     always_ff @(posedge clk30) begin
         if (memory_wr) memory[memory_addr] <= memory_in;
         else memory_readout <= memory[memory_addr];
@@ -192,7 +200,7 @@ module uc68hc05 (
         case (addr)
             16'h0000: begin
                 datain = porta_mix;
-                // $display("PORTA %x %d %x", dataout, wr, porta_mix);
+                $display("PORTA %x %d %x", dataout, wr, porta_mix);
             end
             16'h0001: begin
                 datain = portb_mix;
@@ -265,6 +273,7 @@ module uc68hc05 (
         endcase
     end
 
+    /*verilator tracing_off*/
     UR6805 slave_core (
         .clk(clk30),
         .clken(clken),
@@ -278,7 +287,7 @@ module uc68hc05 (
         .state(state),
         .dataout(dataout)
     );
-
+    /*verilator tracing_on*/
 
     always_ff @(posedge clk30) begin
         if (reset) begin
@@ -440,8 +449,22 @@ module uc68hc05 (
                     default: begin
                         // The rest is just RAM and ROM. But check for out of bounds
                         assert (addr[15:13] == 0);
+
+                        if (wr && addr == 16'h006e) $display("CH0 PTR %x %x WR", addr, dataout);
+                        if (wr && addr == 16'h008f) $display("CH0 MEM 0 %x %x WR", addr, dataout);
+                        if (wr && addr == 16'h0090) $display("CH0 MEM 1 %x %x WR", addr, dataout);
+                        if (wr && addr == 16'h0091) $display("CH0 MEM 2 %x %x WR", addr, dataout);
+                        if (wr && addr == 16'h0092) $display("CH0 MEM 3 %x %x WR", addr, dataout);
                     end
                 endcase
+            end
+
+            if (clken) begin
+                if (!wr && addr == 16'h006e) $display("CH0 PTR %x %x RD", addr, datain);
+                if (!wr && addr == 16'h008f) $display("CH0 MEM 0 %x %x RD", addr, datain);
+                if (!wr && addr == 16'h0090) $display("CH0 MEM 1 %x %x RD", addr, datain);
+                if (!wr && addr == 16'h0091) $display("CH0 MEM 2 %x %x RD", addr, datain);
+                if (!wr && addr == 16'h0092) $display("CH0 MEM 3 %x %x RD", addr, datain);
             end
 
             if (spi.write) begin

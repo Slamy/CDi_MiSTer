@@ -1,30 +1,59 @@
 [*]
 [*] GTKWave Analyzer v3.3.120 (w)1999-2024 BSI
-[*] Sat Nov 23 21:51:18 2024
+[*] Sun Nov 24 10:45:25 2024
 [*]
 [dumpfile] "/tmp/waveform2.vcd"
-[dumpfile_mtime] "Sat Nov 23 21:51:18 2024"
-[dumpfile_size] 4220096
+[dumpfile_mtime] "Sun Nov 24 10:45:03 2024"
+[dumpfile_size] 215626968
 [savefile] "/home/andre/GIT/scc68070/sim2/slave_dac.gtkw"
 [timestart] 0
-[size] 1464 973
+[size] 1920 1152
 [pos] -1 -1
-*-20.771339 3141000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-20.792110 4384000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.emu.
 [treeopen] TOP.emu.cditop.
+[treeopen] TOP.emu.cditop.servo.
+[treeopen] TOP.emu.cditop.uc68hc05_0.
 [sst_width] 295
 [signals_width] 337
 [sst_expanded] 1
-[sst_vpaned_height] 284
-@8023
+[sst_vpaned_height] 347
+@8022
 TOP.emu.cditop.att.factor_left_a[7:0]
 TOP.emu.cditop.att.factor_left_b[7:0]
 TOP.emu.cditop.att.factor_right_a[7:0]
 TOP.emu.cditop.att.factor_right_b[7:0]
 @28
+TOP.emu.cditop.datadac
+TOP.emu.cditop.uc68hc05_0.spi.write
+@22
+TOP.emu.cditop.uc68hc05_0.spi.mosi[7:0]
+TOP.emu.cditop.uc68hc05_0.spi.miso[7:0]
+TOP.emu.cditop.servo.perform_mode_fault[14:0]
+TOP.emu.cditop.servo.mode_fault_cnt[14:0]
+@100000028
+TOP.emu.cditop.servo.state[6:0]
+@29
+TOP.emu.cditop.VSync
+@28
 TOP.emu.cditop.att.clkdac
 TOP.emu.cditop.att.csdac1n
 TOP.emu.cditop.att.csdac2n
+@22
+TOP.emu.cditop.uc68hc05_0.addr[15:0]
+@28
+TOP.emu.cditop.uc68hc05_0.wr
+TOP.emu.cditop.scc68070_0.uart_cs
+@22
+TOP.emu.cditop.uc68hc05_0.datain[7:0]
+TOP.emu.cditop.uc68hc05_0.dataout[7:0]
+@28
+TOP.emu.cditop.dtackslaven
+@22
+TOP.emu.cditop.uc68hc05_0.slave_core.rega[7:0]
+TOP.emu.cditop.uc68hc05_0.slave_core.regx[7:0]
+@28
+TOP.emu.cditop.uc68hc05_0.slave_core.extirq
 [pattern_trace] 1
 [pattern_trace] 0
