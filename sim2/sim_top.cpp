@@ -16,6 +16,7 @@
 #include <byteswap.h>
 
 #define SCC68070
+#define SLAVE
 
 typedef VerilatedFstC tracetype_t;
 
@@ -87,8 +88,10 @@ class CDi {
 
     int pixel_index = 0;
 
-    uint16_t sector_buffer[0x1000];
-    uint16_t sector_buffer_index = 0;
+    uint16_t hps_buffer[4096];
+    uint16_t hps_buffer_index = 0;
+    bool hps_nvram_backup_active{false};
+    bool ignore_first_hps_din{false};
 
     int instanceid;
 
@@ -222,12 +225,13 @@ class CDi {
         }
 #endif
 
+        dut.rootp->emu__DOT__nvram_media_change = (step == 2000);
         // Simulate CD data delivery from HPS
-        if (dut.rootp->emu__DOT__sd_rd && sd_rd_q == 0) {
-            assert(dut.rootp->emu__DOT__sd_ack == 0);
-            dut.rootp->emu__DOT__sd_ack = 1;
+        if (dut.rootp->emu__DOT__cd_hps_req && sd_rd_q == 0 && dut.rootp->emu__DOT__nvram_hps_ack == 0) {
+            assert(dut.rootp->emu__DOT__cd_hps_ack == 0);
+            dut.rootp->emu__DOT__cd_hps_ack = 1;
 
-            uint32_t lba = dut.rootp->emu__DOT__sd_lba0;
+            uint32_t lba = dut.rootp->emu__DOT__cd_hps_lba;
             uint32_t m_time = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__time_register;
 
             uint32_t reference_lba = lba_from_time(m_time);
@@ -235,28 +239,90 @@ class CDi {
 
             uint32_t file_offset = (lba - 150) * kSectorSize;
 
-            printf("Request Sector %x %x %x\n", m_time, lba, file_offset);
+            printf("Request CD Sector %x %x %x\n", m_time, lba, file_offset);
 
             int res = fseek(f_cd_bin, file_offset, SEEK_SET);
             assert(res == 0);
 
-            fread(sector_buffer, 1, 0x930, f_cd_bin);
-            sector_buffer_index = 0;
+            fread(hps_buffer, 1, 0x930, f_cd_bin);
+            hps_buffer_index = 0;
+        }
+
+        if (dut.rootp->emu__DOT__nvram_hps_rd && sd_rd_q == 0 && dut.rootp->emu__DOT__cd_hps_ack == 0) {
+            assert(dut.rootp->emu__DOT__nvram_hps_ack == 0);
+            dut.rootp->emu__DOT__nvram_hps_ack = 1;
+
+            printf("Request NvRAM restore!\n");
+
+            FILE *f_nvram_bin = fopen("save_in.bin", "rb");
+            assert(f_nvram_bin);
+            fread(hps_buffer, 1, 8192, f_nvram_bin);
+            hps_buffer_index = 0;
+            dut.rootp->emu__DOT__sd_buff_addr = hps_buffer_index;
+            fclose(f_nvram_bin);
+        }
+
+        if (dut.rootp->emu__DOT__nvram_hps_wr && sd_rd_q == 0 && dut.rootp->emu__DOT__cd_hps_ack == 0) {
+            assert(dut.rootp->emu__DOT__nvram_hps_ack == 0);
+            dut.rootp->emu__DOT__nvram_hps_ack = 1;
+
+            printf("Request NvRAM backup!\n");
+            hps_buffer_index = 0;
+            hps_nvram_backup_active = true;
+            dut.rootp->emu__DOT__sd_buff_addr = hps_buffer_index;
+            ignore_first_hps_din = true;
         }
 
         dut.rootp->emu__DOT__sd_buff_wr = 0;
-        if (dut.rootp->emu__DOT__sd_ack && (step % 200) == 15) {
-            if (sector_buffer_index == kSectorSize / 2) {
-                dut.rootp->emu__DOT__sd_ack = 0;
+        if (dut.rootp->emu__DOT__cd_hps_ack && (step % 200) == 15) {
+            if (hps_buffer_index == kSectorSize / 2) {
+                dut.rootp->emu__DOT__cd_hps_ack = 0;
                 printf("Sector transferred!\n");
             } else {
-                dut.rootp->emu__DOT__sd_buff_dout = sector_buffer[sector_buffer_index];
+                dut.rootp->emu__DOT__sd_buff_dout = hps_buffer[hps_buffer_index];
                 dut.rootp->emu__DOT__sd_buff_wr = 1;
-                sector_buffer_index++;
+                hps_buffer_index++;
             }
         }
 
-        sd_rd_q = dut.rootp->emu__DOT__sd_rd;
+        if (dut.rootp->emu__DOT__nvram_hps_ack && (step % 20) == 15) {
+            if (hps_nvram_backup_active) {
+                if (hps_buffer_index == 4096) {
+                    dut.rootp->emu__DOT__nvram_hps_ack = 0;
+                    printf("NvRAM backed up!\n");
+
+                    FILE *f_nvram_bin = fopen("save_out.bin", "wb");
+                    assert(f_nvram_bin);
+                    fwrite(hps_buffer, 1, 8192, f_nvram_bin);
+                    hps_nvram_backup_active = false;
+                    fclose(f_nvram_bin);
+                } else {
+                    hps_buffer[hps_buffer_index] = dut.rootp->emu__DOT__nvram_hps_din;
+
+                    if (ignore_first_hps_din)
+                        ignore_first_hps_din = false;
+                    else
+                        hps_buffer_index++;
+
+                    dut.rootp->emu__DOT__sd_buff_addr = hps_buffer_index;
+                }
+
+            } else {
+                if (hps_buffer_index == 4096) {
+                    dut.rootp->emu__DOT__nvram_hps_ack = 0;
+                    printf("NvRAM restored!\n");
+                } else {
+                    dut.rootp->emu__DOT__sd_buff_dout = hps_buffer[hps_buffer_index];
+                    dut.rootp->emu__DOT__sd_buff_wr = 1;
+                    dut.rootp->emu__DOT__sd_buff_addr = hps_buffer_index;
+
+                    hps_buffer_index++;
+                }
+            }
+        }
+
+        sd_rd_q =
+            dut.rootp->emu__DOT__cd_hps_req || dut.rootp->emu__DOT__nvram_hps_rd || dut.rootp->emu__DOT__nvram_hps_wr;
 
         /*
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid) {
@@ -266,6 +332,7 @@ class CDi {
         */
 
         // Trace System Calls
+#ifdef SCC68070
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
             dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in) {
 
@@ -301,6 +368,7 @@ class CDi {
 
             printstate();
         }
+#endif
 
         // Simulate television
         if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {
@@ -377,17 +445,20 @@ class CDi {
         dut.eval();
         // do_trace = false;
         dut.rootp->emu__DOT__debug_uart_fake_space = false;
+        dut.rootp->emu__DOT__img_size = 4096;
+
         // dut.rootp->emu__DOT__tvmode_ntsc = true;
 
         dut.RESET = 1;
         dut.UART_RXD = 1;
 
+        // wait for SDRAM to initialize
         for (int y = 0; y < 300; y++) {
-            // wait for SDRAM to initialize
             clock();
         }
 
         dut.RESET = 0;
+        dut.OSD_STATUS = 1;
 
         start = std::chrono::system_clock::now();
     }
@@ -398,13 +469,35 @@ class CDi {
         dut.RESET = 0;
     }
 
-    void dump_memory() {
+    void dump_system_memory() {
         char filename[100];
         sprintf(filename, "%d/ramdump.bin", instanceid);
         printf("Writing %s!\n", filename);
         FILE *f = fopen(filename, "wb");
         assert(f);
         fwrite(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
+        fclose(f);
+    }
+
+    void dump_slave_memory() {
+#ifdef SLAVE
+        char filename[100];
+        sprintf(filename, "%d/ramdump_slave.bin", instanceid);
+        printf("Writing %s!\n", filename);
+        FILE *f = fopen(filename, "wb");
+        assert(f);
+        fwrite(&dut.rootp->emu__DOT__cditop__DOT__uc68hc05_0__DOT__memory[0], 1, 8192, f);
+        fclose(f);
+#endif
+    }
+
+    void dump_cdic_memory() {
+        char filename[100];
+        sprintf(filename, "%d/ramdump_cdic.bin", instanceid);
+        printf("Writing %s!\n", filename);
+        FILE *f = fopen(filename, "wb");
+        assert(f);
+        fwrite(&dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__mem__DOT__ram[0], 2, 8192, f);
         fclose(f);
     }
 };
@@ -444,6 +537,15 @@ int main(int argc, char **argv) {
     case 4:
         f_cd_bin = fopen("images/Hotel Mario.bin", "rb");
         break;
+    case 5:
+        f_cd_bin = fopen("images/Zelda's Adventure (Europe).bin", "rb");
+        break;
+    case 6:
+        f_cd_bin = fopen("images/tetris.bin", "rb");
+        break;
+    case 7:
+        f_cd_bin = fopen("images/soundtest.bin", "rb");
+        break;
     }
 
     assert(f_cd_bin);
@@ -453,11 +555,12 @@ int main(int argc, char **argv) {
     while (status == 0) {
         machine.modelstep();
     }
-    
+
     machine.modelstep();
     machine.modelstep();
     machine.modelstep();
-    machine.dump_memory();
+    machine.dump_system_memory();
+    machine.dump_slave_memory();
 
     fclose(f_cd_bin);
 

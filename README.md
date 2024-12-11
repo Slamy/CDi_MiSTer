@@ -13,6 +13,8 @@ Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` a
 
 Keep in mind that - for now - a special [MiSTer Main application](https://github.com/Slamy/Main_MiSTer) is required for the CD drive emulation.
 
+The save files containing the NvRAM is compatible with the CD-i emulation of MAME.
+
 ## Status
 
 * CD-I MONO BOARD low level test is functional
@@ -42,6 +44,7 @@ Keep in mind that - for now - a special [MiSTer Main application](https://github
 * MiSTer
 	* ISO Mounting via Menu functional
 	* Automatic boot rom loading for main cpu and slave
+	* Backup and Restore of NvRAM
 
 Core Utilization:
 
@@ -54,7 +57,6 @@ Core Utilization:
 * Investigate "Zelda's Adventure" sound hiccups
 * Implement audio mixing and panning
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
-* Investigate wrong frame in intro of Hotel Mario (probably fixed?)
 * Add Interlacing
 * MCD212 Add Regions
 	* Fixes graphics in P.A.W.S.
@@ -67,10 +69,8 @@ Core Utilization:
 * CDIC Descrambler (The Apprentice)
 * CDIC Byteswap (The Apprentice)
 * Fix reset behaviour / Core is unstable
+* Add auto start of titles using front panel "Play" button
 * Fix servo behaviour of always detecting a CD-i disc
-* Use the MiSTer framework to save the NvRAM to mass storage
-	* Only when changes are detected and when the OSD is opened
-	* The N64 core does it like that too
 * Add alternative input devices (a mouse)
 * OSD setting for input device conformance (1200 baud)
 * Add SNAC support (IR remote + wired controller)

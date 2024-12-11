@@ -35,3 +35,13 @@ Written video_00.png after 51.33
 
 This means Fst is better as it is much smaller
 
+
+## Auto save of NvRAM?
+
+Seems to be not desired:
+* SD Card wear out?
+* Point of time to write is random?
+* Unresponsive as it steals cycles from HPS IO?
+
+https://github.com/MiSTer-devel/Main_MiSTer/issues/789
+https://github.com/MiSTer-devel/Main_MiSTer/issues/760

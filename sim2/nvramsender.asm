@@ -13,11 +13,11 @@ start_delay:
 	add #-1,d0
 	bne start_delay
 
-	; Send lower bank
-	move.l #0,a0
-	move.l #524288,d1
+	move.l #$320000,a0
+	move.l #8192,d1
 loop:
 
+	
 wait_till_ready:
 	move.b $80002013,d0
 	btst.l #$2,d0
@@ -25,28 +25,10 @@ wait_till_ready:
 
 	move.b (a0),d0
 	move.b d0,$80002019
-	adda.l #1,a0
+	adda.l #2,a0
 	add.l #-1,d1
 	bne loop
-
-	; Send upper bank
-	move.l #$200000,a0
-	move.l #524288,d1
-loop2:
-
-wait_till_ready2:
-	move.b $80002013,d0
-	btst.l #$2,d0
-	beq wait_till_ready2
-
-	move.b (a0),d0
-	move.b d0,$80002019
-	adda.l #1,a0
-	add.l #-1,d1
-	bne loop2
 
 end:
 	bra end
 
-wastespace:
-	incbin "cdimono1/cdi200.rom"

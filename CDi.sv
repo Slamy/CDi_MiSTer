@@ -214,13 +214,17 @@ module emu (
     localparam CONF_STR = {
         "CD-i;UART115200;",
         "-;",
-        "S0,CUECHD,Insert Disc;",
-        "F1,ROM,Replace Boot ROM;",
-        "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-        "O[3],UART Fake Space,No,Yes;",
-        "O[4],TV Mode,PAL,NTSC;",
-        "O[5],Overclock input device,No,Yes;",
+        "S0,CUECHD,Load CD;",
         "-;",
+        "O[4],TV Mode,PAL,NTSC;",
+        "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
+        "-;",
+        "P1,Debug Options;",
+        "P1-;",
+        "P1F1,ROM,Replace Boot ROM;",
+        "P1O[3],UART Fake Space,No,Yes;",
+        "P1O[7:6],Force Video Plane,Original,A,B;",
+        "O[5],Overclock input device,No,Yes;",
         "-;",
         "T[0],Reset;",
         "R[0],Reset and close OSD;",
@@ -230,6 +234,8 @@ module emu (
         "jn,A,B;",
         "jp,B,A;",
         // so all options will get default values on first start.
+        "I,",
+        "NvRAM saved,",
         "V,v",
         `BUILD_DATE
     };
@@ -257,23 +263,38 @@ module emu (
     (* keep *)wire        clk_audio  /*verilator public_flat_rw*/;
 
 
-    wire [31:0] sd_lba0;
-    wire        sd_rd  /*verilator public_flat_rd*/;
-    wire        sd_wr;
-    wire        sd_ack  /*verilator public_flat_rw*/;
-    wire [ 7:0] sd_buff_addr;
-    wire [15:0] sd_buff_dout  /*verilator public_flat_rw*/;
-    wire [15:0] sd_buff_din0;
+    wire [31:0] cd_hps_lba;
+    wire        cd_hps_req  /*verilator public_flat_rd*/;
+    wire        cd_hps_ack  /*verilator public_flat_rw*/;
+    wire        cd_media_change  /*verilator public_flat_rw*/;
+
+    (* keep *)wire        nvram_hps_ack  /*verilator public_flat_rw*/;
+    (* keep *)bit         nvram_hps_wr;
+    (* keep *)bit         nvram_hps_rd  /*verilator public_flat_rd*/;
+    bit  [15:0] nvram_hps_din;
+    wire        nvram_media_change  /*verilator public_flat_rw*/;
+
+    wire [ 7:0] sd_buff_addr  /*verilator public_flat_rw*/;
     wire        sd_buff_wr  /*verilator public_flat_rw*/;
-    wire        img_mounted;
+    wire [15:0] sd_buff_dout  /*verilator public_flat_rw*/;
+
     wire        img_readonly;
     wire [63:0] img_size;
+
+    wire [15:0] status_menumask;
+
+    bit         info_req;
+    bit  [ 7:0] info;
+
+    // Flag which becomes active for some time when an NvRAM image is mounted
+    wire        nvram_img_mount = nvram_media_change && img_size != 0;
 
 `ifndef VERILATOR
     hps_io #(
         .CONF_STR(CONF_STR),
         .WIDE(1),
-        .BLKSZ(3)
+        .BLKSZ(6),  // NvRAM of 8kB size as block size
+        .VDNUM(2)
     ) hps_io (
         .clk_sys  (clk_sys),
         .HPS_BUS  (HPS_BUS),
@@ -284,7 +305,10 @@ module emu (
 
         .buttons(buttons),
         .status(status),
-        .status_menumask(),
+        .status_menumask(status_menumask),
+
+        .info_req(info_req),
+        .info(info),
 
         .ioctl_download(ioctl_download),
         .ioctl_index(ioctl_index),
@@ -293,17 +317,17 @@ module emu (
         .ioctl_dout(ioctl_dout),
         .ioctl_wait(ioctl_wait),
 
-        .sd_lba('{sd_lba0}),
-        .sd_blk_cnt('{0}),
-        .sd_rd(sd_rd),
-        .sd_wr(sd_wr),
-        .sd_ack(sd_ack),
+        .sd_lba('{cd_hps_lba, 0}),
+        .sd_blk_cnt('{0, 0}),
+        .sd_rd({nvram_hps_rd, cd_hps_req}),
+        .sd_wr({nvram_hps_wr, 1'b0}),
+        .sd_ack({nvram_hps_ack, cd_hps_ack}),
         .sd_buff_addr(sd_buff_addr),
         .sd_buff_dout(sd_buff_dout),
-        .sd_buff_din('{sd_buff_din0}),
+        .sd_buff_din('{0, nvram_hps_din}),
         .sd_buff_wr(sd_buff_wr),
 
-        .img_mounted(img_mounted),
+        .img_mounted({nvram_media_change, cd_media_change}),
         .img_readonly(img_readonly),
         .img_size(img_size),
 
@@ -389,6 +413,17 @@ module emu (
     bit            [12:0] slave_worm_adr = 0;
     bit            [ 7:0] slave_worm_data = 0;
     bit                   slave_worm_wr;
+
+    // Signals to manipulate the NvRAM from the Linux side
+    bit            [12:0] nvram_backup_restore_adr;
+    bit            [15:0] nvram_restore_data_temp;
+    wire           [ 7:0] nvram_restore_data;
+    wire           [ 7:0] nvram_backup_data;
+    bit                   nvram_restore_write;
+    wire                  nvram_cpu_changed;
+    bit                   nvram_allow_cpu_access;
+
+    assign nvram_restore_data = nvram_backup_restore_adr[0] ? nvram_restore_data_temp[15:8] : nvram_restore_data_temp[7:0];
 
     always_ff @(posedge clk_sys) begin
         ioctl_slave_worm_wr_q <= ioctl_slave_worm_wr;
@@ -483,7 +518,7 @@ module emu (
 
     assign prepare_sdram = cditop_reset;
     always_ff @(posedge clk_sys) begin
-        cditop_reset <= RESET || status[0] || buttons[1] || ioctl_download || !ram_zero_done;
+        cditop_reset <= RESET || status[0] || buttons[1] || ioctl_download || !ram_zero_done || nvram_img_mount;
     end
 
     sdram sdram (
@@ -527,7 +562,6 @@ module emu (
     bit SDRAM_nWE_q;
     bit SDRAM_DQMH_q;
     bit SDRAM_DQML_q;
-    bit alignment_fail = 0;
 
     always_ff @(posedge clk_sys) begin
         SDRAM_nWE_q  <= SDRAM_nWE;
@@ -562,7 +596,7 @@ module emu (
     bit  tvmode_ntsc  /*verilator public_flat_rw*/;
     wire overclock_maneuvering_device = 1;
 `else
-    // status seems to be all zero after reset
+    // Status seems to be all zero after reset
     // Should be considered for defining the default
     wire debug_uart_fake_space = status[3];
     wire tvmode_ntsc = status[4];
@@ -630,14 +664,21 @@ module emu (
         .slave_worm_data(slave_worm_data),
         .slave_worm_wr  (slave_worm_wr),
 
+        .nvram_backup_restore_adr(nvram_backup_restore_adr),
+        .nvram_restore_data(nvram_restore_data),
+        .nvram_backup_data(nvram_backup_data),
+        .nvram_restore_write(nvram_restore_write),
+        .nvram_cpu_changed(nvram_cpu_changed),
+        .nvram_allow_cpu_access(nvram_allow_cpu_access),
+
         .slave_serial_in(slave_serial_in),
         .slave_serial_out(slave_serial_out),
         .slave_rts(slave_rts),
 
-        .cd_hps_req(sd_rd),
-        .cd_hps_lba(sd_lba0),
-        .cd_hps_ack(sd_ack),
-        .cd_hps_data_valid(sd_buff_wr),
+        .cd_hps_req(cd_hps_req),
+        .cd_hps_lba(cd_hps_lba),
+        .cd_hps_ack(cd_hps_ack),
+        .cd_hps_data_valid(sd_buff_wr && cd_hps_ack),
         // MiSTer uses little endian on linux. Swap over to big endian
         // to actually fit the way the 68k wants it
         .cd_hps_data({sd_buff_dout[7:0], sd_buff_dout[15:8]}),
@@ -661,8 +702,149 @@ module emu (
     assign VGA_G = g;
     assign VGA_B = b;
 
-    reg [26:0] act_cnt;
-    always_ff @(posedge clk_sys) act_cnt <= act_cnt + 1'd1;
-    assign LED_USER = act_cnt[26] ? act_cnt[25:18] > act_cnt[7:0] : act_cnt[25:18] <= act_cnt[7:0];
+    // ----- NvRAM Backup and Restore Handling -----
+
+    // If set, a backup of NvRAM shall be performed as the content has changed.
+    // Will be reset, as soon as a backup operation has begun
+    // to allow yet another backup operation after the current one
+    // to ensure the latest state on the SD card
+    bit nvram_backup_pending = 0;
+
+    // Cooldown counter. Ensures that a backup is only performed if
+    // the NvRAM hasn't changed for a while.
+    bit [11:0] nvram_backup_cooldown = 0;
+
+    // Make the USER LED indicate that we need to perform a backup
+    assign LED_USER = nvram_backup_pending;
+
+    enum bit [3:0] {
+        NVRAM_IDLE,
+        NVRAM_WAIT_FOR_ACK,
+        NVRAM_BACKUP0,
+        NVRAM_BACKUP1,
+        NVRAM_BACKUP2,
+        NVRAM_BACKUP3,
+        NVRAM_RESTORE0,
+        NVRAM_RESTORE1,
+        NVRAM_RESTORE2
+    } nvram_state;
+
+    // Used to notice a change of the address
+    bit sd_buff_addr_q;
+
+    // Is set, if NvRAM image is mounted and usable
+    bit nvram_image_mounted = 0;
+
+    // Ignore the first 4 seconds. For some reason, the OS
+    // performs writes during bootup. Why should we backup these?
+    bit [27:0] nvram_early_boot_pending_ignore;
+
+    always_ff @(posedge clk_sys) begin
+        info <= 0;
+        info_req <= 0;
+        sd_buff_addr_q <= sd_buff_addr[0];
+        nvram_restore_write <= 0;
+
+        if (nvram_media_change) nvram_image_mounted <= (img_size != 0);
+
+        if (cditop_reset) begin
+            nvram_backup_pending <= 0;
+`ifdef VERILATOR
+            nvram_early_boot_pending_ignore <= 4;
+`else
+            nvram_early_boot_pending_ignore <= 4 * 28'(30e6);  // Wait 4 seconds
+`endif
+        end else if (nvram_early_boot_pending_ignore != 0) begin
+            // Count down 4 seconds of cooldown after reset until actually
+            // checking for NvRAM changes to backup
+            nvram_early_boot_pending_ignore <= nvram_early_boot_pending_ignore - 1;
+        end else begin
+            // On NvRAM change, only start the backup after some memory cycles
+            // of not writing to NvRAM. Avoids writing too often
+            if (nvram_cpu_changed && nvram_image_mounted) begin
+                // Reset counter with every NvRAM write by CPU
+                nvram_backup_cooldown <= ~0;  // All bits set
+            end else if (nvram_backup_cooldown != 0 && sdram_rd) begin
+                // Counting down memory cycles after NvRAM change.
+                if (nvram_backup_cooldown == 1) nvram_backup_pending <= 1;
+                nvram_backup_cooldown <= nvram_backup_cooldown - 1;
+            end
+        end
+
+        if (nvram_hps_ack) begin
+            nvram_hps_wr <= 0;
+            nvram_hps_rd <= 0;
+        end
+
+        case (nvram_state)
+            NVRAM_IDLE: begin
+                nvram_allow_cpu_access   <= 1;
+                nvram_backup_restore_adr <= 0;
+
+                if (nvram_img_mount) begin
+                    // NvRAM image mounted? Then restore that to NvRAM!
+                    nvram_hps_rd <= 1;
+                    nvram_state <= NVRAM_WAIT_FOR_ACK;
+                    nvram_allow_cpu_access <= 0;
+                end else if (nvram_backup_pending && OSD_STATUS) begin
+                    // NvRAM has changed? And OSD is open? Well, then make a backup!
+                    nvram_backup_pending <= 0;
+                    nvram_hps_wr <= 1;
+                    nvram_state <= NVRAM_WAIT_FOR_ACK;
+                    nvram_allow_cpu_access <= 0;
+                end
+            end
+            NVRAM_WAIT_FOR_ACK: begin
+                if (nvram_hps_ack) begin
+                    if (nvram_hps_rd) nvram_state <= NVRAM_RESTORE0;
+                    if (nvram_hps_wr) nvram_state <= NVRAM_BACKUP0;
+                end
+            end
+            NVRAM_BACKUP0: begin
+                nvram_backup_restore_adr <= nvram_backup_restore_adr + 1;
+                nvram_state <= NVRAM_BACKUP1;
+            end
+            NVRAM_BACKUP1: begin
+                nvram_hps_din[7:0] <= nvram_backup_data;
+                nvram_backup_restore_adr <= nvram_backup_restore_adr + 1;
+                nvram_state <= NVRAM_BACKUP2;
+            end
+            NVRAM_BACKUP2: begin
+                nvram_hps_din[15:8] <= nvram_backup_data;
+                nvram_state <= NVRAM_BACKUP3;
+            end
+            NVRAM_BACKUP3: begin
+                if (sd_buff_addr_q != sd_buff_addr[0]) begin
+                    nvram_state <= NVRAM_BACKUP1;
+                    nvram_backup_restore_adr <= nvram_backup_restore_adr + 1;
+                end
+                if (!nvram_hps_ack) nvram_state <= NVRAM_IDLE;
+            end
+
+            NVRAM_RESTORE0: begin
+                if (sd_buff_wr) begin
+                    nvram_restore_data_temp <= sd_buff_dout;
+                    nvram_restore_write <= 1;
+                    nvram_state <= NVRAM_RESTORE1;
+                end
+
+                if (!nvram_hps_ack) begin
+                    nvram_state <= NVRAM_IDLE;
+                    nvram_allow_cpu_access <= 1;
+                end
+            end
+            NVRAM_RESTORE1: begin
+                nvram_restore_write <= 1;
+                nvram_backup_restore_adr <= nvram_backup_restore_adr + 1;
+                nvram_state <= NVRAM_RESTORE2;
+            end
+            NVRAM_RESTORE2: begin
+                nvram_backup_restore_adr <= nvram_backup_restore_adr + 1;
+                nvram_state <= NVRAM_RESTORE0;
+            end
+
+            default: nvram_state <= NVRAM_IDLE;
+        endcase
+    end
 
 endmodule

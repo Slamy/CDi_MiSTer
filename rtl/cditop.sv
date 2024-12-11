@@ -38,6 +38,13 @@ module cditop (
     input [7:0] slave_worm_data,
     input slave_worm_wr,
 
+    input [12:0] nvram_backup_restore_adr,
+    input [7:0] nvram_restore_data,
+    output [7:0] nvram_backup_data,
+    input nvram_restore_write,
+    output bit nvram_cpu_changed,
+    input nvram_allow_cpu_access,
+
     bytestream.source slave_serial_out,
     bytestream.sink slave_serial_in,
     output slave_rts,
@@ -75,15 +82,34 @@ module cditop (
     (* noprune *) wire [15:0] cpu_data = write_strobe ? cpu_data_out : data_in;
 
     // 8 kB of NVRAM
-    bit [7:0] nvram[8192]  /*verilator public_flat_rw*/;
+    wire [7:0] nvram_readout;
+    wire nvram_cpu_side_write = !reset && attex_cs_nvram && uds && write_strobe && nvram_allow_cpu_access;
+    nvram_dual_port_memory nvram (
+        .clk(clk30),
+
+        // CPU side interface
+        .data_a(cpu_data_out[15:8]),
+        .addr_a(addr[13:1]),
+        .we_a(nvram_cpu_side_write),
+        .q_a(nvram_readout),
+
+        // HPS Backup/Restore side interface
+        .data_b(nvram_restore_data),
+        .addr_b(nvram_backup_restore_adr),
+        .we_b(nvram_restore_write),
+        .q_b(nvram_backup_data)
+    );
+
+    always_ff @(posedge clk30) begin
+        nvram_cpu_changed <= !reset && nvram_cpu_side_write;
+    end
 
     wire mcd212_bus_ack;
     wire [15:0] mcd212_dout;
     wire [15:0] cdic_dout;
     bit cdic_bus_ack;
 
-    bit [7:0] nvram_readout;
-    bit nvram_bus_ack;
+    bit nvram_read_bus_ack;
 
     wire attex_cs_mcd212 = ((addr_byte <= 24'h27ffff) || (addr_byte >= 24'h400000)) && as && !addr[23];
     wire attex_cs_cdic = addr_byte[23:16] == 8'h30 && as;
@@ -283,7 +309,7 @@ module cditop (
             bus_ack = cdic_bus_ack;
         end else if (attex_cs_nvram) begin
             data_in = {nvram_readout, nvram_readout};
-            bus_ack = nvram_bus_ack || write_strobe;
+            bus_ack = nvram_read_bus_ack || (write_strobe && nvram_allow_cpu_access);
         end else if (attex_cs_mcd212) begin
             data_in = mcd212_dout;
             bus_ack = mcd212_bus_ack;
@@ -296,19 +322,12 @@ module cditop (
     end
 
     always_ff @(posedge clk30) begin
-        nvram_bus_ack <= 0;
+        // nvram_readout takes one cycle, apply that to the bus_ack only during read.
+        // only provide an ack if it wasn't given last cycle
+        nvram_read_bus_ack <= (!reset && attex_cs_nvram && !write_strobe && !nvram_read_bus_ack && nvram_allow_cpu_access);
 
-        if (!reset && attex_cs_nvram) begin
-            if (uds && write_strobe) begin
-                nvram[addr[13:1]] <= cpu_data_out[15:8];
-                $display("NVRAM Written %x %x", addr[13:1], cpu_data_out[15:8]);
-            end else begin
-                nvram_readout <= nvram[addr[13:1]];
-
-                // nvram_readout takes one cycle, apply that to the bus_ack 
-                if (!nvram_bus_ack) nvram_bus_ack <= 1;
-            end
-        end
+        if (nvram_cpu_side_write && bus_ack)
+            $display("NVRAM Written %x %x", addr[13:1], cpu_data_out[15:8]);
     end
 
     wire resetsys = ddrc[2] ? portc_out[2] : 1'b0;
@@ -395,3 +414,39 @@ module cditop (
     end
 
 endmodule
+
+
+// According to
+// https://www.intel.com/content/www/us/en/docs/programmable/683082/22-1/true-dual-port-synchronous-ram.html
+// to ensure that this is indeed a True Dual-Port RAM with Single Clock
+module nvram_dual_port_memory (
+    input clk,
+    input [7:0] data_a,
+    input [7:0] data_b,
+    input [12:0] addr_a,
+    input [12:0] addr_b,
+    input we_a,
+    input we_b,
+    output bit [7:0] q_a,
+    output bit [7:0] q_b
+);
+    // Declare the RAM variable
+    bit [7:0] ram[8192]  /*verilator public_flat_rw*/;
+
+    // Port A 
+    always @(posedge clk) begin
+        if (we_a) begin
+            ram[addr_a] = data_a;
+        end
+        q_a <= ram[addr_a];
+    end
+
+    // Port B 
+    always @(posedge clk) begin
+        if (we_b) begin
+            ram[addr_b] = data_b;
+        end
+        q_b <= ram[addr_b];
+    end
+endmodule
+
