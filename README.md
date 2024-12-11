@@ -71,6 +71,8 @@ Core Utilization:
 * Fix reset behaviour / Core is unstable
 * Add auto start of titles using front panel "Play" button
 * Fix servo behaviour of always detecting a CD-i disc
+* Find a solution for the video mode reset during system resets
+	* The ST flag is the issue here, causing a video mode change
 * Add alternative input devices (a mouse)
 * OSD setting for input device conformance (1200 baud)
 * Add SNAC support (IR remote + wired controller)

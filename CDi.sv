@@ -592,13 +592,15 @@ module emu (
 `endif
 
 `ifdef VERILATOR
-    bit  debug_uart_fake_space  /*verilator public_flat_rw*/;
-    bit  tvmode_ntsc  /*verilator public_flat_rw*/;
+    bit debug_uart_fake_space  /*verilator public_flat_rw*/;
+    bit tvmode_ntsc  /*verilator public_flat_rw*/;
     wire overclock_maneuvering_device = 1;
+    wire [1:0] debug_force_video_plane = 0;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
     wire debug_uart_fake_space = status[3];
+    wire [1:0] debug_force_video_plane = status[7:6];
     wire tvmode_ntsc = status[4];
     wire overclock_maneuvering_device = status[5];
 `endif
@@ -634,6 +636,7 @@ module emu (
 
         .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
+        .debug_force_video_plane,
         .scandouble(forced_scandoubler),
 
         .ce_pix(ce_pix),

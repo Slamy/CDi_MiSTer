@@ -34,7 +34,9 @@ module mcd212 (
     output bit        sdram_refresh,
     input             sdram_burstdata_valid,
 
-    output irq
+    output irq,
+
+    input [1:0] debug_force_video_plane
 );
 
     // Memory Swapping according to chapter 3.4
@@ -478,6 +480,7 @@ module mcd212 (
             if ((cpu_lds || cpu_uds) && cs_channel1 && cpu_write_strobe) begin
                 if (cpu_addressb[3:0] == 4'h2) begin
                     command_register_dcr1 <= cpu_din;
+                    $display("DCR1 set to %x", cpu_din);
                     assert (cpu_lds && cpu_uds);
                 end
 
@@ -1034,6 +1037,9 @@ module mcd212 (
                 vidout = plane_b;
             end
         end
+
+        if (debug_force_video_plane == 2'b01) vidout = plane_a;
+        else if (debug_force_video_plane == 2'b10) vidout = plane_b;
 
         // cursor
         if (cursor_pixel && inside_cursor_window && cursor_control_register.en) begin

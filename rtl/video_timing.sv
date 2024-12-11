@@ -118,6 +118,17 @@ module video_timing (
     assign new_pixel = (cm ? video_x[0] == 1 : video_x[1:0] == 1) && !hblank && !vblank;
 
 `ifdef VERILATOR
+    wire [4:0] timing_param = {sm, cf, st, cm, fd};
+    bit  [4:0] timing_param_q = 0;
+
+    always_ff @(posedge clk) begin
+        timing_param_q <= timing_param;
+
+        if (timing_param_q != timing_param) begin
+            $display("Video Timing Parameters: %b", timing_param);
+        end
+    end
+
     int pixels_per_line = 0;
     always_ff @(posedge clk) begin
         if (new_line) begin

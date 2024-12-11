@@ -10,8 +10,11 @@ vector:
 main:
 	move.b #'A',$80002019
 
+	; IC1 DC1 Plane A
 	move.w #$C300,$4ffff2
-	move.w #$C300,$4fffe2
+	; IC2 DC2 Plane B
+	; move.w #$C300,$4fffe2
+	
 	move.w #$0000,$4ffff0
 
 	lea.l icalist,a0

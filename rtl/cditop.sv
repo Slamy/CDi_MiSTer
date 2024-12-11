@@ -6,6 +6,7 @@ module cditop (
 
     input tvmode_pal,
     input debug_uart_fake_space,
+    input [1:0] debug_force_video_plane,
 
     input scandouble,
 
@@ -191,7 +192,8 @@ module cditop (
         .sdram_burst(sdram_burst),
         .sdram_refresh(sdram_refresh),
         .sdram_burstdata_valid,
-        .irq(vdsc_int)
+        .irq(vdsc_int),
+        .debug_force_video_plane
     );
 
     wire in2in;
