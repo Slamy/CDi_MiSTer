@@ -33,7 +33,7 @@ module uc68hc05 (
     bit [7:0] datain;
     bit [7:0] memory_readout = 0;
 
-    (* keep *) wire [15:0] addr;
+    wire [15:0] addr;
     bit [15:0] lastaddr;
     wire wrn;
     wire wr = !wrn;

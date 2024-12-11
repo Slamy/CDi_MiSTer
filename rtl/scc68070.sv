@@ -94,7 +94,7 @@ module scc68070 (
     } timer_status_register;
 
 
-    (* keep *) bit [15:0] internal_data_in;
+    bit [15:0] internal_data_in;
 
     // UART is from 0x1008 to 0x100D
     wire soc_periph = internal_addr[31];

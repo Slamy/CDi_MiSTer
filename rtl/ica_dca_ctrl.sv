@@ -36,11 +36,11 @@ module ica_dca_ctrl (
     localparam bit [21:0] odd_ica_start = 22'h400;
     localparam bit [21:0] even_ica_start = 22'h404;
 
-    (* keep *) bit [21:0] ica_pointer;
+    bit [21:0] ica_pointer;
     bit [21:0] dca_pointer;
     bit [21:0] next_line_dca_pointer;
     bit [3:0] dca_burst_cnt;
-    (* keep *) bit [31:0] instruction;
+    bit [31:0] instruction;
 
     enum bit [3:0] {
         IDLE,

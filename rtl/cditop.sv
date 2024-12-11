@@ -70,17 +70,17 @@ module cditop (
 
     wire write_strobe;
     wire as;
-    (* keep *) wire lds;
-    (* keep *) wire uds;
+    wire lds;
+    wire uds;
 
-    (* keep *) bit bus_ack  /*verilator public_flat_rd*/;
+    bit bus_ack  /*verilator public_flat_rd*/;
 
-    (* keep *) bit [15:0] data_in;
-    (* keep *) wire [15:0] cpu_data_out;
-    (* keep *) wire [23:1] addr;
+    bit [15:0] data_in;
+    wire [15:0] cpu_data_out;
+    wire [23:1] addr;
     wire [23:0] addr_byte = {addr[23:1], 1'b0};
 
-    (* noprune *) wire [15:0] cpu_data = write_strobe ? cpu_data_out : data_in;
+    wire [15:0] cpu_data = write_strobe ? cpu_data_out : data_in;
 
     // 8 kB of NVRAM
     wire [7:0] nvram_readout;
@@ -297,7 +297,7 @@ module cditop (
     bit [7:0] portc_out;
     wire [7:0] portd_in = {!write_strobe, 7'b1111111};
 
-    (* keep *) bit slave_bus_ack;
+    bit slave_bus_ack;
 
     always_comb begin
         bus_ack = 1;
@@ -346,7 +346,7 @@ module cditop (
     bit dtackslaven_q = 0;
     bit in2in_q = 1;
 
-    (* keep *)bit slave_irq;
+    bit slave_irq;
 
     assign reset = external_reset || resetsys;
 

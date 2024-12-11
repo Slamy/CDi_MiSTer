@@ -259,8 +259,8 @@ module emu (
     wire [15:0] ioctl_index  /*verilator public_flat_rw*/;
     wire        ioctl_wait  /*verilator public_flat_rw*/ = 0;
 
-    (* keep *)wire        clk_sys  /*verilator public_flat_rw*/;
-    (* keep *)wire        clk_audio  /*verilator public_flat_rw*/;
+    wire        clk_sys  /*verilator public_flat_rw*/;
+    wire        clk_audio  /*verilator public_flat_rw*/;
 
 
     wire [31:0] cd_hps_lba;
@@ -268,9 +268,9 @@ module emu (
     wire        cd_hps_ack  /*verilator public_flat_rw*/;
     wire        cd_media_change  /*verilator public_flat_rw*/;
 
-    (* keep *)wire        nvram_hps_ack  /*verilator public_flat_rw*/;
-    (* keep *)bit         nvram_hps_wr;
-    (* keep *)bit         nvram_hps_rd  /*verilator public_flat_rd*/;
+    wire        nvram_hps_ack  /*verilator public_flat_rw*/;
+    bit         nvram_hps_wr;
+    bit         nvram_hps_rd  /*verilator public_flat_rd*/;
     bit  [15:0] nvram_hps_din;
     wire        nvram_media_change  /*verilator public_flat_rw*/;
 
