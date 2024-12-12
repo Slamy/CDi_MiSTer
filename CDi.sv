@@ -713,10 +713,6 @@ module emu (
     // to ensure the latest state on the SD card
     bit nvram_backup_pending = 0;
 
-    // Cooldown counter. Ensures that a backup is only performed if
-    // the NvRAM hasn't changed for a while.
-    bit [11:0] nvram_backup_cooldown = 0;
-
     // Make the USER LED indicate that we need to perform a backup
     assign LED_USER = nvram_backup_pending;
 
@@ -742,11 +738,15 @@ module emu (
     // performs writes during bootup. Why should we backup these?
     bit [27:0] nvram_early_boot_pending_ignore;
 
+    // Used to detect changes of OSD_STATUS
+    bit OSD_STATUS_q;
+
     always_ff @(posedge clk_sys) begin
         info <= 0;
         info_req <= 0;
         sd_buff_addr_q <= sd_buff_addr[0];
         nvram_restore_write <= 0;
+        OSD_STATUS_q <= OSD_STATUS;
 
         if (nvram_media_change) nvram_image_mounted <= (img_size != 0);
 
@@ -758,20 +758,11 @@ module emu (
             nvram_early_boot_pending_ignore <= 4 * 28'(30e6);  // Wait 4 seconds
 `endif
         end else if (nvram_early_boot_pending_ignore != 0) begin
-            // Count down 4 seconds of cooldown after reset until actually
+            // Count down 4 seconds after reset until actually
             // checking for NvRAM changes to backup
             nvram_early_boot_pending_ignore <= nvram_early_boot_pending_ignore - 1;
-        end else begin
-            // On NvRAM change, only start the backup after some memory cycles
-            // of not writing to NvRAM. Avoids writing too often
-            if (nvram_cpu_changed && nvram_image_mounted) begin
-                // Reset counter with every NvRAM write by CPU
-                nvram_backup_cooldown <= ~0;  // All bits set
-            end else if (nvram_backup_cooldown != 0 && sdram_rd) begin
-                // Counting down memory cycles after NvRAM change.
-                if (nvram_backup_cooldown == 1) nvram_backup_pending <= 1;
-                nvram_backup_cooldown <= nvram_backup_cooldown - 1;
-            end
+        end else if (nvram_cpu_changed && nvram_image_mounted) begin
+            nvram_backup_pending <= 1;
         end
 
         if (nvram_hps_ack) begin
@@ -789,8 +780,8 @@ module emu (
                     nvram_hps_rd <= 1;
                     nvram_state <= NVRAM_WAIT_FOR_ACK;
                     nvram_allow_cpu_access <= 0;
-                end else if (nvram_backup_pending && OSD_STATUS) begin
-                    // NvRAM has changed? And OSD is open? Well, then make a backup!
+                end else if (nvram_backup_pending && OSD_STATUS && !OSD_STATUS_q) begin
+                    // NvRAM has changed? And OSD was just opened? Well, then make a backup!
                     nvram_backup_pending <= 0;
                     nvram_hps_wr <= 1;
                     nvram_state <= NVRAM_WAIT_FOR_ACK;
