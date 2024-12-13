@@ -699,6 +699,7 @@ module mcd212 (
     clut_rle rle0 (
         .clk,
         .reset(vblank || reset || ica0_reload_vsr),
+        .st(control_register_crsr1w.st),
         .src(rle0_in),
         .dst(rle0_out),
         .passthrough(!display_decoder_register_ddr1.ft1)
@@ -707,6 +708,7 @@ module mcd212 (
     clut_rle rle1 (
         .clk,
         .reset(vblank || reset || ica1_reload_vsr),
+        .st(control_register_crsr1w.st),
         .src(rle1_in),
         .dst(rle1_out),
         .passthrough(!display_decoder_register_ddr2.ft1)
@@ -725,6 +727,7 @@ module mcd212 (
     delta_yuv_decoder dyuv0 (
         .clk,
         .reset(reset || ica0_reload_vsr || vblank || new_line),
+        .st(control_register_crsr1w.st),
         .absolute_start_yuv(dyuv0_abs_start),
         .src(dyuv0_in),
         .rgb_out(dyuv0_out),
@@ -735,6 +738,7 @@ module mcd212 (
     delta_yuv_decoder dyuv1 (
         .clk,
         .reset(reset || ica1_reload_vsr || vblank || new_line),
+        .st(control_register_crsr1w.st),
         .absolute_start_yuv(dyuv1_abs_start),
         .src(dyuv1_in),
         .rgb_out(dyuv1_out),

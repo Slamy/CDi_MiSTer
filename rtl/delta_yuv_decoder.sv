@@ -5,6 +5,7 @@
 module delta_yuv_decoder (
     input clk,
     input reset,
+    input st,
     pixelstream src,
     input yuv_s absolute_start_yuv,
     output rgb888_s rgb_out,
@@ -50,7 +51,7 @@ module delta_yuv_decoder (
     // Counting the words. Might be not the best solution.
     bit [8:0] wordcnt;
     always_ff @(posedge clk) begin
-        if (reset) wordcnt <= 384;
+        if (reset) wordcnt <= st ? 360 : 384;
         else if (src.write && src.strobe) wordcnt <= wordcnt - 1;
     end
 

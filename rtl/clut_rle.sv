@@ -3,6 +3,7 @@
 module clut_rle (
     input clk,
     input reset,
+    input st,
     pixelstream.sink src,
     pixelstream.source dst,
     input passthrough
@@ -22,7 +23,7 @@ module clut_rle (
     wire reset_pixelcounter = pixelcounter == 0;
 
     always_ff @(posedge clk) begin
-        if (reset || reset_pixelcounter) pixelcounter <= 384;
+        if (reset || reset_pixelcounter) pixelcounter <= st ? 360 : 384;
         else if (dst.write && dst.strobe) pixelcounter <= pixelcounter - 1;
     end
 
