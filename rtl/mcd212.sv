@@ -3,6 +3,31 @@
 
 // MCD 212 - DRAM and Video
 
+`ifdef VERILATOR
+function string coding_method_name(bit [3:0] coding, bit plane_b);
+    if (plane_b) begin
+        case (coding)
+            4'b0000: coding_method_name = "OFF";
+            4'b0001: coding_method_name = "CLUT8";
+            4'b0011: coding_method_name = "CLUT7";
+            4'b0100: coding_method_name = "CLUT7+7";
+            4'b0101: coding_method_name = "DYUV";
+            4'b1011: coding_method_name = "CLUT4";
+            default: coding_method_name = "N/A";
+        endcase
+    end else begin
+        case (coding)
+            4'b0000: coding_method_name = "OFF";
+            4'b0001: coding_method_name = "RGB555";
+            4'b0011: coding_method_name = "CLUT7";
+            4'b0101: coding_method_name = "DYUV";
+            4'b1011: coding_method_name = "CLUT4";
+            default: coding_method_name = "N/A";
+        endcase
+    end
+endfunction
+`endif
+
 module mcd212 (
     input clk,
     input reset,
@@ -515,10 +540,10 @@ module mcd212 (
 
 
     typedef struct packed {
-        bit [3:0] op;
-        bit rf;
-        bit [5:0] wf;
-        bit [9:0] x;
+        bit [3:0] op;  // Operation Control Code
+        bit rf;  // Region Flag
+        bit [5:0] wf;  // Next Weight Factor
+        bit [9:0] x;  // Distance from lefthand edge of display, double resolution
     } region_entry;
 
     region_entry region_control[8];
@@ -796,14 +821,14 @@ module mcd212 (
                 synchronized_pixel1[7:4] <= synchronized_pixel1[3:0];
         end
     end
-    /*
+
     always_ff @(posedge clk) begin
         if (ica0_reload_vsr) $display("Reload VSR %x", ica0_vsr);
 
         if (dca0_read) $display("Start DCA0 on line %d", video_y);
         if (dca1_read) $display("Start DCA1 on line %d", video_y);
     end
-    */
+
 
     bit [15:0] cursor[16];
     bit [1:0] clut_bank0;
@@ -837,9 +862,9 @@ module mcd212 (
     } backdrop_color_register;
 
     struct packed {
-        bit cs;
-        bit nr;
-        bit ev;
+        bit cs;  // CLUT select for dual 7-bit CLUT
+        bit nr;  // 0 One region flag, 1 Two region flags used
+        bit ev;  // External video enable
         bit [3:0] cm23_20_planeb;
         bit [3:0] cm13_10_planea;
     } image_coding_method_register;
@@ -901,15 +926,17 @@ module mcd212 (
 
     assign {r, g, b} = {vidout.r, vidout.g, vidout.b};
 
-    bit  plane_a_visible;
-    bit  plane_b_visible;
+    bit plane_a_visible;
+    bit plane_b_visible;
+
+    bit [1:0] region_flags = 0;
 
     wire plane_a_dyuv_active = image_coding_method_register.cm13_10_planea == 4'b0101;
     wire plane_b_dyuv_active = image_coding_method_register.cm23_20_planeb == 4'b0101;
 
     // Ignore Color Key for DYUV. Use it only for CLUT!
-    wire plane_a_color_key_match = (clut_out0 != trans_color_plane_a) || plane_a_dyuv_active;
-    wire plane_b_color_key_match = (clut_out1 != trans_color_plane_b) || plane_b_dyuv_active;
+    wire plane_a_color_key_match = (clut_out0 == trans_color_plane_a) && !plane_a_dyuv_active;
+    wire plane_b_color_key_match = (clut_out1 == trans_color_plane_b) && !plane_b_dyuv_active;
 
     function automatic [7:0] WeightCalc(input [7:0] rgb, input [5:0] weight);
         if (weight == 0) begin
@@ -920,8 +947,9 @@ module mcd212 (
     endfunction
 
     always_comb begin
+        bit plane_a_transparent;  // Because logic in datasheet is also inverted
         bit [7:0] r, g, b;
-
+        plane_a_transparent = 1;
         r = {clut_out0.r, 2'b00};
         g = {clut_out0.g, 2'b00};
         b = {clut_out0.b, 2'b00};
@@ -936,33 +964,43 @@ module mcd212 (
         plane_a.g = WeightCalc(g, weight_a);
         plane_a.b = WeightCalc(b, weight_a);
 
-        plane_a_visible = 0;
         if (image_coding_method_register.cm13_10_planea != 0 && command_register_dcr1.ic1) begin
             // Use only the lower 3 bits first as the highest bit just inverts the result
 
-            // TODO Add Regions
+            assert (transparency_control_register.ta[2:0] != 3'b010);  // Transparency Bit?
+            assert (transparency_control_register.ta[2:0] != 3'b111);  // N.U.
             case (transparency_control_register.ta[2:0])
+                // Always (Plane Disabled)
+                3'b000:  plane_a_transparent = 1;
                 // Color Key = True
-                3'b001:  plane_a_visible = plane_a_color_key_match;
+                3'b001:  plane_a_transparent = plane_a_color_key_match;
+                // Region Flag 0
+                3'b011:  plane_a_transparent = region_flags[0];
+                // Region Flag 1
+                3'b100:  plane_a_transparent = region_flags[1];
                 // Region Flag 0 or Color Key = True
-                3'b101:  plane_a_visible = plane_a_color_key_match;
+                3'b101:  plane_a_transparent = plane_a_color_key_match || region_flags[0];
                 // Region Flag 1 or Color Key = True
-                3'b110:  plane_a_visible = plane_a_color_key_match;
-                default: plane_a_visible = 0;
+                3'b110:  plane_a_transparent = plane_a_color_key_match || region_flags[1];
+                // N.U.
+                default: plane_a_transparent = 0;
             endcase
 
             // Invert original result
-            if (transparency_control_register.ta[3]) plane_a_visible = !plane_a_visible;
+            if (transparency_control_register.ta[3]) plane_a_transparent = !plane_a_transparent;
 
             // Jeopardy Hack for Plane A just in case it's used elsewhere
             // This case is not defined in the datasheet
             if (transparency_control_register.ta == 4'b1001 && plane_a_dyuv_active)
-                plane_a_visible = 1;
+                plane_a_transparent = 0;
         end
+        plane_a_visible = !plane_a_transparent;
     end
 
     always_comb begin
+        bit plane_b_transparent;  // Because logic in datasheet is also inverted
         bit [7:0] r, g, b;
+        plane_b_transparent = 1;
         r = {clut_out1.r, 2'b00};
         g = {clut_out1.g, 2'b00};
         b = {clut_out1.b, 2'b00};
@@ -977,29 +1015,38 @@ module mcd212 (
         plane_b.g = WeightCalc(g, weight_b);
         plane_b.b = WeightCalc(b, weight_b);
 
-        plane_b_visible = 0;
         if (image_coding_method_register.cm23_20_planeb != 0 && command_register_dcr2.ic2) begin
             // Use only the lower 3 bits first as the highest bit just inverts the result
 
-            // TODO Add Regions
+            assert (transparency_control_register.tb[2:0] != 3'b010);  // Transparency Bit?
+            assert (transparency_control_register.tb[2:0] != 3'b111);  // N.U.
             case (transparency_control_register.tb[2:0])
+                // Always (Plane Disabled)
+                3'b000:  plane_b_transparent = 1;
                 // Color Key = True
-                3'b001:  plane_b_visible = plane_b_color_key_match;
+                3'b001:  plane_b_transparent = plane_b_color_key_match;
+                // Region Flag 0
+                3'b011:  plane_b_transparent = region_flags[0];
+                // Region Flag 1
+                3'b100:  plane_b_transparent = region_flags[1];
                 // Region Flag 0 or Color Key = True
-                3'b101:  plane_b_visible = plane_b_color_key_match;
+                3'b101:  plane_b_transparent = plane_b_color_key_match || region_flags[0];
                 // Region Flag 1 or Color Key = True
-                3'b110:  plane_b_visible = plane_b_color_key_match;
-                default: plane_b_visible = 0;
+                3'b110:  plane_b_transparent = plane_b_color_key_match || region_flags[1];
+                // N.U.
+                default: plane_b_transparent = 0;
             endcase
 
             // Invert original result
-            if (transparency_control_register.tb[3]) plane_b_visible = !plane_b_visible;
+            if (transparency_control_register.tb[3]) plane_b_transparent = !plane_b_transparent;
 
             // Jeopardy Hack
             // This case is not defined in the datasheet
             if (transparency_control_register.tb == 4'b1001 && plane_b_dyuv_active)
-                plane_b_visible = 1;
+                plane_b_transparent = 0;
         end
+        plane_b_visible = !plane_b_transparent;
+
     end
 
     function automatic [7:0] clamped_mix(input [7:0] a, input [7:0] b);
@@ -1078,8 +1125,10 @@ module mcd212 (
                 case (ch0_register_adr)
                     7'h40: begin
                         // Image Coding Method
-                        $display("Line %3d Coding A:%b B:%b", video_y, ch0_register_data[3:0],
-                                 ch0_register_data[11:8]);
+                        $display("Line %3d Coding A:%b %s B:%b %s", video_y,
+                                 ch0_register_data[3:0], coding_method_name(
+                                 ch0_register_data[3:0], 0), ch0_register_data[11:8],
+                                 coding_method_name(ch0_register_data[11:8], 1));
                         image_coding_method_register.cs <= ch0_register_data[22];
                         image_coding_method_register.nr <= ch0_register_data[19];
                         image_coding_method_register.ev <= ch0_register_data[18];
@@ -1171,7 +1220,10 @@ module mcd212 (
                 endcase
 
                 if (ch0_register_adr[6:3] == 4'b1010) begin
-                    $display("Region A %d %b", ch0_register_adr[2:0], ch0_register_data);
+                    $display("Region A %d %b %b %b %b", ch0_register_adr[2:0],
+                             ch0_register_data[23:20], ch0_register_data[16],
+                             ch0_register_data[15:10], ch0_register_data[9:0]);
+
                     region_control[ch0_register_adr[2:0]] <= {
                         ch0_register_data[23:20], ch0_register_data[16:0]
                     };
@@ -1254,7 +1306,10 @@ module mcd212 (
                 endcase
 
                 if (ch1_register_adr[6:3] == 4'b1010) begin
-                    $display("Region B %d %b", ch1_register_adr[2:0], ch1_register_data);
+                    $display("Region B %d %b %b %b %b", ch1_register_adr[2:0],
+                             ch1_register_data[23:20], ch1_register_data[16],
+                             ch1_register_data[15:10], ch1_register_data[9:0]);
+
                     region_control[ch1_register_adr[2:0]] <= {
                         ch1_register_data[23:20], ch1_register_data[16:0]
                     };

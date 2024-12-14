@@ -126,15 +126,17 @@ class CDi {
 
         png_init_io(png, fp);
 
+        int png_height_scale = 4;
+        int png_height = height * png_height_scale;
         // Output is 8bit depth, RGBA format.
-        png_set_IHDR(png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-                     PNG_FILTER_TYPE_DEFAULT);
+        png_set_IHDR(png, info, width, png_height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+                     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
         png_write_info(png, info);
 
-        png_bytepp row_pointers = (png_bytepp)png_malloc(png, sizeof(png_bytepp) * height);
+        png_bytepp row_pointers = (png_bytepp)png_malloc(png, sizeof(png_bytepp) * png_height);
 
-        for (int i = 0; i < height; i++) {
-            row_pointers[i] = &output_image[width * 3 * i];
+        for (int i = 0; i < png_height; i++) {
+            row_pointers[i] = &output_image[width * 3 * (i / png_height_scale)];
         }
 
         png_write_image(png, row_pointers);
