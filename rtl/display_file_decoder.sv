@@ -91,7 +91,6 @@ module display_file_decoder (
                 end
                 default: begin
                 end
-
             endcase
         end
     end
@@ -125,7 +124,7 @@ module display_file_decoder (
             write_index <= 0;
             read_index_q <= 0;
             count <= 0;
-            lower_byte <= 0;
+            lower_byte <= vsr_in[0];  // handle odd addresses by ignoring the first byte
             indizes_equal_during_write_q <= 0;
         end else begin
             if (din_valid && !(out.strobe && lower_byte)) count <= count + 1;
