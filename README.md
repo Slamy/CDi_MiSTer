@@ -48,7 +48,7 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,156 / 41,910 ( 31 % )
+    Logic utilization (in ALMs)  13,284 / 41,910 ( 32 % )
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
     Total DSP Blocks             65 / 112 ( 58 % )
 
@@ -58,13 +58,12 @@ Core Utilization:
 * Investigate crashed audio in both 2D Zelda games
     * Occurs during "Help-Cutscene" when SFX is played
 * Implement audio mixing and panning
+    * Fixes frequently used Stereo to Mono mixing in games with SFX
+    * Might fix weirdly mixed german + english voice in Kether
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
-* Add Interlacing
-* MCD212 Add Regions
-    * Fixes graphics in P.A.W.S.
-    * Fixes graphics in Tangram
-* Add RGB555
-    * Fixes DYUV Test on "Validation Disc"
+* MCD212: Add Interlacing
+* MCD212: Make regions and sprites pixel perfect
+    * Weird colors in Myst intro
 * Investigate red bars in Hotel Mario intro
 * Implement CDIC CDDA for audio cd tracks
 * CDIC Fetch TOC (The Apprentice)
@@ -73,6 +72,8 @@ Core Utilization:
 * Fix reset behaviour / Core is unstable
 * Add auto start of titles using front panel "Play" button
 * Fix servo behaviour of always detecting a CD-i disc
+* MCD212: Add RGB555
+    * Fixes DYUV Test on "Validation Disc"
 * Find a solution for the video mode reset during system resets
     * The ST flag is the issue here, causing a video mode change
 * Add alternative input devices (a mouse)

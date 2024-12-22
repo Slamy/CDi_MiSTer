@@ -891,7 +891,7 @@ module mcd212 (
         // TODO Initial values might not be correct. Adapt to rest of video timing.
         // TODO I'm also very unsure about the width of sprites. What is double? What is normal?
         // Accoring to chapter 7.6 the position is always based on double resolution
-        if (hblank) active_pixel <= 1;
+        if (hblank) active_pixel <= 0;
         else if (new_pixel_hires) active_pixel <= active_pixel + 1;
 
         if (vblank) active_line <= -1;
@@ -1219,21 +1219,20 @@ module mcd212 (
                     end
                 endcase
 
-                if (ch0_register_adr[6:3] == 4'b1010) begin
-                    $display("Region A %d %b %b %b %b", ch0_register_adr[2:0],
-                             ch0_register_data[23:20], ch0_register_data[16],
-                             ch0_register_data[15:10], ch0_register_data[9:0]);
-
-                    region_control[ch0_register_adr[2:0]] <= {
-                        ch0_register_data[23:20], ch0_register_data[16:0]
-                    };
-                end
-
                 if (ch0_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
                     $display("CLUT A  %d  %d %d %d", {clut_bank0, ch0_register_adr[5:0]},
                              ch0_register_data[23:18], ch0_register_data[15:10],
                              ch0_register_data[7:2]);
+                end
+            end
+
+            // TODO Only handles Explicit Control
+            if (active_pixel == region_control[rf0_index].x) begin
+                if (region_control[rf0_index].op[2:1] == 2'b10) begin
+                    // Change Weight of Plane A
+                    weight_a <= region_control[rf0_index].wf;
+                    $display("Weight A changed with Region %d", region_control[rf0_index].wf);
                 end
             end
         end
@@ -1253,13 +1252,36 @@ module mcd212 (
     assign clut_we1 = (ch1_register_adr <= 7'h3f) && ch1_register_write;
 
     always_ff @(posedge clk) begin
+        if (!reset) begin
+            if (ch0_register_write && ch0_register_adr[6:3] == 4'b1010) begin
+                $display("Line %3d Region A %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
+                         ch0_register_adr[2:0], ch0_register_data[23:20], ch0_register_data[16],
+                         ch0_register_data[15:10], ch0_register_data[9:0]);
+
+                region_control[ch0_register_adr[2:0]] <= {
+                    ch0_register_data[23:20], ch0_register_data[16:0]
+                };
+            end
+
+            if (ch1_register_write && ch1_register_adr[6:3] == 4'b1010) begin
+                $display("Line %3d Region A %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
+                         ch1_register_adr[2:0], ch1_register_data[23:20], ch1_register_data[16],
+                         ch1_register_data[15:10], ch1_register_data[9:0]);
+
+                region_control[ch1_register_adr[2:0]] <= {
+                    ch1_register_data[23:20], ch1_register_data[16:0]
+                };
+            end
+        end
+    end
+
+    always_ff @(posedge clk) begin
         if (reset) begin
             clut_bank1 <= 0;
             trans_color_plane_b <= 0;
             mask_color_plane_b <= 0;
             weight_b <= 0;
         end else begin
-
             if (ch1_register_write) begin
                 case (ch1_register_adr)
                     7'h43: begin
@@ -1305,16 +1327,6 @@ module mcd212 (
                     end
                 endcase
 
-                if (ch1_register_adr[6:3] == 4'b1010) begin
-                    $display("Region B %d %b %b %b %b", ch1_register_adr[2:0],
-                             ch1_register_data[23:20], ch1_register_data[16],
-                             ch1_register_data[15:10], ch1_register_data[9:0]);
-
-                    region_control[ch1_register_adr[2:0]] <= {
-                        ch1_register_data[23:20], ch1_register_data[16:0]
-                    };
-                end
-
                 if (ch1_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
                     $display("CLUT B  %d  %d %d %d", {clut_bank1, ch1_register_adr[5:0]},
@@ -1322,8 +1334,55 @@ module mcd212 (
                              ch1_register_data[7:2]);
                 end
             end
-        end
 
+            // TODO Only handles Explicit Control
+            if (active_pixel == region_control[rf0_index].x) begin
+                if (region_control[rf0_index].op[2:1] == 2'b11) begin
+                    // Change Weight of Plane B
+                    $display("Weight B changed with Region %d", region_control[rf0_index].wf);
+                    weight_b <= region_control[rf0_index].wf;
+                end
+            end
+        end
+    end
+
+
+    // --- Regions ---
+    bit [2:0] rf0_index;  // 0 to 7 as it is used for Explicit Control
+    bit [1:0] rf1_index;  // 0 to 3 as only required for Implicit Control
+
+    always_ff @(posedge clk) begin
+        if (hblank) begin
+            region_flags <= 0;
+            rf0_index <= 0;
+            rf1_index <= 0;
+        end else begin
+            if (image_coding_method_register.nr) begin
+                // Implicit Control of Regions Flags
+                // RF0 is handles by Region Control Registers 0123 in that order
+                // X0 < X1 < X2 < X3
+                // RF1 is handles by Region Control Registers 4567 in that order
+                // X4 < X5 < X6 < X7
+
+                if (active_pixel == region_control[rf0_index].x) begin
+                    // TODO
+                end
+
+                if (active_pixel == region_control[{1'b1, rf1_index}].x) begin
+                    // TODO
+                end
+
+            end else begin
+                // Explicit Control of Region Flags
+                // X0 < X1 < X2 < X3 < X4 < X5 < X6 < X7
+                if (active_pixel == region_control[rf0_index].x) begin
+                    rf0_index <= rf0_index + 1;
+                    if (region_control[rf0_index].op[3]) begin
+                        region_flags[region_control[rf0_index].rf]<=region_control[rf0_index].op[0];
+                    end
+                end
+            end
+        end
     end
 
 endmodule

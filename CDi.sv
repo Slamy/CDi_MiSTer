@@ -224,6 +224,7 @@ module emu (
         "P1F1,ROM,Replace Boot ROM;",
         "P1O[3],UART Fake Space,No,Yes;",
         "P1O[7:6],Force Video Plane,Original,A,B;",
+        "P1O[8],No reset on NvRAM change,No,Yes;",
         "O[5],Overclock input device,No,Yes;",
         "-;",
         "T[0],Reset;",
@@ -518,7 +519,7 @@ module emu (
 
     assign prepare_sdram = cditop_reset;
     always_ff @(posedge clk_sys) begin
-        cditop_reset <= RESET || status[0] || buttons[1] || ioctl_download || !ram_zero_done || nvram_img_mount;
+        cditop_reset <= RESET || status[0] || buttons[1] || ioctl_download || !ram_zero_done || (nvram_img_mount && enable_reset_on_nvram_img_mount);
     end
 
     sdram sdram (
@@ -596,6 +597,7 @@ module emu (
     bit tvmode_ntsc  /*verilator public_flat_rw*/;
     wire overclock_maneuvering_device = 1;
     wire [1:0] debug_force_video_plane = 0;
+    wire enable_reset_on_nvram_img_mount = 0;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -603,6 +605,7 @@ module emu (
     wire [1:0] debug_force_video_plane = status[7:6];
     wire tvmode_ntsc = status[4];
     wire overclock_maneuvering_device = status[5];
+    wire enable_reset_on_nvram_img_mount = !status[8];
 `endif
 
     wire HBlank;
