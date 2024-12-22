@@ -38,6 +38,9 @@ module cdic (
     output bit fail_too_much_data
 );
 
+    // Used to detect edges of cd_hps_ack
+    bit cd_hps_ack_q;
+
     // Sometimes when performing a seek, the MiSTer main doesn't deliver
     // a CD sector for multiple sector times.
     // As long as this is bit is set, the data must not be processed.
@@ -336,7 +339,7 @@ module cdic (
         if (reset) mem_cd_audio_ack_q <= 0;
         else mem_cd_audio_ack_q <= mem_cd_audio_ack;
     end
-    wire access = cs && uds && lds;
+    wire access = cs && (uds || lds);
 
     struct packed {
         bit [3:0] mins_upper_digit;
@@ -357,12 +360,23 @@ module cdic (
         secs = 32'(time_register.secs_upper_digit) * 32'd10 + 32'(time_register.secs_lower_digit);
         frac = 32'(time_register.frac_upper_digit) * 32'd10 + 32'(time_register.frac_lower_digit);
 
+        // The highest bit of the fraction is usually never set as
+        // it ends with BCD 0x74 before the next second
+        // However, it causes the fraction to be nullified
+        // This feature is used by the Seek command
+        if (time_register.frac_upper_digit[3]) frac = 0;
+
         time_register_as_lba = ((mins * 60) + secs) * 75 + frac;
     end
 
+    // Subcode Q data is added at the end of the raw sector data
+    localparam bit [14:0] kWordsPerSubcodeFrame = 12;
 
     // 2352 bytes per sector. Always.
-    localparam bit [14:0] kWordsPerSector = 2352 / 2;
+    localparam bit [14:0] kCdSectorSize = 2352;
+
+    // Total number of words, the CDIC will provide per requested sector
+    localparam bit [14:0] kWordsPerSector = kWordsPerSubcodeFrame + kCdSectorSize / 2;
 
     // Index of word in CD sector. Useful for selecting specific words
     bit [14:0] sector_word_index = 0;
@@ -423,6 +437,7 @@ module cdic (
         cd_audio_start_playback <= 0;
         cd_hps_data_valid_q2 <= cd_hps_data_valid_q;
         cd_hps_data_valid_q <= cd_hps_data_valid;
+        cd_hps_ack_q <= cd_hps_ack;
 
         adpcm_enable_audiomap <= 0;
         adpcm_disable_audiomap <= 0;
@@ -470,16 +485,16 @@ module cdic (
                 cd_data_target_adr <= cd_data_target_adr + 1;
             end
 
+            if (cd_hps_ack_q && !cd_hps_ack && cd_reading_active) begin
+                $display("Sector written to RAM / has ended");
+                //Get next sector
+                cd_hps_lba <= cd_hps_lba + 1;
+                write_timecode1 <= 1;
+                write_timecode2 <= 1;
+            end
+
             if (cd_hps_data_valid && cd_reading_active) begin
                 sector_word_index <= sector_word_index + 1;
-
-                if (sector_word_index == kWordsPerSector - 1) begin
-                    $display("Sector written to RAM / has ended");
-                    //Get next sector
-                    cd_hps_lba <= cd_hps_lba + 1;
-                    write_timecode1 <= 1;
-                    write_timecode2 <= 1;
-                end
 
                 // Reading Order of MODE2 Header Information
                 // Example Header
@@ -720,7 +735,13 @@ module cdic (
                         cd_hps_lba <= time_register_as_lba;
                         read_mode2 <= 0;
                     end
-                    16'h2c: $display("CDIC Command: Seek");
+                    16'h2c: begin
+                        $display("CDIC Command: Seek");
+                        // MAME and cdiemu implement seek as Read Mode 1
+                        start_cd_reading_cnt <= kSeekTime;
+                        cd_hps_lba <= time_register_as_lba;
+                        read_mode2 <= 0;
+                    end
                     16'h2a: begin
                         $display("CDIC Command: Read Mode 2");
                         start_cd_reading_cnt <= kSeekTime;

@@ -47,3 +47,17 @@ SECTOR_SUBMODE
     SUBMODE_VIDEO      = 0x02,  Sector must be one of these
     SUBMODE_EOR        = 0x01,
 SECTOR_CODING
+
+## Subcode
+
+### Q Channel
+
+* https://bani.anime.net/iec958/q_subcode/project.htm
+* https://github.com/carrotIndustries/redbook
+* https://problemkaputt.de/psxspx-cdrom-subchannels.htm
+
+### Dumping
+
+    $ cdrdao read-cd --read-raw --read-subchan rw_raw tocfile
+    $ cat tocfile
+

@@ -98,7 +98,9 @@ class CDi {
     std::chrono::_V2::system_clock::time_point start;
     int sd_rd_q;
     static constexpr uint32_t kSectorHeaderSize{12};
-    static constexpr uint32_t kSectorSize{0x930};
+    static constexpr uint32_t kSectorSize{2352};
+    static constexpr uint32_t kWordsPerSubcodeFrame{12};
+    static constexpr uint32_t kWordsPerSector{kWordsPerSubcodeFrame + kSectorSize / 2};
 
     uint32_t get_pixel_value(uint32_t x, uint32_t y) {
         uint8_t *pixel = &output_image[(width * y + x) * 3];
@@ -246,7 +248,10 @@ class CDi {
             int res = fseek(f_cd_bin, file_offset, SEEK_SET);
             assert(res == 0);
 
-            fread(hps_buffer, 1, 0x930, f_cd_bin);
+            fread(hps_buffer, 1, kSectorSize, f_cd_bin);
+
+            for (int i = 0; i < 12; i++)
+                hps_buffer[kSectorSize / 2 + i] = 0x12 + i;
             hps_buffer_index = 0;
         }
 
@@ -277,7 +282,7 @@ class CDi {
 
         dut.rootp->emu__DOT__sd_buff_wr = 0;
         if (dut.rootp->emu__DOT__cd_hps_ack && (step % 200) == 15) {
-            if (hps_buffer_index == kSectorSize / 2) {
+            if (hps_buffer_index == kWordsPerSector) {
                 dut.rootp->emu__DOT__cd_hps_ack = 0;
                 printf("Sector transferred!\n");
             } else {

@@ -1,5 +1,17 @@
 # Servo
 
+## SPI to Slave recorded on Philips CD-i 210/05
+
+500 kHZ Clock rate
+
+### With CD-i in closed tray
+
+Ends with status `B0 00 04 25`
+
+### With Audio CD in closed tray
+
+Ends with status `B0 00 01 25`
+
 ## SPI to Slave recorded on Philips CD-i 210/20
 
 500 kHZ Clock rate

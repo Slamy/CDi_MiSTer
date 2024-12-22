@@ -13,7 +13,8 @@ vasmm68k_mot -Fbin -m68000 cdic_data.asm -o cdic_data.rom
 vasmm68k_mot -Fbin -m68000 uarttest.asm -o uarttest.rom
 vasmm68k_mot -Fbin -m68000 nvram_backup_restore.asm -o nvram_backup_restore.rom
 vasmm68k_mot -Fbin -m68000 nvramsender.asm -o nvramsender.rom
+vasmm68k_mot -Fbin -m68000 cdic_sector_send.asm -o cdic_sector_send.rom
 
-xxd -p -c2 nvram_backup_restore.rom cdi200.mem
+xxd -p -c2 cdic_sector_send.rom cdi200.mem
 xxd -p -c1 ../sim/cdimono1/zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206 slave.mem
 #dd if=/dev/urandom of=save.bin count=16
