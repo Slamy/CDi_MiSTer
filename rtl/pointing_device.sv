@@ -1,3 +1,20 @@
+
+
+function automatic signed [7:0] deadzone_calc(input signed [7:0] analog);
+    if (analog > 14) deadzone_calc = analog - 14;
+    else if (analog < -14) deadzone_calc = analog + 14;
+    else deadzone_calc = 0;
+endfunction
+
+function automatic signed [8:0] mouse_saturate(input signed [15:0] acc);
+    if (acc > 127)
+        mouse_saturate = 127;
+    else if (acc < -127)
+        mouse_saturate = -127;
+    else
+        mouse_saturate = acc;
+endfunction
+
 module pointing_device (
     input clk,
     input wire [15:0] mister_joystick,
@@ -78,19 +95,20 @@ module pointing_device (
         y = 0;
 
         // combine joystick and mouse buttons
-
         b1 = mister_joystick[5] | mister_mouse[0];
         b2 = mister_joystick[4] | mister_mouse[1];
 
-        // The spoon has a short amount of time where it moves 2 ticks per frame
+        // The paddle controller has a short amount of time where
+        // it moves 2 ticks per frame
         // After a while it switches itself to 8 ticks per frame
-        // We are overclocking the spoon, changing 8 to 2 and 2 to 1
+        // In case of overclocking we reduce the speed to 7
         if (accel >= 5) begin
             speed = overclock ? 7 : 8;
         end else begin
             speed = overclock ? 2 : 2;
         end
 
+        // handle d pad
         if (mister_joystick[0]) x = speed;
         if (mister_joystick[2]) y = speed;
         if (mister_joystick[1]) x = -speed;
@@ -100,58 +118,31 @@ module pointing_device (
         y_analog = mister_joystick_analog[15:8];
 
         // map analog input to -18..+18 with a deadzone of 28x28
-
-        if (x_analog > 14)
-            x_analog = x_analog - 14;
-        else if (x_analog < -14)
-            x_analog = x_analog + 14;
-        else
-            x_analog = 0;
-
-        x_analog = x_analog / 6;
-
-        if (y_analog > 14)
-            y_analog = y_analog - 14;
-        else if (y_analog < -14)
-            y_analog = y_analog + 14;
-        else
-            y_analog = 0;
-
-        y_analog = y_analog / 6;
+        x_analog = deadzone_calc(x_analog) / 6;
+        y_analog = deadzone_calc(y_analog) / 6;
 
         // set mouse coordinates
+        x_mouse = mouse_saturate(x_mouse_acc);
+        y_mouse = mouse_saturate(y_mouse_acc);
 
-        if (x_mouse_acc > 127)
-            x_mouse = 127;
-        else if (x_mouse_acc < -127)
-            x_mouse = -127;
-        else
-            x_mouse = x_mouse_acc;
-
-        if (y_mouse_acc > 127)
-            y_mouse = 127;
-        else if (y_mouse_acc < -127)
-            y_mouse = -127;
-        else
-            y_mouse = y_mouse_acc;
-
-        digital_movement = (x != 0) || (y != 0);
+        digital_movement = mister_joystick[3:0]!=0;
         analog_movement = (x_analog != 0) || (y_analog != 0);
         mouse_movement = (x_mouse != 0) || (y_mouse != 0);
 
-        // prioritize mouse>analog>digital
-
-        if (mouse_movement) begin
+        // prioritize analog > digital > mouse
+        if (mouse_movement && !digital_movement) begin
             x = x_mouse;
             y = y_mouse;
-        end else if (analog_movement) begin
+        end
+        if (analog_movement) begin
             x = x_analog;
             y = y_analog;
         end
 
         // Only transmit when buttons have changed or when we are moving the cursor
         // Even so, the speed is not changed, we must transmit permanently.
-        perform_transmit = (b1 != b1_q) || (b2 != b2_q) || (x != x_q) || (y != y_q) || (x !=0 ) || (y !=0 );
+        perform_transmit = (b1 != b1_q) || (b2 != b2_q) || (x != x_q) ||
+         (y != y_q) || (x !=0 ) || (y !=0 );
     end
 
     always_ff @(posedge clk) begin
@@ -161,7 +152,6 @@ module pointing_device (
         serial_out.write <= 0;
 
         // accumulation of mouse movement
-
         x_mouse_acc <= x_mouse_acc + x_mouse_inc;
         y_mouse_acc <= y_mouse_acc + y_mouse_inc;
 
@@ -196,7 +186,6 @@ module pointing_device (
                 end
                 IDLE: begin
                     // do nothing
-
                 end
                 BYTE0: begin
                     serial_out.data <= frame[0];
