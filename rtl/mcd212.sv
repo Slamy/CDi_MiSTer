@@ -3,6 +3,10 @@
 
 // MCD 212 - DRAM and Video
 
+`define dp_vsr(statement) `ifdef DEBUG_VSR $display``statement `endif
+`define dp_dcaptr(statement) `ifdef DEBUG_DCA $display``statement `endif
+`define dp_raster(statement) `ifdef DEBUG_RASTER $display``statement `endif
+
 `ifdef VERILATOR
 function string coding_method_name(bit [3:0] coding, bit plane_b);
     if (plane_b) begin
@@ -822,6 +826,13 @@ module mcd212 (
         end
     end
 
+    always_ff @(posedge clk) begin
+        if (ica0_reload_vsr) `dp_vsr(("Reload VSR %x", ica0_vsr));
+
+        if (dca0_read) `dp_dcaptr(("Start DCA0 on line %d", video_y));
+        if (dca1_read) `dp_dcaptr(("Start DCA1 on line %d", video_y));
+    end
+
     bit [15:0] cursor[16];
     bit [1:0] clut_bank0;
     bit [1:0] clut_bank1;
@@ -1113,13 +1124,14 @@ module mcd212 (
                 case (ch0_register_adr)
                     7'h40: begin
                         // Image Coding Method
-                        $display(
+                        `dp_raster(
+                            (
                             "Line %3d Coding A:%b %s B:%b %s NR:%b", video_y,
                             ch0_register_data[3:0],  // Coding A
                             coding_method_name(ch0_register_data[3:0], 0),  // Coding A as text
                             ch0_register_data[11:8],  // Coding B
                             coding_method_name(ch0_register_data[11:8], 1),  // Coding B as text
-                            ch0_register_data[19]);  // Type of region flag handling
+                            ch0_register_data[19]));  // Type of region flag handling
                         image_coding_method_register.cs <= ch0_register_data[22];
                         image_coding_method_register.nr <= ch0_register_data[19];
                         image_coding_method_register.ev <= ch0_register_data[18];
@@ -1128,9 +1140,10 @@ module mcd212 (
                     end
                     7'h41: begin
                         // Transparency Control
-                        $display("Line %3d Transparency Control MX:%b TB:%b TA:%b", video_y,
+                        `dp_raster(
+                            ("Line %3d Transparency Control MX:%b TB:%b TA:%b", video_y,
                                  ch0_register_data[23], ch0_register_data[11:8],
-                                 ch0_register_data[3:0]);
+                                 ch0_register_data[3:0]));
 
                         transparency_control_register.mx <= ch0_register_data[23];
                         transparency_control_register.tb <= ch0_register_data[11:8];
@@ -1143,16 +1156,17 @@ module mcd212 (
                     7'h42: begin
                         // Plane Order
                         plane_b_in_front_of_a <= ch0_register_data[0];
-                        if (ch0_register_data[0]) $display("Plane B in front of Plane A");
-                        else $display("Plane A in front of Plane B");
+                        if (ch0_register_data[0]) `dp_raster(("Plane B in front of Plane A"));
+                        else `dp_raster(("Plane A in front of Plane B"));
                     end
                     7'h43: begin
                         // CLUT Bank
                         clut_bank0 <= ch0_register_data[1:0];
                     end
                     7'h44: begin
-                        $display("Trans Color Plane A %d %d %d", ch0_register_data[23:18],
-                                 ch0_register_data[15:10], ch0_register_data[7:2]);
+                        `dp_raster(
+                            ("Trans Color Plane A %d %d %d", ch0_register_data[23:18],
+                                 ch0_register_data[15:10], ch0_register_data[7:2]));
                         trans_color_plane_a <= {
                             ch0_register_data[23:18],
                             ch0_register_data[15:10],
@@ -1160,8 +1174,9 @@ module mcd212 (
                         };
                     end
                     7'h47: begin
-                        $display("Mask Color Plane A %d %d %d", ch0_register_data[23:18],
-                                 ch0_register_data[15:10], ch0_register_data[7:2]);
+                        `dp_raster(
+                            ("Mask Color Plane A %d %d %d", ch0_register_data[23:18],
+                                 ch0_register_data[15:10], ch0_register_data[7:2]));
                         mask_color_plane_a <= {
                             ch0_register_data[23:18],
                             ch0_register_data[15:10],
@@ -1171,28 +1186,30 @@ module mcd212 (
                     7'h4a: begin
                         // DYUV Abs. Start Value for Plane A
                         dyuv0_abs_start <= ch0_register_data;
-                        $display("DYUV Abs. Start Plane A %d %d %d", ch0_register_data[23:16],
-                                 ch0_register_data[15:8], ch0_register_data[7:0]);
+                        `dp_raster(
+                            ("DYUV Abs. Start Plane A %d %d %d", ch0_register_data[23:16],
+                                 ch0_register_data[15:8], ch0_register_data[7:0]));
                     end
                     7'h4d: begin
                         // Cursor Position
                         cursor_position_reg <= ch0_register_data;
-                        $display("Cursor X:%d Y:%d", ch0_register_data[9:0],
-                                 ch0_register_data[21:12]);
+                        `dp_raster(
+                            ("Cursor X:%d Y:%d", ch0_register_data[9:0], ch0_register_data[21:12]));
                     end
                     7'h4e: begin
                         // Cursor Control
                         cursor_control_register <= ch0_register_data;
-                        $display("Cursor Control %b", ch0_register_data);
+                        `dp_raster(("Cursor Control %b", ch0_register_data));
                     end
                     7'h4f: begin
                         // Cursor Pattern
                         cursor[ch0_register_data[19:16]] <= ch0_register_data[15:0];
-                        $display("Cursor %x %b", ch0_register_data[19:16], ch0_register_data[15:0]);
+                        `dp_raster(
+                            ("Cursor %x %b", ch0_register_data[19:16], ch0_register_data[15:0]));
                     end
                     7'h58: begin
                         // Backdrop Color
-                        $display("Backdrop Color %b", ch0_register_data[3:0]);
+                        `dp_raster(("Backdrop Color %b", ch0_register_data[3:0]));
                         backdrop_color_register <= ch0_register_data[3:0];
                     end
                     7'h59: begin
@@ -1203,29 +1220,30 @@ module mcd212 (
                     7'h5b: begin
                         // Weight Factor for Plane A
                         weight_a <= ch0_register_data[5:0];
-                        $display("Line %3d Weight A %d", video_y, ch0_register_data[5:0]);
+                        `dp_raster(("Line %3d Weight A %d", video_y, ch0_register_data[5:0]));
                     end
                     default: begin
                         // Mask out CLUT and Region writes
                         if (ch0_register_adr >= 7'h40 && ch0_register_adr[6:3] != 4'b1010) begin
-                            $display("Plane A ignored %x", ch0_register_adr);
+                            `dp_raster(("Plane A ignored %x", ch0_register_adr));
                         end
                     end
                 endcase
 
                 if (ch0_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
-                    $display("CLUT A  %d  %d %d %d", {clut_bank0, ch0_register_adr[5:0]},
-                             ch0_register_data[23:18], ch0_register_data[15:10],
-                             ch0_register_data[7:2]);
+                    `dp_raster(("CLUT A  %d  %d %d %d", {clut_bank0, ch0_register_adr[5:0]
+                               }, ch0_register_data[23:18], ch0_register_data[15:10],
+                                   ch0_register_data[7:2]));
                 end
             end
 
             if (active_pixel == region_control[rf0_index].x) begin
                 if (region_control[rf0_index].op[2:1] == 2'b10) begin
                     // Change Weight of Plane A
-                    $display("Line %3d Weight A changed with Region %d at %d to %d", video_y,
-                             rf0_index, active_pixel, region_control[rf0_index].wf);
+                    `dp_raster(
+                        ("Line %3d Weight A changed with Region %d at %d to %d", video_y,
+                             rf0_index, active_pixel, region_control[rf0_index].wf));
                     weight_a <= region_control[rf0_index].wf;
                 end
             end
@@ -1233,8 +1251,10 @@ module mcd212 (
             if (image_coding_method_register.nr && active_pixel == region_control[{1'b1, rf1_index}].x) begin
                 if (region_control[{1'b1, rf1_index}].op[2:1] == 2'b10) begin
                     // Change Weight of Plane A
-                    $display("Line %3d Weight A changed with Region %d at %d to %d", video_y,
-                             rf0_index, active_pixel, region_control[{1'b1, rf1_index}].wf);
+                    `dp_raster(
+                        ("Line %3d Weight A changed with Region %d at %d to %d", video_y,
+                             rf0_index, active_pixel, region_control[{
+                        1'b1, rf1_index}].wf));
                     weight_a <= region_control[{1'b1, rf1_index}].wf;
                 end
             end
@@ -1257,9 +1277,10 @@ module mcd212 (
     always_ff @(posedge clk) begin
         if (!reset) begin
             if (ch0_register_write && ch0_register_adr[6:3] == 4'b1010) begin
-                $display("Line %3d Region CH0 %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
+                `dp_raster(
+                    ("Line %3d Region CH0 %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
                          ch0_register_adr[2:0], ch0_register_data[23:20], ch0_register_data[16],
-                         ch0_register_data[15:10], ch0_register_data[9:0]);
+                         ch0_register_data[15:10], ch0_register_data[9:0]));
 
                 region_control[ch0_register_adr[2:0]] <= {
                     ch0_register_data[23:20], ch0_register_data[16:0]
@@ -1267,9 +1288,10 @@ module mcd212 (
             end
 
             if (ch1_register_write && ch1_register_adr[6:3] == 4'b1010) begin
-                $display("Line %3d Region CH1 %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
+                `dp_raster(
+                    ("Line %3d Region CH1 %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
                          ch1_register_adr[2:0], ch1_register_data[23:20], ch1_register_data[16],
-                         ch1_register_data[15:10], ch1_register_data[9:0]);
+                         ch1_register_data[15:10], ch1_register_data[9:0]));
 
                 region_control[ch1_register_adr[2:0]] <= {
                     ch1_register_data[23:20], ch1_register_data[16:0]
@@ -1295,8 +1317,9 @@ module mcd212 (
                         assert (ch1_register_data[1]);
                     end
                     7'h46: begin
-                        $display("Trans Color Plane B %d %d %d", ch1_register_data[23:18],
-                                 ch1_register_data[15:10], ch1_register_data[7:2]);
+                        `dp_raster(
+                            ("Trans Color Plane B %d %d %d", ch1_register_data[23:18],
+                                 ch1_register_data[15:10], ch1_register_data[7:2]));
                         trans_color_plane_b <= {
                             ch1_register_data[23:18],
                             ch1_register_data[15:10],
@@ -1304,8 +1327,9 @@ module mcd212 (
                         };
                     end
                     7'h49: begin
-                        $display("Mask Color Plane B %d %d %d", ch1_register_data[23:18],
-                                 ch1_register_data[15:10], ch1_register_data[7:2]);
+                        `dp_raster(
+                            ("Mask Color Plane B %d %d %d", ch1_register_data[23:18],
+                                 ch1_register_data[15:10], ch1_register_data[7:2]));
                         mask_color_plane_b <= {
                             ch1_register_data[23:18],
                             ch1_register_data[15:10],
@@ -1315,13 +1339,14 @@ module mcd212 (
                     7'h4b: begin
                         // DYUV Abs. Start Value for Plane B
                         dyuv1_abs_start <= ch1_register_data;
-                        $display("DYUV Abs. Start Plane B %d %d %d", ch1_register_data[23:16],
-                                 ch1_register_data[15:8], ch1_register_data[7:0]);
+                        `dp_raster(
+                            ("DYUV Abs. Start Plane B %d %d %d", ch1_register_data[23:16],
+                                 ch1_register_data[15:8], ch1_register_data[7:0]));
                     end
                     7'h5c: begin
                         // Weight Factor for Plane B
                         weight_b <= ch1_register_data[5:0];
-                        $display("Line %3d Weight B %d", video_y, ch1_register_data[5:0]);
+                        `dp_raster(("Line %3d Weight B %d", video_y, ch1_register_data[5:0]));
                     end
                     7'h5A: begin
                         // Mosaic Pixel Hold for Plane B
@@ -1330,24 +1355,24 @@ module mcd212 (
                     end
                     default: begin
                         if (ch1_register_adr >= 7'h40 && ch1_register_adr[6:3] != 4'b1010) begin
-                            $display("Plane B ignored %x", ch1_register_adr);
+                            `dp_raster(("Plane B ignored %x", ch1_register_adr));
                         end
                     end
                 endcase
 
                 if (ch1_register_adr <= 7'h3f) begin
                     // CLUT Color 0 to 63
-                    $display("CLUT B  %d  %d %d %d", {clut_bank1, ch1_register_adr[5:0]},
-                             ch1_register_data[23:18], ch1_register_data[15:10],
-                             ch1_register_data[7:2]);
+                    `dp_raster(("CLUT B  %d  %d %d %d", {clut_bank1, ch1_register_adr[5:0]
+                               }, ch1_register_data[23:18], ch1_register_data[15:10],
+                                   ch1_register_data[7:2]));
                 end
             end
 
             if (active_pixel == region_control[rf0_index].x) begin
                 if (region_control[rf0_index].op[2:1] == 2'b11) begin
                     // Change Weight of Plane B
-                    $display("Line %3d Weight B changed with Region %d at %d to %d", video_y, {
-                             1'b1, rf1_index}, active_pixel, region_control[rf0_index].wf);
+                    `dp_raster(("Line %3d Weight B changed with Region %d at %d to %d", video_y, {
+                               1'b1, rf1_index}, active_pixel, region_control[rf0_index].wf));
                     weight_b <= region_control[rf0_index].wf;
                 end
             end
@@ -1355,8 +1380,9 @@ module mcd212 (
             if (image_coding_method_register.nr && active_pixel == region_control[{1'b1, rf1_index}].x) begin
                 if (region_control[{1'b1, rf1_index}].op[2:1] == 2'b11) begin
                     // Change Weight of Plane B
-                    $display("Line %3d Weight B changed with Region %d at %d to %d", video_y, {
-                             1'b1, rf1_index}, active_pixel, region_control[{1'b1, rf1_index}].wf);
+                    `dp_raster(("Line %3d Weight B changed with Region %d at %d to %d", video_y, {
+                               1'b1, rf1_index}, active_pixel, region_control[{1'b1, rf1_index
+                               }].wf));
                     weight_b <= region_control[{1'b1, rf1_index}].wf;
                 end
             end
