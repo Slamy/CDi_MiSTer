@@ -48,8 +48,8 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,438 / 41,910 ( 32 % )
-    Total registers              15409
+    Logic utilization (in ALMs)  13,359 / 41,910 ( 32 % )
+    Total registers              15428
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
     Total DSP Blocks             65 / 112 ( 58 % )
 
@@ -77,8 +77,6 @@ Core Utilization:
     * Fixes DYUV Test on "Validation Disc"
 * Find a solution for the video mode reset during system resets
     * The ST flag is the issue here, causing a video mode change
-* Add alternative input devices (a mouse)
-* OSD setting for input device conformance (1200 baud)
 * Add SNAC support (IR remote + wired controller)
 * Refurbish I2C for the front display and show the content as picture in picture during changes?
     * It might not even be required at all.

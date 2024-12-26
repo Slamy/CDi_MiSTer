@@ -626,7 +626,7 @@ module emu (
     bytestream slave_serial_in ();
     wire slave_rts;
 
-    pointing_device spoon (
+    pointing_device pointing_dev_front (
         .clk(clk_sys),
         .mister_joystick(JOY0),
         .mister_joystick_analog(JOY0_ANALOG),
