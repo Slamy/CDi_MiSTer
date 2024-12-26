@@ -609,7 +609,7 @@ module emu (
     wire debug_uart_fake_space = status[3];
     wire [1:0] debug_force_video_plane = status[7:6];
     wire tvmode_ntsc = status[4];
-    wire overclock_maneuvering_device = status[5];
+    wire overclock_pointing_device = status[5];
     wire enable_reset_on_nvram_img_mount = !status[8];
 `endif
 
