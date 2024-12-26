@@ -16,7 +16,7 @@ module pointing_device (
         else deadzone_calc = 0;
     endfunction
 
-    function automatic signed [7:0] mouse_saturate(input signed [15:0] acc);
+    function automatic signed [7:0] mouse_saturate(input signed [12:0] acc);
         if (acc > 127) mouse_saturate = 127;
         else if (acc < -127) mouse_saturate = -127;
         else mouse_saturate = 8'(acc);
@@ -87,8 +87,8 @@ module pointing_device (
     bit significant_mouse_movement_latch;
 
     // accumulate movement from MiSTer framework
-    bit signed [15:0] x_mouse_acc;
-    bit signed [15:0] y_mouse_acc;
+    bit signed [12:0] x_mouse_acc;
+    bit signed [12:0] y_mouse_acc;
 
     bit signed [7:0] x_mouse;
     bit signed [7:0] y_mouse;
@@ -157,8 +157,8 @@ module pointing_device (
 
         // accumulation of mouse movement
         if (mouse_inc_valid && device_type == RELATIVE) begin
-            x_mouse_acc <= x_mouse_acc + 16'(x_mouse_inc);
-            y_mouse_acc <= y_mouse_acc + 16'(y_mouse_inc);
+            x_mouse_acc <= x_mouse_acc + 13'(x_mouse_inc);
+            y_mouse_acc <= y_mouse_acc + 13'(y_mouse_inc);
         end
 
         if (significant_mouse_movement) significant_mouse_movement_latch <= 1;
@@ -236,8 +236,8 @@ module pointing_device (
                 x_mouse_acc <= 0;
                 y_mouse_acc <= 0;
                 if (mouse_inc_valid) begin
-                    x_mouse_acc <= 16'(x_mouse_inc);
-                    y_mouse_acc <= 16'(y_mouse_inc);
+                    x_mouse_acc <= 13'(x_mouse_inc);
+                    y_mouse_acc <= 13'(y_mouse_inc);
                 end
             end
 
