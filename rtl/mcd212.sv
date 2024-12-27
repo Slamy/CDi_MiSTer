@@ -822,14 +822,6 @@ module mcd212 (
         end
     end
 
-    always_ff @(posedge clk) begin
-        if (ica0_reload_vsr) $display("Reload VSR %x", ica0_vsr);
-
-        if (dca0_read) $display("Start DCA0 on line %d", video_y);
-        if (dca1_read) $display("Start DCA1 on line %d", video_y);
-    end
-
-
     bit [15:0] cursor[16];
     bit [1:0] clut_bank0;
     bit [1:0] clut_bank1;
@@ -1125,10 +1117,13 @@ module mcd212 (
                 case (ch0_register_adr)
                     7'h40: begin
                         // Image Coding Method
-                        $display("Line %3d Coding A:%b %s B:%b %s", video_y,
-                                 ch0_register_data[3:0], coding_method_name(
-                                 ch0_register_data[3:0], 0), ch0_register_data[11:8],
-                                 coding_method_name(ch0_register_data[11:8], 1));
+                        $display(
+                            "Line %3d Coding A:%b %s B:%b %s NR:%b", video_y,
+                            ch0_register_data[3:0],  // Coding A
+                            coding_method_name(ch0_register_data[3:0], 0),  // Coding A as text
+                            ch0_register_data[11:8],  // Coding B
+                            coding_method_name(ch0_register_data[11:8], 1),  // Coding B as text
+                            ch0_register_data[19]);  // Type of region flag handling
                         image_coding_method_register.cs <= ch0_register_data[22];
                         image_coding_method_register.nr <= ch0_register_data[19];
                         image_coding_method_register.ev <= ch0_register_data[18];
@@ -1206,15 +1201,18 @@ module mcd212 (
                     end
                     7'h59: begin
                         // Mosaic Pixel Hold for Plane A
+                        // TODO is ignored
+                        $display("Mosaic A %b", ch0_register_data[3:0]);
                     end
                     7'h5b: begin
                         // Weight Factor for Plane A
                         weight_a <= ch0_register_data[5:0];
-                        $display("Weight A %d", ch0_register_data[5:0]);
+                        $display("Line %3d Weight A %d", video_y, ch0_register_data[5:0]);
                     end
                     default: begin
-                        if (ch0_register_adr >= 7'h40) begin
-                            $display("Ignored %x", ch0_register_adr);
+                        // Mask out CLUT and Region writes
+                        if (ch0_register_adr >= 7'h40 && ch0_register_adr[6:3] != 4'b1010) begin
+                            $display("Plane A ignored %x", ch0_register_adr);
                         end
                     end
                 endcase
@@ -1231,8 +1229,9 @@ module mcd212 (
             if (active_pixel == region_control[rf0_index].x) begin
                 if (region_control[rf0_index].op[2:1] == 2'b10) begin
                     // Change Weight of Plane A
+                    $display("Line %3d Weight A changed with Region at %d to %d", video_y,
+                             active_pixel, region_control[rf0_index].wf);
                     weight_a <= region_control[rf0_index].wf;
-                    $display("Weight A changed with Region %d", region_control[rf0_index].wf);
                 end
             end
         end
@@ -1318,11 +1317,16 @@ module mcd212 (
                     7'h5c: begin
                         // Weight Factor for Plane B
                         weight_b <= ch1_register_data[5:0];
-                        $display("Weight B %d", ch1_register_data[5:0]);
+                        $display("Line %3d Weight B %d", video_y, ch1_register_data[5:0]);
+                    end
+                    7'h5A: begin
+                        // Mosaic Pixel Hold for Plane B
+                        // TODO is ignored
+                        $display("Mosaic B %b", ch0_register_data[3:0]);
                     end
                     default: begin
-                        if (ch1_register_adr >= 7'h40) begin
-                            $display("Ignored %x", ch1_register_adr);
+                        if (ch1_register_adr >= 7'h40 && ch1_register_adr[6:3] != 4'b1010) begin
+                            $display("Plane B ignored %x", ch1_register_adr);
                         end
                     end
                 endcase
@@ -1339,7 +1343,8 @@ module mcd212 (
             if (active_pixel == region_control[rf0_index].x) begin
                 if (region_control[rf0_index].op[2:1] == 2'b11) begin
                     // Change Weight of Plane B
-                    $display("Weight B changed with Region %d", region_control[rf0_index].wf);
+                    $display("Line %3d Weight B changed with Region at %d to %d", video_y,
+                             active_pixel, region_control[rf0_index].wf);
                     weight_b <= region_control[rf0_index].wf;
                 end
             end
