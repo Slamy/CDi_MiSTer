@@ -1225,13 +1225,21 @@ module mcd212 (
                 end
             end
 
-            // TODO Only handles Explicit Control
             if (active_pixel == region_control[rf0_index].x) begin
                 if (region_control[rf0_index].op[2:1] == 2'b10) begin
                     // Change Weight of Plane A
-                    $display("Line %3d Weight A changed with Region at %d to %d", video_y,
-                             active_pixel, region_control[rf0_index].wf);
+                    $display("Line %3d Weight A changed with Region %d at %d to %d", video_y,
+                             rf0_index, active_pixel, region_control[rf0_index].wf);
                     weight_a <= region_control[rf0_index].wf;
+                end
+            end
+
+            if (image_coding_method_register.nr && active_pixel == region_control[{1'b1, rf1_index}].x) begin
+                if (region_control[{1'b1, rf1_index}].op[2:1] == 2'b10) begin
+                    // Change Weight of Plane A
+                    $display("Line %3d Weight A changed with Region %d at %d to %d", video_y,
+                             rf0_index, active_pixel, region_control[{1'b1, rf1_index}].wf);
+                    weight_a <= region_control[{1'b1, rf1_index}].wf;
                 end
             end
         end
@@ -1253,7 +1261,7 @@ module mcd212 (
     always_ff @(posedge clk) begin
         if (!reset) begin
             if (ch0_register_write && ch0_register_adr[6:3] == 4'b1010) begin
-                $display("Line %3d Region A %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
+                $display("Line %3d Region CH0 %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
                          ch0_register_adr[2:0], ch0_register_data[23:20], ch0_register_data[16],
                          ch0_register_data[15:10], ch0_register_data[9:0]);
 
@@ -1263,7 +1271,7 @@ module mcd212 (
             end
 
             if (ch1_register_write && ch1_register_adr[6:3] == 4'b1010) begin
-                $display("Line %3d Region A %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
+                $display("Line %3d Region CH1 %d   CMD:%b   RF:%b   Weight:%d   X:%d", video_y,
                          ch1_register_adr[2:0], ch1_register_data[23:20], ch1_register_data[16],
                          ch1_register_data[15:10], ch1_register_data[9:0]);
 
@@ -1339,13 +1347,21 @@ module mcd212 (
                 end
             end
 
-            // TODO Only handles Explicit Control
             if (active_pixel == region_control[rf0_index].x) begin
                 if (region_control[rf0_index].op[2:1] == 2'b11) begin
                     // Change Weight of Plane B
-                    $display("Line %3d Weight B changed with Region at %d to %d", video_y,
-                             active_pixel, region_control[rf0_index].wf);
+                    $display("Line %3d Weight B changed with Region %d at %d to %d", video_y, {
+                             1'b1, rf1_index}, active_pixel, region_control[rf0_index].wf);
                     weight_b <= region_control[rf0_index].wf;
+                end
+            end
+
+            if (image_coding_method_register.nr && active_pixel == region_control[{1'b1, rf1_index}].x) begin
+                if (region_control[{1'b1, rf1_index}].op[2:1] == 2'b11) begin
+                    // Change Weight of Plane B
+                    $display("Line %3d Weight B changed with Region %d at %d to %d", video_y, {
+                             1'b1, rf1_index}, active_pixel, region_control[{1'b1, rf1_index}].wf);
+                    weight_b <= region_control[{1'b1, rf1_index}].wf;
                 end
             end
         end
@@ -1368,22 +1384,35 @@ module mcd212 (
                 // X0 < X1 < X2 < X3
                 // RF1 is handles by Region Control Registers 4567 in that order
                 // X4 < X5 < X6 < X7
-
                 if (active_pixel == region_control[rf0_index].x) begin
-                    // TODO
+                    if (region_control[rf0_index].op[3]) begin
+                        region_flags[0] <= region_control[rf0_index].op[0];
+                    end
+
+                    if (region_control[rf0_index].op != 0) begin
+                        rf0_index <= rf0_index + 1;
+                    end
                 end
 
                 if (active_pixel == region_control[{1'b1, rf1_index}].x) begin
-                    // TODO
-                end
+                    if (region_control[{1'b1, rf1_index}].op[3]) begin
+                        region_flags[1] <= region_control[{1'b1, rf1_index}].op[0];
+                    end
 
+                    if (region_control[{1'b1, rf1_index}].op != 0) begin
+                        rf1_index <= rf1_index + 1;
+                    end
+                end
             end else begin
                 // Explicit Control of Region Flags
                 // X0 < X1 < X2 < X3 < X4 < X5 < X6 < X7
                 if (active_pixel == region_control[rf0_index].x) begin
-                    rf0_index <= rf0_index + 1;
                     if (region_control[rf0_index].op[3]) begin
                         region_flags[region_control[rf0_index].rf]<=region_control[rf0_index].op[0];
+                    end
+
+                    if (region_control[rf0_index].op != 0) begin
+                        rf0_index <= rf0_index + 1;
                     end
                 end
             end
