@@ -880,9 +880,6 @@ module mcd212 (
 
     // mouse cursor
     always_ff @(posedge clk) begin
-        // TODO Initial values might not be correct. Adapt to rest of video timing.
-        // TODO I'm also very unsure about the width of sprites. What is double? What is normal?
-        // Accoring to chapter 7.6 the position is always based on double resolution
         if (hblank) active_pixel <= 0;
         else if (new_pixel_hires) active_pixel <= active_pixel + 1;
 
@@ -894,14 +891,13 @@ module mcd212 (
         if (cursor_control_register.cuw) begin
             // Double Resolution
             inside_cursor_window <= (active_line >= cursor_position_reg.y) && (active_line < cursor_position_reg.y + 16) && 
-                                    (active_pixel > cursor_position_reg.x) && (active_pixel <= cursor_position_reg.x + 16);
-            cursor_pixel <= active_cursor_line[4'(cursor_position_reg.x-active_pixel)];
-
+                                    (active_pixel >= cursor_position_reg.x) && (active_pixel < cursor_position_reg.x + 16);
+            cursor_pixel <= active_cursor_line[4'((cursor_position_reg.x-active_pixel-10'd1))];
         end else begin
             // Normal Resolution - double the width
             inside_cursor_window <= (active_line >= cursor_position_reg.y) && (active_line < cursor_position_reg.y + 16) && 
-                                    (active_pixel > cursor_position_reg.x) && (active_pixel <= cursor_position_reg.x + 32);
-            cursor_pixel <= active_cursor_line[4'((cursor_position_reg.x-active_pixel)>>1)];
+                                    (active_pixel >= cursor_position_reg.x) && (active_pixel < cursor_position_reg.x + 32);
+            cursor_pixel <= active_cursor_line[4'((cursor_position_reg.x-active_pixel-10'd1)>>1)];
         end
     end
 
