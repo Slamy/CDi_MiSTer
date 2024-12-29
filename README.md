@@ -48,8 +48,8 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,456 / 41,910 ( 32 % )
-    Total registers              15390
+    Logic utilization (in ALMs)  13,539 / 41,910 ( 32 % )
+    Total registers              15568
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
     Total DSP Blocks             65 / 112 ( 58 % )
 
@@ -61,15 +61,15 @@ Core Utilization:
 * Implement audio mixing and panning
     * Fixes frequently used Stereo to Mono mixing in games with SFX
     * Might fix weirdly mixed german + english voice in Kether
+    * Unmute is still a mystery. Not solved in any known CD-i emulator
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
 * MCD212: Add Interlacing
-* MCD212: Make regions and sprites pixel perfect
-    * Weird colors in Myst intro
 * Investigate red bars in Hotel Mario intro
-* Implement CDIC CDDA for audio cd tracks
 * CDIC Fetch TOC (The Apprentice)
 * CDIC Descrambler (The Apprentice)
 * CDIC Byteswap (The Apprentice)
+* Investigate weird glitches at the bottom in "Myst" gameplay when rotating
+* Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour / Core is unstable
 * Add auto start of titles using front panel "Play" button
 * Fix servo behaviour of always detecting a CD-i disc
@@ -82,8 +82,7 @@ Core Utilization:
     * It might not even be required at all.
 * Fix timekeeper initial time
 * Playback of Audio CDs
-    * Difficult, as no existing software emulator can do that yet
-    * Analysis of real hardware probably required
+    * Possibility was proven in MAME, requires different codes from SERVO
     * Other MiSTer cores can do that too, so it would be cool: (PSX, MegaCD, Saturn, PCE)
 
 ## Expected checksums of roms

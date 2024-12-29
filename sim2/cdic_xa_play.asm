@@ -41,7 +41,6 @@ main:
 	; Hotel Mario     00472600 Intro Music
 	; Hotel Mario     00471800 Intro Actual request from the start
 
-
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 
 	jsr waitforirq

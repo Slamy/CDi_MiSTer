@@ -48,6 +48,7 @@ module audiodecoder (
 
     enum {
         IDLE,
+        // XA ADPCM handling
         DETECT_CODING,
         DETECT_CODING2,
         WAIT_AUDIO_TICKS,
@@ -59,12 +60,15 @@ module audiodecoder (
         CALC1,
         CALC2,
         CALC3,
-        NEXT_SAMPLE
-    } adpcm_state;
+        NEXT_SAMPLE,
+        // CDDA handling
+        CDDA_READ,
+        CDDA_PROCESS,
+        CDDA_WAIT
+    } decoder_state;
 
-    assign idle = adpcm_state == IDLE;
+    assign idle = decoder_state == IDLE;
 
-    bit [13:0] current_addr;
     bit [13:0] data_addr;
     bit [13:0] header_addr;
     bit [13:0] block_addr;
@@ -125,7 +129,11 @@ module audiodecoder (
     bit [3:0] mem_data_byte_nibbles[2];
 
     wire channel  /*verilator public_flat_rd*/ = playback_coding.chan == kStereo ? block_cnt[0] : 0;
-    assign out.sample = old_samples[sample_channel][0];
+
+    always_comb begin
+        out.sample = old_samples[sample_channel][0];
+        if (playback_coding.bps == k16Bps) out.sample = sample[15:0];
+    end
 
     always_comb begin
         // create nibble and byte views on memory result
@@ -140,7 +148,7 @@ module audiodecoder (
         if (sample < -32768) sample16 = -32768;
         else if (sample > 32767) sample16 = 32767;
 
-        case (adpcm_state)
+        case (decoder_state)
             DETECT_CODING: begin
                 mem_addr_byte = block_addr + 11;
                 mem_rd = 1;
@@ -157,6 +165,10 @@ module audiodecoder (
                 mem_addr_byte = data_addr + 12;
                 mem_rd = 1;
             end
+            CDDA_READ: begin
+                mem_addr_byte = data_addr;
+                mem_rd = 1;
+            end
         endcase
 
         {mem_addr, mem_addr_byte_selector} = mem_addr_byte;
@@ -168,13 +180,13 @@ module audiodecoder (
     bit signed [15:0] old_samples[2][2];
     bit signed [31:0] mac;
 
-    wire inbetween  /*verilator public_flat_rd*/ = adpcm_state == APPLY_FILTER1;
+    wire inbetween  /*verilator public_flat_rd*/ = decoder_state == APPLY_FILTER1;
 
     always_ff @(posedge clk) begin
         disable_audiomap <= 0;
 
         // catch overflow during simulation
-        if (start_playback) assert (adpcm_state == IDLE);
+        if (start_playback) assert (decoder_state == IDLE);
 
         if (out.strobe) begin
             assert (out.write);
@@ -184,7 +196,7 @@ module audiodecoder (
         if (mem_rd) mem_addr_byte_selector_q <= mem_addr_byte_selector;
 
         if (reset) begin
-            adpcm_state <= IDLE;
+            decoder_state <= IDLE;
             old_samples <= '{'{0, 0}, '{0, 0}};
             group_cnt <= 0;
             out.write <= 0;
@@ -196,7 +208,7 @@ module audiodecoder (
                 else tick_wait_cnt <= tick_wait_cnt - 1;
             end
 
-            case (adpcm_state)
+            case (decoder_state)
                 IDLE: begin
                     if (start_playback) begin
                         // Coding can be read from memory or forced
@@ -209,17 +221,19 @@ module audiodecoder (
                             $display("EXTERNAL CODING %x", cd_audio_coding);
 
                             playback_coding <= cd_audio_coding;
-                            adpcm_state <= WAIT_AUDIO_TICKS;
+                            decoder_state   <= (cd_audio_coding.bps == k16Bps) ? CDDA_READ : WAIT_AUDIO_TICKS;
                             if (tick_wait_cnt == 0) begin
                                 if (ignore_playback_delay) tick_wait_cnt <= 1;
                                 else tick_wait_cnt <= get_sector_count_for_coding(cd_audio_coding);
                             end
                         end else begin
                             // Read coding from sector header
-                            adpcm_state <= DETECT_CODING;
+                            decoder_state <= DETECT_CODING;
                         end
 
                         block_addr <= {playback_addr, 1'b0};
+                        data_addr  <= {playback_addr, 1'b0};  // for CDDA
+
                         $display("Start Decoder at %x", {playback_addr, 1'b0});
 
                         if (reset_filter_on_start) begin
@@ -233,7 +247,7 @@ module audiodecoder (
                 end
                 DETECT_CODING: begin
                     if (mem_ack) begin
-                        adpcm_state <= DETECT_CODING2;
+                        decoder_state <= DETECT_CODING2;
                     end
                 end
                 DETECT_CODING2: begin
@@ -245,11 +259,11 @@ module audiodecoder (
 
                         if (mem_data_byte == 8'hff) begin
                             // special coding to stop the decoder?
-                            adpcm_state <= IDLE;
+                            decoder_state <= IDLE;
                             disable_audiomap <= 1;
                         end else begin
                             playback_coding <= mem_data_byte;
-                            adpcm_state <= WAIT_AUDIO_TICKS;
+                            decoder_state   <= WAIT_AUDIO_TICKS;
                             if (tick_wait_cnt == 0) begin
                                 if (ignore_playback_delay) tick_wait_cnt <= 1;
                                 else tick_wait_cnt <= get_sector_count_for_coding(mem_data_byte);
@@ -261,12 +275,12 @@ module audiodecoder (
                     end
                 end
                 WAIT_AUDIO_TICKS: begin
-                    if (tick_wait_cnt == 0) adpcm_state <= EVALHEADER;
+                    if (tick_wait_cnt == 0) decoder_state <= EVALHEADER;
                 end
                 EVALHEADER: begin
                     if (mem_ack) begin
                         data_addr <= block_addr + data_offset;
-                        adpcm_state <= EVALHEADER2;
+                        decoder_state <= EVALHEADER2;
                         data_cnt <= 0;
                     end
                 end
@@ -278,12 +292,11 @@ module audiodecoder (
                     end
 
                     if (mem_ack) begin
-                        adpcm_state <= READ_SAMPLE;
+                        decoder_state <= READ_SAMPLE;
                     end
                 end
                 READ_SAMPLE: begin
                     if (mem_ack_q) begin
-
                         if (playback_coding.bps == k8Bps)
                             sample <= 32'(signed'(mem_data_byte)) <<< gain_shift;
                         else
@@ -291,21 +304,21 @@ module audiodecoder (
 
                         data_addr <= data_addr + 4;
                         data_cnt <= data_cnt + 1;
-                        adpcm_state <= APPLY_FILTER1;
+                        decoder_state <= APPLY_FILTER1;
                     end
                 end
                 APPLY_FILTER1: begin
                     mac <= s_xa_filter_coef[filter_index][0] * old_samples[channel][0];
-                    adpcm_state <= APPLY_FILTER2;
+                    decoder_state <= APPLY_FILTER2;
                 end
                 APPLY_FILTER2: begin
                     mac <= mac + s_xa_filter_coef[filter_index][1] * old_samples[channel][1];
-                    adpcm_state <= CALC1;
+                    decoder_state <= CALC1;
                 end
                 CALC1: begin
                     if (!out.write) begin
                         sample <= sample + ((mac + 128) / 256);
-                        adpcm_state <= CALC2;
+                        decoder_state <= CALC2;
                         sample_channel <= channel;
                     end
                 end
@@ -316,28 +329,52 @@ module audiodecoder (
                     if (data_cnt == SAMPLES_PER_BLOCK) begin
                         if (block_cnt == last_block_index) begin
                             if (group_cnt == LAST_GROUP_INDEX) begin
-                                adpcm_state <= IDLE;
+                                decoder_state <= IDLE;
                             end else begin
-                                block_addr  <= block_addr + BLOCK_SIZE;  // group has 128 byte size
-                                adpcm_state <= EVALHEADER;
-                                block_cnt   <= 0;
-                                group_cnt   <= group_cnt + 1;
+                                block_addr <= block_addr + BLOCK_SIZE;  // group has 128 byte size
+                                decoder_state <= EVALHEADER;
+                                block_cnt <= 0;
+                                group_cnt <= group_cnt + 1;
                             end
                         end else begin
-                            block_cnt   <= block_cnt + 1;
-                            adpcm_state <= EVALHEADER;
+                            block_cnt <= block_cnt + 1;
+                            decoder_state <= EVALHEADER;
                         end
                     end else begin
-                        adpcm_state <= NEXT_SAMPLE;
+                        decoder_state <= NEXT_SAMPLE;
                     end
                 end
                 NEXT_SAMPLE: begin
                     if (mem_ack) begin
-                        adpcm_state <= READ_SAMPLE;
+                        decoder_state <= READ_SAMPLE;
+                    end
+                end
+                CDDA_READ: begin
+                    if (mem_ack) begin
+                        data_addr <= data_addr + 2;
+                        decoder_state <= CDDA_PROCESS;
+                    end
+                end
+                CDDA_PROCESS: begin
+                    if (mem_ack_q) begin
+                        sample[15:0] <= {mem_data[7:0], mem_data[15:8]};
+                        sample_channel <= !data_addr[1];
+                        out.write <= 1;
+                        decoder_state <= CDDA_WAIT;
+                    end
+                end
+                CDDA_WAIT: begin
+                    if (!out.write) begin
+                        if (block_addr == 14'h000 && data_addr == 14'h930) begin
+                            decoder_state <= IDLE;
+                        end else if (block_addr == 14'ha00 && data_addr == (14'h930 + 14'ha00))
+                            decoder_state <= IDLE;
+                        else begin
+                            decoder_state <= CDDA_READ;
+                        end
                     end
                 end
             endcase
         end
-
     end
 endmodule

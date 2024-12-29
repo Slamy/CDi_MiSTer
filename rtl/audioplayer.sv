@@ -5,6 +5,7 @@
 module audioplayer (
     input clk,
     input sample_tick37,
+    input sample_tick44,
     input audio_tick,
     input reset,
 
@@ -156,6 +157,7 @@ module audioplayer (
     always_comb begin
         strobe_fifo = 0;
         if (playback_active) begin
+            if (current_active_coding.rate == k44Khz && sample_tick44) strobe_fifo = 1;
             if (current_active_coding.rate == k37Khz && sample_tick37) strobe_fifo = 1;
             if (current_active_coding.rate == k18Khz && sample_tick37 && sample_toggle18)
                 strobe_fifo = 1;
@@ -192,7 +194,9 @@ module audioplayer (
             latched_audiomap_finished_playback <= 0;
         end else begin
 
-            if (fifo_nearly_full == 2'b11 && sample_tick37) begin
+            if (fifo_nearly_full == 2'b11 &&
+                ((current_active_coding.rate != k44Khz && sample_tick37) ||
+                 (current_active_coding.rate == k44Khz && sample_tick44))) begin
                 playback_active_next_sample_tick <= 1;
                 playback_active <= playback_active_next_sample_tick;
             end

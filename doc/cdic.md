@@ -12,7 +12,7 @@ Coming from https://github.com/cdifan/cdichips/blob/master/ims66490cdic.md
     3200 - 3BFF 	ADPCM buffer 1 (0xa00 (2560) in size)
     3C00 - 3FFE 	Register area  (0x400 (1024) in size)
 
-## MAME behaviour
+## MAME behaviour with data
 
 No datahseets available. Will use software emulation of MAME for reconstruction.
 
@@ -72,6 +72,54 @@ The sector header seems to match. Endianess must still be swapped though.
     0a08 00 00
     0a0a 00 09
     0a0c 00
+
+## MAME and CDDA
+
+* CDDA sectors are expected to be delivered to the DATA buffers and NOT the ADPCM buffers
+* An IRQ is issued only on FRAC 0 (every second)
+
+An example from the Apprentice, playing some CDDA:
+
+    CD Data Sector delivered to a00
+    Sector 1b 00 1e delivery ended at 1324. Cause IRQ. Buffer bit set to 1
+    [:cdic] ':maincpu' (0042B058): cdic_r: Data buffer Register = 4001 & ffff
+    [:cdic] ':maincpu' (0042B068): cdic_r: X-Buffer Register = 8000 & ffff
+    [:cdic] ':maincpu' (0042B068): Clearing CDIC interrupt line
+    [:cdic] ':maincpu' (0042B0A0): cdic_r: Command Register = 0028 & ffff
+    [:cdic] ':maincpu' (0042AAE4): ram_r: 1324 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1324 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1326 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1328 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 132a : 0015 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 132c : 0028 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 132e : 0000 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1330 : 0000 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1332 : 0015 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1334 : 0028 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1336 : 0000 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 1338 : 006d & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 133a : 0000 & ffff
+    ...
+    CD Data Sector delivered to 0
+    Sector 5a ff 80 delivery ended at 0924. Cause IRQ. Buffer bit set to 0
+    [:cdic] ':maincpu' (0042B058): cdic_r: Data buffer Register = 4000 & ffff
+    [:cdic] ':maincpu' (0042B068): cdic_r: X-Buffer Register = 8000 & ffff
+    [:cdic] ':maincpu' (0042B068): Clearing CDIC interrupt line
+    [:cdic] ':maincpu' (0042B0A0): cdic_r: Command Register = 0028 & ffff
+    [:cdic] ':maincpu' (0042AAE4): ram_r: 0924 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0924 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0926 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0928 : 0001 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 092a : 0015 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 092c : 0029 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 092e : 0000 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0930 : 0000 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0932 : 0015 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0934 : 0029 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0936 : 0000 & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 0938 : 001b & ffff
+    [:cdic] ':maincpu' (00429654): ram_r: 093a : 0091 & ffff
+
 
 ### Access of CDIC RAM by CPU
 
@@ -281,10 +329,10 @@ This feels wrong.
 
 ## Tools
 
-aplay -f cd -c 1 -r 37800 < 1/audio_right.bin
-aplay -f cd -c 1 -r 37800 < 1/audio_left.bin 
+    aplay -f cd -c 1 -r 37800 < 1/audio_right.bin
+    aplay -f cd -c 1 -r 37800 < 1/audio_left.bin
 
-aplay -f cd -c 1 -r 18900 < audio_right.bin
-aplay -f cd -c 1 -r 18900 < audio_left.bin 
+    aplay -f cd -c 1 -r 18900 < audio_right.bin
+    aplay -f cd -c 1 -r 18900 < audio_left.bin
 
-
+    aplay -f cd -c 1 -r 44100 < 0/audio_left.bin

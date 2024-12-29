@@ -240,7 +240,7 @@ class CDi {
 
             uint32_t reference_lba = lba_from_time(m_time);
             // assert(lba == reference_lba);
-
+            assert(lba >= 150);
             uint32_t file_offset = (lba - 150) * kSectorSize;
 
             printf("Request CD Sector %x %x %x\n", m_time, lba, file_offset);
@@ -467,6 +467,7 @@ class CDi {
         }
 
         // Simulate Audio
+        // TODO handle emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick44 as well
         if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick37) {
             int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_left;
             int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;

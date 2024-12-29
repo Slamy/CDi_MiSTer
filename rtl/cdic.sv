@@ -4,6 +4,9 @@
 `include "bus.svh"
 `include "audiotypes.svh"
 
+`define dp_hps_data(statement) `ifdef DEBUG_HPS_DATA $display``statement `endif
+`define dp_dma_write(statement) `ifdef DEBUG_CDIC_DMA $display``statement `endif
+
 module cdic (
     input clk,
     input clk_audio,
@@ -139,7 +142,7 @@ module cdic (
     wire sample_tick44_audio = sample44100counter == 0;
     wire sector_tick_audio = sector75counter == 0;
     wire sample_tick37  /*verilator public_flat_rd*/;
-    wire sample_tick44;
+    wire sample_tick44  /*verilator public_flat_rd*/;
     wire sector_tick;
     flag_cross_domain cross1 (
         .clk_a(clk_audio),
@@ -201,7 +204,7 @@ module cdic (
     // Also cut of the time code to later insert that. The driver seems
     // to be unhappy when it is presented too early.
     // TODO This is not yet confirmed
-    wire mem_cd_hps_we = cd_hps_data_valid && sector_word_index >= 8 && use_sector_data;
+    wire mem_cd_hps_we = cd_hps_data_valid && (sector_word_index >= 8 || read_cdda) && use_sector_data;
 
     wire [15:0] mem_cdic_readout;
     bit [15:0] mem_cdic_data;
@@ -232,7 +235,7 @@ module cdic (
     // Address of CD sector to play back
     // Should be 13'h1900 or 13'h1400
     // Can be either an audiomap or coming directly from CD
-    bit [12:0] adpcm_playback_addr;
+    bit [12:0] audio_playback_addr;
 
     bit [12:0] mem_cd_audio_addr;  // Address for CDIC memory
     bit mem_cd_audio_rd;
@@ -246,6 +249,7 @@ module cdic (
     bit file_match;
     bit header_mode2;
     bit read_mode2;
+    bit read_cdda;
 
     bit [15:0] header_timecode1;  // For inserting the timecode after reception
     bit [15:0] header_timecode2;  // For inserting the timecode after reception
@@ -265,6 +269,7 @@ module cdic (
     audioplayer adpcm (
         .clk(clk),
         .sample_tick37,
+        .sample_tick44,
         .audio_tick(sector_tick),
         .reset(reset),
         .mem_addr(mem_cd_audio_addr),
@@ -277,7 +282,7 @@ module cdic (
         .start_playback(cd_audio_start_playback),
         .enable_audiomap(adpcm_enable_audiomap),
         .disable_audiomap(adpcm_disable_audiomap),
-        .playback_addr(adpcm_playback_addr),
+        .playback_addr(audio_playback_addr),
         .audiomap_active(audiomap_active),
         .audiomap_finished_playback(audiomap_finished_playback),
 
@@ -291,14 +296,25 @@ module cdic (
     bit audio_target_buffer;
 
     always_comb begin
-        adpcm_playback_addr = 0;  // TODO remove optimize LUT usage
+`ifdef VERILATOR
+        audio_playback_addr = 0;  // better visibility in waveform
+`else
+        audio_playback_addr = audio_control_register[13:1];  // optimize LUTs
+`endif
 
-        if (adpcm_enable_audiomap) adpcm_playback_addr = audio_control_register[13:1];
+        if (adpcm_enable_audiomap) audio_playback_addr = audio_control_register[13:1];
 
         // CD Audio Playback
         if (cd_audio_start_playback) begin
-            adpcm_playback_addr = !audio_target_buffer ? 13'h1900 : 13'h1400;
-            $display("CD Audio at %x", {adpcm_playback_addr, 1'b0});
+            if (header_mode2) begin
+                audio_playback_addr = !audio_target_buffer ? 13'h1900 : 13'h1400;
+                $display("ADPCM at %x", {audio_playback_addr, 1'b0});
+            end else begin
+                assert (read_cdda);
+                // CDDA is located in the data buffers
+                audio_playback_addr = data_target_buffer ? 13'h0500 : 13'h0000;
+                $display("CDDA at %x", {audio_playback_addr, 1'b0});
+            end
         end
     end
 
@@ -401,25 +417,16 @@ module cdic (
 
 `ifdef VERILATOR
     always_ff @(posedge clk) begin
-        /*
         if (cd_hps_data_valid && use_sector_data)
-            $display(
-                "CDIC CD Data %x %d %x WE:%d",
-                {
-                    cd_data_target_adr, 1'b0
-                },
-                sector_word_index,
-                cd_hps_data,
-                mem_cd_hps_we
-            );
+            `dp_hps_data(("CDIC CD Data %x %d %x WE:%d", {cd_data_target_adr, 1'b0
+                         }, sector_word_index, cd_hps_data, mem_cd_hps_we));
 
         if (mem_dma_we) begin
-            $display("DMA Write %x %x", {mem_cpu_addr, 1'b0}, mem_cpu_data);
+            `dp_dma_write(("DMA Write %x %x", {mem_cpu_addr, 1'b0}, mem_cpu_data));
         end
-        */
     end
-
 `endif
+
     assign intreq = x_buffer_register[15] | audio_buffer_register[15];
     assign req = dma_control_register[15];
 
@@ -489,8 +496,8 @@ module cdic (
                 $display("Sector written to RAM / has ended");
                 //Get next sector
                 cd_hps_lba <= cd_hps_lba + 1;
-                write_timecode1 <= 1;
-                write_timecode2 <= 1;
+                write_timecode1 <= !read_cdda;
+                write_timecode2 <= !read_cdda;
             end
 
             if (cd_hps_data_valid && cd_reading_active) begin
@@ -607,7 +614,7 @@ module cdic (
                     // for CPU readout. The ADPCM buffers are no longer
                     // tied to the buffer position from CPU view
                     cd_audio_coding <= header_coding;
-                end else if (use_sector_data && sector_word_index == 10) begin
+                end else if (use_sector_data && sector_word_index == 10 && !read_cdda) begin
                     $display("Use sector %x %x %x for data in buffer %x", header_timecode1[15:8],
                              header_timecode1[7:0], header_timecode2[15:8], {
                              cd_data_target_adr[12:3], 4'b0});
@@ -645,7 +652,8 @@ module cdic (
                 // Use the same sector buffer again if the current one was filtered out
                 // MAME does that too and it makes sense.
                 // Offset 2 for skipping Time Code, which is inserted later
-                cd_data_target_adr <= data_target_buffer ? 2 : 13'h0502;
+                if (read_cdda) cd_data_target_adr <= data_target_buffer ? 0 : 13'h0500;
+                else cd_data_target_adr <= data_target_buffer ? 2 : 13'h0502;
 
                 // With a real CD, it takes one sector to read one sector.
                 // This is not the case here as the CD emulator should be
@@ -657,7 +665,8 @@ module cdic (
 
                     // Now that we use this sector, select the other buffer one for the next
                     // Offset 2 for skipping Time Code
-                    cd_data_target_adr <= !data_target_buffer ? 2 : 13'h0502;
+                    if (read_cdda) cd_data_target_adr <= !data_target_buffer ? 0 : 13'h0500;
+                    else cd_data_target_adr <= !data_target_buffer ? 2 : 13'h0502;
 
                     // Bit 0 is toggled on every received sector which
                     // indicates to the CPU which buffer was refreshed
@@ -668,15 +677,18 @@ module cdic (
                     data_target_buffer <= !data_target_buffer;
                     data_buffer_register[0] <= !data_target_buffer;
 
-                    $display(
-                        "Sector %x %x %x delivery ended at %x. Cause IRQ. Buffer bit set to %d. %s",
-                        header_timecode1[15:8], header_timecode1[7:0], header_timecode2[15:8], {
-                        cd_data_target_adr, 1'b0}, !data_target_buffer,
-                        (header_submode.audio && audio_channel_match) ? "Audio" : "Data");
-
+                    if (read_cdda) begin
+                        $display("Audio Sector delivery ended at %x", {cd_data_target_adr, 1'b0});
+                    end else begin
+                        $display(
+                            "Sector %x %x %x delivery ended at %x. Cause IRQ. Buffer bit set to %d. %s",
+                            header_timecode1[15:8], header_timecode1[7:0], header_timecode2[15:8],
+                            {cd_data_target_adr, 1'b0}, !data_target_buffer,
+                            (header_submode.audio && audio_channel_match) ? "Audio" : "Data");
+                    end
                     // Bit 2 is reset on data sector
                     // Bit 2 is set on audio sector
-                    data_buffer_register[2] <= header_submode.audio && audio_channel_match;
+                    data_buffer_register[2] <= header_submode.audio && audio_channel_match && header_mode2;
 
                     // Bit 14 is set on every received sector
                     data_buffer_register[14] <= 1'b1;
@@ -690,8 +702,15 @@ module cdic (
                     if (command_register == 16'h23 || command_register == 16'h24)
                         cd_reading_active <= 0;
 
-                    if (header_submode.audio && audio_channel_match) begin
+                    if (header_submode.audio && audio_channel_match && header_mode2) begin
                         cd_audio_start_playback <= 1;
+                    end
+
+                    if (read_cdda) begin
+                        cd_audio_start_playback <= 1;
+                        cd_audio_coding.rate <= k44Khz;
+                        cd_audio_coding.bps <= k16Bps;
+                        cd_audio_coding.chan <= kStereo;
                     end
                 end
 
@@ -707,6 +726,9 @@ module cdic (
                 x_buffer_register[15] <= 1'b0;
                 // as soon as bit 15 is set, the command is parsed and must be reset directly afterwards
                 data_buffer_register[15] <= 0;
+
+                read_mode2 <= 0;
+                read_cdda <= 0;
 
                 case (command_register)
                     16'h23: begin
@@ -727,8 +749,19 @@ module cdic (
                         $display("CDIC Command: Update");
                         // Just ignore that? MAME does so too...
                     end
-                    16'h27: $display("CDIC Command: Fetch TOC");
-                    16'h28: $display("CDIC Command: Play CDDA");
+                    16'h27: begin
+                        $display("CDIC Command: Fetch TOC");
+                        start_cd_reading_cnt <= kSeekTime;
+                        cd_hps_lba <= time_register_as_lba;
+                        read_mode2 <= 1;
+                        // TODO Experimental just to deliver anything at all
+                    end
+                    16'h28: begin
+                        $display("CDIC Command: Play CDDA");
+                        cd_hps_lba <= time_register_as_lba;
+                        start_cd_reading_cnt <= kSeekTime;
+                        read_cdda <= 1;
+                    end
                     16'h29: begin
                         $display("CDIC Command: Read Mode 1");
                         start_cd_reading_cnt <= kSeekTime;
