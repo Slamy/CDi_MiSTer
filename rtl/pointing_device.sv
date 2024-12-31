@@ -98,8 +98,8 @@ module pointing_device (
         y  = 0;
 
         // combine joystick and mouse buttons
-        b1 = mister_joystick[5] | mister_mouse[0];
-        b2 = mister_joystick[4] | mister_mouse[1];
+        b1 = mister_joystick[6] | mister_joystick[4] | mister_mouse[0];
+        b2 = mister_joystick[6] | mister_joystick[5] | mister_mouse[1];
 
         // The paddle controller has a short amount of time where
         // it moves 2 ticks per frame
