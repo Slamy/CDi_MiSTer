@@ -3,6 +3,8 @@
 module video_timing (
     input clk,
     input reset,
+    output bit fake_parity,  // Always switches between odd (1) and even (0) field (even non interlaced)
+    output bit parity,  // Non interlaced always 1, interlaced 1 odd, 0 even field
     input sm,  // scan mode, 1 = interlaced, 0 = non-interlaced
     input cf,  // crystal, 0 = 28 MHz for NTSC monitors, 1 = 30 MHz for PAL and NTSC TV
     input st,  // standard, 1=360/720 pixels per line, 0=384/768
@@ -82,17 +84,49 @@ module video_timing (
             v_start = 26;
             v_front_porch = 6;
         end
+
+        // Add the half line
+        v_total = v_total + 1;
+
+        // This hack is required to fix the flickering OSD
+        // It moves even fields one line down
+        // but also breaks the line order for everything else
+        if (!parity) v_start = v_start + 1;
     end
 
     always_ff @(posedge clk) begin
+        new_frame <= 0;
+        new_line  <= 0;
+
         if (reset) begin
             video_x <= 0;
             video_y <= 0;
+            parity <= 1;
+            fake_parity <= 1;
         end else begin
             if (video_x == (h_total - 1)) begin  // end of line reached?
                 video_x <= 0;
-                if (video_y == (v_total - 1)) begin
+                hsync <= 1;
+                new_line <= 1;
+
+                if (video_y == (v_total - 1) && !parity) begin
+                    // Start odd field now
+                    // Can only be reached in interlacing mode
                     video_y <= 0;
+                    new_frame <= 1;
+                    parity <= 1;
+                    fake_parity <= 1;
+                    vsync <= 1;
+                end else if (video_y == (v_total - 2) && parity) begin
+                    // Start even field when in interlacing
+                    // Stay on odd field when interlacing is disabled
+                    video_y   <= 0;
+                    new_frame <= 1;
+
+                    if (sm) parity <= 0;
+                    else vsync <= 1;
+
+                    fake_parity <= !fake_parity;
                 end else begin
                     video_y <= video_y + 1;
                 end
@@ -100,14 +134,16 @@ module video_timing (
                 video_x <= video_x + 1;
             end
 
+            if (video_x == h_sync) hsync <= 0;
+            if (parity && video_y == v_sync) vsync <= 0;
+
+            // Create the centered vsync edges for interlacing
+            if (!parity && video_x == h_total / 2 && video_y == 0) vsync <= 1;
+            if (!parity && video_x == h_total / 2 && video_y == v_sync) vsync <= 0;
         end
     end
 
     always_ff @(posedge clk) begin
-        hsync <= video_x < h_sync;
-        vsync <= video_y < v_sync;
-        new_frame <= video_x == 0 && video_y == 0;
-        new_line <= video_x == 0;
         hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
         vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
         display_active <= video_y < (v_start + v_active);

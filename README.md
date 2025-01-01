@@ -48,8 +48,8 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,539 / 41,910 ( 32 % )
-    Total registers              15568
+    Logic utilization (in ALMs)  13,571 / 41,910 ( 32 % )
+    Total registers              15469
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
     Total DSP Blocks             65 / 112 ( 58 % )
 
@@ -63,7 +63,6 @@ Core Utilization:
     * Might fix weirdly mixed german + english voice in Kether
     * Unmute is still a mystery. Not solved in any known CD-i emulator
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
-* MCD212: Add Interlacing
 * Investigate red bars in Hotel Mario intro
 * CDIC Fetch TOC (The Apprentice)
 * CDIC Descrambler (The Apprentice)
@@ -73,6 +72,9 @@ Core Utilization:
 * Fix reset behaviour / Core is unstable
 * Add auto start of titles using front panel "Play" button
 * Fix servo behaviour of always detecting a CD-i disc
+* Investigate desaturated colors / low contrast in "Photo CD Sample Disc"
+    * The colors seem to be a little bit to bright?
+    * For some reason MAME is really dark, also not accurate
 * MCD212: Add RGB555
     * Fixes DYUV Test on "Validation Disc"
 * Find a solution for the video mode reset during system resets

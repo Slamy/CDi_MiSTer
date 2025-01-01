@@ -195,7 +195,6 @@ module emu (
     assign {DDRAM_CLK, DDRAM_BURSTCNT, DDRAM_ADDR, DDRAM_DIN, DDRAM_BE, DDRAM_RD, DDRAM_WE} = '0;
 
     assign VGA_SL = 0;
-    assign VGA_F1 = 0;
     assign VGA_SCALER = 0;
     assign VGA_DISABLE = 0;
     assign HDMI_FREEZE = 0;
@@ -611,7 +610,6 @@ module emu (
     wire overclock_pointing_device = status[5];
     wire enable_reset_on_nvram_img_mount = !status[8];
 `endif
-
     wire HBlank;
     wire HSync;
     wire VBlank;
@@ -646,7 +644,6 @@ module emu (
         .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
         .debug_force_video_plane,
-        .scandouble(forced_scandoubler),
 
         .ce_pix(ce_pix),
 
@@ -654,6 +651,7 @@ module emu (
         .HSync (HSync),
         .VBlank(VBlank),
         .VSync (VSync),
+        .vga_f1(VGA_F1),
 
         .r(r),
         .g(g),

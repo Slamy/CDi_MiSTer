@@ -23,6 +23,7 @@ module ica_dca_ctrl (
 
     input dca_read,
     input hblank,
+    input parity,    // 1 for odd frame, 0 for even frame
 
     output [6:0] register_adr,
     output [23:0] register_data,
@@ -86,14 +87,13 @@ module ica_dca_ctrl (
     // fix this. Also we need one additional burst
     bit dca_misaligned;
 
-
     always_ff @(posedge clk) begin
         irq <= 0;
         disp_params.strobe <= 0;
         execute_instruction <= 0;
 
         if (reset) begin
-            ica_pointer <= odd_ica_start;
+            ica_pointer <= parity ? odd_ica_start : even_ica_start;
             as <= 0;
             state <= IDLE;
             ica_ended <= 0;
@@ -224,18 +224,12 @@ module ica_dca_ctrl (
                         end
                     end
                 end
-
-
                 default: begin
                 end
-
             endcase
-
-
 
             if (execute_instruction) begin
                 // `dp(("%s instruction %x", unit_name, instruction);
-
                 case (instruction[31:28])
                     0: begin
                         // stop until next field
@@ -299,15 +293,12 @@ module ica_dca_ctrl (
 
                             `dp(("%s RELOAD DISPLAY PARAMETERS %b", unit_name, instruction[4:0]));
                         end
-
                     end
                     default: begin
                         // no command but probably a register write
                     end
                 endcase
             end
-
         end
     end
-
 endmodule

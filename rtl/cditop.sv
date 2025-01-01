@@ -8,14 +8,12 @@ module cditop (
     input debug_uart_fake_space,
     input [1:0] debug_force_video_plane,
 
-    input scandouble,
-
     output bit ce_pix,
-
     output bit HBlank,
     output bit HSync,
     output bit VBlank,
     output bit VSync,
+    output vga_f1,
 
     output [7:0] r,
     output [7:0] g,
@@ -182,6 +180,7 @@ module cditop (
         .vsync(VSync),
         .hblank(HBlank),
         .vblank(VBlank),
+        .vga_f1(vga_f1),
         .sdram_addr(sdram_addr),
         .sdram_rd(sdram_rd),
         .sdram_wr(sdram_wr),

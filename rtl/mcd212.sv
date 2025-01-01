@@ -51,6 +51,7 @@ module mcd212 (
     output           vsync,
     output bit       hblank,
     output           vblank,
+    output           vga_f1,
 
     output bit [24:0] sdram_addr,
     output bit        sdram_rd,
@@ -99,7 +100,29 @@ module mcd212 (
     wire [19:1] ram_address = {cpu_address[21], cpu_address[18], cpu_address[17:1]};
 
     bit sdram_busy_q = 0;
-    bit parity = 0;
+
+    // Is 1 for non interlaced
+    // and 1 for odd and 0 for even in interlaced mode
+    // This matches the description in the MCD212 datasheet
+    wire vt_field_parity  /*verilator public_flat_rd*/;
+
+    // According to Kitrinx on Discord
+    // 0 for non interlaced (like in the MiSTer template)
+    // 0 for odd, 1 for even
+    // Invert vt_field_parity to achieve this
+    assign vga_f1 = command_register_dcr1.sm ? !vt_field_parity : 0;
+
+    // Expected to be 1 for non interlaced
+    // and 1 for odd and 0 for even in interlaced mode.
+    // At least according to the datasheet
+    // TODO A hack is applied here
+    // Even and odd fields are swapped to revert a hack in video timing
+    // to fix the flickering OSD
+    wire ica_parity  /*verilator public_flat_rd*/ = !command_register_dcr1.sm | !vt_field_parity;
+
+    // Always switches between 1 and 0.
+    // If interlacing is enabled, it is consistent with the real parity
+    wire fake_parity;
 
     bit [21:0] ica0_adr;
     bit ica0_as;
@@ -195,7 +218,7 @@ module mcd212 (
         status_register1 = 0;
         // TODO This might not be accurate
         status_register1.da = display_active;
-        status_register1.pa = parity;
+        status_register1.pa = fake_parity;
     end
 
     always_comb begin
@@ -396,7 +419,7 @@ module mcd212 (
     wire [8:0] video_y;
     wire [12:0] video_x;
     wire new_frame  /*verilator public_flat_rd*/;
-    wire new_line;
+    wire new_line  /*verilator public_flat_rd*/;
     wire new_pixel;
     wire new_pixel_lores;
     wire new_pixel_hires;
@@ -410,6 +433,8 @@ module mcd212 (
     video_timing vt (
         .clk,
         .reset,
+        .fake_parity(fake_parity),
+        .parity(vt_field_parity),
         .sm(command_register_dcr1.sm),
         .cf(1),  // TODO CF=1 Only accept TV resolutions for now
         .st(control_register_crsr1w.st),
@@ -621,7 +646,8 @@ module mcd212 (
         .disp_params(ica0_disp_param_out),
         // Fire at end of visible lines
         .dca_read(dca0_read),
-        .hblank(hblank)
+        .hblank(hblank),
+        .parity(ica_parity)
     );
 
     wire dca1_read = hblank_vt && !hblank_vt_q && !vblank && command_register_dcr2.dc2;
@@ -644,7 +670,8 @@ module mcd212 (
         .disp_params(ica1_disp_param_out),
         // Fire at end of visible lines
         .dca_read(dca1_read),
-        .hblank(hblank)
+        .hblank(hblank),
+        .parity(ica_parity)
     );
 
     wire [15:0] file0_din = sdram_dout;
@@ -654,13 +681,9 @@ module mcd212 (
         if (reset) begin
             hblank_vt_q <= 0;
             hblank <= 0;
-            parity <= 0;
         end else begin
             hblank_vt_q <= hblank_vt;
             hblank <= hblank_vt_q;
-
-            // TODO Remove this
-            if (new_frame) parity <= !parity;
         end
 
     end
@@ -894,7 +917,7 @@ module mcd212 (
         if (hblank) active_pixel <= 0;
         else if (new_pixel_hires) active_pixel <= active_pixel + 1;
 
-        if (vblank) active_line <= -1;
+        if (vblank) active_line <= 0;
         else if (new_line) active_line <= active_line + 1;
 
         active_cursor_line <= cursor[4'(active_line-cursor_position_reg.y)];
