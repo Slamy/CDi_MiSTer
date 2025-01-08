@@ -70,7 +70,6 @@ module audiodecoder (
     assign idle = decoder_state == IDLE;
 
     bit [13:0] data_addr;
-    bit [13:0] header_addr;
     bit [13:0] block_addr;
     bit [4:0] group_cnt;  // 18 groups per sector
     bit [3:0] block_cnt;  // counts to 8 for 4BPS and to 4 for 8BPS
@@ -365,9 +364,10 @@ module audiodecoder (
                 end
                 CDDA_WAIT: begin
                     if (!out.write) begin
-                        if (block_addr == 14'h000 && data_addr == 14'h930) begin
+                        // TODO Remove magic numbers
+                        if (block_addr == 14'h1400 && data_addr == (14'h930 + 14'h1400)) begin
                             decoder_state <= IDLE;
-                        end else if (block_addr == 14'ha00 && data_addr == (14'h930 + 14'ha00))
+                        end else if (block_addr == 14'h1e00 && data_addr == (14'h930 + 14'h1e00))
                             decoder_state <= IDLE;
                         else begin
                             decoder_state <= CDDA_READ;

@@ -13,10 +13,40 @@
 #include <png.h>
 
 #include "hle.h"
+#include <arpa/inet.h>
 #include <byteswap.h>
 
 #define SCC68070
 #define SLAVE
+
+#define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
+
+struct subcode {
+    uint16_t control;
+    uint16_t track;
+    uint16_t index;
+    uint16_t mode1_mins;
+    uint16_t mode1_secs;
+    uint16_t mode1_frac;
+    uint16_t mode1_zero;
+    uint16_t mode1_amins;
+    uint16_t mode1_asecs;
+    uint16_t mode1_afrac;
+    uint16_t mode1_crc0;
+    uint16_t mode1_crc1;
+};
+static_assert(sizeof(struct subcode) == 24);
+
+struct toc_entry {
+    uint8_t control;
+    uint8_t track;
+    uint8_t m;
+    uint8_t s;
+    uint8_t f;
+};
+
+static struct toc_entry toc_buffer[100];
+int toc_entry_count = 0;
 
 typedef VerilatedFstC tracetype_t;
 
@@ -64,6 +94,90 @@ uint32_t lba_from_time(uint32_t m_time) {
         lba -= 150;
 
     return lba;
+}
+
+// CRC routine from https://github.com/mamedev/mame/blob/master/src/mame/philips/cdicdic.cpp
+const uint16_t s_crc_ccitt_table[256] = {
+    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad,
+    0xe1ce, 0xf1ef, 0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6, 0x9339, 0x8318, 0xb37b, 0xa35a,
+    0xd3bd, 0xc39c, 0xf3ff, 0xe3de, 0x2462, 0x3443, 0x0420, 0x1401, 0x64e6, 0x74c7, 0x44a4, 0x5485, 0xa56a, 0xb54b,
+    0x8528, 0x9509, 0xe5ee, 0xf5cf, 0xc5ac, 0xd58d, 0x3653, 0x2672, 0x1611, 0x0630, 0x76d7, 0x66f6, 0x5695, 0x46b4,
+    0xb75b, 0xa77a, 0x9719, 0x8738, 0xf7df, 0xe7fe, 0xd79d, 0xc7bc, 0x48c4, 0x58e5, 0x6886, 0x78a7, 0x0840, 0x1861,
+    0x2802, 0x3823, 0xc9cc, 0xd9ed, 0xe98e, 0xf9af, 0x8948, 0x9969, 0xa90a, 0xb92b, 0x5af5, 0x4ad4, 0x7ab7, 0x6a96,
+    0x1a71, 0x0a50, 0x3a33, 0x2a12, 0xdbfd, 0xcbdc, 0xfbbf, 0xeb9e, 0x9b79, 0x8b58, 0xbb3b, 0xab1a, 0x6ca6, 0x7c87,
+    0x4ce4, 0x5cc5, 0x2c22, 0x3c03, 0x0c60, 0x1c41, 0xedae, 0xfd8f, 0xcdec, 0xddcd, 0xad2a, 0xbd0b, 0x8d68, 0x9d49,
+    0x7e97, 0x6eb6, 0x5ed5, 0x4ef4, 0x3e13, 0x2e32, 0x1e51, 0x0e70, 0xff9f, 0xefbe, 0xdfdd, 0xcffc, 0xbf1b, 0xaf3a,
+    0x9f59, 0x8f78, 0x9188, 0x81a9, 0xb1ca, 0xa1eb, 0xd10c, 0xc12d, 0xf14e, 0xe16f, 0x1080, 0x00a1, 0x30c2, 0x20e3,
+    0x5004, 0x4025, 0x7046, 0x6067, 0x83b9, 0x9398, 0xa3fb, 0xb3da, 0xc33d, 0xd31c, 0xe37f, 0xf35e, 0x02b1, 0x1290,
+    0x22f3, 0x32d2, 0x4235, 0x5214, 0x6277, 0x7256, 0xb5ea, 0xa5cb, 0x95a8, 0x8589, 0xf56e, 0xe54f, 0xd52c, 0xc50d,
+    0x34e2, 0x24c3, 0x14a0, 0x0481, 0x7466, 0x6447, 0x5424, 0x4405, 0xa7db, 0xb7fa, 0x8799, 0x97b8, 0xe75f, 0xf77e,
+    0xc71d, 0xd73c, 0x26d3, 0x36f2, 0x0691, 0x16b0, 0x6657, 0x7676, 0x4615, 0x5634, 0xd94c, 0xc96d, 0xf90e, 0xe92f,
+    0x99c8, 0x89e9, 0xb98a, 0xa9ab, 0x5844, 0x4865, 0x7806, 0x6827, 0x18c0, 0x08e1, 0x3882, 0x28a3, 0xcb7d, 0xdb5c,
+    0xeb3f, 0xfb1e, 0x8bf9, 0x9bd8, 0xabbb, 0xbb9a, 0x4a75, 0x5a54, 0x6a37, 0x7a16, 0x0af1, 0x1ad0, 0x2ab3, 0x3a92,
+    0xfd2e, 0xed0f, 0xdd6c, 0xcd4d, 0xbdaa, 0xad8b, 0x9de8, 0x8dc9, 0x7c26, 0x6c07, 0x5c64, 0x4c45, 0x3ca2, 0x2c83,
+    0x1ce0, 0x0cc1, 0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36, 0x4e55, 0x5e74,
+    0x2e93, 0x3eb2, 0x0ed1, 0x1ef0};
+
+#define CRC_CCITT_ROUND(accum, data) (((accum << 8) | data) ^ s_crc_ccitt_table[accum >> 8])
+
+void subcode_data(int lba, struct subcode &out) {
+    int fake_lba = lba;
+    if (fake_lba < 150)
+        fake_lba += 150;
+    uint8_t m, s, f;
+    m = fake_lba / (60 * 75);
+    fake_lba -= m * (60 * 75);
+    s = fake_lba / 75;
+    f = fake_lba % 75;
+
+    if (lba < toc_entry_count) {
+        auto &toc_entry = toc_buffer[lba];
+
+        out.control = htons(toc_entry.control);
+        out.track = 0; // Track 0 for TOC
+        out.index = htons(toc_entry.track);
+        out.mode1_mins = htons(BCD(m));
+        out.mode1_secs = htons(BCD(s));
+        out.mode1_frac = htons(BCD(f));
+        out.mode1_zero = 0;
+        out.mode1_amins = htons(toc_entry.m);
+        out.mode1_asecs = htons(toc_entry.s);
+        out.mode1_afrac = htons(toc_entry.f);
+        out.mode1_crc0 = htons(0xff);
+        out.mode1_crc1 = htons(0xff);
+
+        // printf("toc  lba=%d   %02x %02x %02x %02x %02x\n", lba, out.control, out.index, out.mode1_amins,
+        // out.mode1_asecs, out.mode1_afrac);
+    } else {
+        int track = 1;
+        out.control = htons(0x01);
+        out.track = htons(1); // Track 1 for TOC
+        out.index = htons(1);
+        out.mode1_mins = htons(BCD(m));
+        out.mode1_secs = htons(BCD(s));
+        out.mode1_frac = htons(BCD(f));
+        out.mode1_zero = 0;
+        out.mode1_amins = htons(BCD(m));
+        out.mode1_asecs = htons(BCD(s));
+        out.mode1_afrac = htons(BCD(f));
+        out.mode1_crc0 = htons(0xff);
+        out.mode1_crc1 = htons(0xff);
+
+        // printf("data lba=%d   %02x %02x %02x %02x %02x\n", lba, out.control, out.track, BCD(m), BCD(s), BCD(f));
+    }
+
+    uint16_t crc_accum = 0;
+    uint8_t *crc = reinterpret_cast<uint8_t *>(&out);
+    for (int i = 0; i < 12; i++)
+        crc_accum = CRC_CCITT_ROUND(crc_accum, crc[1 + i * 2]);
+
+    out.mode1_crc0 = htons((crc_accum >> 8) & 0xff);
+    out.mode1_crc1 = htons(crc_accum & 0xff);
+
+    printf("subcode %d   %02x %02x %02x %02x %02x %02x     %02x %02x %02x %02x %02x %02x\n", lba, ntohs(out.control),
+           ntohs(out.track), ntohs(out.index), ntohs(out.mode1_mins), ntohs(out.mode1_secs), ntohs(out.mode1_frac),
+           ntohs(out.mode1_zero), ntohs(out.mode1_amins), ntohs(out.mode1_asecs), ntohs(out.mode1_afrac),
+           ntohs(out.mode1_crc0), ntohs(out.mode1_crc1));
 }
 
 class CDi {
@@ -240,7 +354,10 @@ class CDi {
 
             uint32_t reference_lba = lba_from_time(m_time);
             // assert(lba == reference_lba);
-            assert(lba >= 150);
+            // assert(lba >= 150);
+
+            if (lba < 150)
+                lba += 150;
             uint32_t file_offset = (lba - 150) * kSectorSize;
 
             printf("Request CD Sector %x %x %x\n", m_time, lba, file_offset);
@@ -250,8 +367,8 @@ class CDi {
 
             fread(hps_buffer, 1, kSectorSize, f_cd_bin);
 
-            for (int i = 0; i < 12; i++)
-                hps_buffer[kSectorSize / 2 + i] = 0x12 + i;
+            struct subcode &out = *reinterpret_cast<struct subcode *>(&hps_buffer[kSectorSize / 2]);
+            subcode_data(dut.rootp->emu__DOT__cd_hps_lba, out);
             hps_buffer_index = 0;
         }
 
@@ -467,8 +584,7 @@ class CDi {
         }
 
         // Simulate Audio
-        // TODO handle emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick44 as well
-        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick37) {
+        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick44) {
             int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_left;
             int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;
             fwrite(&sample_l, 2, 1, f_audio_left);
@@ -619,6 +735,27 @@ int main(int argc, char **argv) {
     }
 
     assert(f_cd_bin);
+
+    toc_buffer[0] = {1, 1, 0, 0, 0};
+    toc_buffer[1] = {1, 1, 0, 0, 0};
+    toc_buffer[2] = {1, 1, 0, 0, 0};
+    toc_buffer[3] = {1, 2, 3, 38, 69};
+    toc_buffer[4] = {1, 2, 3, 38, 69};
+    toc_buffer[5] = {1, 2, 3, 38, 69};
+    toc_buffer[6] = {1, 3, 7, 1, 96};
+    toc_buffer[7] = {1, 3, 7, 1, 96};
+    toc_buffer[8] = {1, 3, 7, 1, 96};
+    toc_buffer[9] = {1, 4, 18, 16, 71};
+    toc_buffer[10] = {1, 4, 18, 16, 71};
+    toc_buffer[11] = {1, 4, 18, 16, 71};
+    toc_buffer[12] = {1, 160, 1, 0, 0};
+    toc_buffer[13] = {1, 160, 1, 0, 0};
+    toc_buffer[14] = {1, 160, 1, 0, 0};
+    toc_buffer[15] = {1, 161, 4, 0, 0};
+    toc_buffer[16] = {1, 161, 4, 0, 0};
+    toc_buffer[17] = {1, 161, 4, 0, 0};
+    toc_buffer[18] = {1, 162, 0, 0, 0};
+    toc_entry_count=19;
 
     CDi machine(machineindex);
 
