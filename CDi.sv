@@ -224,6 +224,7 @@ module emu (
         "P1O[3],UART Fake Space,No,Yes;",
         "P1O[7:6],Force Video Plane,Original,A,B;",
         "P1O[8],No reset on NvRAM change,No,Yes;",
+        "P1O[9],RGB Scale Limited to Full,No,Yes;",
         "O[5],Overclock input device,No,Yes;",
         "-;",
         "T[0],Reset;",
@@ -601,6 +602,7 @@ module emu (
     wire overclock_pointing_device = 1;
     wire [1:0] debug_force_video_plane = 0;
     wire enable_reset_on_nvram_img_mount = 0;
+    wire debug_limited_to_full = 0;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -609,6 +611,7 @@ module emu (
     wire tvmode_ntsc = status[4];
     wire overclock_pointing_device = status[5];
     wire enable_reset_on_nvram_img_mount = !status[8];
+    wire debug_limited_to_full = status[9];
 `endif
     wire HBlank;
     wire HSync;
@@ -644,6 +647,7 @@ module emu (
         .tvmode_pal(!tvmode_ntsc),
         .debug_uart_fake_space,
         .debug_force_video_plane,
+        .debug_limited_to_full,
 
         .ce_pix(ce_pix),
 

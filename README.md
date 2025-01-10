@@ -55,6 +55,7 @@ Core Utilization:
 
 ## TODOs in order of priority
 
+* Investigate "Earth Command" hanging after intro
 * Investigate "Zelda's Adventure" sound hiccups
 * Investigate crashed audio in both 2D Zelda games
     * Occurs during "Help-Cutscene" when SFX is played

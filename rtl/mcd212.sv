@@ -67,7 +67,8 @@ module mcd212 (
 
     output irq,
 
-    input [1:0] debug_force_video_plane
+    input [1:0] debug_force_video_plane,
+    input debug_limited_to_full
 );
 
     // Memory Swapping according to chapter 3.4
@@ -1082,6 +1083,12 @@ module mcd212 (
         else clamped_mix = sum[7:0];
     endfunction
 
+    function automatic [7:0] limited_to_full(input [7:0] value);
+        if (value >= 235) limited_to_full = 255;
+        else if (value <= 16) limited_to_full = 0;
+        else limited_to_full = (value - 16) * 37 / 32;
+    endfunction
+
     always_comb begin
         // start with the backdrop color
         vidout.r = backdrop_color_register.r ? 8'hff : 0;
@@ -1131,6 +1138,12 @@ module mcd212 (
                 vidout.g[7] = 0;
                 vidout.b[7] = 0;
             end
+        end
+
+        if (debug_limited_to_full) begin
+            vidout.r = limited_to_full(vidout.r);
+            vidout.g = limited_to_full(vidout.g);
+            vidout.b = limited_to_full(vidout.b);
         end
     end
 
