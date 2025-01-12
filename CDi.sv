@@ -544,7 +544,7 @@ module emu (
 
 `ifdef VERILATOR
     bit [15:0] rom[262144]  /*verilator public_flat_rw*/;
-    bit [15:0] ram[262144*2]  /*verilator public_flat_rw*/;
+    bit [15:0] ram[2097152]  /*verilator public_flat_rw*/;
     bit [22:0] sdram_real_addr;
     initial begin
         $readmemh("cdi200.mem", rom);
@@ -560,7 +560,7 @@ module emu (
         SDRAM_DQ_in = 0;
 
         if (sdram_real_addr[21]) SDRAM_DQ_in = rom[burstwrap_corrected_address[17:0]];
-        else SDRAM_DQ_in = ram[burstwrap_corrected_address[18:0]];
+        else SDRAM_DQ_in = ram[burstwrap_corrected_address[20:0]];
     end
 
     bit SDRAM_nWE_q;
@@ -588,9 +588,9 @@ module emu (
                 rom[burstwrap_corrected_address[17:0]][7:0] <= SDRAM_DQ_out[7:0];
         end else begin
             if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
-                ram[burstwrap_corrected_address[18:0]][15:8] <= SDRAM_DQ_out[15:8];
+                ram[burstwrap_corrected_address[20:0]][15:8] <= SDRAM_DQ_out[15:8];
             if (!SDRAM_nWE_q && !SDRAM_DQML_q)
-                ram[burstwrap_corrected_address[18:0]][7:0] <= SDRAM_DQ_out[7:0];
+                ram[burstwrap_corrected_address[20:0]][7:0] <= SDRAM_DQ_out[7:0];
         end
     end
 `endif

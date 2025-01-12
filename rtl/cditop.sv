@@ -111,6 +111,7 @@ module cditop (
     bit nvram_read_bus_ack;
 
     wire attex_cs_mcd212 = ((addr_byte <= 24'h27ffff) || (addr_byte >= 24'h400000)) && as && !addr[23];
+    wire dvc_ram_cs = ((addr_byte[23:20] == 4'hd) || (addr_byte[23:19] == 5'b11101)) && as;
     wire attex_cs_cdic = addr_byte[23:16] == 8'h30 && as;
     wire attex_cs_slave = addr_byte[23:16] == 8'h31 && as;
     wire attex_cs_nvram = addr_byte[23:16] == 8'h32 && as;
@@ -165,7 +166,7 @@ module cditop (
     mcd212 mcd212_inst (
         .clk(clk30),
         .reset,
-        .cpu_address(addr[22:1]),
+        .cpu_address(addr[23:1]),
         .cpu_din(cdic_dma_ack ? cdic_dout : cpu_data_out),
         .cpu_dout(mcd212_dout),
         .cpu_bus_ack(mcd212_bus_ack),
@@ -173,6 +174,7 @@ module cditop (
         .cpu_lds(lds),
         .cpu_write_strobe(write_strobe),
         .cs(attex_cs_mcd212),
+        .dvc_ram_cs(dvc_ram_cs),
         .r(r),
         .g(g),
         .b(b),
@@ -311,7 +313,7 @@ module cditop (
         end else if (attex_cs_nvram) begin
             data_in = {nvram_readout, nvram_readout};
             bus_ack = nvram_read_bus_ack || (write_strobe && nvram_allow_cpu_access);
-        end else if (attex_cs_mcd212) begin
+        end else if (attex_cs_mcd212 || dvc_ram_cs) begin
             data_in = mcd212_dout;
             bus_ack = mcd212_bus_ack;
         end

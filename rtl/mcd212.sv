@@ -33,16 +33,17 @@ endfunction
 `endif
 
 module mcd212 (
-    input clk,
-    input reset,
-    input [22:1] cpu_address,
-    input [15:0] cpu_din,
+    input             clk,
+    input             reset,
+    input      [23:1] cpu_address,
+    input      [15:0] cpu_din,
     output bit [15:0] cpu_dout,
-    input cpu_uds,
-    input cpu_lds,
-    input cpu_write_strobe,
-    output bit cpu_bus_ack,
-    input cs,
+    input             cpu_uds,
+    input             cpu_lds,
+    input             cpu_write_strobe,
+    output bit        cpu_bus_ack,
+    input             cs,
+    input             dvc_ram_cs,
 
     output     [7:0] r,
     output     [7:0] g,
@@ -83,14 +84,13 @@ module mcd212 (
     end
 
 
-    wire [22:0] cpu_addressb = {cpu_address[22:1], 1'b0};
+    wire [23:0] cpu_addressb = {cpu_address[23:1], 1'b0};
     // implementation of memory map according to MCD212 datasheet
-    wire cs_ram = cpu_addressb <= 23'h3fffff && cs && !cs_early_rom;  // 4MB
-    wire cs_rom = cpu_addressb >= 23'h400000 && cpu_addressb <= 23'h4ffbff && cs;
-    wire cs_system_io = cpu_addressb >= 23'h4ffc00 && cpu_addressb <= 23'h4fffdf && cs;
-    wire cs_channel2 = cpu_addressb >= 23'h4fffe0 && cpu_addressb <= 23'h4fffef && cs;
-    wire cs_channel1 = cpu_addressb >= 23'h4ffff0 && cpu_addressb <= 23'h4fffff && cs;
-
+    wire cs_ram = cpu_addressb < 24'h400000 && cs && !cs_early_rom;  // 4MB
+    wire cs_rom = cpu_addressb >= 24'h400000 && cpu_addressb < 24'h4ffc00 && cs;
+    wire cs_system_io = cpu_addressb >= 24'h4ffc00 && cpu_addressb < 24'h4fffe0 && cs;
+    wire cs_channel2 = cpu_addressb >= 24'h4fffe0 && cpu_addressb < 24'h4ffff0 && cs;
+    wire cs_channel1 = cpu_addressb >= 24'h4ffff0 && cpu_addressb < 24'h500000 && cs;
     wire cs_rom_fused = (cs_rom || cs_early_rom) && cs;
 
     // Bit 18 is the Bank selection for TD=0
@@ -144,7 +144,7 @@ module mcd212 (
     bit file1_bus_ack;
     bit file1_burstdata_valid;
 
-    wire cpu_sdram_access = (cs_ram || cs_rom_fused) && (cpu_uds || cpu_lds);
+    wire cpu_sdram_access = (cs_ram || cs_rom_fused || dvc_ram_cs) && (cpu_uds || cpu_lds);
     wire sdram_refresh_request;
 
     typedef enum bit [3:0] {
@@ -297,14 +297,19 @@ module mcd212 (
                             sdram_addr[0] = 1'b0;
                             sdram_rd = !sdram_busy && !sdram_busy_q;
                             sdram_wr = 1'b0;
-                        end else begin
+                        end else if (cs_ram) begin
                             sdram_addr[24:1] = {5'b0, ram_address[19:1]};
                             sdram_addr[0] = cpu_write_strobe ? !cpu_lds && cpu_uds : 1'b0;  // only active on odd byte accesses
                             sdram_word = (cpu_lds && cpu_uds) || !cpu_write_strobe;
-                            sdram_rd = cs_ram && !cpu_write_strobe && !sdram_busy && !sdram_busy_q;
-                            sdram_wr = cs_ram && cpu_write_strobe && !sdram_busy && !sdram_busy_q;
+                            sdram_rd = !cpu_write_strobe && !sdram_busy && !sdram_busy_q;
+                            sdram_wr = cpu_write_strobe && !sdram_busy && !sdram_busy_q;
+                        end else if (dvc_ram_cs) begin
+                            sdram_addr[24:1] = {1'b0, cpu_address[23:20] - 4'hc, cpu_address[19:1]};
+                            sdram_addr[0] = cpu_write_strobe ? !cpu_lds && cpu_uds : 1'b0;  // only active on odd byte accesses
+                            sdram_word = (cpu_lds && cpu_uds) || !cpu_write_strobe;
+                            sdram_rd = !cpu_write_strobe && !sdram_busy && !sdram_busy_q;
+                            sdram_wr = cpu_write_strobe && !sdram_busy && !sdram_busy_q;
                         end
-
                     end
                 end
                 default: begin
@@ -350,7 +355,7 @@ module mcd212 (
         // only the CPU writes to SDRAM
         sdram_din = cpu_din;
 
-        if (cs_ram || cs_rom_fused) begin
+        if (cs_ram || dvc_ram_cs || cs_rom_fused) begin
             cpu_dout = sdram_dout;
         end else if (cs_channel1) begin
             case (cpu_addressb[7:0])
