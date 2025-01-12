@@ -648,7 +648,7 @@ module cdic (
                 end
             end
 
-            if (cd_reading_active && sector_tick) begin
+            if (cd_reading_active && sector_tick && !hps_transaction_in_progress) begin
                 // Use the same sector buffer again if the current one was filtered out
                 // MAME does that too and it makes sense.
                 // Offset 2 for skipping Time Code, which is inserted later
@@ -658,7 +658,7 @@ module cdic (
                 // With a real CD, it takes one sector to read one sector.
                 // This is not the case here as the CD emulator should be
                 // faster, so we wait until the next sector tick until evaluating it.
-                if (use_sector_data && !hps_transaction_in_progress) begin
+                if (use_sector_data) begin
                     assert (sector_word_index == kWordsPerSector);
                     if (sector_word_index < kWordsPerSector) fail_not_enough_words <= 1;
                     if (sector_word_index > kWordsPerSector) fail_too_much_data <= 1;
@@ -716,10 +716,8 @@ module cdic (
 
                 // Request the next sector from HPS if the last one
                 // is fully received
-                if (!hps_transaction_in_progress) begin
-                    cd_hps_req <= 1;
-                    use_sector_data <= 1;
-                end
+                cd_hps_req <= 1;
+                use_sector_data <= 1;
             end
 
             if (data_buffer_register[15]) begin
