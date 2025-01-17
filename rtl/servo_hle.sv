@@ -3,7 +3,8 @@ module servo_hle (
     input clk,
     input reset,
     parallelel_spi.slave spi,
-    output bit quirk_force_mode_fault
+    output bit quirk_force_mode_fault,
+    input debug_audio_cd_in_tray
 );
 
     typedef enum bit [6:0] {
@@ -45,8 +46,8 @@ module servo_hle (
         if (state == PROVIDE_B0_10 && spi.write) begin spi.miso = 8'h03; perform_mode_fault = 80; end
         if (state == PROVIDE_B0_11 && spi.write) begin spi.miso = 8'hB0; perform_mode_fault = 80; end
         if (state == PROVIDE_B0_12 && spi.write) begin spi.miso = 8'h00; perform_mode_fault = 80; end
-        if (state == PROVIDE_B0_13 && spi.write) begin spi.miso = 8'h02; perform_mode_fault = 80; end
-        if (state == PROVIDE_B0_14 && spi.write) begin spi.miso = 8'h15; perform_mode_fault = 80; end
+        if (state == PROVIDE_B0_13 && spi.write) begin spi.miso = debug_audio_cd_in_tray ? 8'h01 : 8'h02 ; perform_mode_fault = 80; end
+        if (state == PROVIDE_B0_14 && spi.write) begin spi.miso = 8'h25; perform_mode_fault = 80; end
         // verilog_format: on
         if (spi.write) $display("SERVO %x %x", spi.mosi, spi.miso);
     end

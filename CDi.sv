@@ -218,6 +218,7 @@ module emu (
         "O[4],TV Mode,PAL,NTSC;",
         "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
         "-;",
+
         "P1,Debug Options;",
         "P1-;",
         "P1F1,ROM,Replace Boot ROM;",
@@ -225,6 +226,8 @@ module emu (
         "P1O[7:6],Force Video Plane,Original,A,B;",
         "P1O[8],No reset on NvRAM change,No,Yes;",
         "P1O[9],RGB Scale Limited to Full,No,Yes;",
+        "P1O[10],SERVO Audio CD,No,Yes;",
+
         "O[5],Overclock input device,No,Yes;",
         "-;",
         "T[0],Reset;",
@@ -603,6 +606,7 @@ module emu (
     wire [1:0] debug_force_video_plane = 0;
     wire enable_reset_on_nvram_img_mount = 0;
     wire debug_limited_to_full = 0;
+    wire debug_audio_cd_in_tray = 0;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -612,6 +616,7 @@ module emu (
     wire overclock_pointing_device = status[5];
     wire enable_reset_on_nvram_img_mount = !status[8];
     wire debug_limited_to_full = status[9];
+    wire debug_audio_cd_in_tray = status[10];
 `endif
     wire HBlank;
     wire HSync;
@@ -648,6 +653,7 @@ module emu (
         .debug_uart_fake_space,
         .debug_force_video_plane,
         .debug_limited_to_full,
+        .debug_audio_cd_in_tray,
 
         .ce_pix(ce_pix),
 

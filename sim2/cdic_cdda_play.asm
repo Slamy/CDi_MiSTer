@@ -16,20 +16,12 @@ main:
 	move.w #$8000,$303FFE ; Data buffer
 
 	move.w #$2480,$303FFC ; Interrupt Vector
-
-	move.w #$0027,$303C00 ; Fetch TOC
-	move.l #$00020000,$303C02 ; Timer Register
-	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
-
-	jsr waitforirq
-	jsr waitforirq
-
-	move.w #$0000,$303FFE ; Deactivate cd reading
-
 	move.w #$0028,$303C00 ; Play CDDA
-	move.l #$00040000,$303C02 ; Timer Register
-	; Apprentice Level 1
-	;move.l #$19468000,$303C02 ; Timer Register
+	; Apprentice - Level 1
+	move.l #$19468000,$303C02 ; Timer Register
+
+	; Apprentice - Title Screen
+	move.l #$15220000,$303C02 ; Timer Register
 
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 

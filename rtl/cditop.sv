@@ -8,6 +8,7 @@ module cditop (
     input debug_uart_fake_space,
     input [1:0] debug_force_video_plane,
     input debug_limited_to_full,
+    input debug_audio_cd_in_tray,
 
     output bit ce_pix,
     output bit HBlank,
@@ -394,7 +395,8 @@ module cditop (
         .clk  (clk30),
         .reset(reset),
         .spi  (slave_servo_spi),
-        .quirk_force_mode_fault
+        .quirk_force_mode_fault,
+        .debug_audio_cd_in_tray
     );
 
     always_comb begin

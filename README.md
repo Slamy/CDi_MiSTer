@@ -48,13 +48,18 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,547 / 41,910 ( 32 % )
-    Total registers              15430
+    Logic utilization (in ALMs)  13,579 / 41,910 ( 32 % )
+    Total registers              15399
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
-    Total DSP Blocks             65 / 112 ( 58 % )
+    Total DSP Blocks             68 / 112 ( 61 % )
 
 ## TODOs in order of priority
 
+* Fix too many IRQs on CDDA
+* Fix hang on audio track stop or change (IRQs?)
+* Investigate mysterious non loading behavior
+* Investigate graphical glitches with "Zenith"
+* Investigate graphical glitches in "The Flowers of Robert Mapplethorpe"
 * Investigate "Earth Command" hanging after intro
 * Investigate "Zelda's Adventure" sound hiccups
 * Investigate crashed audio in both 2D Zelda games
