@@ -208,7 +208,7 @@ module mcd212 (
     always_ff @(posedge clk) begin
         irq_q <= irq;
 
-        if (irq && !irq_q) $display("VIDEO IRQ 1");
+        if (irq && !irq_q) $display("VIDEO IRQ 1 at line %d", video_y);
         if (!irq && irq_q) $display("VIDEO IRQ 0");
     end
 `endif
@@ -864,7 +864,9 @@ module mcd212 (
 
     bit [15:0] cursor[16];
     bit [1:0] clut_bank0;
-    bit [1:0] clut_bank1;
+    // Channel 1 can only write to banks 2 and 3 according to chapter 7.2 CLUT DECODER
+    // According to 5.4.4.5 CLUT Bank Register, A7 is forced 1
+    bit clut_bank1;  // Highest bit is always 1
 
     struct packed {
         bit [1:0] reserved1;
@@ -1167,12 +1169,13 @@ module mcd212 (
                         // Image Coding Method
                         `dp_raster(
                             (
-                            "Line %3d Coding A:%b %s B:%b %s NR:%b", video_y,
+                            "Line %3d Coding A:%b %s B:%b %s NR:%b CS:%b", video_y,
                             ch0_register_data[3:0],  // Coding A
                             coding_method_name(ch0_register_data[3:0], 0),  // Coding A as text
                             ch0_register_data[11:8],  // Coding B
                             coding_method_name(ch0_register_data[11:8], 1),  // Coding B as text
-                            ch0_register_data[19]));  // Type of region flag handling
+                            ch0_register_data[19],  // Type of region flag handling
+                            ch0_register_data[22]));  //CLUT select for dual 7-bit CLUTs
                         image_coding_method_register.cs <= ch0_register_data[22];
                         image_coding_method_register.nr <= ch0_register_data[19];
                         image_coding_method_register.ev <= ch0_register_data[18];
@@ -1303,7 +1306,8 @@ module mcd212 (
     end
 
     assign clut_wr_addr0 = {clut_bank0, ch0_register_adr[5:0]};
-    assign clut_wr_addr1 = {clut_bank1, ch1_register_adr[5:0]};
+    // According to 5.4.4.5 CLUT Bank Register, A7 is forced 1
+    assign clut_wr_addr1 = {1'b1, clut_bank1, ch1_register_adr[5:0]};
 
     assign clut_wr_data0 = {
         ch0_register_data[23:18], ch0_register_data[15:10], ch0_register_data[7:2]
@@ -1352,10 +1356,7 @@ module mcd212 (
                 case (ch1_register_adr)
                     7'h43: begin
                         // CLUT Bank
-                        clut_bank1 <= ch1_register_data[1:0];
-
-                        // The second channel can only write to banks 2 and 3
-                        assert (ch1_register_data[1]);
+                        clut_bank1 <= ch1_register_data[0];
                     end
                     7'h46: begin
                         `dp_raster(
