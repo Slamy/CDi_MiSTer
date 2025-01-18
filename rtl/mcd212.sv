@@ -849,9 +849,17 @@ module mcd212 (
 
             // Implement CLUT4 shifting
             if (image_coding_method_register.cm13_10_planea == 4'b1011 && new_pixel_hires && !new_pixel_lores)
-                synchronized_pixel0[7:4] <= synchronized_pixel0[3:0];
+                synchronized_pixel0[7:4] <= {
+                    // Bit 3 must be forced to 0, when RLE is active
+                    synchronized_pixel0[3] && !display_decoder_register_ddr1.ft1,
+                    synchronized_pixel0[2:0]
+                };
             if (image_coding_method_register.cm23_20_planeb == 4'b1011 && new_pixel_hires && !new_pixel_lores)
-                synchronized_pixel1[7:4] <= synchronized_pixel1[3:0];
+                synchronized_pixel1[7:4] <= {
+                    // Bit 3 must be forced to 0, when RLE is active
+                    synchronized_pixel1[3] && !display_decoder_register_ddr2.ft1,
+                    synchronized_pixel1[2:0]
+                };
         end
     end
 

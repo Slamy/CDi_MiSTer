@@ -48,17 +48,15 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,630 / 41,910 ( 33 % )
-    Total registers              15431
+    Logic utilization (in ALMs)  13,683 / 41,910 ( 33 % )
+    Total registers              15422
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
     Total DSP Blocks             68 / 112 ( 61 % )
 
 ## TODOs in order of priority
 
-* Fix hang on audio track stop or change
 * Investigate mysterious non loading behavior
 * Investigate graphical glitches with "Zenith"
-* Investigate graphical glitches in "The Flowers of Robert Mapplethorpe"
 * Investigate "Earth Command" hanging after intro
 * Investigate "Zelda's Adventure" sound hiccups
 * Investigate crashed audio in both 2D Zelda games
@@ -67,9 +65,12 @@ Core Utilization:
     * Fixes frequently used Stereo to Mono mixing in games with SFX
     * Might fix weirdly mixed german + english voice in Kether
     * Unmute is still a mystery. Not solved in any known CD-i emulator
+* Investigate "Felix the Cat" sound problems
+* Investigate "Plunderball" gameplay being too fast (CPU speed?)
+* Fix hang on audio track stop or change
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
 * Investigate red bars in Hotel Mario intro
-* Investigate weird glitches at the bottom in "Myst" gameplay when rotating
+* Investigate weird glitches at the bottom in "Myst" gameplay when rotating (CPU speed?)
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour / Core is unstable
 * Add auto start of titles using front panel "Play" button
