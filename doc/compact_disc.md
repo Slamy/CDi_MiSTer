@@ -130,3 +130,22 @@ After 2 seconds, the index 1 of track 1 starts
     01 01 01 00 00 05 00 00 02 05 29 da
     01 01 01 00 00 07 00 00 02 07 4d 1b
 
+### Play CDDA
+
+Recording of "Play CDDA" command.
+Extracted using custom software on a CD-i 210/05.
+
+    01 01 01 01 14 56 00 01 16 56 e4 6f
+    01 01 01 01 14 58 00 01 16 58 ca 09
+    01 01 01 01 14 59 00 01 16 59 70 79
+    01 01 01 01 14 70 00 01 16 70 64 7a
+    01 01 01 01 14 72 00 01 16 72 01 3b
+    01 01 01 01 14 73 00 01 16 73 bb 4b
+    01 01 01 01 15 00 00 01 17 00 70 7a
+    01 01 01 01 15 01 00 01 17 01 ca 0a
+
+It turns out that every sector get's an IRQ. From the source code
+of MAME it seemed to only cause an IRQ every sector with Frame=0.
+This seems to be not the case on a real machine.
+Thinking about this, it might also make sense concerning CD+G
+will have visual data on every sector.

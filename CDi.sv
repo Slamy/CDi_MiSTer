@@ -293,6 +293,8 @@ module emu (
 
     // Flag which becomes active for some time when an NvRAM image is mounted
     wire        nvram_img_mount = nvram_media_change && img_size != 0;
+    // Flag which becomes active for some time when an NvRAM image is mounted
+    wire        cd_img_mount = cd_media_change && img_size != 0;
 
 `ifndef VERILATOR
     hps_io #(
@@ -324,7 +326,7 @@ module emu (
 
         .sd_lba('{cd_hps_lba, 0}),
         .sd_blk_cnt('{0, 0}),
-        .sd_rd({nvram_hps_rd, cd_hps_req}),
+        .sd_rd({nvram_hps_rd, cd_hps_req && cd_image_mounted}),
         .sd_wr({nvram_hps_wr, 1'b0}),
         .sd_ack({nvram_hps_ack, cd_hps_ack}),
         .sd_buff_addr(sd_buff_addr),
@@ -751,6 +753,9 @@ module emu (
     // Is set, if NvRAM image is mounted and usable
     bit nvram_image_mounted = 0;
 
+    // Is set, if CD image is mounted and usable
+    bit cd_image_mounted = 0;
+
     // Ignore the first 4 seconds. For some reason, the OS
     // performs writes during bootup. Why should we backup these?
     bit [27:0] nvram_early_boot_pending_ignore;
@@ -766,6 +771,7 @@ module emu (
         OSD_STATUS_q <= OSD_STATUS;
 
         if (nvram_media_change) nvram_image_mounted <= (img_size != 0);
+        if (cd_media_change) cd_image_mounted <= (img_size != 0);
 
         if (cditop_reset) begin
             nvram_backup_pending <= 0;

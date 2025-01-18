@@ -48,15 +48,14 @@ The save files containing the NvRAM is compatible with the CD-i emulation of MAM
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,579 / 41,910 ( 32 % )
-    Total registers              15399
+    Logic utilization (in ALMs)  13,630 / 41,910 ( 33 % )
+    Total registers              15431
     Total block memory bits      634,055 / 5,662,720 ( 11 % )
     Total DSP Blocks             68 / 112 ( 61 % )
 
 ## TODOs in order of priority
 
-* Fix too many IRQs on CDDA
-* Fix hang on audio track stop or change (IRQs?)
+* Fix hang on audio track stop or change
 * Investigate mysterious non loading behavior
 * Investigate graphical glitches with "Zenith"
 * Investigate graphical glitches in "The Flowers of Robert Mapplethorpe"
@@ -70,11 +69,6 @@ Core Utilization:
     * Unmute is still a mystery. Not solved in any known CD-i emulator
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
 * Investigate red bars in Hotel Mario intro
-* Check CUE/BIN vs CHD differences in MiSTer Main
-    * The CUE/BIN version of "The Apprentice" seems to break the core
-* CDIC Fetch TOC (The Apprentice)
-* CDIC Descrambler (The Apprentice)
-* CDIC Byteswap (The Apprentice)
 * Investigate weird glitches at the bottom in "Myst" gameplay when rotating
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour / Core is unstable
@@ -91,9 +85,6 @@ Core Utilization:
 * Refurbish I2C for the front display and show the content as picture in picture during changes?
     * It might not even be required at all.
 * Fix timekeeper initial time
-* Playback of Audio CDs
-    * Possibility was proven in MAME, requires different codes from SERVO
-    * Other MiSTer cores can do that too, so it would be cool: (PSX, MegaCD, Saturn, PCE)
 
 ## Expected checksums of roms
 
