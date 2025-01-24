@@ -77,7 +77,6 @@ module audiodecoder (
 
     bit [3:0] tick_wait_cnt;
     header_coding_s playback_coding;
-    assign playback_coding_out = playback_coding;
 
     // Those are byte addresses
     localparam bit [13:0] HEADER_OFFSETS_4BIT[8] = '{0, 1, 2, 3, 8, 9, 10, 11};
@@ -325,6 +324,8 @@ module audiodecoder (
                     old_samples[sample_channel][1] <= old_samples[sample_channel][0];
                     old_samples[sample_channel][0] <= sample16;
                     out.write <= 1;
+                    playback_coding_out <= playback_coding;
+
                     if (data_cnt == SAMPLES_PER_BLOCK) begin
                         if (block_cnt == last_block_index) begin
                             if (group_cnt == LAST_GROUP_INDEX) begin
@@ -359,6 +360,7 @@ module audiodecoder (
                         sample[15:0] <= {mem_data[7:0], mem_data[15:8]};
                         sample_channel <= !data_addr[1];
                         out.write <= 1;
+                        playback_coding_out <= playback_coding;
                         decoder_state <= CDDA_WAIT;
                     end
                 end
