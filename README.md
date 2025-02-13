@@ -23,35 +23,35 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,683 / 41,910 ( 33 % )
-    Total registers              15422
-    Total block memory bits      634,055 / 5,662,720 ( 11 % )
-    Total DSP Blocks             68 / 112 ( 61 % )
+    Logic utilization (in ALMs)  13,730 / 41,910 ( 33 % )
+    Total registers              15503
+    Total block memory bits      637,639 / 5,662,720 ( 11 % )
+    Total DSP Blocks             72 / 112 ( 64 % )
 
 ### TODOs in order of priority
 
+* Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
+    * A workaround is CPU overclocking
 * Investigate mysterious non loading behavior
-* Investigate graphical glitches with "Zenith"
+* Investigate graphical glitches in intro of "Zenith"
+    * CPU Speed? Timing of Video IRQs?
 * Investigate "Earth Command" hanging after intro
 * Investigate "Zelda's Adventure" sound hiccups
-* Investigate crashed audio in both 2D Zelda games
-    * Occurs during "Help-Cutscene" when SFX is played
-* Implement audio mixing and panning
-    * Fixes frequently used Stereo to Mono mixing in games with SFX
-    * Might fix weirdly mixed german + english voice in Kether
-    * Unmute is still a mystery. Not solved in any known CD-i emulator
+    * During stop of audiomap and switch to audio channel playback
+      the audio channel mask is set one sector too late.
+* Investigate sound hiccups in both 2D Zelda games
+    * Probably the same as with "Zelda's Adventure"
 * Investigate "Felix the Cat" sound problems
 * Fix hang on audio track stop or change
-* Investigate flicker of graphics in Hotel Mario (CPU speed?)
 * Investigate red bars in Hotel Mario intro
-* Investigate weird glitches at the bottom in "Myst" gameplay when rotating (CPU speed?)
+* Investigate single blur line in Hotel Mario at the top
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour / Core is unstable
 * Add auto start of titles using front panel "Play" button
 * Fix servo behaviour of always detecting a CD-i disc
 * Investigate desaturated colors / low contrast in "Photo CD Sample Disc"
-    * The colors seem to be a little bit to bright?
-    * For some reason MAME is really dark, also not accurate
+    * Probably fixable with 16-235 to 0-255 scaling
+    * More investigation needed
 * MCD212: Add RGB555
     * Fixes DYUV Test on "Validation Disc"
 * Find a solution for the video mode reset during system resets

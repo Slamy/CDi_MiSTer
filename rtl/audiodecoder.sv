@@ -7,24 +7,12 @@
 // inspired by https://github.com/MiSTer-devel/PSX_MiSTer/blob/main/rtl/cd_xa.vhd
 // inspired by https://github.com/dankan1890/mewui/blob/master/src/mame/machine/cdicdic.cpp
 
-
-function automatic [3:0] get_sector_count_for_coding(input header_coding_s coding);
-    bit [3:0] base_count = 2;
-
-    if (coding.bps == k4Bps) base_count *= 2;  // Twice as many 4bpp audio frames fit as usual
-    if (coding.rate == k18Khz)
-        base_count *= 2;  // Twice as many half-rate audio frames fit as usual
-    if (coding.chan == kMono) base_count *= 2;  // Twice as many mono audio frames fit vs. stereo
-
-    $display("get_sector_count_for_coding %d", base_count);
-    get_sector_count_for_coding = base_count - 1;
-endfunction
-
 module audiodecoder (
     input clk,
     input reset,
     input reset_filter_on_start,
     input ignore_playback_delay,
+    input stop_playback,
 
     output bit [12:0] mem_addr,
     output bit mem_rd,
@@ -69,13 +57,13 @@ module audiodecoder (
 
     assign idle = decoder_state == IDLE;
 
+
     bit [13:0] data_addr;
     bit [13:0] block_addr;
     bit [4:0] group_cnt;  // 18 groups per sector
     bit [3:0] block_cnt;  // counts to 8 for 4BPS and to 4 for 8BPS
     bit [5:0] data_cnt;  // counts to 28
 
-    bit [3:0] tick_wait_cnt;
     header_coding_s playback_coding;
 
     // Those are byte addresses
@@ -177,6 +165,7 @@ module audiodecoder (
 
     bit signed [15:0] old_samples[2][2];
     bit signed [31:0] mac;
+    bit stop_playback_latch;
 
     wire inbetween  /*verilator public_flat_rd*/ = decoder_state == APPLY_FILTER1;
 
@@ -198,16 +187,13 @@ module audiodecoder (
             old_samples <= '{'{0, 0}, '{0, 0}};
             group_cnt <= 0;
             out.write <= 0;
-            tick_wait_cnt <= 0;
+            stop_playback_latch <= 0;
         end else begin
-            if (audio_tick && !idle) begin
-                if (tick_wait_cnt == 0)
-                    tick_wait_cnt <= get_sector_count_for_coding(playback_coding);
-                else tick_wait_cnt <= tick_wait_cnt - 1;
-            end
+            if (stop_playback) stop_playback_latch <= 1;
 
             case (decoder_state)
                 IDLE: begin
+                    stop_playback_latch <= 0;
                     if (start_playback) begin
                         // Coding can be read from memory or forced
                         if (use_external_coding) begin
@@ -220,10 +206,6 @@ module audiodecoder (
 
                             playback_coding <= cd_audio_coding;
                             decoder_state   <= (cd_audio_coding.bps == k16Bps) ? CDDA_READ : WAIT_AUDIO_TICKS;
-                            if (tick_wait_cnt == 0) begin
-                                if (ignore_playback_delay) tick_wait_cnt <= 1;
-                                else tick_wait_cnt <= get_sector_count_for_coding(cd_audio_coding);
-                            end
                         end else begin
                             // Read coding from sector header
                             decoder_state <= DETECT_CODING;
@@ -237,9 +219,6 @@ module audiodecoder (
                         if (reset_filter_on_start) begin
                             $display("Reset audio filters");
                             old_samples <= '{'{0, 0}, '{0, 0}};
-
-                            // TODO Why this again?
-                            if (!use_external_coding) tick_wait_cnt <= 0;
                         end
                     end
                 end
@@ -261,11 +240,10 @@ module audiodecoder (
                             disable_audiomap <= 1;
                         end else begin
                             playback_coding <= mem_data_byte;
-                            decoder_state   <= WAIT_AUDIO_TICKS;
-                            if (tick_wait_cnt == 0) begin
-                                if (ignore_playback_delay) tick_wait_cnt <= 1;
-                                else tick_wait_cnt <= get_sector_count_for_coding(mem_data_byte);
-                            end
+                            // Measurements of the CDIC IRQ are showing
+                            // that the audiomap is not synchronized to CD Data IRQs
+                            // No waiting ticks added here
+                            decoder_state   <= EVALHEADER;
 
                             assert (mem_data_byte != 0);  // plausible?
                         end
@@ -273,7 +251,12 @@ module audiodecoder (
                     end
                 end
                 WAIT_AUDIO_TICKS: begin
-                    if (tick_wait_cnt == 0) decoder_state <= EVALHEADER;
+                    if (audio_tick) decoder_state <= EVALHEADER;
+
+                    if (stop_playback_latch) begin
+                        decoder_state <= IDLE;
+                        stop_playback_latch <= 0;
+                    end
                 end
                 EVALHEADER: begin
                     if (mem_ack) begin
@@ -319,6 +302,11 @@ module audiodecoder (
                         decoder_state <= CALC2;
                         sample_channel <= channel;
                     end
+
+                    if (stop_playback_latch) begin
+                        decoder_state <= IDLE;
+                        stop_playback_latch <= 0;
+                    end
                 end
                 CALC2: begin
                     old_samples[sample_channel][1] <= old_samples[sample_channel][0];
@@ -328,8 +316,9 @@ module audiodecoder (
 
                     if (data_cnt == SAMPLES_PER_BLOCK) begin
                         if (block_cnt == last_block_index) begin
-                            if (group_cnt == LAST_GROUP_INDEX) begin
+                            if ((group_cnt == LAST_GROUP_INDEX) || stop_playback_latch) begin
                                 decoder_state <= IDLE;
+                                stop_playback_latch <= 0;
                             end else begin
                                 block_addr <= block_addr + BLOCK_SIZE;  // group has 128 byte size
                                 decoder_state <= EVALHEADER;

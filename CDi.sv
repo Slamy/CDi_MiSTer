@@ -661,6 +661,7 @@ module emu (
         .debug_force_video_plane,
         .debug_limited_to_full,
         .debug_audio_cd_in_tray,
+        .debug_disable_audio_attenuation(status[2]),
 
         .ce_pix(ce_pix),
 

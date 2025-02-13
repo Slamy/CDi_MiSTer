@@ -19,6 +19,56 @@ $1ff8 -> $961  Timer
 $1ff6 -> $67a  SCI
 $1ff4 -> $100  SPI
 
+## Variables
+    0050 Multiplied with Attenuation value?
+    0053 Bit 4 activates transmission to DAC
+         Only when set, jump to 0aa6 is performed during main loop at 02ba
+         Bit 4 is set by Mute Command at 0x0575
+         Bit 4 is set by Unmute command at 0x575 as well
+         Bit 4 is cleared after the transmission was performed in function 0afe
+         Bit 4 is set at 0x0561 which seems to be related to timing. When?
+         Bit 4 is set at 0x0589. When? Seems to be near
+               to 0x575 when a compare went different.
+
+    0056 Bit 0 is cleared on Unmute
+         Bit 0 is set on Mute
+    0059 Checked on Unmute
+    0063 Bit 4 set on channel 0 83?
+    0064 Timer High (ACHR) is stored here at 0571
+         Written after Unmute but not always. There is a 
+         comparsion involved between ACHR and 0x0064. Fading?
+    0066 SERVO SPI Byte 0
+    0067 SERVO SPI Byte 1
+    0068 SERVO SPI Byte 2
+    0069 SERVO SPI Byte 3
+    0099 Copy of 0x0066 (during 0c3d)
+    009a Copy of 0x0067 (during 0c3d)
+    009b Copy of 0x0068 (during 0c3d)
+    009c Copy of 0x0069 (during 0c3d)
+    0075 Attenuation Highest Bit?
+    0076 Attenuation 0
+    0077 Attenuation 1
+    0078 Attenuation 2
+    0079 Attenuation 3
+    00d1 Only written at 0ff0. Always incremented by 0x10
+    00da Only written at 0160
+    00db Probably End of Stack
+    00ff Start of Stack
+    0b37 Array of Attenuation values. Only 0x2d entries
+
+## Functions
+
+    032f        IRQ Routine when called from CPU
+    0abf - 0afd Transfers all attenuation values
+    0afe - 0b36 Transmits 8 bit to DAC
+    0bde - 0ce8 Analysis of SERVO SPI
+
+
+## Commands
+
+    move.b #$82,$310004 ; Mute
+    move.b #$83,$310004 ; Unmute
+
 ## Communication at bootup with mame and cdi200.rom
 
     zx405037p__cdi_servo_2.1__b43t__llek9215.mc68hc705c8a_withtestrom.7201 ROM NEEDS REDUMP

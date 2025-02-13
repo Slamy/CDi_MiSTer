@@ -8,6 +8,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/cditop.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/clut_rle.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/delta_yuv_decoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/display_file_decoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/dual_ad7528.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/flag_cross_domain.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ica_dca_ctrl.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/pointing_device.sv

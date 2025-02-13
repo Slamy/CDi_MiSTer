@@ -4,13 +4,36 @@
 
 Coming from https://github.com/cdifan/cdichips/blob/master/ims66490cdic.md
 
-    0000 - 09FF 	DATA buffer 0  (0xa00 (2560) in size)
-    0A00 - 13FF 	DATA buffer 1  (0xa00 (2560) in size)
-    1400 - 1DFF     Unknown ?      (0xa00 (2560) in size)
-    1E00 - 27ff     Unknown ?      (0xa00 (2560) in size)
-    2800 - 31FF 	ADPCM buffer 0 (0xa00 (2560) in size)
-    3200 - 3BFF 	ADPCM buffer 1 (0xa00 (2560) in size)
+    0000 - 09FF 	DATA buffer 0  (0xa00 (2560) in size)   Word Adr 0000
+    0A00 - 13FF 	DATA buffer 1  (0xa00 (2560) in size)   Word Adr 0500
+    1400 - 1DFF     Unknown ?      (0xa00 (2560) in size)   Word Adr 0a00
+    1E00 - 27ff     Unknown ?      (0xa00 (2560) in size)   Word Adr 0f00
+    2800 - 31FF 	ADPCM buffer 0 (0xa00 (2560) in size)   Word Adr 1400
+    3200 - 3BFF 	ADPCM buffer 1 (0xa00 (2560) in size)   Word Adr 1900
     3C00 - 3FFE 	Register area  (0x400 (1024) in size)
+
+### Registers
+
+Access with word aligned addresses. Long word is fine as it is performed
+as word aligned access by the CPU
+
+    3C00 Command Register
+    3C02 Time Register High
+    3C04 Time Register Low
+    3C06 File register
+    3C08 Channel mask High (for data and audio)
+    3C0A Channel mask Low (for data and audio)
+    3C0C Audio channel mask
+    3C80 Data select ?
+
+These are maybe the only real registers of the CDIC
+
+    3FF4 Audio buffer (ABUF)
+    3FF6 Extra buffer (XBUF)
+    3FF8 DMA Control
+    3FFA AUDCTL (Audio Control, called Z-Buffer in MAME)
+    3FFC Interrupt Vector
+    3FFE Data buffer
 
 ## MAME behaviour with data
 
@@ -27,7 +50,7 @@ First usage in MAME when "Frog Feast" disc is inserted
     [:cdic] ':maincpu' (00429784): cdic_r: Data buffer Register = 0000 & ffff
     [:cdic] ':maincpu' (00429788): cdic_r: X-Buffer Register = 0000 & ffff
     [:cdic] ':maincpu' (00429788): Clearing CDIC interrupt line
-    
+
 But this is very early on. Nothing is really done here. No CD interaction.
 
     [:cdic] ':maincpu' (0042AD7A): cdic_r: Data buffer Register = 0000 & ffff
@@ -40,7 +63,7 @@ But this is very early on. Nothing is really done here. No CD interaction.
     [:cdic] ':maincpu' (00429B24): cdic_r: X-Buffer Register = 0000 & ffff
     [:cdic] ':maincpu' (00429B24): Clearing CDIC interrupt line
     [:cdic] Sector tick, waiting on spinup
-    
+
 Time passes
 
     [:cdic] About to process a disc sector
@@ -169,7 +192,7 @@ stops the whole process.
     0x2a Read Mode 2   Seek to timestamp in Time Register and start reading Mode 2
     0x2c Seek          ? According to Mame, equal to 0x29 ?
 
-### Register
+### Registers
 
 Data Buffer Register[15] Set bit to transfer command register to shadow command register
 Data Buffer Register[2] Related to Audio?
@@ -199,7 +222,7 @@ PSX:
    constant RAW_SECTOR_OUTPUT_SIZE  : integer := RAW_SECTOR_SIZE - SECTOR_SYNC_SIZE;
    constant DATA_SECTOR_SIZE        : integer := 2048;
    constant PREGAPSIZE              : integer := 150;
-   
+
    constant FRAMES_PER_SECOND       : integer := 75;
    constant FRAMES_PER_MINUTE       : integer := 75 * 60;
 
@@ -336,3 +359,115 @@ This feels wrong.
     aplay -f cd -c 1 -r 18900 < audio_left.bin
 
     aplay -f cd -c 1 -r 44100 < 0/audio_left.bin
+
+## Recordings real CD-i
+
+### Zelda - Wand of Gamelon
+
+    *((unsigned short *)0x303C06) = 0x0100; // File
+    *((unsigned long *)0x303C08) = 0x0003; // Channel
+    *((unsigned short *)0x303C0C) = 0x0001; // Audio Channel
+    *((unsigned long *)0x303C02) = 0x48303100; /* Timecode */
+    *((unsigned short *)0x303C00) = 0x2a; // Read Mode 2
+    *((unsigned short *)0x303FFE) = 0xC000; /* Start! */
+
+       ABUF XBUF DMA  AUDC DBUF
+     0  7fff 7fff 3ffe d7fe c800 After Reset
+     1  7fff 7fff 3ffe d7fe 4824 Audio Buf 0
+     2  7fff 7fff 3ffe d7fe 4800
+     3  7fff 7fff 3ffe d7fe 4801
+     4  7fff 7fff 3ffe d7fe 4800
+     5  7fff 7fff 3ffe d7fe 4801
+     6  7fff 7fff 3ffe d7fe 4800
+     7  7fff 7fff 3ffe d7fe 4801
+     8  7fff 7fff 3ffe d7fe 4800
+     9  7fff 7fff 3ffe d7fe 4801
+    10  7fff 7fff 3ffe d7fe 4800
+    11  7fff 7fff 3ffe d7fe 4801
+    12  7fff 7fff 3ffe d7fe 4800
+    13  7fff 7fff 3ffe d7fe 4801
+    14  7fff 7fff 3ffe d7fe 4800
+    15  7fff 7fff 3ffe d7fe 4801
+    16  7fff 7fff 3ffe d7fe 4800
+    17  7fff 7fff 3ffe d7fe 4825
+    18  7fff 7fff 3ffe d7fe 4801
+    19  7fff 7fff 3ffe d7fe 4800
+    20  7fff 7fff 3ffe d7fe 4801
+
+Again with data in buffers
+
+        Data 0    Data 1    1400  1E00      ADPCM 0   ADPCM 1   DMA  AUDC DBUF
+     1  4830 3202 ffc0 ffc0 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4824
+     2  4830 3202 4830 3302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     3  4830 3402 4830 3302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+     4  4830 3402 4830 3502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     5  4830 3602 4830 3502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+     6  4830 3602 4830 3702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     7  4830 3802 4830 3702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+     8  4830 3802 4830 3902 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     9  4830 4002 4830 3902 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    10  4830 4002 4830 4102 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    11  4830 4202 4830 4102 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    12  4830 4202 4830 4302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    13  4830 4402 4830 4302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    14  4830 4402 4830 4502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    15  4830 4602 4830 4502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    16  4830 4602 4830 4702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    17  4830 4602 4830 4802 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4825
+    18  4830 4902 4830 4802 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    19  4830 4902 4830 5002 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    20  4830 5102 4830 5002 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    21  4830 5102 4830 5202 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    22  4830 5302 4830 5202 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    23  4830 5302 4830 5402 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    24  4830 5502 4830 5402 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    25  4830 5502 4830 5602 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    26  4830 5702 4830 5602 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    27  4830 5702 4830 5802 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    28  4830 5902 4830 5802 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    29  4830 5902 4830 6002 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    30  4830 6102 4830 6002 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    31  4830 6102 4830 6202 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    32  4830 6302 4830 6202 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    33  4830 6402 4830 6202 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4824
+    34  4830 6402 4830 6502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    35  4830 6602 4830 6502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    36  4830 6602 4830 6702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    37  4830 6802 4830 6702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    38  4830 6802 4830 6902 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    39  4830 7002 4830 6902 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    40  4830 7002 4830 7102 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    41  4830 7202 4830 7102 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    42  4830 7202 4830 7302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+
+With offset of 1 frame
+
+    *((unsigned short *)0x303C06) = 0x0100; // File
+    *((unsigned long *)0x303C08) = 0x0003; // Channel
+    *((unsigned short *)0x303C0C) = 0x0001; // Audio Channel
+    *((unsigned long *)0x303C02) = 0x48303200; /* Timecode */
+    *((unsigned short *)0x303C00) = 0x2a; // Read Mode 2
+    *((unsigned short *)0x303FFE) = 0xC000; /* Start! */
+
+     1  4830 3202 4830 3302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     2  4830 3402 4830 3302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+     3  4830 3402 4830 3502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     4  4830 3602 4830 3502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+     5  4830 3602 4830 3702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     6  4830 3802 4830 3702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+     7  4830 3802 4830 3902 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+     8  4830 4002 4830 3902 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+     9  4830 4002 4830 4102 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    10  4830 4202 4830 4102 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    11  4830 4202 4830 4302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    12  4830 4402 4830 4302 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    13  4830 4402 4830 4502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    14  4830 4602 4830 4502 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    15  4830 4602 4830 4702 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    16  4830 4602 4830 4802 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4824
+    17  4830 4902 4830 4802 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    18  4830 4902 4830 5002 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    19  4830 5102 4830 5002 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    20  4830 5102 4830 5202 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800
+    21  4830 5302 4830 5202 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4801
+    22  4830 5302 4830 5402 00 00 74f0 e1e2 f861 74e0 d000 f0f0 3ffe d7fe 4800

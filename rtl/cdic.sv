@@ -68,6 +68,7 @@ module cdic (
 
     bit [15:0] command_register = 0;
 
+    // DBUF @ 303FFE
     // Bit 0 is toggled on every received sector
     // Bit 2 is reset on data sector
     // Bit 2 is set on audio sector
@@ -82,6 +83,7 @@ module cdic (
     // 101 0x3200 = 5 * 0xA00
     bit [15:0] data_buffer_register = 0;
 
+    // XBUF @ 303FF6
     // Bit 15 causes IRQ
     // Bit 15 is set when a sector is stored
     // in either data or ADPCM buffer
@@ -89,6 +91,7 @@ module cdic (
     // The CPU still gets the set bit
     bit [15:0] x_buffer_register = 0;
 
+    // ABUF @ 303FF4
     // Bit 15 causes IRQ
     // Bit 15 is set when an audio buffer was played
     // Reading register clears bit 15 after the read
@@ -98,18 +101,25 @@ module cdic (
     // Interrupt vector to present to the M68k CPU
     bit [15:0] interrupt_vector_register = 0;
 
+    // DMACTL @ 303FF8
     // Bit 15 activates DMA transfer
     // Bit 14 ??? has no use?
     // Bits 13:0 are the current address in CDIC memory according to MAME
     bit [15:0] dma_control_register = 0;
 
-    // Bit 0 toggles on every read when no audio is played? 
+    // AUDCTL @ 303FFA (called Z buffer in MAME)
+    // Bit 0 toggles on every read when no audio is played?
     // The toggled result is the one returned
     // to the CPU?
-    // Resetting bit 13 stops audio map playback?
-    // Setting bit 13 starts audio map playback?
+    // Resetting bit 13 stops audio map playback? Or is it bit 11?
+    // CPU does write 0x0000 to do so, ignoring the previous content
+    // Setting bit 13 starts audio map playback? Or is it bit 11?
+    // CPU does write 0x2800 to do so, ignoring the previous content
+    // CPU writes 0x0800 to this register when unmuting
+    // It does so only if bit 11 is not set but bit 0 is set
+    // after a CDIC IRQ
     // This is also the address for playback of audio
-    bit [15:0] audio_control_register = 0;  // called Z buffer in MAME?
+    bit [15:0] audio_control_register = 0;
 
     // Matching value for File in MODE2 header
     // If the file is not matching, the sector will be ignored
@@ -231,6 +241,7 @@ module cdic (
     // which had audio data and matching audio channel and
     // needs to be played back now
     bit cd_audio_start_playback;
+    bit cd_audio_abort_playback_request;
 
     // Address of CD sector to play back
     // Should be 13'h1900 or 13'h1400
@@ -281,6 +292,7 @@ module cdic (
 
         .cd_audio_coding(cd_audio_coding),
         .start_playback(cd_audio_start_playback),
+        .abort_playback_request(cd_audio_abort_playback_request),
         .enable_audiomap(adpcm_enable_audiomap),
         .disable_audiomap(adpcm_disable_audiomap),
         .playback_addr(audio_playback_addr),
@@ -312,7 +324,6 @@ module cdic (
                 $display("ADPCM at %x", {audio_playback_addr, 1'b0});
             end else begin
                 assert (read_cdda);
-                // CDDA is located in the data buffers
                 audio_playback_addr = data_target_buffer ? 13'h0f00 : 13'h0a00;
                 $display("CDDA at %x", {audio_playback_addr, 1'b0});
             end
@@ -407,8 +418,11 @@ module cdic (
 
     // Number of sectors to wait until requesting the first
     // after the reading was instructed to start.
+`ifdef VERILATOR
     localparam bit [5:0] kSeekTime = 1;
-
+`else
+    localparam bit [5:0] kSeekTime = 2;
+`endif
     // Simulates reading time. Remaining sectors to wait.
     bit [5:0] start_cd_reading_cnt = 0;
 
@@ -443,6 +457,7 @@ module cdic (
         bus_ack <= 0;
         rdy <= 0;
         cd_audio_start_playback <= 0;
+        cd_audio_abort_playback_request <= 0;
         cd_hps_data_valid_q2 <= cd_hps_data_valid_q;
         cd_hps_data_valid_q <= cd_hps_data_valid;
         cd_hps_ack_q <= cd_hps_ack;
@@ -596,24 +611,7 @@ module cdic (
                     $display("Use sector %x %x %x for audio", header_timecode1[15:8],
                              header_timecode1[7:0], header_timecode2[15:8]);
 
-                    // For audio sectors, move forward 0x1400 words
-                    // DATA 0x0000 turns to ADPCM 0x2800
-                    // DATA 0x0a00 turns to ADPCM 0x3200
-                    // At least this is how MAME does it but cannot be build in hardware
-                    // because the sector interval might lead to the currently played sector
-                    // being overwritten.
-                    // We are applying a hack here:
-                    // The second coding pair is provided at 0x280X/0x320X as
-                    // checked by the driver code.
-                    // This is actually required to make the intros
-                    // of "Zelda's Adventure" and "Hotel Mario" work
-                    // as the driver reads the coding values
-                    cd_data_target_adr <= cd_data_target_adr + 13'h1400;
-
-                    // The current coding is stored here to avoid dependency
-                    // onto the buffers whose location are now optimized
-                    // for CPU readout. The ADPCM buffers are no longer
-                    // tied to the buffer position from CPU view
+                    cd_data_target_adr <= audio_target_buffer ? 13'h1904 : 13'h1404;
                     cd_audio_coding <= header_coding;
                 end else if (use_sector_data && sector_word_index == 10 && !read_raw) begin
                     $display("Use sector %x %x %x for data in buffer %x", header_timecode1[15:8],
@@ -622,15 +620,10 @@ module cdic (
                 end
 
                 if (header_mode2 && use_sector_data && audio_channel_match && sector_word_index == 12 && header_submode.audio) begin
-                    $display("Select actual ADPCM buffer");
+                    $display("Select ADPCM buffer %x", {audio_target_buffer ? 13'h1906 : 13'h1406,
+                                                        1'b0});
 
-                    // This is a hack to simulate bank switching!
-                    // The driver code never reads the data which is fed to the ADPCM
-                    // buffers using the audio channel mask.
-                    // We use this method to avoid the currently playing buffer to be
-                    // overwritten.
-                    cd_data_target_adr  <= audio_target_buffer ? 13'h1906 : 13'h1406;
-                    audio_target_buffer <= !audio_target_buffer;
+                    cd_data_target_adr <= audio_target_buffer ? 13'h1906 : 13'h1406;
                 end
 
                 // Move target address to write the Q subchannel data next
@@ -689,8 +682,9 @@ module cdic (
                         $display(
                             "Sector %x %x %x delivery ended at %x. Cause IRQ. Buffer bit set to %d. %s",
                             header_timecode1[15:8], header_timecode1[7:0], header_timecode2[15:8],
-                            {cd_data_target_adr, 1'b0}, !data_target_buffer,
-                            (header_submode.audio && audio_channel_match) ? "Audio" : "Data");
+                            {cd_data_target_adr, 1'b0},
+                            (header_submode.audio && audio_channel_match && header_mode2) ? !audio_target_buffer : !data_target_buffer,
+                            (header_submode.audio && audio_channel_match && header_mode2) ? "Audio" : "Data");
                     end
                     // Bit 2 is reset on data sector
                     // Bit 2 is set on audio sector
@@ -710,6 +704,10 @@ module cdic (
 
                     if (header_submode.audio && audio_channel_match && header_mode2) begin
                         cd_audio_start_playback <= 1;
+                        // Resetting this bit, causes the CDIC driver to unmute the mixer
+                        audio_control_register[11] <= 0;
+                        data_buffer_register[0] <= audio_target_buffer;
+                        audio_target_buffer <= !audio_target_buffer;
                     end
 
                     if (read_cdda) begin
@@ -731,7 +729,6 @@ module cdic (
                 // as soon as bit 15 is set, the command is parsed and must be reset directly afterwards
                 data_buffer_register[15] <= 0;
 
-                read_mode2 <= 0;
                 read_cdda <= 0;
                 read_raw <= 0;
 
@@ -752,7 +749,6 @@ module cdic (
                     end
                     16'h2e: begin
                         $display("CDIC Command: Update");
-                        // Just ignore that? MAME does so too...
                     end
                     16'h27: begin
                         $display("CDIC Command: Fetch TOC");
@@ -760,6 +756,7 @@ module cdic (
                         // Use negative LBA ask for TOC
                         cd_hps_lba <= 32'hffff0000;
                         read_raw <= 1;
+                        read_mode2 <= 0;
                     end
                     16'h28: begin
                         $display("CDIC Command: Play CDDA");
@@ -767,6 +764,7 @@ module cdic (
                         start_cd_reading_cnt <= kSeekTime;
                         read_raw <= 1;
                         read_cdda <= 1;
+                        read_mode2 <= 0;
                     end
                     16'h29: begin
                         $display("CDIC Command: Read Mode 1");
@@ -819,14 +817,6 @@ module cdic (
                     x_buffer_register[15] <= 0;
                     // but for the moment of reading it has to still be 1
                 end
-
-                /*
-                if (!write_strobe && address[13:1] == 13'h1FFD) begin
-                    // Reading the Audio Control Register toggles the highest bit
-                    audio_control_register[15] <= !audio_control_register[15];
-                    // but for the moment of reading it has to still be 1
-                end
-                */
             end
 
             if (access) begin
@@ -888,7 +878,7 @@ module cdic (
                             audio_control_register <= din;
 
                             adpcm_enable_audiomap  <= din[13];
-                            adpcm_disable_audiomap <= !din[13];
+                            adpcm_disable_audiomap <= din == 0;
                         end
                         13'h1FFE: begin  // 0x3FFC IVEC Interrupt Vector register
                             $display("CDIC Write Interrupt Vector Register %x %x", address[13:1],
@@ -903,9 +893,18 @@ module cdic (
                                 // Reset everything related to CD reading.
                                 cd_reading_active <= 0;
                                 data_target_buffer <= 0;
+
+                                // Note: The first audio buffer must be delivered to 2800
+                                // Only then, the Unmute will be performed
+                                audio_target_buffer <= 0;
                                 use_sector_data <= 0;
+
+                                // Force bit 1 on first read after fresh sector
+                                // Only then, the Unmute will be performed
+                                audio_control_register[0] <= 0;
                                 sector_word_index <= 0;
                                 start_cd_reading_cnt <= 0;
+                                cd_audio_abort_playback_request <= 1;
                             end
                         end
                         default: begin
@@ -1047,7 +1046,7 @@ module cdic_dual_port_memory (
     // Declare the RAM variable
     bit [15:0] ram[8192]  /*verilator public_flat_rw*/;
 
-    // Port A 
+    // Port A
     always @(posedge clk) begin
         if (we_a) begin
             ram[addr_a] = data_a;
@@ -1055,7 +1054,7 @@ module cdic_dual_port_memory (
         q_a <= ram[addr_a];
     end
 
-    // Port B 
+    // Port B
     always @(posedge clk) begin
         if (we_b) begin
             ram[addr_b] = data_b;

@@ -17,6 +17,7 @@ module audioplayer (
 
     input header_coding_s cd_audio_coding,
     input start_playback,  // flag starts CD sector playback at playback_addr
+    input abort_playback_request,
     input enable_audiomap,
     input disable_audiomap,
     input [12:0] playback_addr,
@@ -46,13 +47,14 @@ module audioplayer (
 
     wire reset_filter_on_start;
     wire decoder_disable_audiomap;
-    wire ignore_playback_delay = !playback_active && audiomap_active;
+    wire ignore_playback_delay = audiomap_active;
 
     audiodecoder decoder (
         .clk(clk),
         .reset(reset),
         .reset_filter_on_start(reset_filter_on_start),
         .ignore_playback_delay(ignore_playback_delay),
+        .stop_playback(disable_audiomap),
         .audio_tick(audio_tick),
         .mem_addr(mem_addr),
         .mem_data(mem_data),
@@ -95,6 +97,8 @@ module audioplayer (
             // To react on audiomap activation change
             if (enable_audiomap) audiomap_active <= 1;
             if (disable_audiomap || decoder_disable_audiomap) audiomap_active <= 0;
+
+            if (disable_audiomap || abort_playback_request) playback_request <= 0;
 
             // after the decoder was started, change address to the next buffer
             if (audiomap_active && decoder_start) begin
@@ -174,9 +178,6 @@ module audioplayer (
     // with Tetris
     bit playback_active_next_sample_tick;
 
-    // Used to delay the IRQ until the next sector tick
-    bit latched_audiomap_finished_playback;
-
     always_ff @(posedge clk) begin
         dc_bias_cnt <= !dc_bias_cnt;
 
@@ -191,7 +192,6 @@ module audioplayer (
             playback_active_next_sample_tick <= 0;
             xa_fifo_out[0].strobe <= 0;
             xa_fifo_out[1].strobe <= 0;
-            latched_audiomap_finished_playback <= 0;
         end else begin
 
             if (fifo_nearly_full == 2'b11 &&
@@ -201,12 +201,8 @@ module audioplayer (
                 playback_active <= playback_active_next_sample_tick;
             end
 
-            if (playback_active && decoder_idle && !decoder_idle_q && audiomap_active)
-                latched_audiomap_finished_playback <= 1;
-
-            if (latched_audiomap_finished_playback && audio_tick) begin
+            if (playback_active && decoder_idle && !decoder_idle_q && audiomap_active) begin
                 audiomap_finished_playback <= 1;
-                latched_audiomap_finished_playback <= 0;
             end
 
             if (xa_fifo_out[0].write == 0 && xa_fifo_out[0].write == 0) begin

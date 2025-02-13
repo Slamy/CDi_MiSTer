@@ -29,8 +29,7 @@ module audiofifo (
 
     always_comb begin
         read_index_d = read_index_q;
-        if (out.strobe) begin
-            assert (out.write);  // strobe without a write?
+        if (out.strobe && out.write) begin
             read_index_d = read_index_q + 1;
         end
 
@@ -39,7 +38,7 @@ module audiofifo (
 
     always_ff @(posedge clk) begin
         if (in.strobe && !out.strobe) count <= count + 1;
-        if (!in.strobe && out.strobe) count <= count - 1;
+        if (!in.strobe && out.strobe && count != 0) count <= count - 1;
 
         if (reset) begin
             write_index <= 0;

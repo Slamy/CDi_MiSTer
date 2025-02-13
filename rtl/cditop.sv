@@ -9,6 +9,7 @@ module cditop (
     input [1:0] debug_force_video_plane,
     input [1:0] debug_limited_to_full,
     input debug_audio_cd_in_tray,
+    input debug_disable_audio_attenuation,
 
     output bit ce_pix,
     output bit HBlank,
@@ -214,6 +215,9 @@ module cditop (
     wire cdic_dma_done_in;
     wire cdic_dma_done_out;
 
+    wire signed [15:0] cdic_audio_left;
+    wire signed [15:0] cdic_audio_right;
+
     cdic cdic_inst (
         .clk(clk30),
         .clk_audio(clk_audio),
@@ -239,8 +243,8 @@ module cditop (
         .cd_hps_ack,
         .cd_hps_data_valid,
         .cd_hps_data,
-        .audio_left,
-        .audio_right,
+        .audio_left(cdic_audio_left),
+        .audio_right(cdic_audio_right),
         .fail_not_enough_words(fail_not_enough_words),
         .fail_too_much_data(fail_too_much_data)
     );
@@ -290,17 +294,17 @@ module cditop (
 
     wire stand = !tvmode_pal;  // 1 NTSC, 0 PAL
 
-    bit [7:0] ddra;
-    bit [7:0] ddrb;
-    bit [7:0] ddrc;
+    wire [7:0] ddra;
+    wire [7:0] ddrb;
+    wire [7:0] ddrc;
 
-    bit quirk_force_mode_fault;
+    wire quirk_force_mode_fault;
     wire [7:0] porta_in = cpu_data_out[7:0];
-    bit [7:0] porta_out;
+    wire [7:0] porta_out;
     wire [7:0] portb_in = 8'hff;
-    bit [7:0] portb_out;
+    wire [7:0] portb_out;
     wire [7:0] portc_in = {stand, 5'b11111, addr[2:1]};
-    bit [7:0] portc_out;
+    wire [7:0] portc_out;
     wire [7:0] portd_in = {!write_strobe, 7'b1111111};
 
     bit slave_bus_ack;
@@ -349,10 +353,15 @@ module cditop (
     assign slave_rts = ddrb[4] ? portb_out[4] : 1'b1;
     assign in2in = ddrb[5] ? portb_out[5] : 1'b1;
 
-    bit dtackslaven_q = 0;
-    bit in2in_q = 1;
+    wire datadac = ddrb[0] ? portb_out[0] : 1'b0;
+    wire clkdac = ddrb[1] ? portb_out[1] : 1'b0;
+    wire csdac1n = ddrb[2] ? portb_out[2] : 1'b1;
+    wire csdac2n = ddrb[3] ? portb_out[3] : 1'b1;
 
-    bit slave_irq;
+    bit  dtackslaven_q = 0;
+    bit  in2in_q = 1;
+
+    bit  slave_irq;
 
     assign reset = external_reset || resetsys;
 
@@ -362,16 +371,16 @@ module cditop (
         .clk30,
         .reset(reset),
         .porta_in,
-        .porta_out,
+        .porta_out(porta_out),
         .portb_in,
-        .portb_out,
+        .portb_out(portb_out),
         .portc_in({portc_in[7:5], disclk, disdat_to_ic, portc_in[2:0]}),
-        .portc_out,
+        .portc_out(portc_out),
         .portd_in,
         .irq(!slave_irq),
-        .ddra,
-        .ddrb,
-        .ddrc,
+        .ddra(ddra),
+        .ddrb(ddrb),
+        .ddrc(ddrc),
 
         .worm_adr (slave_worm_adr),
         .worm_data(slave_worm_data),
@@ -385,6 +394,24 @@ module cditop (
     /*verilator tracing_on*/
 
 `endif
+    wire signed [15:0] att_audio_left;
+    wire signed [15:0] att_audio_right;
+
+    dual_ad7528_attenuation att (
+        .clk(clk30),
+        .datadac(datadac),
+        .csdac2n(csdac2n),
+        .csdac1n(csdac1n),
+        .clkdac(clkdac),
+
+        .audio_left_in  (cdic_audio_left),
+        .audio_right_in (cdic_audio_right),
+        .audio_left_out (att_audio_left),
+        .audio_right_out(att_audio_right)
+    );
+
+    assign audio_left  = debug_disable_audio_attenuation ? cdic_audio_left : att_audio_left;
+    assign audio_right = debug_disable_audio_attenuation ? cdic_audio_right : att_audio_right;
 
     u3090mg u3090mg (
         .clk(clk30),
@@ -394,10 +421,10 @@ module cditop (
     );
 
     servo_hle servo (
-        .clk  (clk30),
+        .clk(clk30),
         .reset(reset),
-        .spi  (slave_servo_spi),
-        .quirk_force_mode_fault,
+        .spi(slave_servo_spi),
+        .quirk_force_mode_fault(quirk_force_mode_fault),
         .debug_audio_cd_in_tray
     );
 
