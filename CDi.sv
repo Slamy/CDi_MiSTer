@@ -222,11 +222,13 @@ module emu (
         "P1,Debug Options;",
         "P1-;",
         "P1F1,ROM,Replace Boot ROM;",
+        "P1O[2],Disable Audio Att.,No,Yes;",
         "P1O[3],UART Fake Space,No,Yes;",
         "P1O[7:6],Force Video Plane,Original,A,B;",
         "P1O[8],No reset on NvRAM change,No,Yes;",
-        "P1O[9],RGB Scale Limited to Full,No,Yes;",
-        "P1O[10],SERVO Audio CD,No,Yes;",
+        "P1O[10:9],RGB Scale Limited to Full,0,1,2;",
+        "P1O[12],SERVO Audio CD,No,Yes;",
+        "P1O[11],CPU Turbo,No,Yes;",
 
         "O[5],Overclock input device,No,Yes;",
         "-;",
@@ -607,8 +609,9 @@ module emu (
     wire overclock_pointing_device = 1;
     wire [1:0] debug_force_video_plane = 0;
     wire enable_reset_on_nvram_img_mount = 0;
-    wire debug_limited_to_full = 0;
+    wire [1:0] debug_limited_to_full = 0;
     wire debug_audio_cd_in_tray = 0;
+    wire disable_cpu_starve = 1;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -617,8 +620,9 @@ module emu (
     wire tvmode_ntsc = status[4];
     wire overclock_pointing_device = status[5];
     wire enable_reset_on_nvram_img_mount = !status[8];
-    wire debug_limited_to_full = status[9];
-    wire debug_audio_cd_in_tray = status[10];
+    wire [1:0] debug_limited_to_full = status[10:9];
+    wire debug_audio_cd_in_tray = status[12];
+    wire disable_cpu_starve = status[11];
 `endif
     wire HBlank;
     wire HSync;
@@ -645,6 +649,7 @@ module emu (
 
     wire fail_not_enough_words;
     wire fail_too_much_data;
+    wire debug_irq_hangup;
 
     cditop cditop (
         .clk30(clk_sys),
@@ -709,8 +714,8 @@ module emu (
         .audio_right(AUDIO_R),
 
         .fail_not_enough_words(fail_not_enough_words),
-        .fail_too_much_data(fail_too_much_data)
-
+        .fail_too_much_data(fail_too_much_data),
+        .disable_cpu_starve
     );
 
 

@@ -307,7 +307,7 @@ module uc68hc05 (
 
                 free_running_counter <= free_running_counter + 1;
 
-                if (free_running_counter[17:2] == output_capture && free_running_counter[1:0] == 0) begin
+                if (free_running_counter == {output_capture, 2'b0}) begin
                     timer_status_register.output_compare_flag <= 1;
                     if (timer_control_register.output_capture_interrupt_enable) begin
                         timerirq <= 1;

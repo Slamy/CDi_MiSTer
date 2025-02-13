@@ -7,7 +7,7 @@ module cditop (
     input tvmode_pal,
     input debug_uart_fake_space,
     input [1:0] debug_force_video_plane,
-    input debug_limited_to_full,
+    input [1:0] debug_limited_to_full,
     input debug_audio_cd_in_tray,
 
     output bit ce_pix,
@@ -60,8 +60,8 @@ module cditop (
     output signed [15:0] audio_right,
 
     output fail_not_enough_words,
-    output fail_too_much_data
-
+    output fail_too_much_data,
+    input  disable_cpu_starve
 );
 
     wire reset;
@@ -197,7 +197,9 @@ module cditop (
         .sdram_burstdata_valid,
         .irq(vdsc_int),
         .debug_force_video_plane,
-        .debug_limited_to_full
+        .debug_limited_to_full,
+        // Don't starve the CPU during DMA transfers
+        .disable_cpu_starve(disable_cpu_starve || cdic_dma_ack || cdic_dma_req)
     );
 
     wire in2in;

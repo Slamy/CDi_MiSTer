@@ -68,7 +68,8 @@ module mcd212 (
     output irq,
 
     input [1:0] debug_force_video_plane,
-    input debug_limited_to_full
+    input [1:0] debug_limited_to_full,
+    input disable_cpu_starve
 );
 
     // Memory Swapping according to chapter 3.4
@@ -147,14 +148,16 @@ module mcd212 (
 
     wire cpu_sdram_access = (cs_ram || cs_rom_fused || dvc_ram_cs) && (cpu_uds || cpu_lds);
     wire sdram_refresh_request;
+    bit cpu_starve;
 
     typedef enum bit [3:0] {
-        REFRESH,   // most important
+        REFRESH,     // most important
         ICA_DCA0,
         ICA_DCA1,
         FILE0,
         FILE1,
-        CPU        // least important
+        CPU_STARVE,
+        CPU          // least important
     } e_arbit_target;
 
     // must only be changed if sdram_busy == false
@@ -171,6 +174,7 @@ module mcd212 (
 
     always_comb begin
         sdram_owner_next = CPU;
+        if (cpu_starve) sdram_owner_next = CPU_STARVE;
         if (file1_as) sdram_owner_next = FILE1;
         if (file0_as) sdram_owner_next = FILE0;
         if (ica1_as) sdram_owner_next = ICA_DCA1;
@@ -435,6 +439,14 @@ module mcd212 (
     // we should have 8-9 refresh cycles per horizontal line
     // to fulfill 8192 refreshes per 64ms 
     assign sdram_refresh_request = video_x < 190 && video_x > 130;
+    always_comb begin
+        cpu_starve = 0;
+
+        if (!disable_cpu_starve) begin
+            if (vblank) cpu_starve = video_x > 1400;
+            else cpu_starve = video_x > 1000;
+        end
+    end
 
     video_timing vt (
         .clk,
@@ -1093,10 +1105,17 @@ module mcd212 (
         else clamped_mix = sum[7:0];
     endfunction
 
-    function automatic [7:0] limited_to_full(input [7:0] value);
-        if (value >= 235) limited_to_full = 255;
-        else if (value <= 16) limited_to_full = 0;
-        else limited_to_full = (value - 16) * 37 / 32;
+    // Scales 16-235 to 0-255
+    function automatic [7:0] limited_to_full1(input [7:0] value);
+        if (value >= 235) limited_to_full1 = 255;
+        else if (value <= 16) limited_to_full1 = 0;
+        else limited_to_full1 = (value - 16) * 37 / 32;
+    endfunction
+
+    // Scales 16-255 to 0-255
+    function automatic [7:0] limited_to_full2(input [7:0] value);
+        if (value <= 16) limited_to_full2 = 0;
+        else limited_to_full2 = (value - 16) * 34 / 32;
     endfunction
 
     always_comb begin
@@ -1136,6 +1155,16 @@ module mcd212 (
         if (debug_force_video_plane == 2'b01) vidout = plane_a;
         else if (debug_force_video_plane == 2'b10) vidout = plane_b;
 
+        if (debug_limited_to_full == 1) begin
+            vidout.r = limited_to_full1(vidout.r);
+            vidout.g = limited_to_full1(vidout.g);
+            vidout.b = limited_to_full1(vidout.b);
+        end else if (debug_limited_to_full == 2) begin
+            vidout.r = limited_to_full2(vidout.r);
+            vidout.g = limited_to_full2(vidout.g);
+            vidout.b = limited_to_full2(vidout.b);
+        end
+
         // cursor
         if (cursor_pixel && inside_cursor_window && cursor_control_register.en) begin
             vidout.r = cursor_control_register.r ? 8'hff : 0;
@@ -1148,12 +1177,6 @@ module mcd212 (
                 vidout.g[7] = 0;
                 vidout.b[7] = 0;
             end
-        end
-
-        if (debug_limited_to_full) begin
-            vidout.r = limited_to_full(vidout.r);
-            vidout.g = limited_to_full(vidout.g);
-            vidout.b = limited_to_full(vidout.b);
         end
     end
 

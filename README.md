@@ -41,7 +41,6 @@ Core Utilization:
     * Might fix weirdly mixed german + english voice in Kether
     * Unmute is still a mystery. Not solved in any known CD-i emulator
 * Investigate "Felix the Cat" sound problems
-* Investigate "Plunderball" gameplay being too fast (CPU speed?)
 * Fix hang on audio track stop or change
 * Investigate flicker of graphics in Hotel Mario (CPU speed?)
 * Investigate red bars in Hotel Mario intro
