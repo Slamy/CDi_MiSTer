@@ -421,7 +421,8 @@ module cdic (
 `ifdef VERILATOR
     localparam bit [5:0] kSeekTime = 1;
 `else
-    localparam bit [5:0] kSeekTime = 2;
+    // Seeking on a real 210/05 takes about 200ms
+    localparam bit [5:0] kSeekTime = 14;
 `endif
     // Simulates reading time. Remaining sectors to wait.
     bit [5:0] start_cd_reading_cnt = 0;

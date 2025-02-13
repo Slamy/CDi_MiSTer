@@ -23,8 +23,8 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,730 / 41,910 ( 33 % )
-    Total registers              15503
+    Logic utilization (in ALMs)  13,669 / 41,910 ( 33 % )
+    Total registers              15516
     Total block memory bits      637,639 / 5,662,720 ( 11 % )
     Total DSP Blocks             72 / 112 ( 64 % )
 
@@ -41,7 +41,6 @@ Core Utilization:
       the audio channel mask is set one sector too late.
 * Investigate sound hiccups in both 2D Zelda games
     * Probably the same as with "Zelda's Adventure"
-* Investigate "Felix the Cat" sound problems
 * Fix hang on audio track stop or change
 * Investigate red bars in Hotel Mario intro
 * Investigate single blur line in Hotel Mario at the top
