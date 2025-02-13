@@ -113,22 +113,20 @@ module video_timing (
                     // Start odd field now
                     // Can only be reached in interlacing mode
                     video_y <= 0;
-                    new_frame <= 1;
                     parity <= 1;
                     fake_parity <= 1;
                     vsync <= 1;
                 end else if (video_y == (v_total - 2) && parity) begin
                     // Start even field when in interlacing
                     // Stay on odd field when interlacing is disabled
-                    video_y   <= 0;
-                    new_frame <= 1;
-
+                    video_y <= 0;
                     if (sm) parity <= 0;
                     else vsync <= 1;
 
                     fake_parity <= !fake_parity;
                 end else begin
-                    video_y <= video_y + 1;
+                    video_y   <= video_y + 1;
+                    new_frame <= video_y == (v_start + v_active - 1);
                 end
             end else begin
                 video_x <= video_x + 1;
