@@ -11,7 +11,6 @@ module audiodecoder (
     input clk,
     input reset,
     input reset_filter_on_start,
-    input ignore_playback_delay,
     input stop_playback,
 
     output bit [12:0] mem_addr,

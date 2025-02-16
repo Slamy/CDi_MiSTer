@@ -276,6 +276,7 @@ module cdic (
     bit adpcm_enable_audiomap;  // Flag when audio_control_register[13] is set
     bit adpcm_disable_audiomap;  // Flag when audio_control_register[13] is reset
     wire audiomap_finished_playback;
+    wire decoder_disable_audiomap;
 
     header_coding_s cd_audio_coding;
     audioplayer adpcm (
@@ -298,6 +299,7 @@ module cdic (
         .playback_addr(audio_playback_addr),
         .audiomap_active(audiomap_active),
         .audiomap_finished_playback(audiomap_finished_playback),
+        .decoder_disable_audiomap(decoder_disable_audiomap),
 
         .audio_left (adpcm_left),
         .audio_right(adpcm_right)
@@ -634,7 +636,14 @@ module cdic (
             end
 
             // Audio map finished? Cause an IRQ to inform the CPU
-            if (audiomap_finished_playback) audio_buffer_register[15] <= 1;
+            if (audiomap_finished_playback) begin
+                audio_buffer_register[15] <= 1;
+            end
+
+            if (decoder_disable_audiomap) begin
+                audio_control_register[0]  <= 1;
+                audio_control_register[11] <= 0;
+            end
 
             if (done_in) dma_control_register[15] <= 0;
 
@@ -818,18 +827,16 @@ module cdic (
                     x_buffer_register[15] <= 0;
                     // but for the moment of reading it has to still be 1
                 end
+
+                if (!write_strobe && address[13:1] == 13'h1FFD) begin
+                    // Reading the AUDCTL Buffer Register resets the lowest bit
+                    audio_control_register[0] <= 0;
+                    // but for the moment of reading it has to still be 1
+                end
             end
 
             if (access) begin
                 bus_ack <= !bus_ack;
-
-                // Indicate an inactive audiomap by toggling the lowest bit on read.
-                // Do it with !bus_ack to ensure we are reading
-                // the already toggled state.
-                if (!write_strobe && !bus_ack) begin
-                    if (!audiomap_active && address[13:1] == 13'h1FFD)
-                        audio_control_register[0] <= !audio_control_register[0];
-                end
 
                 if (write_strobe && bus_ack) begin
                     case (address[13:1])

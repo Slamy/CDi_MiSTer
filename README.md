@@ -40,10 +40,11 @@ Core Utilization:
     * During stop of audiomap and switch to audio channel playback
       the audio channel mask is set one sector too late.
 * Investigate sound hiccups in both 2D Zelda games
+    * Occurs during "Help-Cutscene" when SFX is played
     * Probably the same as with "Zelda's Adventure"
 * Fix hang on audio track stop or change
 * Investigate red bars in Hotel Mario intro
-* Investigate single blur line in Hotel Mario at the top
+* Investigate single blue line at the top in Hotel Mario
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour / Core is unstable
 * Add auto start of titles using front panel "Play" button

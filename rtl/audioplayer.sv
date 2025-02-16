@@ -25,7 +25,8 @@ module audioplayer (
     output bit signed [15:0] audio_left,
     output bit signed [15:0] audio_right,
     output bit audiomap_active,
-    output bit audiomap_finished_playback
+    output bit audiomap_finished_playback,
+    output decoder_disable_audiomap
 );
 
     audiostream xa_out ();
@@ -46,14 +47,11 @@ module audioplayer (
     bit decoder_start  /*verilator public_flat_rd*/ = 0;
 
     wire reset_filter_on_start;
-    wire decoder_disable_audiomap;
-    wire ignore_playback_delay = audiomap_active;
 
     audiodecoder decoder (
         .clk(clk),
         .reset(reset),
         .reset_filter_on_start(reset_filter_on_start),
-        .ignore_playback_delay(ignore_playback_delay),
         .stop_playback(disable_audiomap),
         .audio_tick(audio_tick),
         .mem_addr(mem_addr),
