@@ -21,7 +21,8 @@ module video_timing (
     output bit new_pixel,
     output bit new_pixel_hires,
     output bit new_pixel_lores,
-    output bit display_active
+    output bit display_active,
+    input debug_ica_at_vblank
 );
 
     localparam bit [12:0] ClksPerCycle = 16;
@@ -113,6 +114,7 @@ module video_timing (
                     // Start odd field now
                     // Can only be reached in interlacing mode
                     video_y <= 0;
+                    if (!debug_ica_at_vblank) new_frame <= 1;
                     parity <= 1;
                     fake_parity <= 1;
                     vsync <= 1;
@@ -120,13 +122,15 @@ module video_timing (
                     // Start even field when in interlacing
                     // Stay on odd field when interlacing is disabled
                     video_y <= 0;
+                    if (!debug_ica_at_vblank) new_frame <= 1;
+
                     if (sm) parity <= 0;
                     else vsync <= 1;
 
                     fake_parity <= !fake_parity;
                 end else begin
-                    video_y   <= video_y + 1;
-                    new_frame <= video_y == (v_start + v_active - 1);
+                    video_y <= video_y + 1;
+                    if (debug_ica_at_vblank) new_frame <= video_y == (v_start + v_active - 1);
                 end
             end else begin
                 video_x <= video_x + 1;

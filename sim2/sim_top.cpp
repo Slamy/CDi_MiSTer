@@ -499,11 +499,11 @@ class CDi {
             char filename[100];
 
             // Start game
-            if (frame_index == 247) {
+            if (frame_index == 190) {
                 printf("Press a button!\n");
                 dut.rootp->emu__DOT__JOY0 = 0b100000;
             }
-            if (frame_index == 250) {
+            if (frame_index == 194) {
                 printf("Release a button!\n");
                 dut.rootp->emu__DOT__JOY0 = 0b000000;
             }
@@ -558,7 +558,7 @@ class CDi {
                     // Press down left during ingame to kill mario to cause audiomap restart
                     dut.rootp->emu__DOT__JOY0 = 0b000110;
                 }
-            } else if (frame_index > 290) {
+            } else if (frame_index > 200) {
                 if ((frame_index % 25) == 20) {
                     printf("Press a button!\n");
                     dut.rootp->emu__DOT__JOY0 = 0b100000;
@@ -623,7 +623,7 @@ class CDi {
         dut.trace(&m_trace, 5);
 
         if (do_trace) {
-            sprintf(filename, "/tmp/waveform%d.vcd", instanceid);
+            sprintf(filename, "/tmp/waveform.vcd", instanceid);
             fprintf(stderr, "Writing to %s\n", filename);
             m_trace.open(filename);
         }
@@ -731,6 +731,9 @@ int main(int argc, char **argv) {
         break;
     case 7:
         f_cd_bin = fopen("images/Flashback (Europe).bin", "rb");
+        break;
+    case 8:
+        f_cd_bin = fopen("images/Earth Command (Germany).bin", "rb");
         break;
     }
 

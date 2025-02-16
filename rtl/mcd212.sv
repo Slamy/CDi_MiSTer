@@ -69,7 +69,8 @@ module mcd212 (
 
     input [1:0] debug_force_video_plane,
     input [1:0] debug_limited_to_full,
-    input disable_cpu_starve
+    input disable_cpu_starve,
+    input debug_ica_at_vblank
 );
 
     // Memory Swapping according to chapter 3.4
@@ -469,7 +470,8 @@ module mcd212 (
         .new_pixel(new_pixel),
         .new_pixel_lores(new_pixel_lores),
         .new_pixel_hires(new_pixel_hires),
-        .display_active(display_active)
+        .display_active(display_active),
+        .debug_ica_at_vblank(debug_ica_at_vblank)
     );
 
 

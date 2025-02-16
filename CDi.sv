@@ -229,6 +229,7 @@ module emu (
         "P1O[10:9],RGB Scale Limited to Full,0,1,2;",
         "P1O[12],SERVO Audio CD,No,Yes;",
         "P1O[11],CPU Turbo,No,Yes;",
+        "P1O[13],ICA at VBlank,No,Yes;",
 
         "O[5],Overclock input device,No,Yes;",
         "-;",
@@ -612,6 +613,7 @@ module emu (
     wire [1:0] debug_limited_to_full = 0;
     wire debug_audio_cd_in_tray = 0;
     wire disable_cpu_starve = 1;
+    wire debug_ica_at_vblank = 0;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -623,6 +625,7 @@ module emu (
     wire [1:0] debug_limited_to_full = status[10:9];
     wire debug_audio_cd_in_tray = status[12];
     wire disable_cpu_starve = status[11];
+    wire debug_ica_at_vblank = status[13];
 `endif
     wire HBlank;
     wire HSync;
@@ -662,6 +665,7 @@ module emu (
         .debug_limited_to_full,
         .debug_audio_cd_in_tray,
         .debug_disable_audio_attenuation(status[2]),
+        .debug_ica_at_vblank,
 
         .ce_pix(ce_pix),
 
