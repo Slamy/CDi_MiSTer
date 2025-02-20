@@ -52,6 +52,10 @@ module ica_dca_ctrl (
         ICA_READ1,
         ICA_WAIT_FOR_ACK,
         ICA_EXECUTE,
+        ICA_STALL1,
+        ICA_STALL2,
+        ICA_STALL3,
+        ICA_STALL4,
         DCA_READ0,
         DCA_READ1,
         DCA_READ2,
@@ -170,8 +174,13 @@ module ica_dca_ctrl (
                     end
                 end
                 ICA_EXECUTE: begin
-                    state <= IDLE;
+                    state <= ICA_STALL1;
                 end
+                ICA_STALL1: state <= ICA_STALL2;
+                ICA_STALL2: state <= ICA_STALL3;
+                ICA_STALL3: state <= ICA_STALL4;
+                ICA_STALL4: state <= IDLE;
+
                 DCA_READ0: begin
                     if (burstdata_valid) begin
                         instruction[31:16] <= din;
