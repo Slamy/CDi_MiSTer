@@ -35,7 +35,6 @@ Core Utilization:
 * Investigate mysterious non loading behavior
 * Investigate graphical glitches in intro of "Zenith"
     * CPU Speed? Timing of Video IRQs?
-* Investigate "Earth Command" hanging after intro
 * Investigate "Zelda's Adventure" sound hiccups
     * During stop of audiomap and switch to audio channel playback
       the audio channel mask is set one sector too late.
@@ -59,7 +58,6 @@ Core Utilization:
 * Add SNAC support (IR remote + wired controller)
 * Refurbish I2C for the front display and show the content as picture in picture during changes?
     * It might not even be required at all.
-* Fix timekeeper initial time
 
 ## Expected checksums of roms
 

@@ -294,6 +294,8 @@ module emu (
     bit         info_req;
     bit  [ 7:0] info;
 
+    wire [64:0] hps_rtc;
+
     // Flag which becomes active for some time when an NvRAM image is mounted
     wire        nvram_img_mount = nvram_media_change && img_size != 0;
     // Flag which becomes active for some time when an NvRAM image is mounted
@@ -346,7 +348,9 @@ module emu (
         .ps2_mouse(MOUSE),
 
         .joystick_l_analog_0(JOY0_ANALOG),
-        .joystick_0(JOY0)
+        .joystick_0(JOY0),
+
+        .RTC(hps_rtc)
     );
 `endif
 
@@ -720,7 +724,9 @@ module emu (
 
         .fail_not_enough_words(fail_not_enough_words),
         .fail_too_much_data(fail_too_much_data),
-        .disable_cpu_starve
+        .disable_cpu_starve,
+
+        .hps_rtc(hps_rtc)
     );
 
 
@@ -766,10 +772,6 @@ module emu (
     // Is set, if CD image is mounted and usable
     bit cd_image_mounted = 0;
 
-    // Ignore the first 4 seconds. For some reason, the OS
-    // performs writes during bootup. Why should we backup these?
-    bit [27:0] nvram_early_boot_pending_ignore;
-
     // Used to detect changes of OSD_STATUS
     bit OSD_STATUS_q;
 
@@ -785,15 +787,6 @@ module emu (
 
         if (cditop_reset) begin
             nvram_backup_pending <= 0;
-`ifdef VERILATOR
-            nvram_early_boot_pending_ignore <= 4;
-`else
-            nvram_early_boot_pending_ignore <= 4 * 28'(30e6);  // Wait 4 seconds
-`endif
-        end else if (nvram_early_boot_pending_ignore != 0) begin
-            // Count down 4 seconds after reset until actually
-            // checking for NvRAM changes to backup
-            nvram_early_boot_pending_ignore <= nvram_early_boot_pending_ignore - 1;
         end else if (nvram_cpu_changed && nvram_image_mounted) begin
             nvram_backup_pending <= 1;
         end

@@ -11,8 +11,9 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/display_file_decoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/dual_ad7528.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/flag_cross_domain.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ica_dca_ctrl.sv
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/pointing_device.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mcd212.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mk48t08b.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/pointing_device.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/scc68070.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/sdram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/servo_hle.sv
