@@ -444,8 +444,8 @@ module mcd212 (
         cpu_starve = 0;
 
         if (!disable_cpu_starve) begin
-            if (vblank) cpu_starve = video_x > 1400;
-            else cpu_starve = video_x > 1000;
+            if (vblank) cpu_starve = video_x > 1200;
+            else cpu_starve = video_x > 1200;
         end
     end
 
