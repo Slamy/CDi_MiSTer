@@ -23,10 +23,10 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,669 / 41,910 ( 33 % )
-    Total registers              15516
-    Total block memory bits      637,639 / 5,662,720 ( 11 % )
-    Total DSP Blocks             72 / 112 ( 64 % )
+    Logic utilization (in ALMs)  13,431 / 41,910 ( 32 % )
+    Total registers              15619
+    Total block memory bits      630,471 / 5,662,720 ( 11 % )
+    Total DSP Blocks             66 / 112 ( 59 % )
 
 ### TODOs in order of priority
 
@@ -45,7 +45,7 @@ Core Utilization:
 * Investigate red bars in Hotel Mario intro
 * Investigate single blue line at the top in Hotel Mario
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
-* Fix reset behaviour / Core is unstable
+* Fix reset behaviour (Core is sometimes hanging after reset)
 * Add auto start of titles using front panel "Play" button
 * Fix servo behaviour of always detecting a CD-i disc
 * Investigate desaturated colors / low contrast in "Photo CD Sample Disc"
