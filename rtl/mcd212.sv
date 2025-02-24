@@ -818,10 +818,10 @@ module mcd212 (
         .strobe(dyuv1_strobe)
     );
 
-    assign rle0_out.strobe = new_pixel;
-    assign rle1_out.strobe = new_pixel;
-    assign dyuv0_strobe = new_pixel;
-    assign dyuv1_strobe = new_pixel;
+    assign rle0_out.strobe = new_pixel && image_coding_method_register.cm13_10_planea != 0;
+    assign rle1_out.strobe = new_pixel && image_coding_method_register.cm23_20_planeb != 0;
+    assign dyuv0_strobe = new_pixel && image_coding_method_register.cm13_10_planea != 0;
+    assign dyuv1_strobe = new_pixel && image_coding_method_register.cm23_20_planeb != 0;
 
     bit [7:0] synchronized_pixel0;
     bit [7:0] synchronized_pixel1;

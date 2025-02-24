@@ -30,6 +30,8 @@ Core Utilization:
 
 ### TODOs in order of priority
 
+* Investigate hangup during Wand of Gamelon Shopkeeper cutscene
+* Find a better solution for reducing CPU speed
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
 * Investigate mysterious non loading behavior
