@@ -30,22 +30,20 @@ Core Utilization:
 
 ### TODOs in order of priority
 
+* Fix audio regression during Hotel Mario Score Screen (was ok in 250214)
 * Investigate hangup during Wand of Gamelon Shopkeeper cutscene
 * Find a better solution for reducing CPU speed
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
 * Investigate mysterious non loading behavior
-* Investigate graphical glitches in intro of "Zenith"
-    * CPU Speed? Timing of Video IRQs?
 * Investigate "Zelda's Adventure" sound hiccups
     * During stop of audiomap and switch to audio channel playback
       the audio channel mask is set one sector too late.
 * Investigate sound hiccups in both 2D Zelda games
     * Occurs during "Help-Cutscene" when SFX is played
     * Probably the same as with "Zelda's Adventure"
+* Investigate screeching sound effect in the menu of "Golf Tips"
 * Fix hang on audio track stop or change
-* Investigate red bars in Hotel Mario intro
-* Investigate single blue line at the top in Hotel Mario
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour (Core is sometimes hanging after reset)
 * Add auto start of titles using front panel "Play" button
@@ -95,11 +93,11 @@ by emulation errors but are also present on the real machine.
 * The map of "Zelda - Wand of Gamelon" has micro jitter during scrolling
     * This also happens on real 210/05 hardware
 * "Hotel Mario" seems to have the first samples of every ingame song repeated
-    * You have good ears as it is barely noticable. This also happens on real hardware.
+    * You have good ears as it is barely noticeable. This also happens on real hardware.
 * Some earlier CD-i titles have both stereo channels swapped
     * Yes, according to an [internal memo from Philips](http://icdia.co.uk/docs/mono2status.zip) there
       were manufacturing issues and some early players have the left and right channel swapped. This might explain discrepancies.
-    * One known quirk is inversed stereo on the "Philips Logo Jingle" of "Zelda - Wand of Gamelon"
+    * One known quirk is inverted stereo on the "Philips Logo Jingle" of "Zelda - Wand of Gamelon"
 * During the rotating transition in "Myst" there are glitched lines at the bottom
     * This also happens to some extent on a real 210/05 hardware and is caused by a misplaced Video IRQ
       The video data is changed while it is displayed.
@@ -108,5 +106,6 @@ by emulation errors but are also present on the real machine.
 * Burn:Cycle - Random flickering animated text in front of the "Psychic Roulette" credit card terminal
     * This actually happens on the real machine. I also thought this might be a CPU speed issue, considering that
       the flickering disappears if the CPU is slightly overclocked.
-    
+* Flashback: The audio and video during the intro are asynchronous
+    * This curiously happens on the real machine as well and doesn't depend on 50 or 60 Hz.
 

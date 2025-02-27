@@ -1012,11 +1012,19 @@ module mcd212 (
             b = dyuv0_out.b;
         end
 
-        plane_a.r = WeightCalc(r, weight_a);
-        plane_a.g = WeightCalc(g, weight_a);
-        plane_a.b = WeightCalc(b, weight_a);
+        if (image_coding_method_register.cm13_10_planea != 0) begin
+            plane_a.r = WeightCalc(r, weight_a);
+            plane_a.g = WeightCalc(g, weight_a);
+            plane_a.b = WeightCalc(b, weight_a);
+        end else begin
+            // According to 8.1 PLANES, OFF is black level of 16
+            // On a real CD-i it is much blacker than 16. I assume 0
+            plane_a.r = 0;
+            plane_a.g = 0;
+            plane_a.b = 0;
+        end
 
-        if (image_coding_method_register.cm13_10_planea != 0 && command_register_dcr1.ic1) begin
+        if (command_register_dcr1.ic1) begin
             // Use only the lower 3 bits first as the highest bit just inverts the result
 
             assert (transparency_control_register.ta[2:0] != 3'b010);  // Transparency Bit?
@@ -1053,6 +1061,7 @@ module mcd212 (
         bit plane_b_transparent;  // Because logic in datasheet is also inverted
         bit [7:0] r, g, b;
         plane_b_transparent = 1;
+
         r = {clut_out1.r, 2'b00};
         g = {clut_out1.g, 2'b00};
         b = {clut_out1.b, 2'b00};
@@ -1063,11 +1072,19 @@ module mcd212 (
             b = dyuv1_out.b;
         end
 
-        plane_b.r = WeightCalc(r, weight_b);
-        plane_b.g = WeightCalc(g, weight_b);
-        plane_b.b = WeightCalc(b, weight_b);
+        if (image_coding_method_register.cm23_20_planeb != 0) begin
+            plane_b.r = WeightCalc(r, weight_b);
+            plane_b.g = WeightCalc(g, weight_b);
+            plane_b.b = WeightCalc(b, weight_b);
+        end else begin
+            // According to 8.1 PLANES, OFF is black level of 16
+            // On a real CD-i it is much blacker than 16. I assume 0
+            plane_b.r = 0;
+            plane_b.g = 0;
+            plane_b.b = 0;
+        end
 
-        if (image_coding_method_register.cm23_20_planeb != 0 && command_register_dcr2.ic2) begin
+        if (command_register_dcr2.ic2) begin
             // Use only the lower 3 bits first as the highest bit just inverts the result
 
             assert (transparency_control_register.tb[2:0] != 3'b010);  // Transparency Bit?
@@ -1098,7 +1115,6 @@ module mcd212 (
                 plane_b_transparent = 0;
         end
         plane_b_visible = !plane_b_transparent;
-
     end
 
     function automatic [7:0] clamped_mix(input [7:0] a, input [7:0] b);
