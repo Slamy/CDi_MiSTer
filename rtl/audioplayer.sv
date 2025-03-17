@@ -6,7 +6,6 @@ module audioplayer (
     input clk,
     input sample_tick37,
     input sample_tick44,
-    input audio_tick,
     input reset,
 
     output bit [12:0] mem_addr,
@@ -15,18 +14,15 @@ module audioplayer (
     input mem_ack,
     input mem_ack_q,
 
-    input header_coding_s cd_audio_coding,
-    input start_playback,  // flag starts CD sector playback at playback_addr
-    input abort_playback_request,
-    input enable_audiomap,
-    input disable_audiomap,
-    input [12:0] playback_addr,
+    input start_playback,
+    input stop_playback,
+    input cdda_mode,
+    output bit playback_active,
+    output bit finished_buffer_playback,
+    output decoder_disable_audiomap,
 
     output bit signed [15:0] audio_left,
-    output bit signed [15:0] audio_right,
-    output bit audiomap_active,
-    output bit audiomap_finished_playback,
-    output decoder_disable_audiomap
+    output bit signed [15:0] audio_right
 );
 
     audiostream xa_out ();
@@ -42,7 +38,6 @@ module audioplayer (
     header_coding_s current_active_coding;
 
     wire decoder_idle;
-    bit playback_request;
     bit [12:0] playback_request_addr  /*verilator public_flat_rd*/;
     bit decoder_start  /*verilator public_flat_rd*/ = 0;
 
@@ -52,8 +47,6 @@ module audioplayer (
         .clk(clk),
         .reset(reset),
         .reset_filter_on_start(reset_filter_on_start),
-        .stop_playback(disable_audiomap),
-        .audio_tick(audio_tick),
         .mem_addr(mem_addr),
         .mem_data(mem_data),
         .mem_rd(mem_rd),
@@ -63,55 +56,57 @@ module audioplayer (
         .out(xa_out),
         .sample_channel(xa_channel),
 
-        .use_external_coding(!audiomap_active),
-        .cd_audio_coding(cd_audio_coding),
         .start_playback(decoder_start),
+        .stop_playback(stop_playback),
+        .cdda_mode,
         .playback_coding_out(current_active_coding),
         .playback_addr(playback_request_addr),
         .idle(decoder_idle),
         .disable_audiomap(decoder_disable_audiomap)
     );
 
+    wire [1:0] fifo_nearly_full;
+    wire [1:0] fifo_nearly_empty;
+    bit fifo_nearly_empty_q;
+
     always_ff @(posedge clk) begin
         decoder_start <= 0;
+        fifo_nearly_empty_q <= fifo_nearly_empty[0];
+        finished_buffer_playback <= 0;
 
         if (reset) begin
-            playback_request <= 0;
-            audiomap_active <= 0;
+            playback_active <= 0;
             playback_request_addr <= 0;
         end else begin
             // Only start playback when decoder is idle
-            if (decoder_idle && !decoder_start) begin
-                playback_request <= 0;
-                decoder_start <= playback_request || (audiomap_active && !decoder_disable_audiomap);
-            end
-
-            // CD Sector playback
-            if (start_playback) begin
-                playback_request <= 1;
-                playback_request_addr <= playback_addr;
+            if (decoder_idle && !decoder_start && fifo_nearly_empty[0]) begin
+                decoder_start <= playback_active && !decoder_disable_audiomap;
+                finished_buffer_playback <= finished_buffer_playback_latched;
             end
 
             // To react on audiomap activation change
-            if (enable_audiomap) audiomap_active <= 1;
-            if (disable_audiomap || decoder_disable_audiomap) audiomap_active <= 0;
+            if (stop_playback || decoder_disable_audiomap) begin
+                playback_active <= 0;
+            end
 
-            if (disable_audiomap || abort_playback_request) playback_request <= 0;
+            // Buffer playback
+            if (start_playback && !playback_active) begin
+                playback_active <= 1;
+                // ADPCM playback always starts at 0x2800
+                // For CDDA this might not be accurate
+                playback_request_addr <= cdda_mode ? 13'h0f00 : 13'h1400;
+            end
 
             // after the decoder was started, change address to the next buffer
-            if (audiomap_active && decoder_start) begin
-                playback_request_addr <= playback_request_addr == 13'h1400 ? 13'h1900 : 13'h1400;
+            if (decoder_start && playback_active) begin
+                if (cdda_mode)
+                    playback_request_addr <= playback_request_addr == 13'h0a00 ? 13'h0f00 : 13'h0a00;
+                else
+                    playback_request_addr <= playback_request_addr == 13'h1400 ? 13'h1900 : 13'h1400;
             end
-
-            // Store playback_request_addr from extern only at start
-            if (enable_audiomap && !audiomap_active) begin
-                playback_request_addr <= playback_addr;
-            end
-
         end
     end
 
-    wire [1:0] fifo_nearly_full;
 
     always_comb begin
         // Mono is default. Write to both FIFOs and ignore the channel
@@ -139,26 +134,28 @@ module audioplayer (
         .reset,
         .in(xa_fifo_in[0]),
         .out(xa_fifo_out[0]),
-        .nearly_full(fifo_nearly_full[0])
+        .nearly_full(fifo_nearly_full[0]),
+        .nearly_empty(fifo_nearly_empty[0])
     );
     audiofifo fifo_right (
         .clk,
         .reset,
         .in(xa_fifo_in[1]),
         .out(xa_fifo_out[1]),
-        .nearly_full(fifo_nearly_full[1])
+        .nearly_full(fifo_nearly_full[1]),
+        .nearly_empty(fifo_nearly_empty[1])
     );
 
-    bit playback_active = 0;
+    bit audio_fifo_output_enabled = 0;
     bit sample_toggle18 = 0;
     bit decoder_idle_q;
 
-    assign reset_filter_on_start = !playback_active;
+    assign reset_filter_on_start = !audio_fifo_output_enabled;
 
     bit strobe_fifo;
     always_comb begin
         strobe_fifo = 0;
-        if (playback_active) begin
+        if (audio_fifo_output_enabled) begin
             if (current_active_coding.rate == k44Khz && sample_tick44) strobe_fifo = 1;
             if (current_active_coding.rate == k37Khz && sample_tick37) strobe_fifo = 1;
             if (current_active_coding.rate == k18Khz && sample_tick37 && sample_toggle18)
@@ -174,20 +171,21 @@ module audioplayer (
     // One would have been enough, but let's be sure.
     // Not having this results into pops especially percievible
     // with Tetris
-    bit playback_active_next_sample_tick;
+    bit audio_fifo_output_enabled_next_sample_tick;
+
+    bit finished_buffer_playback_latched;
 
     always_ff @(posedge clk) begin
         dc_bias_cnt <= !dc_bias_cnt;
 
-        audiomap_finished_playback <= 0;
         decoder_idle_q <= decoder_idle;
 
         xa_fifo_out[0].strobe <= 0;
         xa_fifo_out[1].strobe <= 0;
 
         if (reset) begin
-            playback_active <= 0;
-            playback_active_next_sample_tick <= 0;
+            audio_fifo_output_enabled <= 0;
+            audio_fifo_output_enabled_next_sample_tick <= 0;
             xa_fifo_out[0].strobe <= 0;
             xa_fifo_out[1].strobe <= 0;
         end else begin
@@ -195,20 +193,24 @@ module audioplayer (
             if (fifo_nearly_full == 2'b11 &&
                 ((current_active_coding.rate != k44Khz && sample_tick37) ||
                  (current_active_coding.rate == k44Khz && sample_tick44))) begin
-                playback_active_next_sample_tick <= 1;
-                playback_active <= playback_active_next_sample_tick;
+                audio_fifo_output_enabled_next_sample_tick <= 1;
+                audio_fifo_output_enabled <= audio_fifo_output_enabled_next_sample_tick;
             end
 
-            if (playback_active && decoder_idle && !decoder_idle_q && audiomap_active) begin
-                audiomap_finished_playback <= 1;
+            if (audio_fifo_output_enabled && decoder_idle && !decoder_idle_q) begin
+                finished_buffer_playback_latched <= 1;
+            end
+
+            if (finished_buffer_playback || stop_playback) begin
+                finished_buffer_playback_latched <= 0;
             end
 
             if (xa_fifo_out[0].write == 0 && xa_fifo_out[0].write == 0) begin
-                playback_active <= 0;
-                playback_active_next_sample_tick <= 0;
+                audio_fifo_output_enabled <= 0;
+                audio_fifo_output_enabled_next_sample_tick <= 0;
             end
 
-            if (playback_active) begin
+            if (audio_fifo_output_enabled) begin
                 if (strobe_fifo) begin
                     xa_fifo_out[0].strobe <= 1;
                     xa_fifo_out[1].strobe <= 1;

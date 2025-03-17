@@ -130,8 +130,10 @@ void subcode_data(int lba, struct subcode &out) {
     s = fake_lba / 75;
     f = fake_lba % 75;
 
-    if (lba < toc_entry_count) {
-        auto &toc_entry = toc_buffer[lba];
+    int toc_entry_index = lba + 0x10000;
+    if (lba < 0 && toc_entry_index < toc_entry_count) {
+
+        auto &toc_entry = toc_buffer[toc_entry_index];
 
         out.control = htons(toc_entry.control);
         out.track = 0; // Track 0 for TOC
@@ -146,8 +148,8 @@ void subcode_data(int lba, struct subcode &out) {
         out.mode1_crc0 = htons(0xff);
         out.mode1_crc1 = htons(0xff);
 
-        // printf("toc  lba=%d   %02x %02x %02x %02x %02x\n", lba, out.control, out.index, out.mode1_amins,
-        // out.mode1_asecs, out.mode1_afrac);
+        // printf("toc  lba=%d   %02x %02x %02x %02x %02x\n", toc_entry_index, out.control, out.index, out.mode1_amins,
+        //        out.mode1_asecs, out.mode1_afrac);
     } else {
         int track = 1;
         out.control = htons(0x01);
@@ -266,7 +268,6 @@ class CDi {
     }
 
     void clock() {
-
         for (int i = 0; i < 2; i++) {
             dut.rootp->emu__DOT__clk_sys = (sim_time & 1);
             dut.rootp->emu__DOT__clk_audio = (sim_time & 1);
@@ -584,7 +585,7 @@ class CDi {
         }
 
         // Simulate Audio
-        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick44) {
+        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick) {
             int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_left;
             int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;
             fwrite(&sample_l, 2, 1, f_audio_left);
@@ -629,7 +630,7 @@ class CDi {
         }
 
         dut.eval();
-        // do_trace = false;
+        do_trace = false;
         dut.rootp->emu__DOT__debug_uart_fake_space = false;
         dut.rootp->emu__DOT__img_size = 4096;
 
@@ -688,6 +689,86 @@ class CDi {
     }
 };
 
+void prepare_apprentice_usa_toc() {
+    toc_buffer[0] = {1, 1, 21, 34, 1};
+    toc_buffer[1] = {1, 1, 21, 34, 0};
+    toc_buffer[2] = {1, 1, 21, 34, 34};
+    toc_buffer[3] = {1, 2, 25, 68, 21};
+    toc_buffer[4] = {1, 2, 25, 68, 2};
+    toc_buffer[5] = {1, 2, 25, 68, 1};
+    toc_buffer[6] = {1, 3, 35, 85, 0};
+    toc_buffer[7] = {1, 3, 35, 85, 68};
+    toc_buffer[8] = {1, 3, 35, 85, 35};
+    toc_buffer[9] = {1, 4, 36, 86, 3};
+    toc_buffer[10] = {1, 4, 36, 86, 1};
+    toc_buffer[11] = {1, 4, 36, 86, 0};
+    toc_buffer[12] = {1, 5, 41, 66, 86};
+    toc_buffer[13] = {1, 5, 41, 66, 36};
+    toc_buffer[14] = {1, 5, 41, 66, 4};
+    toc_buffer[15] = {1, 6, 48, 67, 1};
+    toc_buffer[16] = {1, 6, 48, 67, 0};
+    toc_buffer[17] = {1, 6, 48, 67, 66};
+    toc_buffer[18] = {1, 7, 53, 49, 41};
+    toc_buffer[19] = {1, 7, 53, 49, 6};
+    toc_buffer[20] = {1, 7, 53, 49, 1};
+    toc_buffer[21] = {1, 8, 54, 55, 0};
+    toc_buffer[22] = {1, 8, 54, 55, 67};
+    toc_buffer[23] = {1, 8, 54, 55, 53};
+    toc_buffer[24] = {1, 9, 65, 18, 7};
+    toc_buffer[25] = {1, 9, 65, 18, 1};
+    toc_buffer[26] = {1, 9, 65, 18, 0};
+    toc_buffer[27] = {1, 16, 66, 21, 55};
+    toc_buffer[28] = {1, 16, 66, 21, 54};
+    toc_buffer[29] = {1, 16, 66, 21, 8};
+    toc_buffer[30] = {1, 17, 70, 37, 1};
+    toc_buffer[31] = {1, 17, 70, 37, 0};
+    toc_buffer[32] = {1, 17, 70, 37, 18};
+    toc_buffer[33] = {1, 18, 71, 32, 65};
+    toc_buffer[34] = {1, 18, 71, 32, 16};
+    toc_buffer[35] = {1, 18, 71, 32, 1};
+    toc_buffer[36] = {1, 19, 81, 54, 0};
+    toc_buffer[37] = {1, 19, 81, 54, 21};
+    toc_buffer[38] = {1, 19, 81, 54, 70};
+    toc_buffer[39] = {1, 20, 82, 54, 17};
+    toc_buffer[40] = {1, 20, 82, 54, 1};
+    toc_buffer[41] = {1, 20, 82, 54, 0};
+    toc_buffer[42] = {1, 21, 83, 69, 32};
+    toc_buffer[43] = {1, 21, 83, 69, 71};
+    toc_buffer[44] = {1, 21, 83, 69, 18};
+    toc_buffer[45] = {1, 22, 86, 85, 1};
+    toc_buffer[46] = {1, 22, 86, 85, 0};
+    toc_buffer[47] = {1, 22, 86, 85, 54};
+    toc_buffer[48] = {1, 23, 87, 5, 81};
+    toc_buffer[49] = {1, 23, 87, 5, 20};
+    toc_buffer[50] = {1, 23, 87, 5, 1};
+    toc_buffer[51] = {1, 24, 89, 2, 0};
+    toc_buffer[52] = {1, 24, 89, 2, 54};
+    toc_buffer[53] = {1, 24, 89, 2, 83};
+    toc_buffer[54] = {1, 25, 89, 37, 21};
+    toc_buffer[55] = {1, 25, 89, 37, 1};
+    toc_buffer[56] = {1, 25, 89, 37, 0};
+    toc_buffer[57] = {1, 32, 96, 0, 85};
+    toc_buffer[58] = {1, 32, 96, 0, 86};
+    toc_buffer[59] = {1, 32, 96, 0, 22};
+    toc_buffer[60] = {1, 33, 96, 34, 1};
+    toc_buffer[61] = {1, 33, 96, 34, 0};
+    toc_buffer[62] = {1, 33, 96, 34, 5};
+    toc_buffer[63] = {1, 34, 96, 87, 87};
+    toc_buffer[64] = {1, 34, 96, 87, 24};
+    toc_buffer[65] = {1, 34, 96, 87, 1};
+    toc_buffer[66] = {1, 160, 1, 0, 0};
+    toc_buffer[67] = {1, 160, 1, 0, 2};
+    toc_buffer[68] = {1, 160, 1, 0, 89};
+    toc_buffer[69] = {1, 161, 34, 0, 25};
+    toc_buffer[70] = {1, 161, 34, 0, 1};
+    toc_buffer[71] = {1, 161, 34, 0, 0};
+    toc_buffer[72] = {1, 162, 21, 34, 0};
+    toc_buffer[73] = {1, 162, 21, 34, 96};
+    toc_buffer[74] = {1, 162, 21, 34, 32};
+
+    toc_entry_count = 75;
+}
+
 int main(int argc, char **argv) {
     // Initialize Verilators variables
     Verilated::commandArgs(argc, argv);
@@ -727,38 +808,18 @@ int main(int argc, char **argv) {
         f_cd_bin = fopen("images/Zelda's Adventure (Europe).bin", "rb");
         break;
     case 6:
-        f_cd_bin = fopen("images/tetris.bin", "rb");
+        f_cd_bin = fopen("images/audiocd.bin", "rb");
         break;
     case 7:
         f_cd_bin = fopen("images/Flashback (Europe).bin", "rb");
         break;
     case 8:
-        f_cd_bin = fopen("images/Earth Command (Germany).bin", "rb");
+        f_cd_bin = fopen("images/Apprentice_USA_single.bin", "rb");
+        prepare_apprentice_usa_toc();
         break;
     }
 
     assert(f_cd_bin);
-
-    toc_buffer[0] = {1, 1, 0, 0, 0};
-    toc_buffer[1] = {1, 1, 0, 0, 0};
-    toc_buffer[2] = {1, 1, 0, 0, 0};
-    toc_buffer[3] = {1, 2, 3, 38, 69};
-    toc_buffer[4] = {1, 2, 3, 38, 69};
-    toc_buffer[5] = {1, 2, 3, 38, 69};
-    toc_buffer[6] = {1, 3, 7, 1, 96};
-    toc_buffer[7] = {1, 3, 7, 1, 96};
-    toc_buffer[8] = {1, 3, 7, 1, 96};
-    toc_buffer[9] = {1, 4, 18, 16, 71};
-    toc_buffer[10] = {1, 4, 18, 16, 71};
-    toc_buffer[11] = {1, 4, 18, 16, 71};
-    toc_buffer[12] = {1, 160, 1, 0, 0};
-    toc_buffer[13] = {1, 160, 1, 0, 0};
-    toc_buffer[14] = {1, 160, 1, 0, 0};
-    toc_buffer[15] = {1, 161, 4, 0, 0};
-    toc_buffer[16] = {1, 161, 4, 0, 0};
-    toc_buffer[17] = {1, 161, 4, 0, 0};
-    toc_buffer[18] = {1, 162, 0, 0, 0};
-    toc_entry_count=19;
 
     CDi machine(machineindex);
 

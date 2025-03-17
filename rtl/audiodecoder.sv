@@ -22,10 +22,8 @@ module audiodecoder (
     audiostream.source out,
     output bit sample_channel,
 
-    input use_external_coding,  // don't read coding from memory, use parameter
-    input header_coding_s cd_audio_coding,  // used when external_coding set
+    input cdda_mode,  // don't read coding from memory, just go for CDDA
     input start_playback,
-    input audio_tick,  // CD sector tick rate 75 Hz
     output header_coding_s playback_coding_out,
     input [12:0] playback_addr,
 
@@ -38,7 +36,6 @@ module audiodecoder (
         // XA ADPCM handling
         DETECT_CODING,
         DETECT_CODING2,
-        WAIT_AUDIO_TICKS,
         EVALHEADER,
         EVALHEADER2,
         READ_SAMPLE,
@@ -195,16 +192,17 @@ module audiodecoder (
                     stop_playback_latch <= 0;
                     if (start_playback) begin
                         // Coding can be read from memory or forced
-                        if (use_external_coding) begin
+                        if (cdda_mode) begin
                             // Don't read coding from memory.
                             // Use cd_audio_coding
 
                             block_cnt <= 0;
                             group_cnt <= 0;
-                            $display("EXTERNAL CODING %x", cd_audio_coding);
+                            playback_coding.rate <= k44Khz;
+                            playback_coding.bps <= k16Bps;
+                            playback_coding.chan <= kStereo;
 
-                            playback_coding <= cd_audio_coding;
-                            decoder_state   <= (cd_audio_coding.bps == k16Bps) ? CDDA_READ : WAIT_AUDIO_TICKS;
+                            decoder_state <= CDDA_READ;
                         end else begin
                             // Read coding from sector header
                             decoder_state <= DETECT_CODING;
@@ -247,14 +245,6 @@ module audiodecoder (
                             assert (mem_data_byte != 0);  // plausible?
                         end
 
-                    end
-                end
-                WAIT_AUDIO_TICKS: begin
-                    if (audio_tick) decoder_state <= EVALHEADER;
-
-                    if (stop_playback_latch) begin
-                        decoder_state <= IDLE;
-                        stop_playback_latch <= 0;
                     end
                 end
                 EVALHEADER: begin

@@ -34,6 +34,12 @@ main:
 	move.w #$4000,$303C0C ; Audio Channel Register
 	move.l #$07494800,$303C02 ; Timer Register
 
+	; Apprentice USA Philips Logo
+	move.w #$0000,$303C06 ; File Register
+	move.l #$8000,$303C08 ; Channel Register
+	move.w #$8000,$303C0C ; Audio Channel Register
+	move.l #$12215300,$303C02 ; Timer Register
+
 	; Tetris 00 35 68 00356800 Philips Logo   Coding 01, 2 channels, 4 bits, 000093a8 frequency
 	; Tetris 01 42 67 01426700 Main Menu      Coding 05, 2 channels, 4 bits, 000049d4 frequency
 	; Tetris 55 50 33 55503300 Intro          Coding 05, 2 channels, 4 bits, 000049d4 frequency
@@ -44,10 +50,16 @@ main:
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 
 	jsr waitforirq
+
+	move.w #$0800,$303FFA ; Start playback
+
 	jsr waitforirq
 	jsr waitforirq
 	jsr waitforirq
 	jsr waitforirq
+
+	move.w #$0000,$303FFA ; Stop playback
+
 
 	;move.w #$0000,$303FFE ; Deactivate cd reading
 

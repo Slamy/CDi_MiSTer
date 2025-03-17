@@ -23,27 +23,22 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,431 / 41,910 ( 32 % )
-    Total registers              15619
+    Logic utilization (in ALMs)  13,425 / 41,910 ( 32 % )
+    Total registers              15587
     Total block memory bits      630,471 / 5,662,720 ( 11 % )
     Total DSP Blocks             66 / 112 ( 59 % )
 
 ### TODOs in order of priority
 
-* Fix audio regression during Hotel Mario Score Screen (was ok in 250214)
-* Investigate hangup during Wand of Gamelon Shopkeeper cutscene
 * Find a better solution for reducing CPU speed
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
 * Investigate mysterious non loading behavior
-* Investigate "Zelda's Adventure" sound hiccups
-    * During stop of audiomap and switch to audio channel playback
-      the audio channel mask is set one sector too late.
-* Investigate sound hiccups in both 2D Zelda games
-    * Occurs during "Help-Cutscene" when SFX is played
-    * Probably the same as with "Zelda's Adventure"
+* Investigate input responsiveness (skipped events?)
+* Investigate graphical glitch on the left edge in "Alice in Wonderland" and "Laser Lords"
+* Investigate graphical glitch at the bottom of the screen in Kether during pause
 * Investigate screeching sound effect in the menu of "Golf Tips"
-* Fix hang on audio track stop or change
+* Fix hang on audio track stop or change in media player
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour (Core is sometimes hanging after reset)
 * Add auto start of titles using front panel "Play" button
@@ -103,9 +98,22 @@ by emulation errors but are also present on the real machine.
       The video data is changed while it is displayed.
 * When I load a save game in "Burn:Cycle" it plays a short and unclean loop of noise until I do something
     * I thought that was a bug in the core at first too. However, it is actually like this on a real CD-i too.
+* The music of Burn:Cycle sometimes has "pops" and "clicks"
+    * This game is special. It doesn't play music from CD like most games for this system would do.
+    * Small loops of sampled music are loaded from CD, stored in memory and randomly concatenated together
+      to create the background music. These samples are sometimes not very "loopable" creating a pop at looping points.
+    * This issue is reproducible on a real 210/05 as well      
+* The music during the Philips Logo animation of Burn:Cycle has broken audio
+    * This issue is reproducible on a real 210/05 as well
+    * The problem can be fixed by overclocking the CPU
 * Burn:Cycle - Random flickering animated text in front of the "Psychic Roulette" credit card terminal
     * This actually happens on the real machine. I also thought this might be a CPU speed issue, considering that
       the flickering disappears if the CPU is slightly overclocked.
 * Flashback: The audio and video during the intro are asynchronous
-    * This curiously happens on the real machine as well and doesn't depend on 50 or 60 Hz.
+    * This curiously happens on the real machine as well and doesn't depend on 50 or 60 Hz
+* When dying in "Zelda's Adventure" the accompanying sound effect doesn't match the audio data on CD
+    * Good catch! This is a programming error which can be reproduced on a real CD-i 210/05 as well,
+      which causes the audio playback to start one sector too late.
+    * The same phenomenon exists in the "Help cutscene" of "Zelda - Wand of Gamelon"
+        * It is not audible in that game, because of silence in the beginning
 

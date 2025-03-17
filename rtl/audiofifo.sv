@@ -5,7 +5,8 @@ module audiofifo (
     input reset,
     audiostream.sink in,
     audiostream.source out,
-    output nearly_full
+    output nearly_full,
+    output nearly_empty
 );
 
     bit signed [15:0] mem[64];
@@ -20,12 +21,13 @@ module audiofifo (
     bit indizes_equal_during_write_d;
     bit indizes_equal_during_write_q;
 
-    assign out.write   = count != 0 && !reset && !indizes_equal_during_write_q;
-    assign in.strobe   = count < 60 && !reset && in.write;
+    assign out.write = count != 0 && !reset && !indizes_equal_during_write_q;
+    assign in.strobe = count < 60 && !reset && in.write;
 
     // Always a minimum of 28 XA samples per block
     // We go for 48 just to be safe
     assign nearly_full = count >= 48;
+    assign nearly_empty = count <= 3;
 
     always_comb begin
         read_index_d = read_index_q;

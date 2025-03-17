@@ -1,5 +1,5 @@
 verilator --top-module emu  \
-     --trace --trace-fst --trace-structs --cc --assert --exe --timing --build   \
+     --trace --trace-fst --trace-structs --cc --assert --exe --build   \
     --build-jobs 8 sim_top.cpp -I../rtl  \
     ../rtl/*.sv ../CDi.sv ../rtl/*.v  \
     tg68kdotc_verilog_wrapper.v ur6805.v \

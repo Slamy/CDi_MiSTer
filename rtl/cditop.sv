@@ -268,10 +268,10 @@ module cditop (
         .uds(uds),
         .bus_ack(bus_ack),
         .bus_err,
-        .int1(vdsc_int),
+        .int1(vdsc_int),  // Video IRQ
         .int2(1'b0),  // unconnected in CDi MONO1
-        .in2(!in2in),  // TODO fix polarity
-        .in4(in4in),
+        .in2(in2in),  // Slave IRQ
+        .in4(in4in),  // CDIC IRQ
         .in5(1'b0),
         .iack2(iack2),
         .iack4(iack4),
@@ -345,7 +345,9 @@ module cditop (
 
     wire dtackslaven = ddrb[6] ? portb_out[6] : 1'b1;
     assign slave_rts = ddrb[4] ? portb_out[4] : 1'b1;
-    assign in2in = ddrb[5] ? portb_out[5] : 1'b1;
+
+    // The polarity must be altered as a real SCC68070 is low active
+    assign in2in = !(ddrb[5] ? portb_out[5] : 1'b1);
 
     wire datadac = ddrb[0] ? portb_out[0] : 1'b0;
     wire clkdac = ddrb[1] ? portb_out[1] : 1'b0;
@@ -353,7 +355,7 @@ module cditop (
     wire csdac2n = ddrb[3] ? portb_out[3] : 1'b1;
 
     bit  dtackslaven_q = 0;
-    bit  in2in_q = 1;
+    bit  in2in_q = 0;
 
     bit  slave_irq;
 
@@ -431,14 +433,14 @@ module cditop (
         if (reset) begin
             attex_cs_slave_q <= 0;
             dtackslaven_q <= 0;
-            in2in_q <= 1;
+            in2in_q <= 0;
         end else begin
             attex_cs_slave_q <= attex_cs_slave;
             dtackslaven_q <= dtackslaven;
             in2in_q <= in2in;
 
-            if (!in2in && in2in_q) $display("SLAVE IRQ2 1");
-            if (in2in && !in2in_q) $display("SLAVE IRQ2 0");
+            if (!in2in && in2in_q) $display("SLAVE IRQ2 0");
+            if (in2in && !in2in_q) $display("SLAVE IRQ2 1");
         end
 
     end

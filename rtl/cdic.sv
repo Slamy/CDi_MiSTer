@@ -61,18 +61,16 @@ module cdic (
     bit [31:0] channel_register = 0;
 
     // MODE2 Channel Audio Mask
-    // If matching, disables audiomap and plays sector
-    // directly without waiting for CPU?
-    // The data is delivered to one of the ADPCM buffers?
+    // If matching, the data is delivered to one of the ADPCM buffers
     bit [15:0] audio_channel_register = 0;
 
     bit [15:0] command_register = 0;
 
     // DBUF @ 303FFE
-    // Bit 0 is toggled on every received sector
+    // Bit 0 is toggled on every received sector and
+    // points to the just refreshed buffer
     // Bit 2 is reset on data sector
     // Bit 2 is set on audio sector
-    // Bit 14 is set on every received sector
     // Bit 15 starts the CD reading and parses command register
     // Resetting Bit 14 stops CD reading
     // Buffer of the stored sector is visible here
@@ -94,6 +92,7 @@ module cdic (
     // ABUF @ 303FF4
     // Bit 15 causes IRQ
     // Bit 15 is set when an audio buffer was played
+    // when bit 13 of AUDCTL is set
     // Reading register clears bit 15 after the read
     // The CPU still gets the set bit
     bit [15:0] audio_buffer_register = 0;
@@ -108,17 +107,12 @@ module cdic (
     bit [15:0] dma_control_register = 0;
 
     // AUDCTL @ 303FFA (called Z buffer in MAME)
-    // Bit 0 toggles on every read when no audio is played?
-    // The toggled result is the one returned
-    // to the CPU?
-    // Resetting bit 13 stops audio map playback? Or is it bit 11?
+    // Bit 0 is set when the audiomap has finished playback
+    // with 0xff coding
+    // Resetting bit 11 stops audio map playback directly.
     // CPU does write 0x0000 to do so, ignoring the previous content
-    // Setting bit 13 starts audio map playback? Or is it bit 11?
-    // CPU does write 0x2800 to do so, ignoring the previous content
-    // CPU writes 0x0800 to this register when unmuting
-    // It does so only if bit 11 is not set but bit 0 is set
-    // after a CDIC IRQ
-    // This is also the address for playback of audio
+    // Setting bit 11 starts audio map playback at ADPCM buffer 0
+    // Bit 13 activates IRQs when a single ADPCM buffer was played
     bit [15:0] audio_control_register = 0;
 
     // Matching value for File in MODE2 header
@@ -153,6 +147,11 @@ module cdic (
     wire sector_tick_audio = sector75counter == 0;
     wire sample_tick37  /*verilator public_flat_rd*/;
     wire sample_tick44  /*verilator public_flat_rd*/;
+
+`ifdef VERILATOR
+    wire sample_tick  /*verilator public_flat_rd*/ = read_cdda ? sample_tick44 : sample_tick37;
+`endif
+
     wire sector_tick;
     flag_cross_domain cross1 (
         .clk_a(clk_audio),
@@ -237,16 +236,6 @@ module cdic (
         .q_b(mem_cdic_readout)
     );
 
-    // Flag is set after a full sector is received
-    // which had audio data and matching audio channel and
-    // needs to be played back now
-    bit cd_audio_start_playback;
-    bit cd_audio_abort_playback_request;
-
-    // Address of CD sector to play back
-    // Should be 13'h1900 or 13'h1400
-    // Can be either an audiomap or coming directly from CD
-    bit [12:0] audio_playback_addr;
 
     bit [12:0] mem_cd_audio_addr;  // Address for CDIC memory
     bit mem_cd_audio_rd;
@@ -272,18 +261,16 @@ module cdic (
     assign audio_left  = adpcm_left;
     assign audio_right = adpcm_right;
 
-    wire audiomap_active;
-    bit adpcm_enable_audiomap;  // Flag when audio_control_register[13] is set
-    bit adpcm_disable_audiomap;  // Flag when audio_control_register[13] is reset
-    wire audiomap_finished_playback;
+    bit  audio_start_playback  /*verilator public_flat_rd*/;
+    bit  audio_stop_playback;
+    wire audio_playback_active  /*verilator public_flat_rd*/;
+    wire finished_audio_buffer_playback;
     wire decoder_disable_audiomap;
 
-    header_coding_s cd_audio_coding;
     audioplayer adpcm (
         .clk(clk),
         .sample_tick37,
         .sample_tick44,
-        .audio_tick(sector_tick),
         .reset(reset),
         .mem_addr(mem_cd_audio_addr),
         .mem_data(mem_cdic_readout),
@@ -291,14 +278,11 @@ module cdic (
         .mem_ack(mem_cd_audio_ack),
         .mem_ack_q(mem_cd_audio_ack_q),
 
-        .cd_audio_coding(cd_audio_coding),
-        .start_playback(cd_audio_start_playback),
-        .abort_playback_request(cd_audio_abort_playback_request),
-        .enable_audiomap(adpcm_enable_audiomap),
-        .disable_audiomap(adpcm_disable_audiomap),
-        .playback_addr(audio_playback_addr),
-        .audiomap_active(audiomap_active),
-        .audiomap_finished_playback(audiomap_finished_playback),
+        .start_playback(audio_start_playback),
+        .stop_playback(audio_stop_playback),
+        .cdda_mode(read_cdda),
+        .playback_active(audio_playback_active),
+        .finished_buffer_playback(finished_audio_buffer_playback),
         .decoder_disable_audiomap(decoder_disable_audiomap),
 
         .audio_left (adpcm_left),
@@ -309,28 +293,6 @@ module cdic (
     bit cd_hps_data_valid_q2;
     bit data_target_buffer;
     bit audio_target_buffer;
-
-    always_comb begin
-`ifdef VERILATOR
-        audio_playback_addr = 0;  // better visibility in waveform
-`else
-        audio_playback_addr = audio_control_register[13:1];  // optimize LUTs
-`endif
-
-        if (adpcm_enable_audiomap) audio_playback_addr = audio_control_register[13:1];
-
-        // CD Audio Playback
-        if (cd_audio_start_playback) begin
-            if (header_mode2) begin
-                audio_playback_addr = !audio_target_buffer ? 13'h1900 : 13'h1400;
-                $display("ADPCM at %x", {audio_playback_addr, 1'b0});
-            end else begin
-                assert (read_cdda);
-                audio_playback_addr = data_target_buffer ? 13'h0f00 : 13'h0a00;
-                $display("CDDA at %x", {audio_playback_addr, 1'b0});
-            end
-        end
-    end
 
     bit reset_write_timecode1;
     bit reset_write_timecode2;
@@ -424,7 +386,8 @@ module cdic (
     localparam bit [5:0] kSeekTime = 1;
 `else
     // Seeking on a real 210/05 takes about 200ms
-    localparam bit [5:0] kSeekTime = 14;
+    // But 19 (250ms) seems to be more stable
+    localparam bit [5:0] kSeekTime = 19;
 `endif
     // Simulates reading time. Remaining sectors to wait.
     bit [5:0] start_cd_reading_cnt = 0;
@@ -445,7 +408,7 @@ module cdic (
     end
 `endif
 
-    assign intreq = x_buffer_register[15] | audio_buffer_register[15];
+    assign intreq = (x_buffer_register[15] & data_buffer_register[14]) | audio_buffer_register[15];
     assign req = dma_control_register[15];
 
     localparam kSectorHeader_Mode = 15 / 2;  // Low Byte
@@ -459,14 +422,12 @@ module cdic (
     always_ff @(posedge clk) begin
         bus_ack <= 0;
         rdy <= 0;
-        cd_audio_start_playback <= 0;
-        cd_audio_abort_playback_request <= 0;
         cd_hps_data_valid_q2 <= cd_hps_data_valid_q;
         cd_hps_data_valid_q <= cd_hps_data_valid;
         cd_hps_ack_q <= cd_hps_ack;
 
-        adpcm_enable_audiomap <= 0;
-        adpcm_disable_audiomap <= 0;
+        audio_start_playback <= 0;
+        audio_stop_playback <= 0;
 
         if (reset_write_timecode1) write_timecode1 <= 0;
         if (reset_write_timecode2) write_timecode2 <= 0;
@@ -615,7 +576,6 @@ module cdic (
                              header_timecode1[7:0], header_timecode2[15:8]);
 
                     cd_data_target_adr <= audio_target_buffer ? 13'h1904 : 13'h1404;
-                    cd_audio_coding <= header_coding;
                 end else if (use_sector_data && sector_word_index == 10 && !read_raw) begin
                     $display("Use sector %x %x %x for data in buffer %x", header_timecode1[15:8],
                              header_timecode1[7:0], header_timecode2[15:8], {
@@ -636,7 +596,7 @@ module cdic (
             end
 
             // Audio map finished? Cause an IRQ to inform the CPU
-            if (audiomap_finished_playback) begin
+            if (finished_audio_buffer_playback && audio_control_register[13]) begin
                 audio_buffer_register[15] <= 1;
             end
 
@@ -700,9 +660,6 @@ module cdic (
                     // Bit 2 is set on audio sector
                     data_buffer_register[2] <= header_submode.audio && audio_channel_match && header_mode2;
 
-                    // Bit 14 is set on every received sector
-                    data_buffer_register[14] <= 1'b1;
-
                     // Bit 15 is set when a sector is stored
                     // This causes an IRQ to occur
                     x_buffer_register[15] <= 1'b1;
@@ -713,18 +670,8 @@ module cdic (
                         cd_reading_active <= 0;
 
                     if (header_submode.audio && audio_channel_match && header_mode2) begin
-                        cd_audio_start_playback <= 1;
-                        // Resetting this bit, causes the CDIC driver to unmute the mixer
-                        audio_control_register[11] <= 0;
                         data_buffer_register[0] <= audio_target_buffer;
                         audio_target_buffer <= !audio_target_buffer;
-                    end
-
-                    if (read_cdda) begin
-                        cd_audio_start_playback <= 1;
-                        cd_audio_coding.rate <= k44Khz;
-                        cd_audio_coding.bps <= k16Bps;
-                        cd_audio_coding.chan <= kStereo;
                     end
                 end
 
@@ -754,8 +701,8 @@ module cdic (
                         read_mode2 <= 1;
                     end
                     16'h2b: begin
-                        $display("CDIC Command: Stop CDDA");
-                        cd_reading_active <= 0;
+                        // Unknown purpose
+                        $display("CDIC Command: Stop CDDA?");
                     end
                     16'h2e: begin
                         $display("CDIC Command: Update");
@@ -884,9 +831,8 @@ module cdic (
                             $display("CDIC Write Z Buffer Register / Audio Control Register %x %x",
                                      address[13:1], din);
                             audio_control_register <= din;
-
-                            adpcm_enable_audiomap  <= din[13];
-                            adpcm_disable_audiomap <= din == 0;
+                            audio_start_playback <= din[11];
+                            audio_stop_playback <= !din[11];
                         end
                         13'h1FFE: begin  // 0x3FFC IVEC Interrupt Vector register
                             $display("CDIC Write Interrupt Vector Register %x %x", address[13:1],
@@ -912,7 +858,6 @@ module cdic (
                                 audio_control_register[0] <= 0;
                                 sector_word_index <= 0;
                                 start_cd_reading_cnt <= 0;
-                                cd_audio_abort_playback_request <= 1;
                             end
                         end
                         default: begin
@@ -1013,6 +958,7 @@ module cdic (
             end
             13'h1FFD: begin  // 0x3FFA AUDCTL Audio control register
                 dout = audio_control_register;
+                dout[11] = audio_playback_active;
             end
             13'h1FFE: begin  // 0x3FFC IVEC Interrupt Vector register
                 dout = interrupt_vector_register;

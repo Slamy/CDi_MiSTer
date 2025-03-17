@@ -68,6 +68,8 @@
         "system_error": "cpp",
         "text_encoding": "cpp",
         "thread": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "iterator": "cpp",
+        "random": "cpp"
     }
 }

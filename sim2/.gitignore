@@ -5,3 +5,5 @@ log*
 *.BIN
 *.rom
 
+*.wav
+*.vcd

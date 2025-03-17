@@ -34,14 +34,14 @@ play_audiomap:
 	jsr waitforirq
 	move.b #'A',$80002019
 	move.w #$8a00,d0
-	move.w #$b200,d1
+	move.w #$a800,d1 ; 0x2800
 	jsr movedata
 
 	move.b #'1',$80002019
 	jsr waitforirq
 	move.b #'B',$80002019
 	move.w #$8000,d0
-	move.w #$a800,d1
+	move.w #$b200,d1; 0x3200
 	jsr movedata
 
 	jsr waitforirq
@@ -79,10 +79,15 @@ play_some_cd_sectors:
 	; Wait for the music to play back some sectors
 
 	jsr waitforirq
+
+	move.w #$0800,$303FFA ; Start playback
+
 	jsr waitforirq
 	jsr waitforirq
 
 	move.w #$0000,$303FFE ; Stop CD reading
+	move.w #$0000,$303FFA ; Stop playback
+
 	rts
 
 main:
@@ -176,7 +181,7 @@ movedata:
 	move.w $303200,d7
 	move.w $303202,d7
 
-	move.w #$3200,$303FFA ; Start Audiomap at 0x3200
+	move.w #$2800,$303FFA ; Start Audiomap at 0x2800
 	rts
 
 wait:

@@ -17,6 +17,8 @@ main:
 
 	move.w #$2480,$303FFC ; Interrupt Vector
 	move.w #$0028,$303C00 ; Play CDDA
+	;move.w #$0027,$303C00 ; Fetch TOC
+
 	; Apprentice - Level 1
 	move.l #$19468000,$303C02 ; Timer Register
 
@@ -26,6 +28,9 @@ main:
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 
 	jsr waitforirq
+
+	move.w #$0800,$303FFA ; Start playback
+
 	jsr waitforirq
 	jsr waitforirq
 	jsr waitforirq
