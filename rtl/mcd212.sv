@@ -12,7 +12,7 @@ function string coding_method_name(bit [3:0] coding, bit plane_b);
     if (plane_b) begin
         case (coding)
             4'b0000: coding_method_name = "OFF";
-            4'b0001: coding_method_name = "CLUT8";
+            4'b0001: coding_method_name = "RGB555";
             4'b0011: coding_method_name = "CLUT7";
             4'b0100: coding_method_name = "CLUT7+7";
             4'b0101: coding_method_name = "DYUV";
@@ -22,7 +22,7 @@ function string coding_method_name(bit [3:0] coding, bit plane_b);
     end else begin
         case (coding)
             4'b0000: coding_method_name = "OFF";
-            4'b0001: coding_method_name = "RGB555";
+            4'b0001: coding_method_name = "CLUT8";
             4'b0011: coding_method_name = "CLUT7";
             4'b0101: coding_method_name = "DYUV";
             4'b1011: coding_method_name = "CLUT4";
@@ -1505,7 +1505,7 @@ module mcd212 (
     bit [1:0] rf1_index;  // 0 to 3 as only required for Implicit Control
 
     always_ff @(posedge clk) begin
-        if (hblank) begin
+        if (new_line) begin
             region_flags <= 0;
             rf0_index <= 0;
             rf1_index <= 0;
