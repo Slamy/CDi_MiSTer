@@ -1,6 +1,6 @@
 # CDi_MiSTer
 
-A repo dedicated to create an FPGA implementation of the Philips CD-i to be usable for the MiSTer FPGA project.
+A project dedicated to create an FPGA implementation of the Philips CD-i to be usable for the MiSTer FPGA project.
 As every Philips CD-i player has a different hardware, this project focuses on reverse engineering the "Mono I" PCB.
 This mainboard is used in models like the 210/00, 210/05 or 220/20.
 
@@ -23,8 +23,8 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,425 / 41,910 ( 32 % )
-    Total registers              15587
+    Logic utilization (in ALMs)  13,405 / 41,910 ( 32 % )
+    Total registers              15627
     Total block memory bits      630,471 / 5,662,720 ( 11 % )
     Total DSP Blocks             66 / 112 ( 59 % )
 
@@ -89,7 +89,8 @@ by emulation errors but are also present on the real machine.
     * You have good ears as it is barely noticeable. This also happens on real hardware.
 * Some earlier CD-i titles have both stereo channels swapped
     * Yes, according to an [internal memo from Philips](http://icdia.co.uk/docs/mono2status.zip) there
-      were manufacturing issues and some early players have the left and right channel swapped. This might explain discrepancies.
+      were manufacturing issues and some early players have the left and right channel swapped.
+      This might explain discrepancies.
     * One known quirk is inverted stereo on the "Philips Logo Jingle" of "Zelda - Wand of Gamelon"
 * During the rotating transition in "Myst" there are glitched lines at the bottom
     * This also happens to some extent on a real 210/05 hardware and is caused by a misplaced Video IRQ
@@ -103,15 +104,19 @@ by emulation errors but are also present on the real machine.
     * This issue is reproducible on a real 210/05 as well      
 * The music during the Philips Logo animation of Burn:Cycle has broken audio
     * This issue is reproducible on a real 210/05 as well
+    * For some reason, it seems to be absent on other models with different hardware, like the 450/00
     * The problem can be fixed by overclocking the CPU
-* Burn:Cycle - Random flickering animated text in front of the "Psychic Roulette" credit card terminal
+* Burn:Cycle - Random flickery animated text in front of the "Psychic Roulette" credit card terminal
     * This actually happens on the real machine. I also thought this might be a CPU speed issue, considering that
       the flickering disappears if the CPU is slightly overclocked.
 * Flashback: The audio and video during the intro are asynchronous
-    * This curiously happens on the real machine as well and doesn't depend on 50 or 60 Hz
+    * This curiously happens on the real machine as well and doesn't even depend on 50 or 60 Hz
+    * It seems to be an oversight by the developers when the game was ported to CD-i
 * When dying in "Zelda's Adventure" the accompanying sound effect doesn't match the audio data on CD
     * Good catch! This is a programming error which can be reproduced on a real CD-i 210/05 as well,
       which causes the audio playback to start one sector too late.
     * The same phenomenon exists in the "Help cutscene" of "Zelda - Wand of Gamelon"
         * It is not audible in that game, because of silence in the beginning
-
+* The intro music of Zenith is played only on the left audio channel
+  * Yes, this happens on a real 210/05 too. To be sure, I've tested it as well
+    on a 450/00. It seems to be an oversight by the developers.

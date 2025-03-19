@@ -67,11 +67,9 @@ module audioplayer (
 
     wire [1:0] fifo_nearly_full;
     wire [1:0] fifo_nearly_empty;
-    bit fifo_nearly_empty_q;
 
     always_ff @(posedge clk) begin
         decoder_start <= 0;
-        fifo_nearly_empty_q <= fifo_nearly_empty[0];
         finished_buffer_playback <= 0;
 
         if (reset) begin

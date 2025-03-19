@@ -288,7 +288,7 @@ module emu (
     wire        img_readonly;
     wire [63:0] img_size;
 
-    wire [15:0] status_menumask;
+    wire [15:0] status_menumask = 0;
 
     bit         info_req;
     bit  [ 7:0] info;

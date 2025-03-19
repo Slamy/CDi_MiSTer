@@ -16,9 +16,6 @@ module delta_yuv_decoder (
     bit signed [9:0] r;
     bit signed [9:0] g;
     bit signed [9:0] b;
-    bit signed [9:0] r_q;
-    bit signed [9:0] g_q;
-    bit signed [9:0] b_q;
 
     enum bit [3:0] {
         IDLE,
@@ -27,7 +24,7 @@ module delta_yuv_decoder (
     } state = IDLE;
 
     // Dequantizer Table according to Table 7-1
-    bit [7:0] dyuv_deltas[16] = '{
+    localparam bit [7:0] dyuv_deltas[16] = '{
         0,
         1,
         4,
@@ -82,12 +79,6 @@ module delta_yuv_decoder (
         rgb_out.r = clamp8(r);
         rgb_out.g = clamp8(g);
         rgb_out.b = clamp8(b);
-    end
-
-    always_ff @(posedge clk) begin
-        r_q <= r;
-        g_q <= g;
-        b_q <= b;
     end
 
 `ifdef VERILATOR

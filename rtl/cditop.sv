@@ -98,8 +98,6 @@ module cditop (
     wire attex_cs_slave = addr_byte[23:16] == 8'h31 && as;
     wire attex_cs_mk48 = addr_byte[23:16] == 8'h32 && as;
 
-
-    bit [15:0] data_in_q = 0;
     bit attex_cs_slave_q = 0;
 
     wire bus_err_ram_area1 = (addr_byte >= 24'h600000 && addr_byte < 24'hd00000);
@@ -107,7 +105,6 @@ module cditop (
     wire bus_err = (bus_err_ram_area1 || bus_err_ram_area2) && as && (lds || uds);
 
     always_ff @(posedge clk30) begin
-        data_in_q <= data_in;
 
         if (reset) ce_pix <= 0;
         else ce_pix <= !ce_pix;
@@ -127,14 +124,14 @@ module cditop (
                 );
 
             if ((lds || uds) && attex_cs_slave && !write_strobe)
-                $display("Read SLAVE %x %x %d %d %d", addr[7:1], data_in_q, lds, uds, write_strobe);
+                $display("Read SLAVE %x %x %d %d %d", addr[7:1], data_in, lds, uds, write_strobe);
 
 
             if ((lds || uds) && attex_cs_mk48)
                 $display(
                     "Access NVRAM %x %x %x %d %d %d",
                     addr[7:1],
-                    data_in_q,
+                    data_in,
                     cpu_data_out,
                     lds,
                     uds,

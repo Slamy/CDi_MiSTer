@@ -74,7 +74,6 @@ module pointing_device (
     bit mouse_event_q;
     wire mouse_event = mister_mouse[24];
 
-    bit mouse_movement;
     bit digital_movement;
     bit analog_movement;
 
@@ -129,7 +128,6 @@ module pointing_device (
 
         digital_movement = mister_joystick[3:0] != 0;
         analog_movement = (x_analog != 0) || (y_analog != 0);
-        mouse_movement = (x_mouse != 0) || (y_mouse != 0);
 
         // prioritize analog > digital > mouse
         if (device_type == RELATIVE) begin
