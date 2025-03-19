@@ -69,8 +69,7 @@ module mcd212 (
 
     input [1:0] debug_force_video_plane,
     input [1:0] debug_limited_to_full,
-    input disable_cpu_starve,
-    input debug_ica_at_vblank
+    input disable_cpu_starve
 );
 
     // Memory Swapping according to chapter 3.4
@@ -121,7 +120,7 @@ module mcd212 (
     // TODO A hack is applied here
     // Even and odd fields are swapped to revert a hack in video timing
     // to fix the flickering OSD
-    wire ica_parity  /*verilator public_flat_rd*/ = !command_register_dcr1.sm | !vt_field_parity;
+    wire ica_parity  /*verilator public_flat_rd*/ = !command_register_dcr1.sm | vt_field_parity;
 
     // Always switches between 1 and 0.
     // If interlacing is enabled, it is consistent with the real parity
@@ -429,13 +428,30 @@ module mcd212 (
 
     wire [8:0] video_y;
     wire [12:0] video_x;
-    wire new_frame  /*verilator public_flat_rd*/;
+    bit new_frame  /*verilator public_flat_rd*/;
     wire new_line  /*verilator public_flat_rd*/;
     wire new_pixel;
     wire new_pixel_lores;
     wire new_pixel_hires;
     bit hblank_vt;
     bit hblank_vt_q;
+
+    bit vblank_latched;
+    bit vblank_q;
+
+    always_ff @(posedge clk) begin
+        new_frame <= 0;
+        vblank_q  <= vblank;
+
+        // VBlank has started? Keep track of that
+        if (vblank && !vblank_q) vblank_latched <= 1;
+
+        // When VBlank has started and DCA has finished, begin with ICA immediately
+        if (vblank_latched && !ica0_as && !ica1_as) begin
+            vblank_latched <= 0;
+            new_frame <= 1;
+        end
+    end
 
     // we should have 8-9 refresh cycles per horizontal line
     // to fulfill 8192 refreshes per 64ms 
@@ -465,13 +481,11 @@ module mcd212 (
         .vsync(vsync),
         .hblank(hblank_vt),
         .vblank(vblank),
-        .new_frame(new_frame),
         .new_line(new_line),
         .new_pixel(new_pixel),
         .new_pixel_lores(new_pixel_lores),
         .new_pixel_hires(new_pixel_hires),
-        .display_active(display_active),
-        .debug_ica_at_vblank(debug_ica_at_vblank)
+        .display_active(display_active)
     );
 
 

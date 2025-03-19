@@ -10,7 +10,6 @@ module cditop (
     input [1:0] debug_limited_to_full,
     input debug_audio_cd_in_tray,
     input debug_disable_audio_attenuation,
-    input debug_ica_at_vblank,
 
     output bit ce_pix,
     output bit HBlank,
@@ -201,7 +200,6 @@ module cditop (
         .irq(vdsc_int),
         .debug_force_video_plane,
         .debug_limited_to_full,
-        .debug_ica_at_vblank,
         // Don't starve the CPU during DMA transfers
         .disable_cpu_starve(disable_cpu_starve || cdic_dma_ack || cdic_dma_req)
     );

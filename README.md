@@ -33,8 +33,6 @@ Core Utilization:
 * Find a better solution for reducing CPU speed
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
-* Find a fix for the demo mode of Burn:Cycle
-    * Glitches of audio and video during the "disco/club" section
 * Investigate mysterious non loading behavior
 * Investigate input responsiveness (skipped events?)
 * Investigate screeching sound effect in the menu of "Golf Tips"

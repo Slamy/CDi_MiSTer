@@ -115,7 +115,7 @@ module ica_dca_ctrl (
 
             case (state)
                 IDLE: begin
-                    if (!ica_ended && !hblank) begin
+                    if (!ica_ended) begin
                         state <= ICA_READ0;
                         address <= ica_pointer;
                         // Read one instruction of 4 byte
