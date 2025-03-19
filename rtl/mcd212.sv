@@ -724,7 +724,7 @@ module mcd212 (
         .burstdata_valid(file0_burstdata_valid),
         .vsr_in(ica0_vsr),
         .out(file0_out),
-        .read_pixels(!vblank && image_coding_method_register.cm13_10_planea != 0)
+        .read_pixels(!vblank)
     );
 
 
@@ -743,7 +743,7 @@ module mcd212 (
         .burstdata_valid(file1_burstdata_valid),
         .vsr_in(ica1_vsr),
         .out(file1_out),
-        .read_pixels(!vblank && image_coding_method_register.cm23_20_planeb != 0)
+        .read_pixels(!vblank)
     );
 
     pixelstream dyuv0_in (.clk);
@@ -818,10 +818,10 @@ module mcd212 (
         .strobe(dyuv1_strobe)
     );
 
-    assign rle0_out.strobe = new_pixel && image_coding_method_register.cm13_10_planea != 0;
-    assign rle1_out.strobe = new_pixel && image_coding_method_register.cm23_20_planeb != 0;
-    assign dyuv0_strobe = new_pixel && image_coding_method_register.cm13_10_planea != 0;
-    assign dyuv1_strobe = new_pixel && image_coding_method_register.cm23_20_planeb != 0;
+    assign rle0_out.strobe = new_pixel;
+    assign rle1_out.strobe = new_pixel;
+    assign dyuv0_strobe = new_pixel;
+    assign dyuv1_strobe = new_pixel;
 
     bit [7:0] synchronized_pixel0;
     bit [7:0] synchronized_pixel1;
@@ -983,8 +983,27 @@ module mcd212 (
 
     bit [1:0] region_flags = 0;
 
-    wire plane_a_dyuv_active = image_coding_method_register.cm13_10_planea == 4'b0101;
-    wire plane_b_dyuv_active = image_coding_method_register.cm23_20_planeb == 4'b0101;
+    bit plane_a_dyuv_active;
+    bit plane_b_dyuv_active;
+
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            plane_a_dyuv_active <= 0;
+            plane_b_dyuv_active <= 0;
+        end else begin
+            // Kether is currently the only known title which switches to OFF coding mid frame.
+            // To avoid changing the pixel stream demux and causing alignment
+            // issues, the demux switch is only configured when not OFF.
+            // This might not be accurate and cause issues with other titles
+            // doing that and also switching coding in the meantime.
+            // If VSR is set again, then there might not be an issue
+
+            if (image_coding_method_register.cm13_10_planea != 0)
+                plane_a_dyuv_active <= image_coding_method_register.cm13_10_planea == 4'b0101;
+            if (image_coding_method_register.cm23_20_planeb != 0)
+                plane_b_dyuv_active <= image_coding_method_register.cm23_20_planeb == 4'b0101;
+        end
+    end
 
     // Ignore Color Key for DYUV. Use it only for CLUT!
     wire plane_a_color_key_match = (clut_out0 == trans_color_plane_a) && !plane_a_dyuv_active;

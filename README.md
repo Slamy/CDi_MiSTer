@@ -33,10 +33,11 @@ Core Utilization:
 * Find a better solution for reducing CPU speed
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
+* Find a fix for the demo mode of Burn:Cycle
+    * Glitches of audio and video during the "disco/club" section
 * Investigate mysterious non loading behavior
 * Investigate input responsiveness (skipped events?)
 * Investigate graphical glitch on the left edge in "Alice in Wonderland" and "Laser Lords"
-* Investigate graphical glitch at the bottom of the screen in Kether during pause
 * Investigate screeching sound effect in the menu of "Golf Tips"
 * Fix hang on audio track stop or change in media player
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
