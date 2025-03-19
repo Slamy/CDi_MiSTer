@@ -46,16 +46,15 @@ module ica_dca_ctrl (
     bit [3:0] dca_burst_cnt;
     bit [31:0] instruction;
 
+    bit [4:0] stall_cnt;
+
     enum bit [3:0] {
         IDLE,
         ICA_READ0,
         ICA_READ1,
         ICA_WAIT_FOR_ACK,
         ICA_EXECUTE,
-        ICA_STALL1,
-        ICA_STALL2,
-        ICA_STALL3,
-        ICA_STALL4,
+        ICA_STALL,
         DCA_READ0,
         DCA_READ1,
         DCA_READ2,
@@ -174,12 +173,12 @@ module ica_dca_ctrl (
                     end
                 end
                 ICA_EXECUTE: begin
-                    state <= ICA_STALL1;
+                    state <= ICA_STALL;
                 end
-                ICA_STALL1: state <= ICA_STALL2;
-                ICA_STALL2: state <= ICA_STALL3;
-                ICA_STALL3: state <= ICA_STALL4;
-                ICA_STALL4: state <= IDLE;
+                ICA_STALL: begin
+                    stall_cnt <= stall_cnt + 1;
+                    if (stall_cnt == 0) state <= IDLE;
+                end
 
                 DCA_READ0: begin
                     if (burstdata_valid) begin
@@ -249,7 +248,7 @@ module ica_dca_ctrl (
                     end
                     1: begin
                         // no operation
-                        // `dp(("%s NOP", unit_name);
+                        // `dp(("%s NOP", unit_name));
                     end
                     2: begin
                         // reload dcp
