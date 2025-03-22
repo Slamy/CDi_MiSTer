@@ -23,8 +23,8 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,405 / 41,910 ( 32 % )
-    Total registers              15627
+    Logic utilization (in ALMs)  13,420 / 41,910 ( 32 % )
+    Total registers              15644
     Total block memory bits      630,471 / 5,662,720 ( 11 % )
     Total DSP Blocks             66 / 112 ( 59 % )
 
@@ -44,8 +44,6 @@ Core Utilization:
 * Investigate desaturated colors / low contrast in "Photo CD Sample Disc"
     * Probably fixable with 16-235 to 0-255 scaling
     * More investigation needed
-* MCD212: Add RGB555
-    * Fixes DYUV Test on "Validation Disc"
 * Find a solution for the video mode reset during system resets
     * The ST flag is the issue here, causing a video mode change
 * Add SNAC support (IR remote + wired controller)

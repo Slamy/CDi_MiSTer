@@ -860,6 +860,8 @@ module mcd212 (
     end
 
     always_ff @(posedge clk) begin
+        rgb555 <= {synchronized_pixel0, synchronized_pixel1};
+
         if (new_line) begin
             synchronized_pixel0 <= 0;
             synchronized_pixel1 <= 0;
@@ -976,6 +978,8 @@ module mcd212 (
     rgb888_s plane_b;
     rgb888_s vidout;
 
+    rgb555_s rgb555;
+
     function clut_entry_s RGB888ToClut(input rgb888_s rgb);
         RGB888ToClut.r = rgb.r[7:2];
         RGB888ToClut.g = rgb.g[7:2];
@@ -1004,7 +1008,7 @@ module mcd212 (
             // doing that and also switching coding in the meantime.
             // If VSR is set again, then there might not be an issue
 
-            if (image_coding_method_register.cm13_10_planea != 0)
+            if (image_coding_method_register.cm13_10_planea != 0 || image_coding_method_register.cm23_20_planeb == 4'b0001)
                 plane_a_dyuv_active <= image_coding_method_register.cm13_10_planea == 4'b0101;
             if (image_coding_method_register.cm23_20_planeb != 0)
                 plane_b_dyuv_active <= image_coding_method_register.cm23_20_planeb == 4'b0101;
@@ -1095,6 +1099,12 @@ module mcd212 (
             r = dyuv1_out.r;
             g = dyuv1_out.g;
             b = dyuv1_out.b;
+        end
+
+        if (image_coding_method_register.cm23_20_planeb == 4'b0001) begin  // RGB555
+            r = {rgb555.r, 3'b000};
+            g = {rgb555.g, 3'b000};
+            b = {rgb555.b, 3'b000};
         end
 
         if (image_coding_method_register.cm23_20_planeb != 0) begin

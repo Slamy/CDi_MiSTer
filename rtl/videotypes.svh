@@ -14,6 +14,13 @@ typedef struct {
 } rgb888_s;
 
 typedef struct packed {
+    bit t;
+    bit [4:0] r;
+    bit [4:0] g;
+    bit [4:0] b;
+} rgb555_s;
+
+typedef struct packed {
     bit [7:0] y;
     bit [7:0] u;
     bit [7:0] v;
