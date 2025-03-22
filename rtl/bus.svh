@@ -58,14 +58,5 @@ interface audiostream ();
     modport sink(input write, sample, output strobe);
 endinterface
 
-typedef struct {
-    bit cm;
-    bit mf1;
-    bit mf2;
-    bit ft1;
-    bit ft2;
-
-    bit strobe;  // used to force an overwrite
-} display_parameters_s;
 
 `endif

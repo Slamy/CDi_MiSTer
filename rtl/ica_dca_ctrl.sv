@@ -105,10 +105,8 @@ module ica_dca_ctrl (
             dca_misaligned <= 0;
 
             disp_params.cm <= 0;
-            disp_params.mf1 <= 0;
-            disp_params.mf2 <= 0;
-            disp_params.ft1 <= 0;
-            disp_params.ft2 <= 0;
+            disp_params.mf <= kMosaicFactor2;
+            disp_params.ft <= kBitmap;
             instruction <= 0;
         end else begin
 
@@ -293,10 +291,8 @@ module ica_dca_ctrl (
 
                         if (instruction[27]) begin
                             disp_params.cm <= instruction[4];
-                            disp_params.mf1 <= instruction[3];
-                            disp_params.mf2 <= instruction[2];
-                            disp_params.ft1 <= instruction[1];
-                            disp_params.ft2 <= instruction[0];
+                            disp_params.mf <= mosaic_factor_e'(instruction[3:2]);
+                            disp_params.ft <= file_type_e'(instruction[1:0]);
                             disp_params.strobe <= 1;
 
                             `dp(("%s RELOAD DISPLAY PARAMETERS %b", unit_name, instruction[4:0]));

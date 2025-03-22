@@ -512,21 +512,15 @@ module mcd212 (
         bit [5:0] adr;
     } command_register_dcr2;
 
-    struct packed {
-        bit mf1;
-        bit mf2;
-        bit ft1;
-        bit ft2;
-        bit [5:0] adr;
-    } display_decoder_register_ddr1;
 
-    struct packed {
-        bit mf1;
-        bit mf2;
-        bit ft1;
-        bit ft2;
+    typedef struct packed {
+        mosaic_factor_e mf;
+        file_type_e ft;
         bit [5:0] adr;
-    } display_decoder_register_ddr2;
+    } s_display_decoder_register_t;
+
+    s_display_decoder_register_t display_decoder_register_ddr1;
+    s_display_decoder_register_t display_decoder_register_ddr2;
 
     struct packed {
         bit di1;
@@ -550,18 +544,14 @@ module mcd212 (
         end else begin
 
             if (ica0_disp_param_out.strobe) begin
-                display_decoder_register_ddr1.mf1 <= ica0_disp_param_out.mf1;
-                display_decoder_register_ddr1.mf2 <= ica0_disp_param_out.mf2;
-                display_decoder_register_ddr1.ft1 <= ica0_disp_param_out.ft1;
-                display_decoder_register_ddr1.ft2 <= ica0_disp_param_out.ft2;
+                display_decoder_register_ddr1.mf <= ica0_disp_param_out.mf;
+                display_decoder_register_ddr1.ft <= ica0_disp_param_out.ft;
                 command_register_dcr1.cm1 <= ica0_disp_param_out.cm;
             end
 
             if (ica1_disp_param_out.strobe) begin
-                display_decoder_register_ddr2.mf1 <= ica1_disp_param_out.mf1;
-                display_decoder_register_ddr2.mf2 <= ica1_disp_param_out.mf2;
-                display_decoder_register_ddr2.ft1 <= ica1_disp_param_out.ft1;
-                display_decoder_register_ddr2.ft2 <= ica1_disp_param_out.ft2;
+                display_decoder_register_ddr2.mf <= ica1_disp_param_out.mf;
+                display_decoder_register_ddr2.ft <= ica1_disp_param_out.ft;
                 command_register_dcr2.cm2 <= ica1_disp_param_out.cm;
             end
 
@@ -788,7 +778,8 @@ module mcd212 (
         .st(control_register_crsr1w.st),
         .src(rle0_in),
         .dst(rle0_out),
-        .passthrough(!display_decoder_register_ddr1.ft1)
+        .ft(display_decoder_register_ddr1.ft),
+        .mf(display_decoder_register_ddr1.mf)
     );
 
     clut_rle rle1 (
@@ -797,7 +788,8 @@ module mcd212 (
         .st(control_register_crsr1w.st),
         .src(rle1_in),
         .dst(rle1_out),
-        .passthrough(!display_decoder_register_ddr2.ft1)
+        .ft(display_decoder_register_ddr2.ft),
+        .mf(display_decoder_register_ddr1.mf)
     );
 
 
@@ -879,13 +871,13 @@ module mcd212 (
             if (image_coding_method_register.cm13_10_planea == 4'b1011 && new_pixel_hires && !new_pixel_lores)
                 synchronized_pixel0[7:4] <= {
                     // Bit 3 must be forced to 0, when RLE is active
-                    synchronized_pixel0[3] && !display_decoder_register_ddr1.ft1,
+                    synchronized_pixel0[3] && display_decoder_register_ddr1.ft != kRunLength,
                     synchronized_pixel0[2:0]
                 };
             if (image_coding_method_register.cm23_20_planeb == 4'b1011 && new_pixel_hires && !new_pixel_lores)
                 synchronized_pixel1[7:4] <= {
                     // Bit 3 must be forced to 0, when RLE is active
-                    synchronized_pixel1[3] && !display_decoder_register_ddr2.ft1,
+                    synchronized_pixel1[3] && display_decoder_register_ddr2.ft != kRunLength,
                     synchronized_pixel1[2:0]
                 };
         end
@@ -1341,7 +1333,7 @@ module mcd212 (
                     7'h59: begin
                         // Mosaic Pixel Hold for Plane A
                         // TODO is ignored
-                        $display("Mosaic A %b", ch0_register_data[3:0]);
+                        $display("Mosaic A %b %b", ch0_register_data[23], ch0_register_data[7:0]);
                     end
                     7'h5b: begin
                         // Weight Factor for Plane A
@@ -1475,7 +1467,8 @@ module mcd212 (
                     7'h5A: begin
                         // Mosaic Pixel Hold for Plane B
                         // TODO is ignored
-                        $display("Mosaic B %b", ch0_register_data[3:0]);
+                        $display("Mosaic B %b %b", ch1_register_data[23], ch1_register_data[7:0]);
+
                     end
                     default: begin
                         if (ch1_register_adr >= 7'h40 && ch1_register_adr[6:3] != 4'b1010) begin
