@@ -46,20 +46,28 @@ module dual_ad7528_attenuation (
     bit csdac1n_q;
     bit csdac2n_q;
 
+    // Limit volume to a certain degree
+    // A factor of 9/16 fits by the rule of thumb with the clipping behavior
+    // observed on a 210/05. The real machine has two 16 bit channels which are
+    // summed together using an analog circuit. This is something
+    // we can't do here since our output only has 16 bit.
+    // We are losing a little bit of resolution with this...
+    wire [7:0] scaled_shiftreg = shiftreg * 9 / 16;
+
     always_ff @(posedge clk) begin
         csdac1n_q <= csdac1n;
         csdac2n_q <= csdac2n;
 
         if (!csdac1n && csdac1n_q) begin
             $display("DAC Left %d %d", datadac, shiftreg);
-            if (datadac) factor_left_a <= shiftreg;
-            else factor_left_b <= shiftreg;
+            if (datadac) factor_left_a <= scaled_shiftreg;
+            else factor_left_b <= scaled_shiftreg;
         end
 
         if (!csdac2n && csdac2n_q) begin
             $display("DAC Right %d %d", datadac, shiftreg);
-            if (datadac) factor_right_a <= shiftreg;
-            else factor_right_b <= shiftreg;
+            if (datadac) factor_right_a <= scaled_shiftreg;
+            else factor_right_b <= scaled_shiftreg;
         end
     end
 

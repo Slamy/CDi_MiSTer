@@ -40,6 +40,12 @@ main:
 	move.w #$8000,$303C0C ; Audio Channel Register
 	move.l #$12215300,$303C02 ; Timer Register
 
+    ; Zelda - Wand of Gamelon Intro Cutscene
+	move.w #$0100,$303C06 ; File Register
+	move.l #$0003,$303C08 ; Channel Register
+	move.w #$0001,$303C0C ; Audio Channel Register
+	move.l #$48303100,$303C02 ; Timer Register
+	
 	; Tetris 00 35 68 00356800 Philips Logo   Coding 01, 2 channels, 4 bits, 000093a8 frequency
 	; Tetris 01 42 67 01426700 Main Menu      Coding 05, 2 channels, 4 bits, 000049d4 frequency
 	; Tetris 55 50 33 55503300 Intro          Coding 05, 2 channels, 4 bits, 000049d4 frequency
@@ -49,17 +55,24 @@ main:
 
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 
+	move.b #$c5,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	move.b #$00,$310004
+	;move.b #$82,$310004 ; Mute
+
 	jsr waitforirq
 
 	move.w #$0800,$303FFA ; Start playback
+	;move.b #$83,$310004 ; Unmute
 
 	jsr waitforirq
 	jsr waitforirq
 	jsr waitforirq
 	jsr waitforirq
 
-	move.w #$0000,$303FFA ; Stop playback
-
+	;move.w #$0000,$303FFA ; Stop playback
 
 	;move.w #$0000,$303FFE ; Deactivate cd reading
 
@@ -82,6 +95,10 @@ waitforirqloop:
 
 cdicirq:
 	move.b #'I',$80002019
+
+	move.w $303FFE,d0 ; read DBUF
+	move.w $303FFA,d0 ; read AUDCTL
+
 	move.w $303FF4,d0 ; clear flags on ABUFD
 	; ignore ABUF
 

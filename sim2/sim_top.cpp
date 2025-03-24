@@ -18,6 +18,7 @@
 
 #define SCC68070
 #define SLAVE
+// #define TRACE
 
 #define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
 
@@ -48,9 +49,11 @@ struct toc_entry {
 static struct toc_entry toc_buffer[100];
 int toc_entry_count = 0;
 
+#ifdef TRACE
 typedef VerilatedFstC tracetype_t;
 
-static bool do_trace{false};
+static bool do_trace{true};
+#endif
 volatile sig_atomic_t status = 0;
 
 const int width = 120 * 16;
@@ -195,8 +198,9 @@ class CDi {
 
     uint8_t output_image[size] = {0};
     uint32_t regfile[16];
-
+#ifdef TRACE
     tracetype_t m_trace;
+#endif
 
     uint32_t print_instructions = 0;
     uint32_t prevpc = 0;
@@ -272,9 +276,11 @@ class CDi {
             dut.rootp->emu__DOT__clk_sys = (sim_time & 1);
             dut.rootp->emu__DOT__clk_audio = (sim_time & 1);
             dut.eval();
+#ifdef TRACE
             if (do_trace) {
                 m_trace.dump(sim_time);
             }
+#endif
             sim_time++;
         }
     }
@@ -598,7 +604,7 @@ class CDi {
                 output_image[pixel_index++] = dut.VGA_G;
                 output_image[pixel_index++] = dut.VGA_B;
             } else {
-                output_image[pixel_index++] = do_trace ? 80 : 10;
+                output_image[pixel_index++] = 10;
                 output_image[pixel_index++] = 10;
                 output_image[pixel_index++] = 10;
             }
@@ -621,6 +627,7 @@ class CDi {
         fprintf(stderr, "Writing to %s\n", filename);
         f_audio_right = fopen(filename, "wb");
 
+#ifdef TRACE
         dut.trace(&m_trace, 5);
 
         if (do_trace) {
@@ -628,9 +635,9 @@ class CDi {
             fprintf(stderr, "Writing to %s\n", filename);
             m_trace.open(filename);
         }
+#endif
 
         dut.eval();
-        do_trace = false;
         dut.rootp->emu__DOT__debug_uart_fake_space = false;
         dut.rootp->emu__DOT__img_size = 4096;
 
@@ -773,8 +780,10 @@ int main(int argc, char **argv) {
     // Initialize Verilators variables
     Verilated::commandArgs(argc, argv);
 
+#ifdef TRACE
     if (do_trace)
         Verilated::traceEverOn(true);
+#endif
 
     if (signal(SIGINT, catch_function) == SIG_ERR) {
         fputs("An error occurred while setting a signal handler.\n", stderr);

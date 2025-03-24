@@ -13,14 +13,44 @@ Muting results into all DAC values being 0
 
 ## Audio CD
 
-Just as a Note. The first track of
-"Dolls United": "Eine Insel mit zwei Bergen" has "Moin!"
-at 0:17 on the left side. It does so on PC and also on the CD-i 210/05
-    Atten: c5  0 0 0 0
-    DAC Left 0 255
-    DAC Left 1   0
-    DAC Right 0 255
-    DAC Right 1   0
+The system settings have 5 volume levels
+
+Level 0
+
+    factor_left_a   0x00
+    factor_left_b   0x40
+    factor_right_a  0x00
+    factor_right_b  0x40
+
+Level 1
+
+    factor_left_a   0x00
+    factor_left_b   0x5B
+    factor_right_a  0x00
+    factor_right_b  0x5B
+
+Level 3
+
+    factor_left_a   0x00
+    factor_left_b   0x80
+    factor_right_a  0x00
+    factor_right_b  0x80
+
+Level 4
+
+    factor_left_a   0x00
+    factor_left_b   0xB5
+    factor_right_a  0x00
+    factor_right_b  0xB5
+
+Level 5
+
+    factor_left_a   0x00
+    factor_left_b   0xFF
+    factor_right_a  0x00
+    factor_right_b  0xFF
+
+Note: For some reason, these settings are not transported using the Cx command
 
 ## Zelda - Wand of Gamelon
 
@@ -104,6 +134,17 @@ BGM is on the left channel. SFX is on the right channel.
     DAC Left 0 255
     DAC Right 0 255
     DAC Right 1 255
+
+## Hotel Mario
+
+Philips Logo, Intro, Menu and ingame
+
+    Atten: c0  0 0 0 0
+
+    factor_left_a   0xFF
+    factor_left_b   0xFF
+    factor_right_a  0xFF
+    factor_right_b  0xFF
 
 ## Experiments with SDK API
 
