@@ -23,8 +23,8 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,420 / 41,910 ( 32 % )
-    Total registers              15644
+    Logic utilization (in ALMs)  13,520 / 41,910 ( 32 % )
+    Total registers              15626
     Total block memory bits      630,471 / 5,662,720 ( 11 % )
     Total DSP Blocks             66 / 112 ( 59 % )
 
@@ -40,7 +40,7 @@ Core Utilization:
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour (Core is sometimes hanging after reset)
 * Add auto start of titles using front panel "Play" button
-* Fix servo behaviour of always detecting a CD-i disc
+* Find a way of detecting Audio CDs
 * Investigate desaturated colors / low contrast in "Photo CD Sample Disc"
     * Probably fixable with 16-235 to 0-255 scaling
     * More investigation needed

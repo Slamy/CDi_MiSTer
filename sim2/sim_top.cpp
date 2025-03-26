@@ -342,6 +342,10 @@ class CDi {
             printf("%d\n", step);
         }
 
+        dut.rootp->emu__DOT__cd_media_change = (step == 1300000);
+        if (step == 1300000)
+            printf("Media change!\n");
+
 #ifdef SCC68070
         // Abort on illegal Instructions
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__trap_illegal) {
@@ -386,11 +390,12 @@ class CDi {
             printf("Request NvRAM restore!\n");
 
             FILE *f_nvram_bin = fopen("save_in.bin", "rb");
-            assert(f_nvram_bin);
-            fread(hps_buffer, 1, 8192, f_nvram_bin);
-            hps_buffer_index = 0;
-            dut.rootp->emu__DOT__sd_buff_addr = hps_buffer_index;
-            fclose(f_nvram_bin);
+            if (f_nvram_bin) {
+                fread(hps_buffer, 1, 8192, f_nvram_bin);
+                hps_buffer_index = 0;
+                dut.rootp->emu__DOT__sd_buff_addr = hps_buffer_index;
+                fclose(f_nvram_bin);
+            }
         }
 
         if (dut.rootp->emu__DOT__nvram_hps_wr && sd_rd_q == 0 && dut.rootp->emu__DOT__cd_hps_ack == 0) {

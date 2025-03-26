@@ -4,8 +4,3 @@ verilator --top-module emu  \
     ../rtl/*.sv ../CDi.sv ../rtl/*.v  \
     tg68kdotc_verilog_wrapper.v ur6805.v \
     /usr/lib/x86_64-linux-gnu/libpng.so && ./obj_dir/Vemu $*
-
-# -DDISABLE_MAIN_CPU -DDISABLE_SLAVE_UC
-
-# Makes it slower?
-# --threads 5

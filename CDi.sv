@@ -286,7 +286,7 @@ module emu (
     wire [15:0] sd_buff_dout  /*verilator public_flat_rw*/;
 
     wire        img_readonly;
-    wire [63:0] img_size;
+    wire [63:0] img_size  /*verilator public_flat_rw*/;
 
     wire [15:0] status_menumask = 0;
 
@@ -714,6 +714,7 @@ module emu (
         // MiSTer uses little endian on linux. Swap over to big endian
         // to actually fit the way the 68k wants it
         .cd_hps_data({sd_buff_dout[7:0], sd_buff_dout[15:8]}),
+        .cd_img_mount(cd_img_mount),
 
         .audio_left (AUDIO_L),
         .audio_right(AUDIO_R),

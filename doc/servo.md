@@ -4,9 +4,41 @@
 
 500 kHZ Clock rate
 
+### With no CD in closed tray
+
+    B0 00 00 22
+    B0 00 00 25
+    Now the SLAVE is asking for B0
+    B0 00 00 25 as response on request
+    B0 00 03 25 after 1.5s settled
+
 ### With CD-i in closed tray
 
-Ends with status `B0 00 04 25`
+    B0 00 00 22
+    B0 00 00 25
+    Now the SLAVE is asking for B0
+    B0 00 00 25 as response on request
+    B0 00 04 25 Settled
+
+Now the Eject button is pressed
+
+    A6 00 00 00 is transmitted to SERVO (Eject?)
+    B0 00 03 26 is the response to SLAVE
+    B0 00 03 27 after 1.25 seconds
+    B0 00 03 28 after 102 ms
+    B0 00 03 29 after 1 second
+    B0 00 03 21 directly after
+
+Now Eject is pressed again to close the tray
+
+    A7 00 00 00 is transmitted to SERVO (Load?)
+    B0 00 03 22 as response
+    B0 00 03 23 after 100ms
+    B0 00 03 24 after 1s
+    B0 00 03 25 afterwards
+    B0 00 00 25 afterwards
+    B0 00 04 25 settled
+
 
 ### With Audio CD in closed tray
 

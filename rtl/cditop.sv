@@ -56,6 +56,7 @@ module cditop (
     input cd_hps_ack,
     input cd_hps_data_valid,
     input [15:0] cd_hps_data,
+    input cd_img_mount,
 
     output signed [15:0] audio_left,
     output signed [15:0] audio_right,
@@ -416,7 +417,8 @@ module cditop (
         .reset(reset),
         .spi(slave_servo_spi),
         .quirk_force_mode_fault(quirk_force_mode_fault),
-        .debug_audio_cd_in_tray
+        .debug_audio_cd_in_tray,
+        .cd_img_mount(cd_img_mount)
     );
 
     always_comb begin
