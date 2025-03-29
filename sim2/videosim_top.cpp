@@ -7,6 +7,9 @@
 #include "Vemu.h"
 #include "Vemu___024root.h"
 
+#include "hle.h"
+#include <arpa/inet.h>
+#include <byteswap.h>
 #include <chrono>
 #include <csignal>
 #include <cstdint>
@@ -18,11 +21,8 @@
 #include <stdexcept>
 #include <string.h> // memset()
 #include <string>
+#include <sys/wait.h>
 #include <vector>
-
-#include "hle.h"
-#include <arpa/inet.h>
-#include <byteswap.h>
 
 // #define SCC68070
 // #define SLAVE
@@ -828,7 +828,59 @@ void get_video_frame(std::string binpath, std::string pngpath) {
 #endif
 }
 
+void forked_run() {
+    static constexpr size_t kNumberForks{12};
+    std::vector<pid_t> child_pids;
+
+    auto ramdumps = glob("ramdumps/*.bin");
+    size_t chunksize = ramdumps.size() / kNumberForks;
+    printf("Splitting %d ram dumps into %d sizes of %d\n", ramdumps.size(), kNumberForks, chunksize);
+
+    auto iterator = ramdumps.begin();
+
+    int runner = 0;
+
+    while (iterator < ramdumps.end()) {
+
+        pid_t pid = fork();
+        switch (pid) {
+        case -1:
+            perror("fork");
+            exit(EXIT_FAILURE);
+        case 0:
+            printf("Runner %d is PID %jd\n", runner, (intmax_t)pid);
+
+            while (chunksize && iterator != ramdumps.end()) {
+                chunksize--;
+                printf("Runner %d %s\n", runner, iterator->c_str());
+
+                auto binpath = *iterator;
+                auto pngpath = std::regex_replace(binpath, std::regex("ramdumps/(.*).bin"), "videosim/$1.png");
+                get_video_frame(binpath, pngpath);
+
+                iterator++;
+            }
+            exit(0);
+        default:
+            printf("Child is PID %jd\n", (intmax_t)pid);
+            child_pids.push_back(pid);
+        }
+
+        iterator += chunksize;
+        runner++;
+    }
+
+    printf("Waiting for the runners to finish...\n");
+
+    for (auto child : child_pids) {
+        pid_t result = waitpid(child, nullptr, 0);
+        printf("PID %d has finished!\n", result);
+    }
+
+}
+
 int main(int argc, char **argv) {
+
     // Initialize Verilators variables
     Verilated::commandArgs(argc, argv);
 
@@ -837,16 +889,7 @@ int main(int argc, char **argv) {
         Verilated::traceEverOn(true);
 #endif
 
-    if (signal(SIGINT, catch_function) == SIG_ERR) {
-        fputs("An error occurred while setting a signal handler.\n", stderr);
-        return EXIT_FAILURE;
-    }
-
-    auto ramdumps = glob("ramdumps/*.bin");
-    for (auto &binpath : ramdumps) {
-        auto pngpath = std::regex_replace(binpath, std::regex("ramdumps/(.*).bin"), "videosim/$1.png");
-        get_video_frame(binpath, pngpath);
-    }
+    forked_run();
 
     fprintf(stderr, "Closing...\n");
     fflush(stdout);
