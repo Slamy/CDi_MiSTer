@@ -142,7 +142,7 @@ module video_timing (
     always_ff @(posedge clk) begin
         hblank <= !(video_x >= h_start && video_x < (h_start + h_active));
         vblank <= !(video_y >= v_start && video_y < (v_start + v_active));
-        display_active <= video_y < (v_start + v_active);
+        display_active <= video_y >= v_start;
     end
 
     assign new_pixel_lores = video_x[1:0] == 1 && !hblank && !vblank;

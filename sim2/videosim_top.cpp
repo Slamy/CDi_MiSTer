@@ -511,7 +511,8 @@ class CDi {
 #endif
 
         // Simulate television
-        if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {
+        if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y == 0 &&
+            dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_x == 0) {
             char filename[100];
 
             // Start game
@@ -539,17 +540,27 @@ class CDi {
         }
 
         if (pixel_index < size - 6) {
-            if (dut.VGA_DE) {
-                output_image[pixel_index++] = dut.VGA_R;
-                output_image[pixel_index++] = dut.VGA_G;
-                output_image[pixel_index++] = dut.VGA_B;
-            } else {
+            uint8_t r, g, b;
 
-                int video_irq = dut.rootp->emu__DOT__cditop__DOT__vdsc_int;
-                output_image[pixel_index++] = 10;
-                output_image[pixel_index++] = 10;
-                output_image[pixel_index++] = 10;
+            r = g = b = 30;
+
+            if (dut.VGA_DE) {
+                r = dut.VGA_R;
+                g = dut.VGA_G;
+                b = dut.VGA_B;
             }
+
+            if (dut.VGA_HS) {
+                r += 100;
+            }
+
+            if (dut.VGA_VS) {
+                g += 100;
+            }
+
+            output_image[pixel_index++] = r;
+            output_image[pixel_index++] = g;
+            output_image[pixel_index++] = b;
         }
     }
 
@@ -807,7 +818,10 @@ void get_video_frame(std::string binpath, std::string pngpath) {
 
     // Drive until frame is generated
     machine.modelstep();
-    while (!machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame) {
+    while (machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y == 0) {
+        machine.modelstep();
+    }
+    while (machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y != 0) {
         machine.modelstep();
     }
     machine.modelstep();
@@ -819,8 +833,10 @@ void get_video_frame(std::string binpath, std::string pngpath) {
 #if 0
     // And again!
     machine.modelstep();
-    while (!machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__new_frame)
-    {
+    while (machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y == 0) {
+        machine.modelstep();
+    }
+    while (machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y != 0) {
         machine.modelstep();
     }
     machine.write_png_file("2.png");
@@ -833,7 +849,7 @@ void forked_run() {
     std::vector<pid_t> child_pids;
 
     auto ramdumps = glob("ramdumps/*.bin");
-    size_t chunksize = ramdumps.size() / kNumberForks;
+    size_t chunksize = std::max((size_t)ramdumps.size() / kNumberForks, (size_t)1);
     printf("Splitting %d ram dumps into %d sizes of %d\n", ramdumps.size(), kNumberForks, chunksize);
 
     auto iterator = ramdumps.begin();
@@ -876,7 +892,6 @@ void forked_run() {
         pid_t result = waitpid(child, nullptr, 0);
         printf("PID %d has finished!\n", result);
     }
-
 }
 
 int main(int argc, char **argv) {

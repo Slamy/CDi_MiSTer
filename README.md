@@ -19,6 +19,11 @@ Digital gamepads, Analog gamepads and mice are supported for use with this core.
 To play a title, load a CD and press on the play button at the start screen.
 CD images can be stored as CHD or CUE/BIN format.
 
+## Troubleshooting
+
+* My NTSC CRT television set is not getting a stable image
+  *  Please switch the core to NTSC and reset via OSD. This should fix the problem.
+
 ## Status
 
 Core Utilization:
@@ -40,6 +45,7 @@ Core Utilization:
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour (Core is sometimes hanging after reset)
 * Add auto start of titles using front panel "Play" button
+    * SLAVE 3.2 is required to fix this without any hacks
 * Find a way of detecting Audio CDs
 * Investigate desaturated colors / low contrast in "Photo CD Sample Disc"
     * Probably fixable with 16-235 to 0-255 scaling
@@ -118,3 +124,9 @@ by emulation errors but are also present on the real machine.
 * The intro music of Zenith is played only on the left audio channel
   * Yes, this happens on a real 210/05 too. To be sure, I've tested it as well
     on a 450/00. It seems to be an oversight by the developers.
+* During the cinematic intro of Kether, the screen flickers to black on some frames during the fading slideshows
+  * This curiously happens on a real 210/05 too.
+* If I mash the buttons really hard when booting up Tetris, I get a colorful glitched screen instead of the Philips Logo
+  * Congratulations for this obscure finding. This happens on a real 210/05 too!
+
+  
