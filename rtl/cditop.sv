@@ -49,6 +49,7 @@ module cditop (
 
     bytestream.source slave_serial_out,
     bytestream.sink slave_serial_in,
+    input rc_eye,
     output slave_rts,
 
     output [31:0] cd_hps_lba,
@@ -202,7 +203,7 @@ module cditop (
         .disable_cpu_starve(disable_cpu_starve || cdic_dma_ack || cdic_dma_req)
     );
 
-    wire in2in;
+    wire in2in  /*verilator public_flat_rd*/;
     wire in4in;
     wire iack2;
     wire iack4;
@@ -254,10 +255,25 @@ module cditop (
     wire av = iack2;
 
 `ifndef DISABLE_MAIN_CPU
+    wire reset68k;
+
+    // On a real 210/05, the main CPU polls 152 times
+    // for the PAL/NTSC region. The timeout is 500.
+    // With CPU Turbo this timeout is reached...
+    // This reset delay of 8 frames ensures
+    // that the slave has enough time to react
+    // It will result into 160 polls until the answer is available
+    resetdelay cpuresetdelay (
+        .clk(clk30),
+        .reset,
+        .vsync(VSync),
+        .delayedreset(reset68k)
+    );
+    /*verilator tracing_off*/
 
     scc68070 scc68070_0 (
         .clk(clk30),
-        .reset(reset),  // External sync reset on emulated system
+        .reset(reset68k),  // External sync reset on emulated system
         .write_strobe(write_strobe),
         .as(as),
         .lds(lds),
@@ -288,6 +304,7 @@ module cditop (
         .done_in(cdic_dma_done_in),
         .done_out(cdic_dma_done_out)
     );
+    /*verilator tracing_on*/
 
 `endif
 
@@ -378,6 +395,7 @@ module cditop (
         .worm_data(slave_worm_data),
         .worm_wr  (slave_worm_wr),
 
+        .tcap(rc_eye),
         .serial_in(slave_serial_in),
         .serial_out(slave_serial_out),
         .spi(slave_servo_spi),

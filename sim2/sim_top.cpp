@@ -19,6 +19,7 @@
 #define SCC68070
 #define SLAVE
 // #define TRACE
+// #define SIMULATE_RC5
 
 #define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
 
@@ -187,6 +188,12 @@ void subcode_data(int lba, struct subcode &out) {
 
 class CDi {
   public:
+#ifdef SIMULATE_RC5
+    FILE *rc5_file;
+    uint64_t rc5_fliptime{0};
+    uint32_t rc5_nextstate{1};
+#endif
+
     Vemu dut;
     uint64_t step = 0;
     uint64_t sim_time = 0;
@@ -278,7 +285,10 @@ class CDi {
             dut.eval();
 #ifdef TRACE
             if (do_trace) {
-                m_trace.dump(sim_time);
+                // emu__DOT__clk_sys is 30 MHz
+                // One period is 33333.3333 ps
+                // sim_time counts the half periods
+                m_trace.dump(sim_time * 33333 / 2);
             }
 #endif
             sim_time++;
@@ -337,6 +347,24 @@ class CDi {
     void modelstep() {
         step++;
         clock();
+
+#ifdef SIMULATE_RC5
+        if (sim_time >= rc5_fliptime) {
+            dut.rootp->emu__DOT__rc_eye = rc5_nextstate;
+
+            fprintf(stderr, "Set RC5!\n");
+            char buffer[100];
+            if (!fgets(buffer, sizeof(buffer), rc5_file))
+                exit(1);
+            char *endptr;
+            // primitive csv parsing
+            float next_flip = std::max(strtof(buffer, &endptr) - 2.58810f + 3.0f, 0.0f) * 30e6 * 2;
+            rc5_nextstate = strtol(endptr + 1, &endptr, 10);
+            assert(rc5_nextstate <= 1);
+            printf("%f %d\n", next_flip, rc5_nextstate);
+            rc5_fliptime = next_flip;
+        }
+#endif
 
         if ((step % 100000) == 0) {
             printf("%d\n", step);
@@ -511,6 +539,7 @@ class CDi {
             dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_x == 0) {
             char filename[100];
 
+#ifndef SIMULATE_RC5
             if (dut.rootp->emu__DOT__tvmode_ntsc) {
                 // NTSC
 
@@ -611,6 +640,7 @@ class CDi {
                     }
                 }
             }
+#endif
 
             if (pixel_index > 100) {
                 auto current = std::chrono::system_clock::now();
@@ -688,8 +718,9 @@ class CDi {
         dut.eval();
         dut.rootp->emu__DOT__debug_uart_fake_space = false;
         dut.rootp->emu__DOT__img_size = 4096;
+        dut.rootp->emu__DOT__rc_eye = 1; // RC Eye signal is idle high
 
-        // dut.rootp->emu__DOT__tvmode_ntsc = true;
+        dut.rootp->emu__DOT__tvmode_ntsc = false;
 
         dut.RESET = 1;
         dut.UART_RXD = 1;
@@ -703,6 +734,10 @@ class CDi {
         dut.OSD_STATUS = 1;
 
         start = std::chrono::system_clock::now();
+
+#ifdef SIMULATE_RC5
+        rc5_file = fopen("rc5_joy_upwards.csv", "r");
+#endif
     }
 
     void reset() {

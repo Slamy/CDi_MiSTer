@@ -655,6 +655,9 @@ module emu (
     wire fail_too_much_data;
     wire debug_irq_hangup;
 
+    // TODO requires connection and testing with real photo diode
+    wire rc_eye  /*verilator public_flat_rw*/;
+
     cditop cditop (
         .clk30(clk_sys),
         .clk_audio(clk_audio),
@@ -706,6 +709,7 @@ module emu (
         .slave_serial_in(slave_serial_in),
         .slave_serial_out(slave_serial_out),
         .slave_rts(slave_rts),
+        .rc_eye(rc_eye),
 
         .cd_hps_req(cd_hps_req),
         .cd_hps_lba(cd_hps_lba),
