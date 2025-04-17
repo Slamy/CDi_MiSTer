@@ -231,6 +231,8 @@ module emu (
         "P1O[11],CPU Turbo,No,Yes;",
 
         "O[5],Overclock input device,No,Yes;",
+        "O[14],Autoplay,No,Yes;",
+
         "-;",
         "T[0],Reset;",
         "R[0],Reset and close OSD;",
@@ -330,7 +332,7 @@ module emu (
 
         .sd_lba('{cd_hps_lba, 0}),
         .sd_blk_cnt('{0, 0}),
-        .sd_rd({nvram_hps_rd, cd_hps_req && cd_image_mounted}),
+        .sd_rd({nvram_hps_rd, cd_hps_req && cd_img_mounted}),
         .sd_wr({nvram_hps_wr, 1'b0}),
         .sd_ack({nvram_hps_ack, cd_hps_ack}),
         .sd_buff_addr(sd_buff_addr),
@@ -614,8 +616,9 @@ module emu (
     wire [1:0] debug_force_video_plane = 0;
     wire enable_reset_on_nvram_img_mount = 0;
     wire [1:0] debug_limited_to_full = 0;
-    wire debug_audio_cd_in_tray = 0;
+    wire audio_cd_in_tray = 0;
     wire disable_cpu_starve = 1;
+    wire config_auto_play  /*verilator public_flat_rw*/ = 1;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -625,8 +628,9 @@ module emu (
     wire overclock_pointing_device = status[5];
     wire enable_reset_on_nvram_img_mount = !status[8];
     wire [1:0] debug_limited_to_full = status[10:9];
-    wire debug_audio_cd_in_tray = status[12];
+    wire audio_cd_in_tray = status[12];
     wire disable_cpu_starve = status[11];
+    wire config_auto_play = status[14];
 `endif
     wire HBlank;
     wire HSync;
@@ -667,7 +671,7 @@ module emu (
         .debug_uart_fake_space,
         .debug_force_video_plane,
         .debug_limited_to_full,
-        .debug_audio_cd_in_tray,
+        .audio_cd_in_tray,
         .debug_disable_audio_attenuation(status[2]),
 
         .ce_pix(ce_pix),
@@ -719,6 +723,7 @@ module emu (
         // to actually fit the way the 68k wants it
         .cd_hps_data({sd_buff_dout[7:0], sd_buff_dout[15:8]}),
         .cd_img_mount(cd_img_mount),
+        .cd_img_mounted(cd_img_mounted),
 
         .audio_left (AUDIO_L),
         .audio_right(AUDIO_R),
@@ -726,6 +731,7 @@ module emu (
         .fail_not_enough_words(fail_not_enough_words),
         .fail_too_much_data(fail_too_much_data),
         .disable_cpu_starve,
+        .config_auto_play,
 
         .hps_rtc(hps_rtc)
     );
@@ -768,10 +774,10 @@ module emu (
     bit sd_buff_addr_q;
 
     // Is set, if NvRAM image is mounted and usable
-    bit nvram_image_mounted = 0;
+    bit nvram_img_mounted = 0;
 
     // Is set, if CD image is mounted and usable
-    bit cd_image_mounted = 0;
+    bit cd_img_mounted = 0;
 
     // Used to detect changes of OSD_STATUS
     bit OSD_STATUS_q;
@@ -783,12 +789,12 @@ module emu (
         nvram_restore_write <= 0;
         OSD_STATUS_q <= OSD_STATUS;
 
-        if (nvram_media_change) nvram_image_mounted <= (img_size != 0);
-        if (cd_media_change) cd_image_mounted <= (img_size != 0);
+        if (nvram_media_change) nvram_img_mounted <= (img_size != 0);
+        if (cd_media_change) cd_img_mounted <= (img_size != 0);
 
         if (cditop_reset) begin
             nvram_backup_pending <= 0;
-        end else if (nvram_cpu_changed && nvram_image_mounted) begin
+        end else if (nvram_cpu_changed && nvram_img_mounted) begin
             nvram_backup_pending <= 1;
         end
 

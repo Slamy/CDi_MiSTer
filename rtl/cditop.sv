@@ -8,7 +8,7 @@ module cditop (
     input debug_uart_fake_space,
     input [1:0] debug_force_video_plane,
     input [1:0] debug_limited_to_full,
-    input debug_audio_cd_in_tray,
+    input audio_cd_in_tray,
     input debug_disable_audio_attenuation,
 
     output bit ce_pix,
@@ -58,6 +58,7 @@ module cditop (
     input cd_hps_data_valid,
     input [15:0] cd_hps_data,
     input cd_img_mount,
+    input cd_img_mounted,
 
     output signed [15:0] audio_left,
     output signed [15:0] audio_right,
@@ -65,6 +66,7 @@ module cditop (
     output fail_not_enough_words,
     output fail_too_much_data,
     input  disable_cpu_starve,
+    input  config_auto_play,
 
     input [64:0] hps_rtc
 );
@@ -100,12 +102,36 @@ module cditop (
     wire attex_cs_slave = addr_byte[23:16] == 8'h31 && as;
     wire attex_cs_mk48 = addr_byte[23:16] == 8'h32 && as;
 
+    // Custom kernel module for OS9 to start a CD-i application after booting
+    // Written by "CD-i Fan" for "CD-i Emulator"
+    wire rom_playcdi_cs = ((addr_byte >= 24'hf00000) && (addr_byte <= 24'hf00068)) && as;
+    bit [15:0] rom_playcdi[64];
+    initial $readmemh("../mem/playcdi.mem", rom_playcdi);
+    bit rom_playcdi_bus_ack;
+    bit [15:0] rom_playcdi_dout;
+
+    // Activate automatic playback of CD-i discs only when
+    // an image is mounted, auto play is activated in OSD,
+    // there is an actual CD-i disc in the tray (no audio cd) and
+    // the last reset was not self imposed.
+    // When software is quitting to system shell, this is done via reset using the SLAVE
+    // In that case, we want to go back to the shell.
+    // Also, when booting fails, we also want to go back to shell
+    bit last_reset_by_slave = 0;
+    wire playcdi_rom_activated = cd_img_mounted && config_auto_play && !audio_cd_in_tray && !last_reset_by_slave;
+
+    always_ff @(posedge clk30) begin
+        if (resetsys) last_reset_by_slave <= 1;
+        if (external_reset) last_reset_by_slave <= 0;
+    end
+
     bit attex_cs_slave_q = 0;
 
     wire bus_err_ram_area1 = (addr_byte >= 24'h080000 && addr_byte < 24'h200000);
     wire bus_err_ram_area2 = (addr_byte >= 24'h500000 && addr_byte < 24'hd00000);
-    wire bus_err_ram_area3 = (addr_byte >= 24'hf00000);
-    wire bus_err = (bus_err_ram_area1 || bus_err_ram_area2 || bus_err_ram_area3) && as && (lds || uds);
+    wire bus_err_ram_area3 = (addr_byte >= 24'hf10000);
+    wire bus_err_ram_area4 = (addr_byte >= 24'hf00000) && !playcdi_rom_activated;
+    wire bus_err = (bus_err_ram_area1 || bus_err_ram_area2 || bus_err_ram_area3 || bus_err_ram_area4) && as && (lds || uds);
 
     always_ff @(posedge clk30) begin
 
@@ -342,6 +368,9 @@ module cditop (
         end else if (attex_cs_mcd212 || dvc_ram_cs) begin
             data_in = mcd212_dout;
             bus_ack = mcd212_bus_ack;
+        end else if (rom_playcdi_cs && playcdi_rom_activated) begin
+            data_in = rom_playcdi_dout;
+            bus_ack = rom_playcdi_bus_ack;
         end
 
         if (iack4) begin
@@ -350,7 +379,12 @@ module cditop (
         end
     end
 
-    wire resetsys = ddrc[2] ? portc_out[2] : 1'b0;
+    always_ff @(posedge clk30) begin
+        rom_playcdi_dout <= rom_playcdi[addr[6:1]];
+        rom_playcdi_bus_ack <= !reset && rom_playcdi_cs && !rom_playcdi_bus_ack;
+    end
+
+    wire resetsys  /*verilator public_flat_rd*/ = ddrc[2] ? portc_out[2] : 1'b0;
     wire disdat_from_uc = ddrc[3] ? portc_out[3] : 1'b1;
     wire disdat_to_ic;
 
@@ -436,8 +470,9 @@ module cditop (
         .reset(reset),
         .spi(slave_servo_spi),
         .quirk_force_mode_fault(quirk_force_mode_fault),
-        .debug_audio_cd_in_tray,
-        .cd_img_mount(cd_img_mount)
+        .audio_cd_in_tray,
+        .cd_img_mount(cd_img_mount),
+        .cd_img_mounted(cd_img_mounted)
     );
 
     always_comb begin

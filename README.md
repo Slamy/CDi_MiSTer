@@ -13,7 +13,11 @@ The first games are booting. Expect a certain amount of bugs!
 Place `cdi200.rom` as `boot0.rom` in `/media/fat/games/CD-i`.
 Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` as `boot1.rom` next to it.
 
-The save files containing the NvRAM is compatible with the CD-i emulation of MAME.
+Save files are stored inside an 8K NvRAM. MiSTer will create one save file per CD.
+Whenever the NvRAM state changes, the "User" LED will light up, indicating
+a change is queued to store. When the OSD is opened, the NvRAM will be flushed to SD card.
+
+The save files containing the NvRAM are compatible with the CD-i emulation of MAME.
 
 Digital gamepads, Analog gamepads and mice are supported for use with this core.
 To play a title, load a CD and press on the play button at the start screen.
@@ -28,8 +32,8 @@ CD images can be stored as CHD or CUE/BIN format.
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  13,425 / 41,910 ( 32 % )
-    Total registers              15693
+    Logic utilization (in ALMs)  13,513 / 41,910 ( 32 % )
+    Total registers              15630
     Total block memory bits      630,471 / 5,662,720 ( 11 % )
     Total DSP Blocks             66 / 112 ( 59 % )
 
@@ -40,8 +44,6 @@ Core Utilization:
     * PSX core seems to halt the whole machine to avoid this situation
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
-* Investigate mysterious non loading behavior
-    * Sometimes when pressing play, the disc is not read the first time
 * Investigate input responsiveness (skipped events?)
 * Investigate screeching sound effect in the menu of "Golf Tips"
 * Fix hang on audio track stop or change in media player
@@ -49,17 +51,22 @@ Core Utilization:
 * Digital Video Cartridge MPEG Decoder
 * Investigate "Gray border glitch" at the top of "Myst" gameplay (seems to be only one plane)
 * Fix reset behaviour (Core is sometimes hanging after reset)
-* Add auto start of titles using front panel "Play" button
-    * SLAVE 3.2 is required to fix this without any hacks
-* Find a way of detecting Audio CDs
 * Investigate desaturated colors / low contrast in "Photo CD Sample Disc"
     * Probably fixable with 16-235 to 0-255 scaling
     * More investigation needed
 * Find a solution for the video mode reset during system resets
     * The ST flag is the issue here, causing a video mode change
 * Add SNAC support (IR remote + wired controller)
+    * RC5 support is added. A test using real hardware is required.
+* CD+G
+* Possibly adding support for other PCBs (like Mono II)
 * Refurbish I2C for the front display and show the content as picture in picture during changes?
     * It might not even be required at all.
+
+### Issues with external dependencies
+
+* A dump of the SLAVE 3.2 ROM is required to fix some hacks
+    * I2C front panel data is not correctly handled (e.g. Play button)
 
 ## Expected checksums of roms
 
@@ -82,6 +89,7 @@ the program flow of the CD-i boot process.
 * https://github.com/cdifan/cdichips
 * http://www.icdia.co.uk/microware/index.html
 * https://github.com/Stovent/CeDImu/blob/master/src/CDI/OS9/SystemCalls.hpp
+* playcdi (by CD-i Fan) (auto play for Mono I PCB)
 
 ## FAQ, Issues and Quirks
 

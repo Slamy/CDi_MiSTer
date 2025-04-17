@@ -4,8 +4,9 @@ module servo_hle (
     input reset,
     parallelel_spi.slave spi,
     output bit quirk_force_mode_fault,
-    input debug_audio_cd_in_tray,
-    input cd_img_mount
+    input audio_cd_in_tray,
+    input cd_img_mount,
+    input cd_img_mounted
 );
 
     enum bit [6:0] {
@@ -113,8 +114,9 @@ module servo_hle (
                             end
                             8'ha7: begin  // Close the tray
                                 tray_state <= CLOSED;
-                                disc_state <= debug_audio_cd_in_tray ? AUDIO : CDI;
-                                com_state  <= PROVIDE_B0_0;
+                                if (cd_img_mounted) disc_state <= audio_cd_in_tray ? AUDIO : CDI;
+                                else disc_state <= NO_DISC;
+                                com_state <= PROVIDE_B0_0;
                             end
                             default: begin
                                 // What to do here?
@@ -123,7 +125,7 @@ module servo_hle (
                     end
 
                     if (cd_img_mount) begin
-                        disc_state <= debug_audio_cd_in_tray ? AUDIO : CDI;
+                        disc_state <= audio_cd_in_tray ? AUDIO : CDI;
                         com_state <= PROVIDE_B0_10;
                         quirk_force_mode_fault <= 1;
                         $display("Update of disc state");

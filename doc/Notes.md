@@ -63,3 +63,18 @@ Seems to be not desired:
 
 https://github.com/MiSTer-devel/Main_MiSTer/issues/789
 https://github.com/MiSTer-devel/Main_MiSTer/issues/760
+
+
+## Boot speed and autoplay using playcdi.mod (by cdifan)
+
+Tested using Zelda - Wand of Gamelon (with CPU turbo and seek time of 1 sector)
+
+Normal bootup:
+On frame 108, the system shell Philips logo becomes visible
+On frame 109, the Play button is visible and B1 is pressed.
+On frame 111, the Play button is highlighted blue
+On frame 211, the first frame of the Philips logo animation is visible
+
+With playcdi.mod:
+On frame 149, the first frame of the Philips logo animation is visible
+
