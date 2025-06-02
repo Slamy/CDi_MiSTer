@@ -8,13 +8,16 @@ vector:
 
 main:
 	; Make a pause at the start to relax the UART on the linux side
+	move.l $e40000,d0
+	move.l $e60000,d0
+
 	move #4000,d0
 start_delay:
 	add #-1,d0
 	bne start_delay
 
-	lea rom,a0
-	move.l #524288,d1
+	move.l #$e40000,a0
+	move.l #524288/2,d1
 loop:
 
 wait_till_ready:
@@ -31,5 +34,3 @@ wait_till_ready:
 end:
 	bra end
 
-rom:
-	incbin "cdimono1/cdi200.rom"

@@ -4,6 +4,7 @@ log*
 *.CUE
 *.BIN
 *.rom
+uartlog
 
 *.wav
 *.vcd

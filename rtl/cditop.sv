@@ -91,13 +91,17 @@ module cditop (
 
     wire mcd212_bus_ack;
     bit cdic_bus_ack;
+    bit vmpeg_bus_ack;
     bit mk48_bus_ack;
     wire [15:0] mcd212_dout;
     wire [15:0] cdic_dout;
+    wire [15:0] vmpeg_dout;
     wire [7:0] mk48_dout;
 
     wire attex_cs_mcd212 = ((addr_byte <= 24'h27ffff) || (addr_byte >= 24'h400000)) && as && !addr[23];
     wire dvc_ram_cs = ((addr_byte[23:20] == 4'hd) || (addr_byte[23:19] == 5'b11101)) && as;
+    wire dvc_rom_cs = (addr_byte[23:18] == 6'b111001) && as;
+    wire dvc_mpeg_cs = (addr_byte[23:18] == 6'b111000) && as;
     wire attex_cs_cdic = addr_byte[23:16] == 8'h30 && as;
     wire attex_cs_slave = addr_byte[23:16] == 8'h31 && as;
     wire attex_cs_mk48 = addr_byte[23:16] == 8'h32 && as;
@@ -131,7 +135,8 @@ module cditop (
     wire bus_err_ram_area2 = (addr_byte >= 24'h500000 && addr_byte < 24'hd00000);
     wire bus_err_ram_area3 = (addr_byte >= 24'hf10000);
     wire bus_err_ram_area4 = (addr_byte >= 24'hf00000) && !playcdi_rom_activated;
-    wire bus_err = (bus_err_ram_area1 || bus_err_ram_area2 || bus_err_ram_area3 || bus_err_ram_area4) && as && (lds || uds);
+    wire bus_err_ram_area5 = (addr_byte[23:19] == 5'b11101) && !mpeg_ram_enabled; // MPEG RAM cannot be accessed at first
+    wire bus_err = (bus_err_ram_area1 || bus_err_ram_area2 || bus_err_ram_area3 || bus_err_ram_area4 || bus_err_ram_area5) && as && (lds || uds);
 
     always_ff @(posedge clk30) begin
 
@@ -205,6 +210,7 @@ module cditop (
         .cpu_write_strobe(write_strobe),
         .cs(attex_cs_mcd212),
         .dvc_ram_cs(dvc_ram_cs),
+        .dvc_rom_cs(dvc_rom_cs),
         .r(r),
         .g(g),
         .b(b),
@@ -230,20 +236,32 @@ module cditop (
         .disable_cpu_starve(disable_cpu_starve || cdic_dma_ack || cdic_dma_req)
     );
 
+
+    // DMA signals from CPU
+    wire vmpeg_dma_ack;
+    wire cdic_dma_ack;
+    wire dma_dtc;
+    wire dma_done_out;
+
+    // DMA signals to CPU
+    wire cdic_dma_req;
+    wire vmpeg_dma_req;
+    wire vmpeg_dma_rdy;
+    wire cdic_dma_rdy;
+
     wire in2in  /*verilator public_flat_rd*/;
     wire in4in;
     wire iack2;
     wire iack4;
     wire iack5;
-    wire cdic_dma_req;
-    wire cdic_dma_ack;
-    wire cdic_dma_rdy;
-    wire cdic_dma_dtc;
+
     wire cdic_dma_done_in;
-    wire cdic_dma_done_out;
 
     wire signed [15:0] cdic_audio_left;
     wire signed [15:0] cdic_audio_right;
+
+    wire cdic_intreq;
+    wire cdic_intack;
 
     cdic cdic_inst (
         .clk(clk30),
@@ -257,13 +275,13 @@ module cditop (
         .write_strobe(write_strobe),
         .cs(attex_cs_cdic),
         .bus_ack(cdic_bus_ack),
-        .intreq(in4in),
-        .intack(iack4),
+        .intreq(cdic_intreq),
+        .intack(cdic_intack),
         .req(cdic_dma_req),
         .ack(cdic_dma_ack),
         .rdy(cdic_dma_rdy),
-        .dtc(cdic_dma_dtc),
-        .done_in(cdic_dma_done_out),
+        .dtc(dma_dtc),
+        .done_in(dma_done_out),
         .done_out(cdic_dma_done_in),
         .cd_hps_lba(cd_hps_lba),
         .cd_hps_req(cd_hps_req),
@@ -281,6 +299,38 @@ module cditop (
     // For the SLAVE we must use autovectoring
     wire av = iack2;
 
+    wire mpeg_ram_enabled;
+
+    wire vmpeg_intreq;
+    wire vmpeg_intack;
+
+    vmpeg vmpeg_inst (
+        .clk(clk30),
+        .reset,
+        .address(addr),
+        .din(vmpeg_dma_ack ? mcd212_dout : cpu_data_out),
+        .dout(vmpeg_dout),
+        .uds(uds),
+        .lds(lds),
+        .write_strobe(write_strobe),
+        .cs(dvc_mpeg_cs),
+        .bus_ack(vmpeg_bus_ack),
+        .intreq(vmpeg_intreq),
+        .intack(vmpeg_intack),
+        .req(vmpeg_dma_req),
+        .ack(vmpeg_dma_ack),
+        .rdy(vmpeg_dma_rdy),
+        .dtc(dma_dtc),
+        .done_in(dma_done_out),
+        .done_out(),
+        .mpeg_ram_enabled(mpeg_ram_enabled),
+        .hsync(HSync),
+        .vsync(VSync),
+        .hblank(HBlank),
+        .vblank(VBlank)
+    );
+
+
 `ifndef DISABLE_MAIN_CPU
     wire reset68k;
 
@@ -296,11 +346,10 @@ module cditop (
         .vsync(VSync),
         .delayedreset(reset68k)
     );
-    /*verilator tracing_off*/
 
     scc68070 scc68070_0 (
         .clk(clk30),
-        .reset(reset68k),  // External sync reset on emulated system
+        .reset(reset),  // External sync reset on emulated system
         .write_strobe(write_strobe),
         .as(as),
         .lds(lds),
@@ -323,15 +372,14 @@ module cditop (
         .uart_rx(scc68_uart_rx),
         .debug_uart_fake_space,
         .req1(cdic_dma_req),
-        .req2(0),
+        .req2(vmpeg_dma_req),
         .ack1(cdic_dma_ack),
-        .ack2(),
-        .rdy(cdic_dma_rdy),
-        .dtc(cdic_dma_dtc),
+        .ack2(vmpeg_dma_ack),
+        .rdy(cdic_dma_rdy || vmpeg_dma_rdy),
+        .dtc(dma_dtc),
         .done_in(cdic_dma_done_in),
-        .done_out(cdic_dma_done_out)
+        .done_out(dma_done_out)
     );
-    /*verilator tracing_on*/
 
 `endif
 
@@ -362,10 +410,13 @@ module cditop (
         end else if (attex_cs_cdic) begin
             data_in = cdic_dout;
             bus_ack = cdic_bus_ack;
+        end else if (dvc_mpeg_cs) begin
+            data_in = vmpeg_dout;
+            bus_ack = vmpeg_bus_ack;
         end else if (attex_cs_mk48) begin
             data_in = {mk48_dout, mk48_dout};
             bus_ack = mk48_bus_ack;
-        end else if (attex_cs_mcd212 || dvc_ram_cs) begin
+        end else if (attex_cs_mcd212 || dvc_ram_cs || dvc_rom_cs) begin
             data_in = mcd212_dout;
             bus_ack = mcd212_bus_ack;
         end else if (rom_playcdi_cs && playcdi_rom_activated) begin
@@ -373,8 +424,13 @@ module cditop (
             bus_ack = rom_playcdi_bus_ack;
         end
 
-        if (iack4) begin
+        if (cdic_intack) begin
             data_in = cdic_dout;
+            bus_ack = 1;
+        end
+
+        if (vmpeg_intack) begin
+            data_in = vmpeg_dout;
             bus_ack = 1;
         end
     end
@@ -496,5 +552,31 @@ module cditop (
 
     end
 
+    // Inspired by a small 74ACT74 SR flip flop which does this in the real machine
+    enum bit [1:0] {
+        IDLE,
+        CDIC,
+        VMPEG
+    } irq_in4owner;
+
+    assign cdic_intack = iack4 && irq_in4owner == CDIC;
+    assign vmpeg_intack = iack4 && irq_in4owner == VMPEG;
+    assign in4in = ((irq_in4owner == CDIC) && cdic_intreq) ||  ((irq_in4owner == VMPEG) && vmpeg_intreq);
+
+    always_ff @(posedge clk30) begin
+        case (irq_in4owner)
+            CDIC: begin
+                if (!cdic_intreq) irq_in4owner <= IDLE;
+            end
+            VMPEG: begin
+                if (!vmpeg_intreq) irq_in4owner <= IDLE;
+            end
+            default: begin
+                if (cdic_intreq) irq_in4owner <= CDIC;
+                if (vmpeg_intreq) irq_in4owner <= VMPEG;
+            end
+        endcase
+
+    end
 endmodule
 

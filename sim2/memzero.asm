@@ -30,5 +30,3 @@ erasebank1:
 endless:
 	bra endless
 
-wastespace:
-	incbin "misterdump.bin"

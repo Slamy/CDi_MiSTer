@@ -202,6 +202,9 @@ class CDi {
   private:
     FILE *f_audio_left{nullptr};
     FILE *f_audio_right{nullptr};
+    FILE *f_fma{nullptr};
+    FILE *f_fmv{nullptr};
+    FILE *f_uart{nullptr};
 
     uint8_t output_image[size] = {0};
     uint32_t regfile[16];
@@ -280,7 +283,11 @@ class CDi {
 
     void clock() {
         for (int i = 0; i < 2; i++) {
+
+            // clk_sys is 30 MHz
             dut.rootp->emu__DOT__clk_sys = (sim_time & 1);
+
+            // clk_audio is 22.2264
             dut.rootp->emu__DOT__clk_audio = (sim_time & 1);
             dut.eval();
 #ifdef TRACE
@@ -337,9 +344,12 @@ class CDi {
         memcpy(regfile, &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[0],
                sizeof(regfile));
 
-        printf("%x", pc);
-        for (int i = 0; i < 16; i++)
-            printf(" %x", regfile[i]);
+        printf("%08x ", pc);
+        for (int i = 0; i < 16; i++) {
+            if (i == 8)
+                printf(" ");
+            printf(" %08x", regfile[i]);
+        }
         printf("\n");
 #endif
     }
@@ -488,12 +498,10 @@ class CDi {
         sd_rd_q =
             dut.rootp->emu__DOT__cd_hps_req || dut.rootp->emu__DOT__nvram_hps_rd || dut.rootp->emu__DOT__nvram_hps_wr;
 
-        /*
-        if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid) {
-            fputc(dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_register, stderr);
-            dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_valid = 0;
+        if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_tx_data_valid) {
+            fputc(dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__uart_transmit_holding_register, f_uart);
+            fflush(f_uart);
         }
-        */
 
         // Trace System Calls
 #ifdef SCC68070
@@ -528,9 +536,11 @@ class CDi {
 
         // Trace CPU state
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
-            print_instructions && dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in) {
+            dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in) {
 
-            printstate();
+            uint32_t pc = dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__exe_pc;
+            if (pc >= 0xe40000 && pc < 0xe7ffff)
+                printstate();
         }
 #endif
 
@@ -538,38 +548,6 @@ class CDi {
         if (dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y == 0 &&
             dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_x == 0) {
             char filename[100];
-
-#ifndef SIMULATE_RC5
-            if (dut.rootp->emu__DOT__tvmode_ntsc) {
-                // NTSC
-
-                if (frame_index > 259) {
-                    if ((frame_index % 25) == 20) {
-                        printf("Press a button!\n");
-                        dut.rootp->emu__DOT__JOY0 = 0b100000;
-                    }
-
-                    if ((frame_index % 25) == 23) {
-                        printf("Release a button!\n");
-                        dut.rootp->emu__DOT__JOY0 = 0b000000;
-                    }
-                }
-
-            } else {
-                // PAL
-                if (frame_index > 200) {
-                    if ((frame_index % 25) == 20) {
-                        printf("Press a button!\n");
-                        dut.rootp->emu__DOT__JOY0 = 0b100000;
-                    }
-
-                    if ((frame_index % 25) == 23) {
-                        printf("Release a button!\n");
-                        dut.rootp->emu__DOT__JOY0 = 0b000000;
-                    }
-                }
-            }
-#endif
 
             if (pixel_index > 100) {
                 auto current = std::chrono::system_clock::now();
@@ -591,6 +569,13 @@ class CDi {
             int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;
             fwrite(&sample_l, 2, 1, f_audio_left);
             fwrite(&sample_r, 2, 1, f_audio_right);
+        }
+
+        if (dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__fmv_data_valid) {
+            fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fmv);
+        }
+        if (dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__fma_data_valid) {
+            fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fma);
         }
 
         if (pixel_index < size - 6) {
@@ -621,6 +606,9 @@ class CDi {
     virtual ~CDi() {
         fclose(f_audio_right);
         fclose(f_audio_left);
+        fclose(f_fma);
+        fclose(f_fmv);
+        fclose(f_uart);
     }
     CDi(int i) {
         instanceid = i;
@@ -629,10 +617,27 @@ class CDi {
         sprintf(filename, "%d/audio_left.bin", instanceid);
         fprintf(stderr, "Writing to %s\n", filename);
         f_audio_left = fopen(filename, "wb");
+        assert(f_audio_left);
 
         sprintf(filename, "%d/audio_right.bin", instanceid);
         fprintf(stderr, "Writing to %s\n", filename);
         f_audio_right = fopen(filename, "wb");
+        assert(f_audio_right);
+
+        sprintf(filename, "%d/fma.bin", instanceid);
+        fprintf(stderr, "Writing to %s\n", filename);
+        f_fma = fopen(filename, "wb");
+        assert(f_fma);
+
+        sprintf(filename, "%d/fmv.bin", instanceid);
+        fprintf(stderr, "Writing to %s\n", filename);
+        f_fmv = fopen(filename, "wb");
+        assert(f_fmv);
+
+        sprintf(filename, "%d/uartlog", instanceid);
+        fprintf(stderr, "Writing to %s\n", filename);
+        f_uart = fopen(filename, "wb");
+        assert(f_uart);
 
 #ifdef TRACE
         dut.trace(&m_trace, 5);
@@ -804,7 +809,7 @@ int main(int argc, char **argv) {
 
     int machineindex = 0;
 
-    if (argc == 2) {
+    if (argc >= 2) {
         machineindex = atoi(argv[1]);
         fprintf(stderr, "Machine is %d\n", machineindex);
     }
@@ -823,19 +828,19 @@ int main(int argc, char **argv) {
         f_cd_bin = fopen("images/Nobelia (USA).bin", "rb");
         break;
     case 4:
-        f_cd_bin = fopen("images/Hotel Mario.bin", "rb");
+        f_cd_bin = fopen("images/mpeg_only_audio.bin", "rb"); // 333
         break;
     case 5:
-        f_cd_bin = fopen("images/Zelda's Adventure (Europe).bin", "rb");
+        f_cd_bin = fopen("images/mpeg_only_audio.bin", "rb"); // 400
         break;
     case 6:
-        f_cd_bin = fopen("images/audiocd.bin", "rb");
+        f_cd_bin = fopen("images/mpeg_only_audio.bin", "rb"); // 500
         break;
     case 7:
-        f_cd_bin = fopen("images/Flashback (Europe).bin", "rb");
+        f_cd_bin = fopen("images/mpeg_only_audio.bin", "rb");
         break;
     case 8:
-        f_cd_bin = fopen("images/Apprentice_USA_single.bin", "rb");
+        f_cd_bin = fopen("images/mpeg_only_audio.bin", "rb");
         prepare_apprentice_usa_toc();
         break;
     }
@@ -844,7 +849,7 @@ int main(int argc, char **argv) {
 
     CDi machine(machineindex);
 
-    machine.dut.rootp->emu__DOT__config_auto_play = 1;
+    machine.dut.rootp->emu__DOT__config_auto_play = argc >= 3 ? 1 : 0;
 
     while (status == 0) {
         machine.modelstep();

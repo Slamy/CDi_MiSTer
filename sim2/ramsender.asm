@@ -48,5 +48,3 @@ wait_till_ready2:
 end:
 	bra end
 
-wastespace:
-	incbin "cdimono1/cdi200.rom"

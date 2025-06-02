@@ -44,6 +44,7 @@ module mcd212 (
     output bit        cpu_bus_ack,
     input             cs,
     input             dvc_ram_cs,
+    input             dvc_rom_cs,
 
     output     [7:0] r,
     output     [7:0] g,
@@ -97,8 +98,6 @@ module mcd212 (
 
     // Bit 18 is the Bank selection for TD=0
     // CAS1 if A18=0, CAS2 if A18=1
-    // TODO This might be not accurate. Investigation needed
-    //wire [19:1] ram_address = {cpu_address[18], cpu_address[21], cpu_address[17:1]};
     wire [19:1] ram_address = {cpu_address[21], cpu_address[18], cpu_address[17:1]};
 
     bit sdram_busy_q = 0;
@@ -146,7 +145,7 @@ module mcd212 (
     bit file1_bus_ack;
     bit file1_burstdata_valid;
 
-    wire cpu_sdram_access = (cs_ram || cs_rom_fused || dvc_ram_cs) && (cpu_uds || cpu_lds);
+    wire cpu_sdram_access = (cs_ram || cs_rom_fused || dvc_ram_cs || dvc_rom_cs) && (cpu_uds || cpu_lds);
     wire sdram_refresh_request;
     bit cpu_starve;
 
@@ -298,22 +297,34 @@ module mcd212 (
                     if (cpu_sdram_access) begin
                         if (cs_rom_fused) begin
                             sdram_word = 1;
+                            // map 0x400000 to 0x0400000
                             sdram_addr[24:1] = {3'b001, cpu_address[21:1]};
                             sdram_addr[0] = 1'b0;
                             sdram_rd = !sdram_busy && !sdram_busy_q;
                             sdram_wr = 1'b0;
                         end else if (cs_ram) begin
+                            // map 0x000000 to 0x000000
+                            // map 0x200000 to 0x080000
                             sdram_addr[24:1] = {5'b0, ram_address[19:1]};
                             sdram_addr[0] = cpu_write_strobe ? !cpu_lds && cpu_uds : 1'b0;  // only active on odd byte accesses
                             sdram_word = (cpu_lds && cpu_uds) || !cpu_write_strobe;
                             sdram_rd = !cpu_write_strobe && !sdram_busy && !sdram_busy_q;
                             sdram_wr = cpu_write_strobe && !sdram_busy && !sdram_busy_q;
                         end else if (dvc_ram_cs) begin
+                            // map 0xd00000 to 0x100000
                             sdram_addr[24:1] = {1'b0, cpu_address[23:20] - 4'hc, cpu_address[19:1]};
                             sdram_addr[0] = cpu_write_strobe ? !cpu_lds && cpu_uds : 1'b0;  // only active on odd byte accesses
                             sdram_word = (cpu_lds && cpu_uds) || !cpu_write_strobe;
                             sdram_rd = !cpu_write_strobe && !sdram_busy && !sdram_busy_q;
                             sdram_wr = cpu_write_strobe && !sdram_busy && !sdram_busy_q;
+                        end else if (dvc_rom_cs) begin
+                            sdram_word = 1;
+                            // map 0xe40000 to 0x0480000
+                            // also map 0xe60000 to 0x0480000 (bit 17 must be ignored)
+                            sdram_addr[24:1] = {8'b00100100, cpu_address[16:1]};
+                            sdram_addr[0] = 1'b0;
+                            sdram_rd = !sdram_busy && !sdram_busy_q;
+                            sdram_wr = 1'b0;
                         end
                     end
                 end
@@ -360,7 +371,7 @@ module mcd212 (
         // only the CPU writes to SDRAM
         sdram_din = cpu_din;
 
-        if (cs_ram || dvc_ram_cs || cs_rom_fused) begin
+        if (cs_ram || dvc_ram_cs || dvc_rom_cs || cs_rom_fused) begin
             cpu_dout = sdram_dout;
         end else if (cs_channel1) begin
             case (cpu_addressb[7:0])

@@ -8,7 +8,25 @@ vector:
 
     dc.l 0,0
 main:
-	
+	;Check ROMS
+	move.w #$4afc,d0
+	cmp.w ($e40000),d0
+	bne error
+
+	move.w #$ee2f,d0
+	cmp.w ($e5fffe),d0
+	bne error
+
+	move.w #$4afc,d0
+	cmp.w ($e60000),d0
+	bne error
+
+	move.w #$ee2f,d0
+	cmp.w ($e7fffe),d0
+	bne error
+
+	move.b #'g',$80002019
+
 	;DRAM Bank 0 Lower 256kB -> 0x000000 to 0x03ffff
 	;DRAM Bank 1 Lower 256kB -> 0x040000 to 0x07FFFF
 	move.l #0,a0

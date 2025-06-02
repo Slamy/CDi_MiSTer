@@ -322,7 +322,11 @@ module uc68hc05 (
 
                 // 30 MHz / 2 (clken) / 30 = 0.5 MHz
                 // Equal to 4 MHz /2 /4 on a real 68HC05
+`ifdef VERILATOR
+                if (free_running_counter_shadowcnt == 5 - 1) begin
+`else
                 if (free_running_counter_shadowcnt == 30 - 1) begin
+`endif 
                     free_running_counter_shadowcnt <= 0;
                     free_running_counter <= free_running_counter + 1;
                 end else free_running_counter_shadowcnt <= free_running_counter_shadowcnt + 1;

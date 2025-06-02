@@ -1,7 +1,5 @@
 // SCC68070
 // Uses https://github.com/Slamy/TG68K.C as a fork of TG68k core with some modifications
-// TODO MMU (not required for system boot)
-// TODO DMA (not required for system boot)
 
 module scc68070 (
     input clk,
@@ -145,35 +143,35 @@ module scc68070 (
             ipl = 5;
         end
 
-        if (int1 && lir.int1n_ipl != 0) begin
+        if (int1 && lir.int1n_ipl != 0 && lir.int1n_ipl >= ipl) begin
             ipl = lir.int1n_ipl;
             // external int1 always on chip auto vector
             autovector_lut[ipl] = 0;
             on_chip_autovector = 1;
         end
 
-        if (int2 && lir.int2n_ipl != 0) begin
+        if (int2 && lir.int2n_ipl != 0 && lir.int2n_ipl >= ipl) begin
             ipl = lir.int2n_ipl;
             // external int1 always on chip auto vector
             autovector_lut[ipl] = 0;
             on_chip_autovector = 1;
         end
 
-        if (uart_command_register.receiver_enabled && uart_receive_holding_valid && picr2.uart_rx_ipl != 0) begin
+        if (uart_command_register.receiver_enabled && uart_receive_holding_valid && picr2.uart_rx_ipl != 0 && picr2.uart_rx_ipl >= ipl) begin
             ipl = picr2.uart_rx_ipl;
             // always on chip auto vector by manually providing a vector
             autovector_lut[ipl] = 0;
             on_chip_autovector = 1;
         end
 
-        if (uart_command_register.transmitter_enabled && !uart_transmit_holding_valid && picr2.uart_tx_ipl != 0) begin
+        if (uart_command_register.transmitter_enabled && !uart_transmit_holding_valid && picr2.uart_tx_ipl != 0 && picr2.uart_tx_ipl >= ipl) begin
             ipl = picr2.uart_tx_ipl;
             // always on chip auto vector by manually providing a vector
             autovector_lut[ipl] = 0;
             on_chip_autovector = 1;
         end
 
-        if (timer_status_register.t0_ov && picr1.timer_ipl != 0) begin
+        if (timer_status_register.t0_ov && picr1.timer_ipl != 0 && picr1.timer_ipl >= ipl) begin
             ipl = picr1.timer_ipl;
             // always on chip auto vector by manually providing a vector
             autovector_lut[ipl] = 0;
@@ -242,8 +240,8 @@ module scc68070 (
     bit [7:0] uart_receive_holding_register  /*verilator public_flat_rw*/ = 0;
     bit uart_receive_holding_valid = 0;
     bit [7:0] uart_transmit_holding_register  /*verilator public_flat_rd*/ = 0;
-    bit uart_transmit_holding_valid  /*verilator public_flat_rw*/ = 0;
-    wire uart_tx_data_ready;
+    bit uart_transmit_holding_valid  /*verilator public_flat_rd*/ = 0;
+    wire uart_tx_data_ready  /*verilator public_flat_rd*/;
 
     always_comb begin
         uart_status_register = 0;
@@ -363,16 +361,18 @@ module scc68070 (
             if (dma_cs && (internal_lds || internal_uds)) begin
                 if (write_strobe)
                     $display(
-                        "DMA Write ADDR:%x DATA:%x LDS:%d UDS:%d",
-                        addr[7:1],
+                        "DMA Write CH:%x ADDR:%x DATA:%x LDS:%d UDS:%d",
+                        addr[7:6],
+                        addr[5:1],
                         data_out,
                         internal_lds,
                         internal_uds
                     );
                 if (!write_strobe && clkena_in)
                     $display(
-                        "DMA Read ADDR:%x DATA:%x LDS:%d UDS:%d",
-                        addr[7:1],
+                        "DMA Read CH:%x ADDR:%x DATA:%x LDS:%d UDS:%d",
+                        addr[7:6],
+                        addr[5:1],
                         internal_data_in,
                         internal_lds,
                         internal_uds
@@ -400,7 +400,7 @@ module scc68070 (
                         uart_command_register.transmitter_enabled <= data_out[3:2] == 2'b01;
                     end
                     3'd4: begin
-                        // $display("UART char %c", data_out[7:0]);
+                        //$display("UART char %c", data_out[7:0]);
                     end
                     default: ;
                 endcase
@@ -417,17 +417,17 @@ module scc68070 (
     bit [7:0] uart_rx_data  /*verilator public_flat_rw*/;
     bit uart_rx_data_valid  /*verilator public_flat_rw*/;
 
-    bit [17:0] debug_uart_fake_space_cnt = 0;
+    bit [26:0] debug_uart_fake_space_cnt = 0;
     bit debug_uart_fake_space_timed = 0;
     always_ff @(posedge clk) begin
         if (reset) begin
             debug_uart_fake_space_cnt <= 0;
-        end else if (debug_uart_fake_space_cnt < 40000) begin
+        end else if (debug_uart_fake_space_cnt < 27'd25000000) begin
             // This is a small hack to force the ROM into the self test
             // as this early in the lifetime of the machine,
             // the HPS is unable to provide this character
-            debug_uart_fake_space_cnt   <= debug_uart_fake_space_cnt + 1;
-            debug_uart_fake_space_timed <= debug_uart_fake_space;
+            debug_uart_fake_space_cnt <= debug_uart_fake_space_cnt + 1;
+            debug_uart_fake_space_timed <= debug_uart_fake_space && debug_uart_fake_space_cnt[17:0]==0;
         end else begin
             debug_uart_fake_space_timed <= 0;
         end
@@ -445,6 +445,7 @@ module scc68070 (
         .rx_pin       (uart_rx)
     );
 
+    wire uart_tx_data_valid /*verilator public_flat_rd*/  = uart_transmit_holding_valid && uart_tx_data_ready;
     uart_tx #(
         .CLK_FRE  (30),
         .BAUD_RATE(115200)
@@ -452,7 +453,7 @@ module scc68070 (
         .clk(clk),
         .rst_n(!reset),
         .tx_data(uart_transmit_holding_register),
-        .tx_data_valid(uart_transmit_holding_valid && uart_tx_data_ready),
+        .tx_data_valid(uart_tx_data_valid),
         .tx_data_ready(uart_tx_data_ready),
         .tx_pin(uart_tx)
     );
@@ -468,8 +469,9 @@ module scc68070 (
                 // This is a small hack to force the ROM into the self test,
                 // as this early in the lifetime of the machine,
                 // the HPS is unable to provide this character.
-                uart_receive_holding_register <= 8'h20;  // ASCII Space
+                uart_receive_holding_register <= "F";  // ASCII Space
                 uart_receive_holding_valid <= 1;
+                $display("Send F");
             end else if (uart_rx_data_valid) begin
                 uart_receive_holding_register <= uart_rx_data;
                 uart_receive_holding_valid <= 1;
@@ -490,99 +492,109 @@ module scc68070 (
 
     // ---- DMA ----
 
-    bit [31:0] dma_ch0_memory_address_counter = 0;
-    bit [15:0] dma_ch0_memory_transfer_counter = 0;
+    typedef struct {
+        bit [31:0] memory_address_counter;
+        bit [15:0] memory_transfer_counter;
 
-    struct packed {
-        bit op_complete;
-        bit reserved;
-        bit normal_device_terminated;  // what is this?
-        bit error;
-        bit channel_active;
-        bit [2:0] reserved2;
-    } dma_ch0_status;
+        struct packed {
+            bit op_complete;
+            bit reserved;
+            bit normal_device_terminated;  // what is this?
+            bit error;
+            bit channel_active;
+            bit [2:0] reserved2;
+        } status;
 
-    bit [7:0] dma_ch0_error;
+        bit [7:0] error;
 
-    struct packed {
-        bit [3:0] reserved;
-        bit [1:0] mac;  // 01 Count up, 00 No change
-        bit [1:0] dac;  // 01 Count up, 00 No change
-    } dma_ch0_sequence_control;
+        struct packed {
+            bit [3:0] reserved;
+            bit [1:0] mac;  // 01 Count up, 00 No change
+            bit [1:0] dac;  // 01 Count up, 00 No change
+        } sequence_control;
 
-    struct packed {
-        bit direction;  // 0 Mem to Dev, 1 Dev to Mem
-        bit reserved;
-        bit [1:0] operand_size;
-        bit [3:0] reserved2;
-    } dma_ch0_operation_control;
+        struct packed {
+            bit direction;  // 0 Mem to Dev, 1 Dev to Mem
+            bit reserved;
+            bit [1:0] operand_size;
+            bit [3:0] reserved2;
+        } operation_control;
 
-    struct packed {
-        bit external_request_mode;  // 0 Burst, 1 Cycle Steal
-        bit reserved;
-        bit [1:0] device_type;
-        bit [3:0] reserved2;
-    } dma_ch0_device_control;
+        struct packed {
+            bit external_request_mode;  // 0 Burst, 1 Cycle Steal
+            bit reserved;
+            bit [1:0] device_type;
+            bit [3:0] reserved2;
+        } device_control;
 
-    struct packed {
-        bit start;
-        bit [1:0] reserved;
-        bit software_abort;
-        bit int_enable;
-        bit [2:0] ipl;
-    } dma_ch0_channel_control;
+        struct packed {
+            bit start;
+            bit [1:0] reserved;
+            bit software_abort;
+            bit int_enable;
+            bit [2:0] ipl;
+        } channel_control;
+    } dma_channel_s;
 
-    assign done_out = req1 && ack1 && dma_ch0_memory_transfer_counter == 0;
+    dma_channel_s dma[2];
+    wire [1:0] dma_req = {req2, req1};
+    wire [1:0] dma_ack = {ack2, ack1};
+
+    assign done_out = (req1 && ack1 && dma[0].memory_transfer_counter == 0) || (req2 && ack2 && dma[1].memory_transfer_counter == 0);
 
     always_ff @(posedge clk) begin
-        if (reset) begin
-            dma_ch0_channel_control <= 0;
-            dma_ch0_device_control <= 0;
-            dma_ch0_operation_control <= 0;
-            dma_ch0_sequence_control <= 0;
-            dma_ch0_error <= 0;
-            dma_ch0_status <= 0;
-        end else begin
-            if (done_out) begin
-                dma_ch0_status.channel_active <= 0;
-                dma_ch0_status.op_complete <= 1;
-            end
 
-            if (req1 && ack1 && dtc && dma_ch0_status.channel_active) begin
-                dma_ch0_memory_address_counter  <= dma_ch0_memory_address_counter + 2;
-                dma_ch0_memory_transfer_counter <= dma_ch0_memory_transfer_counter - 1;
-            end
+        int i;
+        for (i = 0; i < 2; i++) begin
+            if (reset) begin
+                dma[i].channel_control <= 0;
+                dma[i].device_control <= 0;
+                dma[i].operation_control <= 0;
+                dma[i].sequence_control <= 0;
+                dma[i].error <= 0;
+                dma[i].status <= 0;
+            end else begin
+                if (done_out) begin
+                    dma[i].status.channel_active <= 0;
+                    dma[i].status.op_complete <= 1;
+                end
 
-            if (dma_cs && addr[5:1] == 5'd0 && internal_uds && write_strobe) begin
-                // Data is ignored. Just reset the status
-                dma_ch0_status <= 0;
-            end
+                if (dma_req[i] && dma_ack[i] && dtc && dma[i].status.channel_active) begin
+                    dma[i].memory_address_counter  <= dma[i].memory_address_counter + 2;
+                    dma[i].memory_transfer_counter <= dma[i].memory_transfer_counter - 1;
+                end
 
-            if (dma_cs && addr[5:1] == 5'd2 && write_strobe) begin
-                if (internal_uds) dma_ch0_device_control <= data_out[15:8];
-                if (internal_lds) dma_ch0_operation_control <= data_out[7:0];
-            end
+                if (dma_cs && addr[5:1] == 5'd0 && internal_uds && write_strobe) begin
+                    // Data is ignored. Just reset the status
+                    dma[i].status <= 0;
+                end
 
-            if (dma_cs && addr[5:1] == 5'd3 && write_strobe) begin
-                if (internal_uds) dma_ch0_sequence_control <= data_out[15:8];
-                if (internal_lds) dma_ch0_channel_control[6:0] <= data_out[6:0];
+                if (dma_cs && addr[5:1] == 5'd2 && write_strobe) begin
+                    if (internal_uds) dma[i].device_control <= data_out[15:8];
+                    if (internal_lds) dma[i].operation_control <= data_out[7:0];
+                end
 
-                if (data_out[7]) dma_ch0_status.channel_active <= 1;
-            end
+                if (dma_cs && addr[5:1] == 5'd3 && write_strobe) begin
+                    if (internal_uds) dma[i].sequence_control <= data_out[15:8];
+                    if (internal_lds) dma[i].channel_control[6:0] <= data_out[6:0];
 
-            if (dma_cs && addr[5:1] == 5'd5 && write_strobe) begin
-                if (internal_uds) dma_ch0_memory_transfer_counter[15:8] <= data_out[15:8];
-                if (internal_lds) dma_ch0_memory_transfer_counter[7:0] <= data_out[7:0];
-            end
+                    if (data_out[7]) dma[i].status.channel_active <= 1;
+                end
 
-            if (dma_cs && addr[5:1] == 5'd6 && write_strobe) begin
-                if (internal_uds) dma_ch0_memory_address_counter[31:24] <= data_out[15:8];
-                if (internal_lds) dma_ch0_memory_address_counter[23:16] <= data_out[7:0];
-            end
+                if (dma_cs && addr[5:1] == 5'd5 && write_strobe) begin
+                    if (internal_uds) dma[i].memory_transfer_counter[15:8] <= data_out[15:8];
+                    if (internal_lds) dma[i].memory_transfer_counter[7:0] <= data_out[7:0];
+                end
 
-            if (dma_cs && addr[5:1] == 5'd7 && write_strobe) begin
-                if (internal_uds) dma_ch0_memory_address_counter[15:8] <= data_out[15:8];
-                if (internal_lds) dma_ch0_memory_address_counter[7:0] <= data_out[7:0];
+                if (dma_cs && addr[5:1] == 5'd6 && write_strobe) begin
+                    if (internal_uds) dma[i].memory_address_counter[31:24] <= data_out[15:8];
+                    if (internal_lds) dma[i].memory_address_counter[23:16] <= data_out[7:0];
+                end
+
+                if (dma_cs && addr[5:1] == 5'd7 && write_strobe) begin
+                    if (internal_uds) dma[i].memory_address_counter[15:8] <= data_out[15:8];
+                    if (internal_lds) dma[i].memory_address_counter[7:0] <= data_out[7:0];
+                end
             end
         end
     end
@@ -591,6 +603,8 @@ module scc68070 (
     assign ack2 = req2;
 
     always_comb begin
+        int i;
+
         // default case is having the CPU core connected
         addr = internal_addr[23:1];
         as = !soc_periph && !skipFetch && (internal_lds || internal_uds);
@@ -599,17 +613,16 @@ module scc68070 (
         write_strobe = !internal_nWr;
         dtc = 0;
 
-        // DMA Channel 1
-        if (ack1) begin
-            addr = dma_ch0_memory_address_counter[23:1];
-            as = rdy && dma_ch0_status.channel_active;
-            lds = rdy && dma_ch0_status.channel_active;
-            uds = rdy && dma_ch0_status.channel_active;
-            write_strobe = dma_ch0_operation_control.direction;  // 1 Dev to Mem
-            dtc = bus_ack && rdy;
+        for (i = 0; i < 2; i++) begin
+            if (dma_ack[i]) begin
+                addr = dma[i].memory_address_counter[23:1];
+                as = rdy && dma[i].status.channel_active;
+                lds = rdy && dma[i].status.channel_active;
+                uds = rdy && dma[i].status.channel_active;
+                write_strobe = dma[i].operation_control.direction;  // 1 Dev to Mem
+                dtc = bus_ack && rdy;
+            end
         end
-
-        // TODO DMA Channel 2
     end
 
     always_comb begin
@@ -651,12 +664,14 @@ module scc68070 (
         end else if (dma_cs) begin
             clkena_in = 1;
             case (addr[5:1])
-                5'd0: internal_data_in = {dma_ch0_status, dma_ch0_error};
-                5'd2: internal_data_in = {dma_ch0_device_control, dma_ch0_operation_control};
-                5'd3: internal_data_in = {dma_ch0_sequence_control, dma_ch0_channel_control};
-                5'd5: internal_data_in = dma_ch0_memory_transfer_counter;
-                5'd6: internal_data_in = dma_ch0_memory_address_counter[31:16];
-                5'd7: internal_data_in = dma_ch0_memory_address_counter[15:0];
+                5'd0: internal_data_in = {dma[addr[6]].status, dma[addr[6]].error};
+                5'd2:
+                internal_data_in = {dma[addr[6]].device_control, dma[addr[6]].operation_control};
+                5'd3:
+                internal_data_in = {dma[addr[6]].sequence_control, dma[addr[6]].channel_control};
+                5'd5: internal_data_in = dma[addr[6]].memory_transfer_counter;
+                5'd6: internal_data_in = dma[addr[6]].memory_address_counter[31:16];
+                5'd7: internal_data_in = dma[addr[6]].memory_address_counter[15:0];
                 default: internal_data_in = 0;
             endcase
         end

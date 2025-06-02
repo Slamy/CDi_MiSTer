@@ -419,8 +419,10 @@ module emu (
 
     // boot0.rom represented as ioctl_index==16h'0000
     // boot1.rom represented as ioctl_index==16h'0040
-    wire                  ioctl_maincpu_rom_wr = ioctl_wr && ioctl_index[6] == 0;
-    wire                  ioctl_slave_worm_wr = ioctl_wr && ioctl_index[6] == 1;
+    // boot2.rom represented as ioctl_index==16h'0080
+    wire                  ioctl_maincpu_rom_wr = ioctl_wr && ioctl_index[7:6] == 2'b00;
+    wire                  ioctl_slave_worm_wr = ioctl_wr && ioctl_index[7:6] == 2'b01;
+    wire                  ioctl_vmpega_worm_wr = ioctl_wr && ioctl_index[7:6] == 2'b10;
 
     bit                   ioctl_slave_worm_wr_q = 0;
 
@@ -486,7 +488,7 @@ module emu (
         case (sdram_owner)
             ROM_DOWNLOAD: begin
                 prepare_sdram_din  = {ioctl_dout[7:0], ioctl_dout[15:8]};
-                prepare_sdram_addr = {3'b001, ioctl_addr[21:1], 1'b0};
+                prepare_sdram_addr = {5'b00100, ioctl_index[7], ioctl_addr[18:1], 1'b0};
                 prepare_sdram_wr   = 1;
             end
             RAM_ZERO: begin
@@ -512,7 +514,7 @@ module emu (
     always_ff @(posedge clk_sys) begin
         if (ioctl_sdram_wr_latch && ioctl_wr) ioctl_wr_overflow <= 1;
 
-        if (ioctl_maincpu_rom_wr) begin
+        if (ioctl_maincpu_rom_wr || ioctl_vmpega_worm_wr) begin
             ioctl_sdram_wr_latch <= 1;
         end
 
@@ -529,7 +531,7 @@ module emu (
             if (sdram_owner_q == RAM_ZERO && sdram_busy_q && !sdram_busy)
                 ram_zero_adr <= ram_zero_adr + 1;
 
-            if (sdram_owner_q == ROM_DOWNLOAD && sdram_busy_q && !sdram_busy)
+            if (sdram_owner == ROM_DOWNLOAD && sdram_busy_q && !sdram_busy)
                 ioctl_sdram_wr_latch <= 0;
         end
     end
@@ -558,10 +560,12 @@ module emu (
 
 `ifdef VERILATOR
     bit [15:0] rom[262144]  /*verilator public_flat_rw*/;
+    bit [15:0] vmpega_rom[65536]  /*verilator public_flat_rw*/;
     bit [15:0] ram[2097152]  /*verilator public_flat_rw*/;
     bit [22:0] sdram_real_addr;
     initial begin
         $readmemh("cdi200.mem", rom);
+        $readmemh("vmpega.mem", vmpega_rom);
         //$readmemh("ramdump.mem", ram);
     end
 
@@ -573,8 +577,11 @@ module emu (
     always_comb begin
         SDRAM_DQ_in = 0;
 
-        if (sdram_real_addr[21]) SDRAM_DQ_in = rom[burstwrap_corrected_address[17:0]];
-        else SDRAM_DQ_in = ram[burstwrap_corrected_address[20:0]];
+        case (sdram_real_addr[21:18])
+            4'b1000: SDRAM_DQ_in = rom[burstwrap_corrected_address[17:0]];
+            4'b1001: SDRAM_DQ_in = vmpega_rom[burstwrap_corrected_address[15:0]];
+            default: SDRAM_DQ_in = ram[burstwrap_corrected_address[20:0]];
+        endcase
     end
 
     bit SDRAM_nWE_q;
@@ -592,20 +599,26 @@ module emu (
         if (!SDRAM_nCAS) burstindex <= 0;
         else if (burstindex < 4) burstindex <= burstindex + 1;
 
-        if (sdram_real_addr[21]) begin
-            // no write during download
-            //if (!SDRAM_nWE_q) assert (ioctl_download);
-
-            if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
-                rom[burstwrap_corrected_address[17:0]][15:8] <= SDRAM_DQ_out[15:8];
-            if (!SDRAM_nWE_q && !SDRAM_DQML_q)
-                rom[burstwrap_corrected_address[17:0]][7:0] <= SDRAM_DQ_out[7:0];
-        end else begin
-            if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
-                ram[burstwrap_corrected_address[20:0]][15:8] <= SDRAM_DQ_out[15:8];
-            if (!SDRAM_nWE_q && !SDRAM_DQML_q)
-                ram[burstwrap_corrected_address[20:0]][7:0] <= SDRAM_DQ_out[7:0];
-        end
+        case (sdram_real_addr[21:18])
+            4'b1000: begin
+                if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
+                    rom[burstwrap_corrected_address[17:0]][15:8] <= SDRAM_DQ_out[15:8];
+                if (!SDRAM_nWE_q && !SDRAM_DQML_q)
+                    rom[burstwrap_corrected_address[17:0]][7:0] <= SDRAM_DQ_out[7:0];
+            end
+            4'b1001: begin
+                if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
+                    vmpega_rom[burstwrap_corrected_address[15:0]][15:8] <= SDRAM_DQ_out[15:8];
+                if (!SDRAM_nWE_q && !SDRAM_DQML_q)
+                    vmpega_rom[burstwrap_corrected_address[15:0]][7:0] <= SDRAM_DQ_out[7:0];
+            end
+            default: begin
+                if (!SDRAM_nWE_q && !SDRAM_DQMH_q)
+                    ram[burstwrap_corrected_address[20:0]][15:8] <= SDRAM_DQ_out[15:8];
+                if (!SDRAM_nWE_q && !SDRAM_DQML_q)
+                    ram[burstwrap_corrected_address[20:0]][7:0] <= SDRAM_DQ_out[7:0];
+            end
+        endcase
     end
 `endif
 

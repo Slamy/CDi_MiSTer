@@ -11,6 +11,8 @@ module cdic (
     input clk,
     input clk_audio,
     input reset,
+
+    // CPU interface
     input [23:1] address,
     input [15:0] din,
     output bit [15:0] dout,
@@ -28,15 +30,18 @@ module cdic (
     input done_in,
     output done_out,
 
+    // HPS IO for CD data
     output bit [31:0] cd_hps_lba,
     output bit cd_hps_req,
     input cd_hps_ack,
     input cd_hps_data_valid,
     input [15:0] cd_hps_data,
 
+    // Audio out
     output signed [15:0] audio_left,
     output signed [15:0] audio_right,
 
+    // Debugging
     output bit fail_not_enough_words,
     output bit fail_too_much_data
 );
@@ -605,7 +610,7 @@ module cdic (
                 audio_control_register[11] <= 0;
             end
 
-            if (done_in) dma_control_register[15] <= 0;
+            if (done_in && ack) dma_control_register[15] <= 0;
 
             if (sector_tick) begin
                 if (!hps_transaction_in_progress) sector_word_index <= 0;
