@@ -40,12 +40,20 @@ module vmpeg (
     wire access = cs && (uds || lds);
 
     wire dma_data_valid = ack && dtc;
-    bit dma_data_valid_q;
+    bit mpeg_word_valid_q;
 
-    bit [7:0] dma_temp;
+    // Get bytes from words for better analysis for state machines
+    bit [7:0] mpeg_temp;
+    wire [7:0] mpeg_data  /*verilator public_flat_rd*/ = mpeg_word_valid_q ? mpeg_temp : din[15:8];
+    wire mpeg_data_valid  /*verilator public_flat_rd*/ = mpeg_word_valid_q || mpeg_word_valid;
 
-    wire [7:0] mpeg_data  /*verilator public_flat_rd*/ = dma_data_valid_q ? dma_temp : din[15:8];
-    wire mpeg_data_valid = dma_data_valid || dma_data_valid_q;
+    always @(posedge clk) begin
+        mpeg_word_valid_q <= mpeg_word_valid;
+        if (mpeg_word_valid) mpeg_temp <= din[7:0];
+    end
+
+    wire mpeg_xferwrite = (address[15:1] == 15'h206F) && bus_ack && write_strobe && access;
+    wire mpeg_word_valid = dma_data_valid || mpeg_xferwrite;
     bit dma_for_fma;
     wire fmv_data_valid  /*verilator public_flat_rd*/ = mpeg_data_valid && !dma_for_fma;
     wire fma_data_valid  /*verilator public_flat_rd*/ = mpeg_data_valid && dma_for_fma;
@@ -116,10 +124,6 @@ module vmpeg (
             fifo_in.pic <= 0;
             fifo_in.gop <= 0;
         end
-
-        dma_data_valid_q <= dma_data_valid;
-
-        if (dma_data_valid) dma_temp <= din[7:0];
 
         if (fma_data_valid) begin
             // $display ("MPEG %x",mpeg_data);
@@ -493,6 +497,7 @@ module vmpeg (
             if (done_in && ack) begin
                 fma_command_register[15] <= 0;
                 dma_active <= 0;
+                dma_for_fma <= 0;
             end
 
             if (access) begin
@@ -572,7 +577,7 @@ module vmpeg (
                         15'h2061: begin
                             $display("FMV Write VIDCMD Register %x %x", address[15:1], din);
                         end
-                        15'h206F: begin
+                        15'h206F: begin  // 0E040DE
                             $display("FMV Write XFER Register %x %x", address[15:1], din);
                         end
                         15'h206E: begin

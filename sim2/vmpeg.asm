@@ -95,10 +95,17 @@ video:
 	; DMA Memory to FMV
 	; The original driver uses 0x484 for memory transfer counter
 	; since the first 6 words are transferred via CPU to XFER
-	; in this case we use DMA for everything
+	; We are doing the same
+	move.w $3000,$0e040de
+	move.w $3002,$0e040de
+	move.w $3004,$0e040de
+	move.w $3006,$0e040de
+	move.w $3008,$0e040de
+	move.w $300a,$0e040de
+
 	move.b d0,$80004040 ; reset status
-	move.l #$3000,$8000400c ; Memory Address Counter
-	move.w #$48a,$8000404a  ; Memory Transfer Counter
+	move.l #$300c,$8000400c ; Memory Address Counter
+	move.w #$484,$8000404a  ; Memory Transfer Counter
 	move.b #$04,$80004046 ; SCR, MAC Count Up, DAC No Change (like the CDIC on CH1)
 	move.b #$12,$80004045 ; Dev. to Mem., 16 Bit Words,
 	move.b #$30,$80004044 ; ACK/RDY device (like the CDIC on CH1)
