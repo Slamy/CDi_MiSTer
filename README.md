@@ -4,9 +4,9 @@ A project dedicated to create an FPGA implementation of the Philips CD-i to be u
 As every Philips CD-i player has a different hardware, this project focuses on reverse engineering the "Mono I" PCB.
 This mainboard is used in models like the 210/00, 210/05 or 220/20.
 
-This repository is very experimental! Use at your own risk!
-
-The first games are booting. Expect a certain amount of bugs!
+Most games which only utilize the hardware of a CD-i should work as expected.
+Titles which require the Digital Video Cartridge will **NOT** work as the required hardware doesn't exist yet.
+The RAM expansion of the DVC is included and will enhance some games.
 
 ## Usage
 
