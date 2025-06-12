@@ -13,13 +13,20 @@ The RAM expansion of the DVC is included and will enhance some games.
 Place `cdi200.rom` as `boot0.rom` in `/media/fat/games/CD-i`.
 Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` as `boot1.rom` next to it.
 
+This core is tested with these files and their respective md5sum:
+
+    2969341396aa61e0143dc2351aaa6ef6  cdi200.rom
+    3d20cf7550f1b723158b42a1fd5bac62  zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206
+
+Due to legal reasons, these files must be sourced separately.
+
 Save files are stored inside an 8K NvRAM. MiSTer will create one save file per CD.
 Whenever the NvRAM state changes, the "User" LED will light up, indicating
 a change is queued to store. When the OSD is opened, the NvRAM will be flushed to SD card.
 
 The save files containing the NvRAM are compatible with the CD-i emulation of MAME.
 
-Digital gamepads, Analog gamepads and mice are supported for use with this core.
+Digital gamepads, analog gamepads and mice are supported for use with this core.
 To play a title, load a CD and press on the play button at the start screen.
 CD images can be stored as CHD or CUE/BIN format.
 
@@ -68,14 +75,12 @@ Core Utilization:
 * A dump of the SLAVE 3.2 ROM is required to fix some hacks
     * I2C front panel data is not correctly handled (e.g. Play button)
 
-## Expected checksums of roms
+## Simulation
 
-This core is tested with these ROMs:
+Even so, the [sim](sim) folder seems to be the correct one, it is deprecated.
+It was used for mixed language simulation with the free version of ModelSim when the project has started.
 
-    2969341396aa61e0143dc2351aaa6ef6  cdi200.rom
-    3d20cf7550f1b723158b42a1fd5bac62  zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206
-
-Due to legal reasons, these files must be sourced separately.
+The [sim2](sim2) folder is the current one, used for most development and makes use of Verilator for improved performance.
 
 ## Used resources
 
@@ -118,7 +123,7 @@ by emulation errors but are also present on the real machine.
     * This game is special. It doesn't play music from CD like most games for this system would do.
     * Small loops of sampled music are loaded from CD, stored in memory and randomly concatenated together
       to create the background music. These samples are sometimes not very "loopable" creating a pop at looping points.
-    * This issue is reproducible on a real 210/05 as well      
+    * This issue is reproducible on a real 210/05 as well
 * The music during the Philips Logo animation of Burn:Cycle has broken audio
     * This issue is reproducible on a real 210/05 as well
     * For some reason, it seems to be absent on other models with different hardware, like the 450/00
@@ -141,5 +146,10 @@ by emulation errors but are also present on the real machine.
   * This curiously happens on a real 210/05 too.
 * If I mash the buttons really hard when booting up Tetris, I get a colorful glitched screen instead of the Philips Logo
   * Congratulations for this obscure finding. This happens on a real 210/05 too!
+* During the intro of "Zombie Dinos vom Planeten Zeltoid", the title text looks like the last row of pixels is missing during the scaling effect
+  * Yes, an oversight it seems. The scaling operation is broken, even on the real machine.
+* QuizMania - Missing animation graphics during intro and alignment issues during video playback in menu
+  * This game seems to have problems with 60Hz/NTSC mode. Both issues can be reproduced using real 210/05 hardware
+  * I assume that this was a local production for the italian market and no testing was performed on NTSC machines
 
-  
+

@@ -25,8 +25,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/videofifo.sv
 set_global_assignment -name VERILOG_FILE rtl/uart_rx.v
 set_global_assignment -name VERILOG_FILE rtl/uart_tx.v
 set_global_assignment -name VHDL_FILE rtl/6805.vhd
-set_global_assignment -name VHDL_FILE tg68k/tg68dotc_verilog_wrapper.vhd
-set_global_assignment -name VHDL_FILE tg68k/TG68K_ALU.vhd
-set_global_assignment -name VHDL_FILE tg68k/TG68K_Pack.vhd
-set_global_assignment -name VHDL_FILE tg68k/TG68K.vhd
-set_global_assignment -name VHDL_FILE tg68k/TG68KdotC_Kernel.vhd
+set_global_assignment -name VHDL_FILE rtl/tg68k/tg68dotc_verilog_wrapper.vhd
+set_global_assignment -name VHDL_FILE rtl/tg68k/TG68K_ALU.vhd
+set_global_assignment -name VHDL_FILE rtl/tg68k/TG68K_Pack.vhd
+set_global_assignment -name VHDL_FILE rtl/tg68k/TG68K.vhd
+set_global_assignment -name VHDL_FILE rtl/tg68k/TG68KdotC_Kernel.vhd
