@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # This script converts the 6805 VHDL code to Verilog usable by Verilator
+set -e
 
 cd "$(dirname "$0")/../rtl"
 
