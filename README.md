@@ -51,6 +51,9 @@ Core Utilization:
     * PSX core seems to halt the whole machine to avoid this situation
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
+* Add rarely used missing MCD212 features
+    * Pixel Hold
+    * Blinking cursor
 * Investigate input responsiveness (skipped events?)
 * Investigate screeching sound effect in the menu of "Golf Tips"
 * Fix hang on audio track stop or change in media player
@@ -74,6 +77,7 @@ Core Utilization:
 
 * A dump of the SLAVE 3.2 ROM is required to fix some hacks
     * I2C front panel data is not correctly handled (e.g. Play button)
+    * The IR codes from the Remote have the same issue when media control buttons are used.
 
 ## Simulation
 
