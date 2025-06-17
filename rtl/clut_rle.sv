@@ -9,7 +9,8 @@ module clut_rle (
     input file_type_e ft,
     input mosaic_factor_e mf
 );
-    wire passthrough = (ft == kBitmap);
+    // If the upper bit is 0, the second is to be ignored
+    wire passthrough = !ft[1];
 
     enum bit [3:0] {
         SINGLE,
