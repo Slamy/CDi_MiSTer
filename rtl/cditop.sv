@@ -191,7 +191,7 @@ module cditop (
         .hps_rtc(hps_rtc)
     );
 
-    wire vdsc_int;
+    wire vdsc_int  /*verilator public_flat_rd*/;
 
     mcd212 mcd212_inst (
         .clk(clk30),

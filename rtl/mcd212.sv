@@ -923,6 +923,13 @@ module mcd212 (
         bit r;
         bit g;
         bit b;
+    } cursor_color;
+
+    struct packed {
+        bit y;  // 1 full brightness, 0 half brightness
+        bit r;
+        bit g;
+        bit b;
     } backdrop_color_register;
 
     struct packed {
@@ -950,6 +957,16 @@ module mcd212 (
     bit inside_cursor_window;
     bit plane_b_in_front_of_a;
 
+    // Counts 0 to 11 to keep track of 12 frame periods
+    bit [3:0] cursor_blink_framecnt;
+    // Counts 12 frame periods the cursor is in the current state
+    bit [2:0] cursor_blink_periodcnt;
+    // If 1, then the cursor is either blinked off or complementary
+    // If 0, the cursor is shown like normal
+    bit cursor_blink_state;
+
+    localparam CURSOR_BLINK_PERIOD = 12;
+
     // mouse cursor
     always_ff @(posedge clk) begin
         if (hblank) active_pixel <= 0;
@@ -971,6 +988,41 @@ module mcd212 (
                                     (active_pixel >= cursor_position_reg.x) && (active_pixel < cursor_position_reg.x + 32);
             cursor_pixel <= active_cursor_line[4'((cursor_position_reg.x-active_pixel-10'd1)>>1)];
         end
+
+        if (new_frame) begin
+            if (cursor_control_register.cof == 0 || cursor_control_register.con == 0) begin
+                // Handle COF=0 or CON=0 as reset condition
+                cursor_blink_framecnt <= 0;
+                cursor_blink_state <= 0;
+                cursor_blink_periodcnt <= 0;
+            end else if (cursor_blink_framecnt == CURSOR_BLINK_PERIOD - 1) begin
+                cursor_blink_framecnt <= 0;
+
+                if (cursor_blink_periodcnt == cursor_control_register.cof - 1 && cursor_blink_state) begin
+                    cursor_blink_state <= 0;
+                    cursor_blink_periodcnt <= 0;
+                end else if (cursor_blink_periodcnt == cursor_control_register.con - 1 && !cursor_blink_state) begin
+                    cursor_blink_state <= 1;
+                    cursor_blink_periodcnt <= 0;
+                end else begin
+                    cursor_blink_periodcnt <= cursor_blink_periodcnt + 1;
+                end
+            end else begin
+                cursor_blink_framecnt <= cursor_blink_framecnt + 1;
+            end
+
+        end
+
+        // If blink type is on/off, force cursor_pixel to 0
+        if (!cursor_control_register.blkc && cursor_blink_state) cursor_pixel <= 0;
+    end
+
+    // Cursor complementary colors
+    always_comb begin
+        cursor_color.y = cursor_control_register.y;
+        cursor_color.r = cursor_control_register.r ^ cursor_blink_state;
+        cursor_color.g = cursor_control_register.g ^ cursor_blink_state;
+        cursor_color.b = cursor_control_register.b ^ cursor_blink_state;
     end
 
     // color mixing
@@ -1220,11 +1272,11 @@ module mcd212 (
 
         // cursor
         if (cursor_pixel && inside_cursor_window && cursor_control_register.en) begin
-            vidout.r = cursor_control_register.r ? 8'hff : 0;
-            vidout.g = cursor_control_register.g ? 8'hff : 0;
-            vidout.b = cursor_control_register.b ? 8'hff : 0;
+            vidout.r = cursor_color.r ? 8'hff : 0;
+            vidout.g = cursor_color.g ? 8'hff : 0;
+            vidout.b = cursor_color.b ? 8'hff : 0;
 
-            if (!cursor_control_register.y) begin
+            if (!cursor_color.y) begin
                 // Half brightness
                 vidout.r[7] = 0;
                 vidout.g[7] = 0;

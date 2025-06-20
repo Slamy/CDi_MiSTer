@@ -4,21 +4,21 @@ A project dedicated to create an FPGA implementation of the Philips CD-i to be u
 As every Philips CD-i player has a different hardware, this project focuses on reverse engineering the "Mono I" PCB.
 This mainboard is used in models like the 210/00, 210/05 or 220/20.
 
-Most games which only utilize the hardware of a CD-i should work as expected.
-Titles which require the Digital Video Cartridge will **NOT** work as the required hardware doesn't exist yet.
-The RAM expansion of the DVC is included and will enhance some games.
+Most games which only utilize the hardware of a base CD-i, should work as expected.
+Titles which require the Digital Video Cartridge will **NOT** work as the required
+hardware doesn't exist yet. The RAM expansion of the DVC is included and will enhance some games.
 
 ## Usage
 
 Place `cdi200.rom` as `boot0.rom` in `/media/fat/games/CD-i`.
 Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` as `boot1.rom` next to it.
 
-This core is tested with these files and their respective md5sum:
+This core is tested against these files and their respective md5sum:
 
     2969341396aa61e0143dc2351aaa6ef6  cdi200.rom
     3d20cf7550f1b723158b42a1fd5bac62  zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206
 
-Due to legal reasons, these files must be sourced separately.
+Due to legal reasons, they must be sourced separately.
 
 Save files are stored inside an 8K NvRAM. MiSTer will create one save file per CD.
 Whenever the NvRAM state changes, the "User" LED will light up, indicating
@@ -34,6 +34,7 @@ CD images can be stored as CHD or CUE/BIN format.
 
 * My NTSC CRT television set is not getting a stable image
   *  Please switch the core to NTSC and reset via OSD. This should fix the problem.
+  *  This can be performed blind with: OSD, Down, Action, 5x Down, Action
 
 ## Status
 
@@ -44,16 +45,18 @@ Core Utilization:
     Total block memory bits      630,471 / 5,662,720 ( 11 % )
     Total DSP Blocks             66 / 112 ( 59 % )
 
-### TODOs in order of priority
+### TODOs
 
 * Find a better solution for reducing CPU speed
+* Black flicker during intro of Ultimate Noah's Ark in 60 Hz mode
+    * A workaround is CPU overclocking. Problem not visible on real machine.
+* Give a signal to the user when CPU data stalling occured
 * Find a better solution for CD data stalling (take a screenshot or plug in a USB device)
     * PSX core seems to halt the whole machine to avoid this situation
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
-* Add rarely used missing MCD212 features
+* Add missing MCD212 features
     * Pixel Hold
-    * Blinking cursor
 * Investigate input responsiveness (skipped events?)
 * Investigate screeching sound effect in the menu of "Golf Tips"
 * Fix hang on audio track stop or change in media player
@@ -68,6 +71,7 @@ Core Utilization:
     * The ST flag is the issue here, causing a video mode change
 * Add SNAC support (IR remote + wired controller)
     * RC5 support is added. A test using real hardware is required.
+* Add 2 player support
 * CD+G
 * Possibly adding support for other PCBs (like Mono II)
 * Refurbish I2C for the front display and show the content as picture in picture during changes?
@@ -155,5 +159,10 @@ by emulation errors but are also present on the real machine.
 * QuizMania - Missing animation graphics during intro and alignment issues during video playback in menu
   * This game seems to have problems with 60Hz/NTSC mode. Both issues can be reproduced using real 210/05 hardware
   * I assume that this was a local production for the italian market and no testing was performed on NTSC machines
-
+* Inside the settings menu on the start screen, there are purple glitch pixels on the right edge of the screen
+  * How could they miss this? It is also present on a real 210/05
+* Lemmings is running slow on the core when compared to the Amiga version
+  * "Oh No!" *Explodes* It is running as slow as on real hardware,
+    but it seems that the CPU Turbo fixes this issue and makes it behave
+    more like the Amiga version.
 
