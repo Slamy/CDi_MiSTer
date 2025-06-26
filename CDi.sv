@@ -215,23 +215,26 @@ module emu (
         "-;",
         "S0,CUECHD,Load CD;",
         "-;",
-        "O[4],TV Mode,PAL,NTSC;",
-        "O[122:121],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-        "-;",
 
-        "P1,Debug Options;",
-        "P1-;",
-        "P1F1,ROM,Replace Boot ROM;",
-        "P1O[2],Disable Audio Att.,No,Yes;",
-        "P1O[3],UART Fake Space,No,Yes;",
-        "P1O[7:6],Force Video Plane,Original,A,B;",
-        "P1O[8],No reset on NvRAM change,No,Yes;",
-        "P1O[10:9],RGB Scale Limited to Full,0,1,2;",
-        "P1O[12],SERVO Audio CD,No,Yes;",
-        "P1O[11],CPU Turbo,No,Yes;",
+        "P1,Audio & Video;",
+        "P1O[4],Video Region,PAL,NTSC;",
+        "P1O[33:32],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
+        "P1O[35:34],Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;",
+        "P1O[39],Vertical Crop,Off,On(270);",
+        "P1O[10:9],RGB Scale,0-255,16-235,16-255;",
+
+        "P2,Debug Options;",
+        "P2-;",
+        "P2F1,ROM,Replace Boot ROM;",
+        "P2O[2],Disable Audio Att.,No,Yes;",
+        "P2O[3],UART Fake Space,No,Yes;",
+        "P2O[7:6],Force Video Plane,Original,A,B;",
+        "P2O[8],No reset on NvRAM change,No,Yes;",
+        "P2O[12],SERVO Audio CD,No,Yes;",
+        "P2O[11],CPU Turbo,No,Yes;",
 
         "O[5],Overclock input device,No,Yes;",
-        "O[14],Autoplay,No,Yes;",
+        "O[14],Autoplay,Yes,No;",
 
         "-;",
         "T[0],Reset;",
@@ -251,56 +254,52 @@ module emu (
     wire [  1:0] buttons;
     wire [127:0] status;
 
-    wire [  1:0] ar = status[122:121];
-    assign VIDEO_ARX = (ar == 0) ? 13'd4 : (13'(ar) - 13'd1);
-    assign VIDEO_ARY = (ar == 0) ? 13'd3 : 13'd0;
+    wire [ 10:0] ps2_key;
 
-    wire [10:0] ps2_key;
+    wire [ 15:0] JOY0  /*verilator public_flat_rw*/;
+    wire [ 15:0] JOY0_ANALOG  /*verilator public_flat_rw*/;
+    wire [ 24:0] MOUSE  /*verilator public_flat_rw*/;
 
-    wire [15:0] JOY0  /*verilator public_flat_rw*/;
-    wire [15:0] JOY0_ANALOG  /*verilator public_flat_rw*/;
-    wire [24:0] MOUSE  /*verilator public_flat_rw*/;
+    wire         ioctl_download  /*verilator public_flat_rw*/;
+    wire         ioctl_wr  /*verilator public_flat_rw*/;
+    wire [ 24:0] ioctl_addr  /*verilator public_flat_rw*/;
+    wire [ 15:0] ioctl_dout  /*verilator public_flat_rw*/;
+    wire [ 15:0] ioctl_index  /*verilator public_flat_rw*/;
+    wire         ioctl_wait  /*verilator public_flat_rw*/ = 0;
 
-    wire        ioctl_download  /*verilator public_flat_rw*/;
-    wire        ioctl_wr  /*verilator public_flat_rw*/;
-    wire [24:0] ioctl_addr  /*verilator public_flat_rw*/;
-    wire [15:0] ioctl_dout  /*verilator public_flat_rw*/;
-    wire [15:0] ioctl_index  /*verilator public_flat_rw*/;
-    wire        ioctl_wait  /*verilator public_flat_rw*/ = 0;
-
-    wire        clk_sys  /*verilator public_flat_rw*/;
-    wire        clk_audio  /*verilator public_flat_rw*/;
+    wire         clk_sys  /*verilator public_flat_rw*/;
+    wire         clk_audio  /*verilator public_flat_rw*/;
 
 
-    wire [31:0] cd_hps_lba;
-    wire        cd_hps_req  /*verilator public_flat_rd*/;
-    wire        cd_hps_ack  /*verilator public_flat_rw*/;
-    wire        cd_media_change  /*verilator public_flat_rw*/;
+    wire [ 31:0] cd_hps_lba;
+    wire         cd_hps_req  /*verilator public_flat_rd*/;
+    wire         cd_hps_ack  /*verilator public_flat_rw*/;
+    wire         cd_media_change  /*verilator public_flat_rw*/;
 
-    wire        nvram_hps_ack  /*verilator public_flat_rw*/;
-    bit         nvram_hps_wr;
-    bit         nvram_hps_rd  /*verilator public_flat_rd*/;
-    bit  [15:0] nvram_hps_din;
-    wire        nvram_media_change  /*verilator public_flat_rw*/;
+    wire         nvram_hps_ack  /*verilator public_flat_rw*/;
+    bit          nvram_hps_wr;
+    bit          nvram_hps_rd  /*verilator public_flat_rd*/;
+    bit  [ 15:0] nvram_hps_din;
+    wire         nvram_media_change  /*verilator public_flat_rw*/;
 
-    wire [ 7:0] sd_buff_addr  /*verilator public_flat_rw*/;
-    wire        sd_buff_wr  /*verilator public_flat_rw*/;
-    wire [15:0] sd_buff_dout  /*verilator public_flat_rw*/;
+    wire [  7:0] sd_buff_addr  /*verilator public_flat_rw*/;
+    wire         sd_buff_wr  /*verilator public_flat_rw*/;
+    wire [ 15:0] sd_buff_dout  /*verilator public_flat_rw*/;
 
-    wire        img_readonly;
-    wire [63:0] img_size  /*verilator public_flat_rw*/;
+    wire         img_readonly;
+    wire [ 63:0] img_size  /*verilator public_flat_rw*/;
 
-    wire [15:0] status_menumask = 0;
+    wire [ 15:0] status_menumask = 0;
 
-    bit         info_req;
-    bit  [ 7:0] info;
+    bit          info_req;
+    bit  [  7:0] info;
 
-    wire [64:0] hps_rtc;
+    wire [ 64:0] hps_rtc;
 
     // Flag which becomes active for some time when an NvRAM image is mounted
-    wire        nvram_img_mount = nvram_media_change && img_size != 0;
+    wire         nvram_img_mount = nvram_media_change && img_size != 0;
     // Flag which becomes active for some time when an NvRAM image is mounted
-    wire        cd_img_mount = cd_media_change && img_size != 0;
+    wire         cd_img_mount = cd_media_change && img_size != 0;
 
 `ifndef VERILATOR
     hps_io #(
@@ -353,6 +352,20 @@ module emu (
 
         .RTC(hps_rtc)
     );
+
+    wire [1:0] ar = status[33:32];
+    wire vcrop_en = status[39];
+
+    video_freak video_freak (
+        .*,
+        .VGA_DE_IN(~(HBlank | VBlank)),
+        .ARX((!ar) ? 13'd4 : (13'(ar) - 13'd1)),
+        .ARY((!ar) ? 13'd3 : 13'd0),
+        .CROP_SIZE(vcrop_en ? 10'd270 : 10'd0),
+        .CROP_OFF(0),
+        .SCALE(status[35:34])
+    );
+
 `endif
 
     ///////////////////////   CLOCKS   ///////////////////////////////
@@ -643,7 +656,7 @@ module emu (
     wire [1:0] debug_limited_to_full = status[10:9];
     wire audio_cd_in_tray = status[12];
     wire disable_cpu_starve = status[11];
-    wire config_auto_play = status[14];
+    wire config_auto_play = !status[14];
 `endif
     wire HBlank;
     wire HSync;
@@ -753,7 +766,6 @@ module emu (
     assign CLK_VIDEO = clk_sys;
     assign CE_PIXEL = ce_pix;
 
-    assign VGA_DE = ~(HBlank | VBlank);
     assign VGA_HS = HSync;
     assign VGA_VS = VSync;
     assign VGA_R = r;
