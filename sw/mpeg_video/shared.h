@@ -115,7 +115,7 @@ struct image_synthesis_descriptor *get_next_ready_synthesis_desc()
     if (cmdcnt != retval->cmdcnt)
     {
         // something went horribly wrong
-        *((volatile uint8_t *)OUTPORT_END) = 7;
+        *((volatile uint8_t *)OUTPORT_END) = 8;
         for (;;)
             ;
     }

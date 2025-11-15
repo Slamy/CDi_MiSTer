@@ -1618,6 +1618,24 @@ static const plm_vlc_t PLM_VIDEO_MACROBLOCK_ADDRESS_INCREMENT[] = {
 	{       0,   23}, {       0,   22},  //  39: 0000 0100 01x
 };
 
+static inline int plm_dma_read_macroblock_address_increment(plm_dma_buffer_t *buffer)
+{
+	int result;
+	// Use soft huffman decoding in case we have less than 13 bits
+	if (!plm_dma_buffer_has(buffer, 13))
+	{
+		result = plm_dma_buffer_read_vlc(buffer, PLM_VIDEO_MACROBLOCK_ADDRESS_INCREMENT);
+	}
+	else
+	{
+		fifo_ctrl->hw_huffman_read_dct_coeff=1;
+		__asm volatile("" : : : "memory");
+		result = fifo_ctrl->hw_huffman_read_dct_coeff;
+	}
+	return result;
+}
+
+
 static const plm_vlc_t PLM_VIDEO_MACROBLOCK_TYPE_INTRA[] = {
 	{  1 << 1,    0}, {       0,  0x01},  //   0: x
 	{      -1,    0}, {       0,  0x11},  //   1: 0x
@@ -1908,6 +1926,25 @@ static const plm_vlc_uint_t PLM_VIDEO_DCT_COEFF[] = {
 	{       0,   0x1e01}, {       0,   0x1d01},  // 110: 0000 0000 0001 110x
 	{       0,   0x1c01}, {       0,   0x1b01},  // 111: 0000 0000 0001 111x
 };
+
+static inline uint16_t plm_dma_read_dct_coeff(plm_dma_buffer_t *buffer)
+{
+	uint16_t result;
+	
+	// Use soft huffman decoding in case we have less than 16 bits
+	if (!plm_dma_buffer_has(buffer, 16))
+	{
+		result = plm_dma_buffer_read_vlc_uint(buffer, PLM_VIDEO_DCT_COEFF);
+	}
+	else
+	{
+		fifo_ctrl->hw_huffman_read_dct_coeff=0;
+		__asm volatile("" : : : "memory");
+		return fifo_ctrl->hw_huffman_read_dct_coeff;
+	}
+
+	return result;
+}
 
 typedef struct {
 	int full_px;
@@ -2365,16 +2402,16 @@ void plm_video_decode_macroblock(plm_video_t *self) {
 
 	// Decode increment
 	int increment = 0;
-	int t = plm_dma_buffer_read_vlc(self->buffer, PLM_VIDEO_MACROBLOCK_ADDRESS_INCREMENT);
+	int t = plm_dma_read_macroblock_address_increment(self->buffer);
 
 	while (t == 34) {
 		// macroblock_stuffing
-		t = plm_dma_buffer_read_vlc(self->buffer, PLM_VIDEO_MACROBLOCK_ADDRESS_INCREMENT);
+		t = plm_dma_read_macroblock_address_increment(self->buffer);
 	}
 	while (t == 35) {
 		// macroblock_escape
 		increment += 33;
-		t = plm_dma_buffer_read_vlc(self->buffer, PLM_VIDEO_MACROBLOCK_ADDRESS_INCREMENT);
+		t = plm_dma_read_macroblock_address_increment(self->buffer);
 	}
 	increment += t;
 
@@ -2717,16 +2754,7 @@ void plm_video_decode_block(plm_video_t *self, int block) {
 	while (TRUE) {
 		int run = 0;
 		OUT_DEBUG = 20;
-#if 0
-		uint16_t coeff = plm_dma_buffer_read_vlc_uint(self->buffer, PLM_VIDEO_DCT_COEFF);
-#else
-		// We assume a requirement for 16 bits.
-		// This is huffman encoded, so the length will vary. But 16 is the maximum
-		while (!plm_dma_buffer_has(self->buffer, 16));
-		fifo_ctrl->hw_huffman_read_dct_coeff=1;
-		__asm volatile("" : : : "memory");
-		uint16_t coeff = fifo_ctrl->hw_huffman_read_dct_coeff;
-#endif
+		uint16_t coeff = plm_dma_read_dct_coeff(self->buffer);
 		OUT_DEBUG = 32;
 
 		if ((coeff == 0x0001) && (n > 0) && (plm_dma_buffer_read(self->buffer, 1) == 0)) {

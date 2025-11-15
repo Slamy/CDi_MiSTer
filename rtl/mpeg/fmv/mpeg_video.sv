@@ -79,10 +79,13 @@ module mpeg_video (
 
     bit [15:0] dct_coeff_result;
     bit dct_coeff_huffman_active = 0;
+    bit dct_coeff_huffman_table = 0;
+
     wire dct_coeff_result_valid;
     dct_coeff_huffman_decoder huff (
         .clk(clk_mpeg),
         .reset(reset_dsp_enabled_clk_mpeg),
+        .codetable(dct_coeff_huffman_table),
         .data_valid(dct_coeff_huffman_active && hw_read_mem_ready && !dct_coeff_result_valid),
         .data(mpeg_in_fifo_out[31-hw_read_bit_shift]),
         .result_valid(dct_coeff_result_valid),
@@ -227,6 +230,7 @@ module mpeg_video (
                 if (dmem_cmd_payload_address_1 == 32'h1000200c) begin
                     hw_read_count <= 1;
                     dct_coeff_huffman_active <= 1;
+                    dct_coeff_huffman_table <= dmem_cmd_payload_data_1[0];
                 end
             end
 

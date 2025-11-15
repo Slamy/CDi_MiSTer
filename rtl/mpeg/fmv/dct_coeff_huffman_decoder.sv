@@ -3,6 +3,7 @@
 module dct_coeff_huffman_decoder (
     input clk,
     input reset,
+    input codetable,
     input data_valid,
     input data,
     output bit result_valid,
@@ -18,6 +19,50 @@ module dct_coeff_huffman_decoder (
 
     // got this from https://github.com/phoboslab/pl_mpeg/blob/master/pl_mpeg.h
     // verilog_format: off
+
+    plm_vlc_uint_t PLM_VIDEO_MACROBLOCK_ADDRESS_INCREMENT[40*2] = '{
+        '{  1,    0}, '{  0,    1},  //   0: x
+        '{  2,    0}, '{  3,    0},  //   1: 0x
+        '{  4,    0}, '{  5,    0},  //   2: 00x
+        '{  0,    3}, '{  0,    2},  //   3: 01x
+        '{  6,    0}, '{  7,    0},  //   4: 000x
+        '{  0,    5}, '{  0,    4},  //   5: 001x
+        '{  8,    0}, '{  9,    0},  //   6: 0000x
+        '{  0,    7}, '{  0,    6},  //   7: 0001x
+        '{ 10,    0}, '{ 11,    0},  //   8: 0000 0x
+        '{ 12,    0}, '{ 13,    0},  //   9: 0000 1x
+        '{ 14,    0}, '{ 15,    0},  //  10: 0000 00x
+        '{ 16,    0}, '{ 17,    0},  //  11: 0000 01x
+        '{ 18,    0}, '{ 19,    0},  //  12: 0000 10x
+        '{  0,    9}, '{  0,    8},  //  13: 0000 11x
+        '{  0,    0}, '{ 20,    0},  //  14: 0000 000x
+        '{  0,    0}, '{ 21,    0},  //  15: 0000 001x
+        '{ 22,    0}, '{ 23,    0},  //  16: 0000 010x
+        '{  0,   15}, '{  0,   14},  //  17: 0000 011x
+        '{  0,   13}, '{  0,   12},  //  18: 0000 100x
+        '{  0,   11}, '{  0,   10},  //  19: 0000 101x
+        '{ 24,    0}, '{ 25,    0},  //  20: 0000 0001x
+        '{ 26,    0}, '{ 27,    0},  //  21: 0000 0011x
+        '{ 28,    0}, '{ 29,    0},  //  22: 0000 0100x
+        '{ 30,    0}, '{ 31,    0},  //  23: 0000 0101x
+        '{ 32,    0}, '{  0,    0},  //  24: 0000 0001 0x
+        '{  0,    0}, '{ 33,    0},  //  25: 0000 0001 1x
+        '{ 34,    0}, '{ 35,    0},  //  26: 0000 0011 0x
+        '{ 36,    0}, '{ 37,    0},  //  27: 0000 0011 1x
+        '{ 38,    0}, '{ 39,    0},  //  28: 0000 0100 0x
+        '{  0,   21}, '{  0,   20},  //  29: 0000 0100 1x
+        '{  0,   19}, '{  0,   18},  //  30: 0000 0101 0x
+        '{  0,   17}, '{  0,   16},  //  31: 0000 0101 1x
+        '{  0,   35}, '{  0,    0},  //  32: 0000 0001 00x
+        '{  0,    0}, '{  0,   34},  //  33: 0000 0001 11x
+        '{  0,   33}, '{  0,   32},  //  34: 0000 0011 00x
+        '{  0,   31}, '{  0,   30},  //  35: 0000 0011 01x
+        '{  0,   29}, '{  0,   28},  //  36: 0000 0011 10x
+        '{  0,   27}, '{  0,   26},  //  37: 0000 0011 11x
+        '{  0,   25}, '{  0,   24},  //  38: 0000 0100 00x
+        '{  0,   23}, '{  0,   22}   //  39: 0000 0100 01x
+    };
+
     plm_vlc_uint_t PLM_VIDEO_DCT_COEFF[112*2] = '{
         '{   1,        0}, '{   0, 16'h0001},  //   0: x
         '{   2,        0}, '{   3,        0},  //   1: 0x
@@ -134,7 +179,13 @@ module dct_coeff_huffman_decoder (
     };
     // verilog_format: on
 
-    wire reached_final_state = PLM_VIDEO_DCT_COEFF[{state, data}].index == 0;
+    plm_vlc_uint_t current_entry;
+    wire reached_final_state = current_entry.index == 0;
+
+    always_comb begin
+        if (codetable) current_entry = PLM_VIDEO_MACROBLOCK_ADDRESS_INCREMENT[{state[5:0], data}];
+        else current_entry = PLM_VIDEO_DCT_COEFF[{state, data}];
+    end
 
     always_ff @(posedge clk) begin
         result_valid <= 0;
@@ -144,10 +195,10 @@ module dct_coeff_huffman_decoder (
         end else if (data_valid) begin
             if (reached_final_state) begin
                 result_valid <= 1;
-                result <= PLM_VIDEO_DCT_COEFF[{state, data}].value;
+                result <= current_entry.value;
                 state <= 0;
             end else begin
-                state <= PLM_VIDEO_DCT_COEFF[{state, data}].index;
+                state <= current_entry.index;
             end
         end
     end
