@@ -59,9 +59,14 @@ Expected synthesis times with Quartus 17.0.2
 
 ### TODOs
 
+* "Uncover featuring Tatjana (Europe)" regressions?
+* Star Trek VI - Terre Inconnue (France) (Disc 1) freezes? Disc 2 does too?
+* Regression of "Historia del Arte Español" (working in DVC rc2)
+    * Blank video?
 * Fix Christmas Crisis bonus ride
     * Video is much wider than the CD-i resolution. Window function required
 * Fix position of MPEG video, relative to base case video
+    * Seems very perceivable with "Les Guignols de l’Info"
 * Add MPEG audio attenuation
 * "Mutant Rampage - Bodyslam" has a tendency to freeze?
 * "The Last Bounty Hunter", "Drug Wars", "Mad Dog 2", "Who Shot Johnny Rock?" have regressions (works in rc2)?

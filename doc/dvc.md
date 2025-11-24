@@ -252,6 +252,8 @@ Memory Map
     V_SCRupd *(unsigned long*)(0x00dfb180 + 0x166)
     V_Status  *(unsigned short*)(0x00dfb180 + 0x136)
     V_PICCnt *(unsigned char*)(0x00dfb180 + 0x1cd)
+    V_Scroll *(unsigned short*)(0x00dfb180 + 0x16a)
+    V_VCMD *(unsigned short*)(0x00dfb180 + 0x16c)
 
   FMA (no source code available?)
 
