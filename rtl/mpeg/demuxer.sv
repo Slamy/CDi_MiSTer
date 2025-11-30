@@ -8,7 +8,9 @@ module mpeg_demuxer (
     input [3:0] stream_filter,
     output bit signed [32:0] system_clock_reference_start_time,
     output bit signed [32:0] decoding_timestamp,
+    output bit signed [32:0] presentation_timestamp,
     output bit decoding_timestamp_updated,
+    output bit presentation_timestamp_updated,
     output bit system_clock_reference_start_time_valid,
     output bit event_program_end
 );
@@ -47,13 +49,14 @@ module mpeg_demuxer (
     bit packet_length_decreasing;
     bit [15:0] packet_length;
     bit signed [32:0] system_clock_reference;
-    bit signed [32:0] presentation_timestamp;
+    bit signed [32:0] presentation_timestamp_temp;
     bit signed [32:0] decoding_timestamp_temp;
     bit dts_present;
 
     always_ff @(posedge clk) begin
         event_program_end <= 0;
         decoding_timestamp_updated <= 0;
+        presentation_timestamp_updated <= 0;
 
         if (reset) begin
             decoding_timestamp <= 0;
@@ -64,6 +67,7 @@ module mpeg_demuxer (
             packet_length <= 0;
             packet_length_decreasing <= 0;
             presentation_timestamp <= 0;
+            presentation_timestamp_temp <= 0;
             system_clock_reference <= 0;
             system_clock_reference_start_time <= 0;
             system_clock_reference_start_time_valid <= 0;
@@ -82,12 +86,12 @@ module mpeg_demuxer (
             })
 
                 // verilog_format: off
-                {PACK5, 8'h??}: begin         
+                {PACK5, 8'h??}: begin
                     demux_state <= IDLE;
                     $display ("%s PACK %d", unit, system_clock_reference);
                 end
-                
-                {PACK4, 8'h??}: begin                    
+
+                {PACK4, 8'h??}: begin
                     demux_state <= PACK5;
                     system_clock_reference[6:0] <= mpeg_data[7:1];
                 end
@@ -108,13 +112,11 @@ module mpeg_demuxer (
                     system_clock_reference[32:30] <= mpeg_data[3:1];
                 end
 
-                {PES8, 8'h??}: begin         
+                {PES8, 8'h??}: begin
                     demux_state <= IDLE;
 
                     if (dts_present) begin
                         $display ("%s PES %d %d", unit, presentation_timestamp, decoding_timestamp_temp);
-                        decoding_timestamp <= decoding_timestamp_temp;
-                        decoding_timestamp_updated <= 1;
                     end
                     else
                         $display ("%s PES %d", unit, presentation_timestamp);
@@ -128,6 +130,11 @@ module mpeg_demuxer (
 
                 {PES_DTS4, 8'b???????1}: begin // DTS
                     decoding_timestamp_temp[6:0] <= mpeg_data[7:1];
+
+                    decoding_timestamp_updated <= 1;
+                    decoding_timestamp[6:0] <= mpeg_data[7:1];
+                    decoding_timestamp[32:7] <= decoding_timestamp_temp[32:7];
+
                     mpeg_packet_body <= 1;
                     demux_state <= PES8;
                 end
@@ -149,7 +156,12 @@ module mpeg_demuxer (
                 end
 
                 {PES7, 8'b???????1}: begin // PTS
+                    presentation_timestamp_temp[6:0] <= mpeg_data[7:1];
+
+                    presentation_timestamp_updated <= 1;
                     presentation_timestamp[6:0] <= mpeg_data[7:1];
+                    presentation_timestamp[32:7] <= presentation_timestamp_temp[32:7];
+
                     if (dts_present) begin
                         demux_state <= PES_DTS0;
                     end else begin
@@ -159,23 +171,23 @@ module mpeg_demuxer (
                 end
                 {PES6, 8'h??}: begin // PTS
                     demux_state <= PES7;
-                    presentation_timestamp[14:7] <= mpeg_data;
+                    presentation_timestamp_temp[14:7] <= mpeg_data;
                 end
                 {PES5, 8'b???????1}: begin // PTS
-                    presentation_timestamp[21:15] <= mpeg_data[7:1];
+                    presentation_timestamp_temp[21:15] <= mpeg_data[7:1];
                     demux_state <= PES6;
                 end
                 {PES4, 8'h??}: begin // PTS
                     demux_state <= PES5;
-                    presentation_timestamp[29:22] <= mpeg_data;
+                    presentation_timestamp_temp[29:22] <= mpeg_data;
                 end
                 {PES2, 8'b0010???1}: begin // PTS (no DTS)
-                    presentation_timestamp[32:30] <= mpeg_data[3:1];
+                    presentation_timestamp_temp[32:30] <= mpeg_data[3:1];
                     dts_present <= 0;
                     demux_state <= PES4;
                 end
                 {PES2, 8'b0011???1}: begin // PTS and DTS
-                    presentation_timestamp[32:30] <= mpeg_data[3:1];
+                    presentation_timestamp_temp[32:30] <= mpeg_data[3:1];
                     dts_present <= 1;
                     demux_state <= PES4;
                 end
@@ -195,7 +207,7 @@ module mpeg_demuxer (
                 {PES2, 8'hff}: begin // stuffing byte
                     demux_state <= PES2;
                 end
-                
+
                 {PES1, 8'h??}: begin
                     demux_state <= PES2;
                     packet_length[7:0] <= mpeg_data;

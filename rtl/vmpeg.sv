@@ -183,7 +183,9 @@ module vmpeg (
     bit [3:0] fma_stream_number;
 
     wire signed [32:0] fmv_decoding_timestamp;
+    wire signed [32:0] fmv_presentation_timestamp;
     wire fmv_decoding_timestamp_updated;
+    wire fmv_presentation_timestamp_updated;
 
     mpeg_demuxer #(
         .unit("FMA")
@@ -197,7 +199,9 @@ module vmpeg (
         .dclk(fma_dclk),
         .system_clock_reference_start_time(fma_system_clock_reference_start_time),
         .decoding_timestamp(),
+        .presentation_timestamp(),
         .decoding_timestamp_updated(),
+        .presentation_timestamp_updated(),
         .system_clock_reference_start_time_valid(fma_system_clock_reference_start_time_valid),
         .event_program_end(fma_event_program_end)
     );
@@ -214,7 +218,9 @@ module vmpeg (
         .dclk(fmv_dclk),
         .system_clock_reference_start_time(fmv_system_clock_reference_start_time),
         .decoding_timestamp(fmv_decoding_timestamp),
+        .presentation_timestamp(fmv_presentation_timestamp),
         .decoding_timestamp_updated(fmv_decoding_timestamp_updated),
+        .presentation_timestamp_updated(fmv_presentation_timestamp_updated),
         .system_clock_reference_start_time_valid(fmv_system_clock_reference_start_time_valid),
         .event_program_end(fmv_event_program_end)
     );
@@ -411,7 +417,7 @@ module vmpeg (
             15'h2046: dout = video_data_input_command_register;  // 0E0408C GEN_VDI_CMD
             15'h204C: dout = fmv_dclk[21:6];  // 0E04098 GEN_SYSCR
             15'h204E: dout = 0;  // e0409c GEN_SYNC_DIFF?
-            15'h2050: dout = {1'b0, fmv_decoding_timestamp[21:7]};  // 00E040A0 Decoding Timestamp
+            15'h2050: dout = {1'b0, fmv_presentation_timestamp[21:7]};  // 00E040A0 DTS or PTS?
             15'h2052: dout = {12'b0, fmv_pictures_in_fifo};  // 00E040A4 ?? Pictures in fifo?
             15'h2054: dout = 16'h0e10;  // E040A8 Picture Rate ? e10 is 25 FPS. Only read.
             15'h2055: dout = 16'h0708;  // e040aa ?? Display Rate ? Never written. Only read.
@@ -497,7 +503,7 @@ module vmpeg (
         end else begin
 
             if (restart_fmv_dsp_enable_q) fmv_dsp_enable <= 1;
-            if (fmv_decoding_timestamp_updated) video_data_input_command_register[14] <= 1;
+            if (fmv_presentation_timestamp_updated) video_data_input_command_register[14] <= 1;
 
             if (vsync && !vsync_q) begin
                 fmv_interrupt_status_register.vsync <= 1;
@@ -793,6 +799,7 @@ module vmpeg (
                               0020 VidOn
                               0100 Hide
                               0200 Show
+                              0420 Show on next picture change
                             */
                             fmv_video_command_register <= din;
 
