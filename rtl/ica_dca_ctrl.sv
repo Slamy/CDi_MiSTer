@@ -171,7 +171,7 @@ module ica_dca_ctrl (
                     end
                 end
                 ICA_EXECUTE: begin
-                    state <= IDLE;
+                    state <= ICA_STALL;
                 end
                 ICA_STALL: begin
                     stall_cnt <= stall_cnt + 1;
