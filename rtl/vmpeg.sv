@@ -134,6 +134,10 @@ module vmpeg (
         .vidout,
         .display_offset_x(video_ctrl_x_display[8:0]),
         .display_offset_y(video_ctrl_y_display[8:0]),
+        .window_offset_y(video_ctrl_decoder_offset_y[8:0]),
+        .window_offset_x(video_ctrl_decoder_offset_x[8:0]),
+        .window_width(video_ctrl_window_width[8:0]),
+        .window_height(video_ctrl_window_height[8:0]),
         .show_on_next_video_frame(fmv_show_on_next_video_frame),
         .event_sequence_end(fmv_event_sequence_end),
         .event_buffer_underflow(fmv_event_buffer_underflow),
@@ -314,10 +318,23 @@ module vmpeg (
 
     bit [15:0] video_ctrl_y_active = 0;
     bit [15:0] video_ctrl_x_active = 0;
+
+    // Where does this come from? Where is it used?
     bit [15:0] video_ctrl_y_offset = 0;
     bit [15:0] video_ctrl_x_offset = 0;
+
+    // Sum of mv_org() + mv_pos()
     bit [15:0] video_ctrl_y_display = 0;
     bit [15:0] video_ctrl_x_display = 0;
+
+    // set by mv_window(_,_,x,y,W,H_);
+    bit [15:0] video_ctrl_window_width = 0;
+    bit [15:0] video_ctrl_window_height = 0;
+
+    // set by mv_window(_,_,X,Y,w,h_);
+    bit [15:0] video_ctrl_decoder_offset_y = 0;
+    bit [15:0] video_ctrl_decoder_offset_x = 0;
+
     bit [15:0] video_data_input_command_register = 0;
 
     bit [15:0] image_height2 = 0;
@@ -375,12 +392,16 @@ module vmpeg (
             15'h2030: dout = fmv_interrupt_enable_register;  // 0E04060
             15'h2031: dout = fmv_interrupt_status_register;  // 0E04062
             15'h2032: dout = fmv_timer_compare_register;  // 0E04064
-            15'h2036: dout = video_ctrl_y_offset;  // 0E0406C
-            15'h2037: dout = video_ctrl_x_offset;  // 0E0406E
-            15'h2038: dout = video_ctrl_y_active;  // 0E04070
-            15'h2039: dout = video_ctrl_x_active;  // 0E04072
-            15'h203a: dout = video_ctrl_y_display;  // 0E04074
-            15'h203b: dout = video_ctrl_x_display;  // 0E04076
+            15'h2036: dout = video_ctrl_y_offset;  // 0E0406C FMA_VOFF
+            15'h2037: dout = video_ctrl_x_offset;  // 0E0406E FMV_HOFF
+            15'h2038: dout = video_ctrl_y_active;  // 0E04070 FMV_VPIX
+            15'h2039: dout = video_ctrl_x_active;  // 0E04072 FMV_HPIX
+            15'h203a: dout = video_ctrl_y_display;  // 0E04074 FMV_SCRPOS Y
+            15'h203b: dout = video_ctrl_x_display;  // 0E04076 FMV_SCRPOS X
+            15'h203c: dout = video_ctrl_window_height;  // 0E04078 FMV_DECWIN H
+            15'h203d: dout = video_ctrl_window_width;  // 0E0407A FMV_DECWIN W
+            15'h203e: dout = video_ctrl_decoder_offset_y;  // 0E0407C FMV_DECOFF Y
+            15'h203f: dout = video_ctrl_decoder_offset_x;  // 0E0407E FMV_DECOFF X
             15'h2044: dout = 0;  // E04088 Decoder Command? GEN_DEC_CMD?
             15'h2046: dout = video_data_input_command_register;  // 0E0408C GEN_VDI_CMD
             15'h204C: dout = fmv_dclk[21:6];  // 0E04098 GEN_SYSCR
@@ -417,6 +438,7 @@ module vmpeg (
     bit restart_fmv_dsp_enable  /*verilator public_flat_rd*/;
     bit restart_fmv_dsp_enable_q;
     bit pending_fma_stream_change;
+    bit register_update_latch;
 
     always @(posedge clk) begin
         bus_ack <= 0;
@@ -459,16 +481,27 @@ module vmpeg (
             video_ctrl_y_active <= 0;
             video_ctrl_y_display <= 0;
             video_ctrl_y_offset <= 0;
+            video_ctrl_window_width <= 0;
+            video_ctrl_window_height <= 0;
+            video_ctrl_decoder_offset_y <= 0;
+            video_ctrl_decoder_offset_x <= 0;
             video_data_input_command_register <= 0;
             fmv_show_on_next_video_frame <= 0;
             pending_fma_stream_change <= 0;
-
+            register_update_latch <= 0;
         end else begin
 
             if (restart_fmv_dsp_enable_q) fmv_dsp_enable <= 1;
             if (fmv_decoding_timestamp_updated) video_data_input_command_register[14] <= 1;
 
-            if (vsync && !vsync_q) fmv_interrupt_status_register.vsync <= 1;
+            if (vsync && !vsync_q) begin
+                fmv_interrupt_status_register.vsync <= 1;
+
+                if (register_update_latch) begin
+                    fmv_interrupt_status_register.vcup <= 1;
+                    register_update_latch <= 0;
+                end
+            end
 
             if (fmv_event_sequence_header) begin
                 fmv_interrupt_status_register.seq <= 1;
@@ -746,10 +779,19 @@ module vmpeg (
                             $display("FMV Write VIDCMD Register %x %x", address[15:1], din);
                             /*
 	                        according to fmvd.txt
+                              0008 RegsUpd
+                              000c Scroll + RegsUpd
+                              0020 VidOn
                               0100 Hide
                               0200 Show
                             */
                             fmv_video_command_register <= din;
+
+                            // 0008 RegsUpd
+                            if (din[3]) begin
+                                register_update_latch <= 1;
+                                $display("RegsUpd");
+                            end
 
                             // Hide 0100
                             if (din[8]) fmv_show_on_next_video_frame <= 0;
@@ -757,7 +799,10 @@ module vmpeg (
                             // Show Window 0200
                             if (din[9]) fmv_show_on_next_video_frame <= 1;
                             // Show Window on next picture change 0400
-                            if (din[10]) fmv_show_on_next_video_frame <= 1;
+                            if (din[10]) begin
+                                fmv_show_on_next_video_frame <= 1;
+                                register_update_latch <= 1;
+                            end
 
                             // TODO this might not be right
                         end
@@ -793,6 +838,24 @@ module vmpeg (
                             $display("FMV Write X Display %x %x ?", address[15:1], din);
                             video_ctrl_x_display <= din;
                         end
+
+                        15'h203c: begin
+                            $display("FMV Write FMV_DECWIN H %x %x ?", address[15:1], din);
+                            video_ctrl_window_height <= din;
+                        end
+                        15'h203d: begin
+                            $display("FMV Write FMV_DECWIN W %x %x ?", address[15:1], din);
+                            video_ctrl_window_width <= din;
+                        end
+                        15'h203e: begin
+                            $display("FMV Write FMV_DECOFF Y %x %x ?", address[15:1], din);
+                            video_ctrl_decoder_offset_y <= din;
+                        end
+                        15'h203f: begin
+                            $display("FMV Write FMV_DECOFF X %x %x ?", address[15:1], din);
+                            video_ctrl_decoder_offset_x <= din;
+                        end
+
                         15'h2046: begin
                             $display("FMV Write GEN_VDI_CMD %x %x ?", address[15:1], din);
                             video_data_input_command_register <= din;

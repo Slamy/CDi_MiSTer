@@ -1,7 +1,6 @@
 
-// For U and V which needs to be doubled in height.
-// To avoid fetching the same data twice, we cache it here
-module ddr_chroma_line_buffer (
+// For buffering of a Y line
+module ddr_luma_line_buffer (
     // Input
     input clk_in,
     input reset,
@@ -9,18 +8,16 @@ module ddr_chroma_line_buffer (
     input we,
     // Output
     input clk_out,
-    input [8:0] raddr,  // 512 x 8
+    input [9:0] raddr,  // 640 x 8
     output bit [7:0] q
 );
 
     // The maximum resolution for MPEG should be 384 for the CD-i
     // But games like Christmas Crisis have a 528 pixel wide frame and crop it
     // We will go for 640 pixels here, to be safe.
-    // Since U and V are halfed, we need 320 pixels of storage
-    // To be safe, we go for 512 pixels here
 
-    bit [5:0] waddr;  // 64 x 64
-    bit [7:0][7:0] ram[512/8];
+    bit [6:0] waddr;  // 128 x 64
+    bit [7:0][7:0] ram[640/8];
 
     always_ff @(posedge clk_in) begin
         if (reset) waddr <= 0;
@@ -32,8 +29,8 @@ module ddr_chroma_line_buffer (
     end
 
     always_ff @(posedge clk_out) begin
-        q <= ram[raddr[8:3]][raddr[2:0]];
+        q <= ram[raddr[9:3]][raddr[2:0]];
     end
 
-endmodule : ddr_chroma_line_buffer
+endmodule : ddr_luma_line_buffer
 

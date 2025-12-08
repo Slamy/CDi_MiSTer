@@ -54,7 +54,7 @@ module ddr_to_byte_fifo (
 
     // The threshold can't be set to exactly half.
     // There is a latency of this signal because of the clock synchronization above
-    // The supplying machine might always provide more than requested becaues of this!
+    // The supplying machine might always provide more than requested because of this!
     assign half_empty = cnt_clkin < 100;
 
     always_ff @(posedge clk_in) begin

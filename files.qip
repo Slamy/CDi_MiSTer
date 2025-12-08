@@ -23,7 +23,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fma/mpeg_audiofifo.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fma/mpeg_input_stream_fifo_8k.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/dct_coeff_huffman_decoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/ddr_chroma_line_buffer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/ddr_to_byte_fifo.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/ddr_luma_line_buffer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/decoder_firmware_memory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/dual_port_videoram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/dualport_shared_ram.sv
