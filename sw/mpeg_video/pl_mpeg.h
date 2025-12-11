@@ -354,7 +354,6 @@ int plm_get_num_video_streams(plm_t *self);
 
 int plm_get_width(plm_t *self);
 int plm_get_height(plm_t *self);
-int32_t plm_get_pixel_aspect_ratio(plm_t *self);
 
 
 // Get the frameperiod of the video stream in frames per second.
@@ -712,7 +711,6 @@ int plm_video_has_header(plm_video_t *self);
 // Get the frameperiod in frames per second.
 
 int32_t plm_video_get_frameperiod(plm_video_t *self);
-int32_t plm_video_get_pixel_aspect_ratio(plm_video_t *self);
 
 
 // Get the display width/height.
@@ -923,12 +921,6 @@ int plm_get_height(plm_t *self) {
 int32_t plm_get_frameperiod(plm_t *self) {
 	return (plm_init_decoders(self) && self->video_decoder)
 		? plm_video_get_frameperiod(self->video_decoder)
-		: 0;
-}
-
-int32_t plm_get_pixel_aspect_ratio(plm_t *self) {
-	return (plm_init_decoders(self) && self->video_decoder)
-		? plm_video_get_pixel_aspect_ratio(self->video_decoder)
 		: 0;
 }
 
@@ -1519,25 +1511,6 @@ static const int PLM_START_USER_DATA = 0xB2;
 #define PLM_START_IS_SLICE(c) \
 	(c >= PLM_START_SLICE_FIRST && c <= PLM_START_SLICE_LAST)
 
-#define FRACTIONAL_ASPECT_RATIO(x) (256.0 * x)
-
-static const float PLM_VIDEO_PIXEL_ASPECT_RATIO[] = {
-	FRACTIONAL_ASPECT_RATIO(1.0000), /* square pixels */
-	FRACTIONAL_ASPECT_RATIO(0.6735), /* 3:4? */
-	FRACTIONAL_ASPECT_RATIO(0.7031), /* MPEG-1 / MPEG-2 video encoding divergence? */
-	FRACTIONAL_ASPECT_RATIO(0.7615), 
-	FRACTIONAL_ASPECT_RATIO(0.8055),
-	FRACTIONAL_ASPECT_RATIO(0.8437),
-	FRACTIONAL_ASPECT_RATIO(0.8935),
-	FRACTIONAL_ASPECT_RATIO(0.9157),
-	FRACTIONAL_ASPECT_RATIO(0.9815),
-	FRACTIONAL_ASPECT_RATIO(1.0255),
-	FRACTIONAL_ASPECT_RATIO(1.0695),
-	FRACTIONAL_ASPECT_RATIO(1.0950),
-	FRACTIONAL_ASPECT_RATIO(1.1575),
-	FRACTIONAL_ASPECT_RATIO(1.2051),
-};
-
 #define TICKS_30MHZ(x) (x ? 30000000.0/x : 10000)
 static const uint32_t PLM_VIDEO_PICTURE_RATE[] = {
 	TICKS_30MHZ(0.000),
@@ -2070,12 +2043,6 @@ int32_t plm_video_get_frameperiod(plm_video_t *self) {
 		: 0;
 }
 
-int32_t plm_video_get_pixel_aspect_ratio(plm_video_t *self) {
-	return plm_video_has_header(self)
-		? seq_hdr_conf.pixel_aspect_ratio
-		: 0;
-}
-
 int plm_video_get_width(plm_video_t *self) {
 	return plm_video_has_header(self)
 		? seq_hdr_conf.width
@@ -2208,21 +2175,9 @@ int plm_video_decode_sequence_header(plm_video_t *self) {
 	if (seq_hdr_conf.width <= 0 || seq_hdr_conf.height <= 0) {
 		return FALSE;
 	}
-
+	
 	// Get pixel aspect ratio
-	int pixel_aspect_ratio_code;
-	pixel_aspect_ratio_code = plm_dma_buffer_read(self->buffer, 4);
-	pixel_aspect_ratio_code -= 1;
-	if (pixel_aspect_ratio_code < 0) {
-		pixel_aspect_ratio_code = 0;
-	}
-	int par_last = (sizeof(PLM_VIDEO_PIXEL_ASPECT_RATIO) /
-			sizeof(PLM_VIDEO_PIXEL_ASPECT_RATIO[0]) - 1);
-	if (pixel_aspect_ratio_code > par_last) {
-		pixel_aspect_ratio_code = par_last;
-	}
-	seq_hdr_conf.pixel_aspect_ratio =
-		PLM_VIDEO_PIXEL_ASPECT_RATIO[pixel_aspect_ratio_code];
+    seq_hdr_conf.pixel_aspect_ratio =  plm_dma_buffer_read(self->buffer, 4);
 
 	// Get frame rate
 	seq_hdr_conf.frameperiod = PLM_VIDEO_PICTURE_RATE[plm_dma_buffer_read(self->buffer, 4)];

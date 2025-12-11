@@ -136,7 +136,6 @@ static void push_frame(plm_frame_t *frame)
 	{
 		frame_display_fifo->frameperiod = seq_hdr_conf.frameperiod;
 	}
-	frame_display_fifo->fractional_pixel_width = seq_hdr_conf.pixel_aspect_ratio;
 
 	// The order is crucial since a write to height will commit the frame!
 	__asm volatile("" : : : "memory");

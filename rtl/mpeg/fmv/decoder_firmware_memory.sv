@@ -37,7 +37,6 @@ module decoder_firmware_memory #(
     // port A
     always_ff @(posedge clk) begin
         if (we1) begin
-            assert (addr1 >= 12'h991);
             // edit this code if using other than four bytes per word
             if (be1[0]) ram[addr1][0] <= data_in1[7:0];
             if (be1[1]) ram[addr1][1] <= data_in1[15:8];
@@ -52,7 +51,6 @@ module decoder_firmware_memory #(
     // port B
     always_ff @(posedge clk) begin
         if (we2) begin
-            assert (addr2 >= 12'h991);
             // edit this code if using other than four bytes per word
             if (be2[0]) ram[addr2][0] <= data_in2[7:0];
             if (be2[1]) ram[addr2][1] <= data_in2[15:8];

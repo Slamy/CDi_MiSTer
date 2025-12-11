@@ -845,9 +845,6 @@ module mpeg_video (
                             frame_period_clk_mpeg_set_clk_mpeg <= 1;
                         end
 
-                        if (dmem_cmd_payload_address_1[15:0] == 16'h3018)
-                            fractional_pixel_width_clk_mpeg <= dmem_cmd_payload_data_1[8:0];
-
                         if (dmem_cmd_payload_address_1[15:0] == 16'h301c)
                             event_sequence_end_clk_mpeg <= 1;
 
