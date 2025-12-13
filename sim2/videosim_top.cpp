@@ -514,7 +514,7 @@ class CDi {
                 g = dut.VGA_G;
                 b = dut.VGA_B;
             }
-
+#if 0
             if (dut.VGA_HS) {
                 r += 100;
             }
@@ -522,7 +522,7 @@ class CDi {
             if (dut.VGA_VS) {
                 g += 100;
             }
-
+#endif
             output_image[pixel_index++] = r;
             output_image[pixel_index++] = g;
             output_image[pixel_index++] = b;

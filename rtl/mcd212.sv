@@ -1062,23 +1062,14 @@ module mcd212 (
             plane_a_dyuv_active <= 0;
             plane_b_dyuv_active <= 0;
         end else begin
-            // Kether is currently the only known title which switches to OFF coding mid frame.
-            // To avoid changing the pixel stream demux and causing alignment
-            // issues, the demux switch is only configured when not OFF.
-            // This might not be accurate and cause issues with other titles
-            // doing that and also switching coding in the meantime.
-            // If VSR is set again, then there might not be an issue
-
-            if (image_coding_method_register.cm13_10_planea != 0 || image_coding_method_register.cm23_20_planeb == 4'b0001)
-                plane_a_dyuv_active <= image_coding_method_register.cm13_10_planea == 4'b0101;
-            if (image_coding_method_register.cm23_20_planeb != 0)
-                plane_b_dyuv_active <= image_coding_method_register.cm23_20_planeb == 4'b0101;
+            plane_a_dyuv_active <= image_coding_method_register.cm13_10_planea == 4'b0101;
+            plane_b_dyuv_active <= image_coding_method_register.cm23_20_planeb == 4'b0101;
         end
     end
 
     // Ignore Color Key for DYUV. Use it only for CLUT!
-    wire plane_a_color_key_match = (clut_out0 == trans_color_plane_a) && !plane_a_dyuv_active;
-    wire plane_b_color_key_match = (clut_out1 == trans_color_plane_b) && !plane_b_dyuv_active;
+    wire plane_a_color_key_match = (clut_out0 == trans_color_plane_a) && !plane_a_dyuv_active && (image_coding_method_register.cm13_10_planea != 0);
+    wire plane_b_color_key_match = (clut_out1 == trans_color_plane_b) && !plane_b_dyuv_active && (image_coding_method_register.cm23_20_planeb != 0);
 
     function automatic [7:0] WeightCalc(input [7:0] rgb, input [5:0] weight);
         if (weight == 0) begin

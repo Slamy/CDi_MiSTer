@@ -1,4 +1,5 @@
 mkdir -p videosim
+rm videosim/*.png
 verilator --top-module emu  \
      --trace --trace-fst --trace-structs --cc --assert --exe --build   \
     --build-jobs 8 videosim_top.cpp -I../rtl  \
