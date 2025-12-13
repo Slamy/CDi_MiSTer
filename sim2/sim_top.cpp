@@ -793,12 +793,12 @@ class CDi {
                 std::chrono::duration<double> elapsed_seconds = current - start;
                 sprintf(filename, "%d/video_%03d.png", instanceid, frame_index);
                 write_png_file(filename);
-                printf("Written %s %d\n", filename, pixel_index);
-                printf("We are at time30mhz=%ld\n", time30mhz);
+                printf("Written video_%03d.png\n", frame_index);
+                // printf("We are at time30mhz=%ld\n", time30mhz);
 
                 uint32_t mpeg_frequency = mpeg_clk_calc_ticks * 30 / mpeg_clk_calc_ticks30;
 
-                printf("Written %s after %.2fs. FMV at %d MHz\n", filename, elapsed_seconds.count(), mpeg_frequency);
+                // printf("Written %s after %.2fs. FMV at %d MHz\n", filename, elapsed_seconds.count(), mpeg_frequency);
                 fprintf(stderr, "Written %s after %.2fs. FMV at %d MHz\n", filename, elapsed_seconds.count(),
                         mpeg_frequency);
 

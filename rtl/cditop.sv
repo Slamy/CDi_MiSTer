@@ -168,15 +168,10 @@ module cditop (
 
 
             if ((lds || uds) && attex_cs_mk48)
-                $display(
-                    "Access NVRAM %x %x %x %d %d %d",
-                    addr[7:1],
-                    data_in,
-                    cpu_data_out,
-                    lds,
-                    uds,
-                    write_strobe
-                );
+
+                if (write_strobe)
+                    $display("Write NVRAM %x %x %d%d", addr[7:1], cpu_data_out, lds, uds);
+                else $display("Read NVRAM %x %x %d%d", addr[7:1], data_in, lds, uds);
 
         end
     end

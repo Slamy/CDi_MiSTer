@@ -53,7 +53,7 @@ main:
 	move.w #$0100,$303C06 ; File Register
 	move.l #$ffffffff,$303C08 ; Channel Register
 	move.w #$0000,$303C0C ; Audio Channel Register
-	move.l #$09235200,$303C02 ; Timer Register
+	move.l #$00323400,$303C02 ; Timer Register
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 
 	; Usually one would use the DTS and SCR to start playback
@@ -135,7 +135,7 @@ video:
 	move.l #$300c,$8000400c ; Memory Address Counter
 	move.w #$484,$8000404a  ; Memory Transfer Counter
 	move.b #$04,$80004046 ; SCR, MAC Count Up, DAC No Change (like the CDIC on CH1)
-	move.b #$12,$80004045 ; Dev. to Mem., 16 Bit Words,
+	move.b #$12,$80004045 ; Mem to Dev.., 16 Bit Words,
 	move.b #$30,$80004044 ; ACK/RDY device (like the CDIC on CH1)
 	move.b #$80,$80004047 ; start DMA
 

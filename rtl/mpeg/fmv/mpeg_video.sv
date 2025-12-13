@@ -787,12 +787,9 @@ module mpeg_video (
     bit dmem_cmd_ready_3_q;
     bit dmem_cmd_payload_write_3_q;
 
-    bit frame_period_clk_mpeg_set_clk_mpeg;
-
     always_ff @(posedge clk_mpeg) begin
         imem_rsp_valid_1 <= 0;
         dmem_rsp_valid_1 <= 0;
-        frame_period_clk_mpeg_set_clk_mpeg <= 0;
 
         dmem_cmd_payload_address_1_q <= dmem_cmd_payload_address_1;
         dmem_cmd_valid_1_q <= dmem_cmd_valid_1;
@@ -802,12 +799,6 @@ module mpeg_video (
         shared_buffer_level <= shared_buffer_level + (shared_buffer_level_inc ? 1:0) - (shared_buffer_level_dec1 ? 1 : 0) - (shared_buffer_level_dec2 ? 1:0);
 
         event_sequence_end_clk_mpeg <= 0;
-
-        if (dmem_cmd_payload_address_1 >= 32'h00002c10 && dmem_cmd_payload_address_1 <= 32'h0002cc0  && dmem_cmd_payload_write_1 && dmem_cmd_valid_1 && dmem_cmd_ready_1) begin
-            $display("Core 1 SEQ HDR write %x at %x during code address %x",
-                     dmem_cmd_payload_data_1, dmem_cmd_payload_address_1,
-                     imem_cmd_payload_address_1);
-        end
 
         if (dmem_cmd_payload_address_1 == 32'h1000000c && dmem_cmd_payload_write_1 && dmem_cmd_valid_1 && dmem_cmd_ready_1)begin
             $display("Core 1 stopped at %x with code %x", imem_cmd_payload_address_1,
@@ -853,7 +844,6 @@ module mpeg_video (
 
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3014) begin
                             frame_period_clk_mpeg <= dmem_cmd_payload_data_1[23:0];
-                            frame_period_clk_mpeg_set_clk_mpeg <= 1;
                         end
 
                         if (dmem_cmd_payload_address_1[15:0] == 16'h301c)
@@ -1198,28 +1188,29 @@ module mpeg_video (
     bit vblank_q2;
     bit for_display_valid;
 
-    wire frame_period_clk_mpeg_set_clk30;
+    wire just_decoded_commit_clk30;
 
-    // frame_period_clk_mpeg is set very infrequently.
-    // frame_period_clk_mpeg_set_clk_mpeg is set for one clk_mpeg tick to indicate change
-    // frame_period_clk_mpeg_set_clk30 is this flag moved over to the clk30 domain
-    // When frame_period_clk_mpeg_set_clk30 is high, the stability of frame_period_clk_mpeg is assumed
-    flag_cross_domain cross_frame_period_clk_mpeg_set (
+    // frame info are set very infrequently.
+    // just_decoded_commit is set for one clk_mpeg tick to indicate change
+    // just_decoded_commit_clk30 is this flag moved over to the clk30 domain
+    // When just_decoded_commit_clk30 is high, the stability of all frame info is assumed
+    flag_cross_domain cross_just_decoded_commit(
         .clk_a(clk_mpeg),
         .clk_b(clk30),
-        .flag_in_clk_a(frame_period_clk_mpeg_set_clk_mpeg),
-        .flag_out_clk_b(frame_period_clk_mpeg_set_clk30)
+        .flag_in_clk_a(just_decoded_commit),
+        .flag_out_clk_b(just_decoded_commit_clk30)
     );
 
     always_ff @(posedge clk30) begin
         vblank_q1 <= vblank;
         vblank_q2 <= vblank_q1;
 
-        if (frame_period_clk_mpeg_set_clk30) begin
+        if (just_decoded_commit_clk30) begin
             frame_period   <= frame_period_clk_mpeg;
             decoder_width  <= decoder_width_clk_mpeg;
             decoder_height <= decoder_height_clk_mpeg;
         end
+
         if (!dsp_enable) begin
             decoder_width  <= 0;
             decoder_height <= 0;

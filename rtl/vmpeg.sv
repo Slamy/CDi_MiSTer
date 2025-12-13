@@ -342,8 +342,8 @@ module vmpeg (
 
     bit  [15:0] video_data_input_command_register = 0;
 
-    bit  [15:0] image_height2 = 0;
-    bit  [15:0] image_width2 = 0;
+    bit  [15:0] image_height = 0;
+    bit  [15:0] image_width = 0;
     bit  [15:0] image_rt;
 
     typedef struct packed {
@@ -382,8 +382,8 @@ module vmpeg (
             15'h180E: dout = fma_interrupt_enable_register;  // 0x0E0301C
             15'h1812: dout = 16'h0004;  // 0x0E03024, HF2 Flag of DSP56001?
 
-            15'h2001: dout = image_width2;  // 00E04002 ?? Written then Read
-            15'h2002: dout = image_height2;  // 00E04004 ?? Written then Read
+            15'h2001: dout = image_width;  // 00E04002 ?? Written then Read
+            15'h2002: dout = image_height;  // 00E04004 ?? Written then Read
             15'h2003: dout = image_rt;  // 00E04006 ??
             15'h2004: dout = fmv_timecode[31:16];  // 00E04008 Temporal time code High. During scan
             15'h2005: dout = fmv_timecode[15:0];  // 00E0400C Temporal time code Low. During scan
@@ -474,9 +474,9 @@ module vmpeg (
             fmv_interrupt_vector_register <= 0;
             fmv_playback_active <= 0;
             fmv_stream_number <= 0;
-            image_height2 <= 0;
+            image_height <= 0;
             image_rt <= 0;
-            image_width2 <= 0;
+            image_width <= 0;
             mpeg_ram_enabled <= 0;
             mpeg_ram_enabled_cnt <= 0;
             timer_cnt <= 0;
@@ -532,14 +532,18 @@ module vmpeg (
 
             if (event_frame_decoded) begin
                 // Frame Header Updated
-                fma_status_register[2] <= 1;
+                fma_status_register[2]           <= 1;
 
                 // Frame Header Updated IRQ
                 fma_interrupt_status_register[2] <= 1;
 
                 // Stream change IRQ
                 fma_interrupt_status_register[1] <= pending_fma_stream_change;
-                pending_fma_stream_change <= 0;
+                pending_fma_stream_change        <= 0;
+
+                // Really correct?
+                image_width                      <= {5'b0, fmv_decoder_width};
+                image_height                     <= {7'b0, fmv_decoder_height};
             end
 
             if (event_underflow) begin
@@ -875,11 +879,11 @@ module vmpeg (
                         end
                         15'h2001: begin
                             $display("FMV Write Image Width2 %x %x", address[15:1], din);
-                            image_width2 <= din;
+                            image_width <= din;
                         end
                         15'h2002: begin
                             $display("FMV Write Image Height2 %x %x", address[15:1], din);
-                            image_height2 <= din;
+                            image_height <= din;
                         end
                         15'h2003: begin
                             $display("FMV Write Image RT? %x %x", address[15:1], din);
