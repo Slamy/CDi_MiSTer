@@ -781,29 +781,30 @@ void get_video_frame(std::string binpath, std::string pngpath) {
     }
     machine.modelstep();
 
-    machine.write_png_file(pngpath.c_str());
-    // machine.write_png_file("1.png");
-    fprintf(stderr, "Written %s\n", pngpath.c_str());
-
-#if 0
+#ifdef TWO_ROUNDS
     // And again!
-    machine.modelstep();
     while (machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y == 0) {
         machine.modelstep();
     }
     while (machine.dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_y != 0) {
         machine.modelstep();
     }
-    machine.write_png_file("2.png");
-    fprintf(stderr, "Written %s\n", pngpath.c_str());
 #endif
+
+    machine.write_png_file(pngpath.c_str());
+    // machine.write_png_file("1.png");
+    fprintf(stderr, "Written %s\n", pngpath.c_str());
 }
 
 void forked_run() {
-    static constexpr size_t kNumberForks{12};
+    static constexpr size_t kNumberForks{14};
     std::vector<pid_t> child_pids;
 
-    auto ramdumps = glob("ramdumps/*.bin");
+    const char *env_ramdumps = std::getenv("CDI_RAMDUMPS");
+
+    std::string path = env_ramdumps ? (std::string(env_ramdumps) + "/*.bin") : "ramdumps/*.bin";
+    printf("Reading ram dumps from %s\n", path.c_str());
+    auto ramdumps = glob(path);
     size_t chunksize = std::max((size_t)ramdumps.size() / kNumberForks, (size_t)1);
     printf("Splitting %d ram dumps into %d sizes of %d\n", ramdumps.size(), kNumberForks, chunksize);
 
