@@ -1133,7 +1133,7 @@ int main(int argc, char **argv) {
 
     switch (machineindex) {
     case 0:
-        f_cd_bin = fopen("images/david.bin", "rb");
+        f_cd_bin = fopen("images/guignols.bin", "rb");
         break;
     case 1:
         f_cd_bin = fopen("images/coneheads.bin", "rb");

@@ -144,7 +144,9 @@ module vmpeg (
         .event_picture_starts_display(fmv_event_picture_starts_display),
         .event_last_picture_starts_display(fmv_event_last_picture_starts_display),
         .event_first_intra_frame_starts_display(fmv_event_first_intra_frame_starts_display),
-        .pictures_in_fifo(fmv_pictures_in_fifo)
+        .pictures_in_fifo(fmv_pictures_in_fifo),
+        .decoder_width(fmv_decoder_width),
+        .decoder_height(fmv_decoder_height)
     );
 
     always_ff @(posedge clk) begin
@@ -316,30 +318,33 @@ module vmpeg (
     wire fma_intreq = (fma_interrupt_status_register & fma_interrupt_enable_register) != 0;
     assign intreq = fma_intreq || fmv_intreq;
 
-    bit [15:0] video_ctrl_y_active = 0;
-    bit [15:0] video_ctrl_x_active = 0;
+    bit  [15:0] video_ctrl_y_active = 0;
+    bit  [15:0] video_ctrl_x_active = 0;
 
     // Where does this come from? Where is it used?
-    bit [15:0] video_ctrl_y_offset = 0;
-    bit [15:0] video_ctrl_x_offset = 0;
+    bit  [15:0] video_ctrl_y_offset = 0;
+    bit  [15:0] video_ctrl_x_offset = 0;
 
     // Sum of mv_org() + mv_pos()
-    bit [15:0] video_ctrl_y_display = 0;
-    bit [15:0] video_ctrl_x_display = 0;
+    bit  [15:0] video_ctrl_y_display = 0;
+    bit  [15:0] video_ctrl_x_display = 0;
 
     // set by mv_window(_,_,x,y,W,H_);
-    bit [15:0] video_ctrl_window_width = 0;
-    bit [15:0] video_ctrl_window_height = 0;
+    bit  [15:0] video_ctrl_window_width = 0;
+    bit  [15:0] video_ctrl_window_height = 0;
 
     // set by mv_window(_,_,X,Y,w,h_);
-    bit [15:0] video_ctrl_decoder_offset_y = 0;
-    bit [15:0] video_ctrl_decoder_offset_x = 0;
+    bit  [15:0] video_ctrl_decoder_offset_y = 0;
+    bit  [15:0] video_ctrl_decoder_offset_x = 0;
 
-    bit [15:0] video_data_input_command_register = 0;
+    wire [10:0] fmv_decoder_width;
+    wire [ 8:0] fmv_decoder_height;
 
-    bit [15:0] image_height2 = 0;
-    bit [15:0] image_width2 = 0;
-    bit [15:0] image_rt;
+    bit  [15:0] video_data_input_command_register = 0;
+
+    bit  [15:0] image_height2 = 0;
+    bit  [15:0] image_width2 = 0;
+    bit  [15:0] image_rt;
 
     typedef struct packed {
         bit show_next;
@@ -377,13 +382,13 @@ module vmpeg (
             15'h180E: dout = fma_interrupt_enable_register;  // 0x0E0301C
             15'h1812: dout = 16'h0004;  // 0x0E03024, HF2 Flag of DSP56001?
 
-            15'h2001: dout = image_width2;  // 00E04002 ??
-            15'h2002: dout = image_height2;  // 00E04004 ??
+            15'h2001: dout = image_width2;  // 00E04002 ?? Written then Read
+            15'h2002: dout = image_height2;  // 00E04004 ?? Written then Read
             15'h2003: dout = image_rt;  // 00E04006 ??
             15'h2004: dout = fmv_timecode[31:16];  // 00E04008 Temporal time code High. During scan
             15'h2005: dout = fmv_timecode[15:0];  // 00E0400C Temporal time code Low. During scan
-            15'h2029: dout = image_width2;  // e04052 Pic Size High ??
-            15'h202a: dout = image_height2;  // e04054 Pic Size Low ??
+            15'h2029: dout = {5'b0, fmv_decoder_width};  // e04052 Picture Width ?? Only read
+            15'h202a: dout = {7'b0, fmv_decoder_height};  // e04054 Picture Height ?? Only read
             15'h202b: dout = image_rt;  // e04056 Pic Rt ??
             15'h202c: dout = fmv_timecode[31:16];  // 00E04058 Time Code High ??
             15'h202d: dout = fmv_timecode[15:0];  // 00E0405A Time Code Low ??
