@@ -429,6 +429,7 @@ enum SttFunction {
     MV_Trigger = 0x113,
     MV_Window = 0x114,
     MV_ReqSync = 0x117,
+    MV_Status = 0x132,
 
 };
 
@@ -693,6 +694,8 @@ const char *sttFunctionToString(const uint16_t stt) {
         return "MV_Window";
     case SttFunction::MV_ReqSync:
         return "MV_ReqSync";
+    case SttFunction::MV_Status:
+        return "MV_Status";
 
     default:
         return "Unknown system call ";

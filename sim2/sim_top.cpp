@@ -480,7 +480,7 @@ class CDi {
         }
 
         if (static_cast<SystemCallType>(call) == SystemCallType::I_SetStt) {
-            printf(" SetStt %s", sttFunctionToString(static_cast<SttFunction>(cpu_d[1])));
+            printf(" SetStt %s", sttFunctionToString(static_cast<SttFunction>(cpu_d[1] & 0xffff)));
 
             if (static_cast<SttFunction>(cpu_d[1]) == SttFunction::SS_DC) {
                 printf(" %s", ss_dc_FunctionToString(cpu_d[2]));
@@ -490,7 +490,7 @@ class CDi {
             }
         }
         if (static_cast<SystemCallType>(call) == SystemCallType::I_GetStt) {
-            printf(" GetStt %s", sttFunctionToString(static_cast<SttFunction>(cpu_d[1])));
+            printf(" GetStt %s", sttFunctionToString(static_cast<SttFunction>(cpu_d[1] & 0xffff)));
         }
         printf("\n");
 
@@ -1136,7 +1136,7 @@ int main(int argc, char **argv) {
         f_cd_bin = fopen("images/guignols.bin", "rb");
         break;
     case 1:
-        f_cd_bin = fopen("images/coneheads.bin", "rb");
+        f_cd_bin = fopen("images/braindead13.bin", "rb");
         break;
     case 2:
         f_cd_bin = fopen("images/LuckyLuke.bin", "rb");
