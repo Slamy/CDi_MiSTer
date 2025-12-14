@@ -307,6 +307,7 @@ class CDi {
 
     uint32_t prevpc = 0;
     uint32_t leave_sys_callpc = 0;
+    SttFunction call_func;
 
     int pixel_index = 0;
 
@@ -462,6 +463,57 @@ class CDi {
         }
     }
 
+    uint8_t cpu_memory_read_u8(uint32_t addr) {
+        if (addr & 1)
+            return cpu_memory_read_u16(addr);
+        else
+            return cpu_memory_read_u16(addr) >> 8;
+    }
+
+    uint32_t cpu_memory_read_u32(uint32_t addr) {
+        uint32_t high = cpu_memory_read_u16(addr);
+        uint32_t low = cpu_memory_read_u16(addr + 2);
+
+        return (high << 16) | low;
+    }
+
+    typedef struct _motionstatus {
+        unsigned short MVS_LCntr;  /* loops remaining */
+        unsigned long MVS_CurAdr;  /* address to retrieve data */
+        unsigned long MVS_Speed;   /* display speed */
+        unsigned long MVS_ImgSz;   /* image size of current stream */
+        unsigned long MVS_TimeCd;  /* timecode of current picture */
+        unsigned short MVS_TmpRef; /* temporal reference */
+        unsigned short MVS_Stream; /* current stream number */
+        unsigned char MVS_PicRt,   /* picture rate */
+            MVS_Res1;              /* reserved */
+        unsigned long MVS_DSC,     /* Video decoder system clock */
+            MVS_Res2;              /* reserved */
+    } MotionStatus;
+
+    void PrintMvStatus(uint32_t addr) {
+        MotionStatus status;
+        status.MVS_LCntr = cpu_memory_read_u16(addr + 0);
+        status.MVS_CurAdr = cpu_memory_read_u32(addr + 2);
+        status.MVS_Speed = cpu_memory_read_u32(addr + 6);
+        status.MVS_ImgSz = cpu_memory_read_u32(addr + 10);
+        status.MVS_TimeCd = cpu_memory_read_u32(addr + 14);
+        status.MVS_TmpRef = cpu_memory_read_u16(addr + 18);
+        status.MVS_Stream = cpu_memory_read_u16(addr + 20);
+        status.MVS_PicRt = cpu_memory_read_u8(addr + 22);
+        status.MVS_DSC = cpu_memory_read_u32(addr + 24);
+
+        printf("MVS_LCntr %x\n", status.MVS_LCntr);
+        printf("MVS_CurAdr %x\n", status.MVS_CurAdr);
+        printf("MVS_Speed %x\n", status.MVS_Speed);
+        printf("MVS_ImgSz %x\n", status.MVS_ImgSz);
+        printf("MVS_TimeCd %x\n", status.MVS_TimeCd);
+        printf("MVS_TmpRef %x\n", status.MVS_TmpRef);
+        printf("MVS_Stream %x\n", status.MVS_Stream);
+        printf("MVS_PicRt %x\n", status.MVS_PicRt);
+        printf("MVS_DSC %x\n", status.MVS_DSC);
+    }
+
     void AnalyzeSyscall() {
         // A syscall is a "Trap #0" followed by a 16 bit argument
         assert((prevpc & 1) == 0);
@@ -480,17 +532,32 @@ class CDi {
         }
 
         if (static_cast<SystemCallType>(call) == SystemCallType::I_SetStt) {
-            printf(" SetStt %s", sttFunctionToString(static_cast<SttFunction>(cpu_d[1] & 0xffff)));
+            SttFunction func = static_cast<SttFunction>(cpu_d[1] & 0xffff);
 
-            if (static_cast<SttFunction>(cpu_d[1]) == SttFunction::SS_DC) {
+            printf(" SetStt %s", sttFunctionToString(func));
+
+            if (func == SttFunction::MV_Window) {
+                uint32_t height = cpu_d[4] & 0xffff;
+                uint32_t width = (cpu_d[4] >> 16) & 0xffff;
+                printf(" %d %d ", width, height);
+                // Check plausibility
+                if ((width > 1000) || (height > 1000))
+                    status = 1;
+            }
+
+            if (func == SttFunction::SS_DC) {
                 printf(" %s", ss_dc_FunctionToString(cpu_d[2]));
                 if (cpu_d[2] == 0x0a && (cpu_d[6] & 0xF0000000) == 0x40000000) {
                     printf(" VSR %x", cpu_d[6] & 0xFFFFFFF);
                 }
             }
+
+            call_func = func;
         }
         if (static_cast<SystemCallType>(call) == SystemCallType::I_GetStt) {
-            printf(" GetStt %s", sttFunctionToString(static_cast<SttFunction>(cpu_d[1] & 0xffff)));
+            SttFunction func = static_cast<SttFunction>(cpu_d[1] & 0xffff);
+            printf(" GetStt %s", sttFunctionToString(func));
+            call_func = func;
         }
         printf("\n");
 
@@ -501,6 +568,17 @@ class CDi {
             fprintf(stderr, "System halted and debugger calted!\n");
             exit(1);
         }
+    }
+
+    void AnalyzeSyscallReturn() {
+        uint32_t *cpu_d = &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[0];
+        uint32_t *cpu_a = &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[8];
+
+        if (call_func == MV_Status) {
+            PrintMvStatus(cpu_a[0]);
+        }
+
+        call_func = SS_Opt; // Invalidate
     }
 
   public:
@@ -750,10 +828,11 @@ class CDi {
             }
 
             if (m_pc == leave_sys_callpc) {
-                printf("Return from Syscall %x %x\n",
+                printf("Return from Syscall %x %x  ",
                        dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__flags,
                        dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__flagssr);
                 printstate();
+                AnalyzeSyscallReturn();
             }
 
             prevpc = m_pc;
@@ -1072,14 +1151,27 @@ class CDi {
         clock30();
         dut.RESET = 0;
     }
-
-    void dump_system_memory() {
+    /// @brief 1MB of Video RAM dumped
+    /// Located in SDRAM at 0x000000
+    void dump_base_case_memory() {
         char filename[100];
-        sprintf(filename, "%d/ramdump.bin", instanceid);
+        sprintf(filename, "%d/video_ramdump.bin", instanceid);
         printf("Writing %s!\n", filename);
         FILE *f = fopen(filename, "wb");
         assert(f);
         fwrite(&dut.rootp->emu__DOT__ram[0], 1, 1024 * 256 * 4, f);
+        fclose(f);
+    }
+
+    /// @brief 1MB of DVC RAM dumped
+    /// Located in SDRAM at 0x100000
+    void dump_dvc_sys_memory() {
+        char filename[100];
+        sprintf(filename, "%d/dvc_ramdump.bin", instanceid);
+        printf("Writing %s!\n", filename);
+        FILE *f = fopen(filename, "wb");
+        assert(f);
+        fwrite(&dut.rootp->emu__DOT__ram[0x100000 / 2], 1, 1024 * 256 * 4, f);
         fclose(f);
     }
 
@@ -1183,7 +1275,8 @@ int main(int argc, char **argv) {
     machine.modelstep();
     machine.modelstep();
     machine.modelstep();
-    machine.dump_system_memory();
+    machine.dump_base_case_memory();
+    machine.dump_dvc_sys_memory();
     machine.dump_slave_memory();
 
     fclose(f_cd_bin);

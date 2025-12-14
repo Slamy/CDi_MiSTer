@@ -1,4 +1,3 @@
-
 #pragma once
 
 // got from here https://github.com/Stovent/CeDImu/blob/master/src/CDI/OS9/SystemCalls.hpp
@@ -429,8 +428,24 @@ enum SttFunction {
     MV_Trigger = 0x113,
     MV_Window = 0x114,
     MV_ReqSync = 0x117,
-    MV_Status = 0x132,
 
+    MA_Abort = 0x011E, // from cdiemu
+    MA_Close = 0x011F,
+    MA_Cntrl = 0x0120,
+    MA_Continue = 0x0121,
+    MA_Loop = 0x0122,
+    MA_Pause = 0x0123,
+    MA_Play = 0x0124,
+    MA_Release = 0x0125,
+    MA_Trigger = 0x0126,
+    MA_SLink = 0x0127,
+    MA_Jump = 0x0128,
+
+    MV_Create = 0x0130,
+    MV_Info = 0x0131,
+    MV_Status = 0x0132,
+
+    MA_Create = 0x0138,
 };
 
 const char *sttFunctionToString(const uint16_t stt) {
@@ -694,8 +709,39 @@ const char *sttFunctionToString(const uint16_t stt) {
         return "MV_Window";
     case SttFunction::MV_ReqSync:
         return "MV_ReqSync";
+
+    case SttFunction::MA_Abort:
+        return "MA_Abort";
+    case SttFunction::MA_Close:
+        return "MA_Close";
+    case SttFunction::MA_Cntrl:
+        return "MA_Cntrl";
+    case SttFunction::MA_Continue:
+        return "MA_Continue";
+    case SttFunction::MA_Loop:
+        return "MA_Loop";
+    case SttFunction::MA_Pause:
+        return "MA_Pause";
+    case SttFunction::MA_Play:
+        return "MA_Play";
+    case SttFunction::MA_Release:
+        return "MA_Release";
+    case SttFunction::MA_Trigger:
+        return "MA_Trigger";
+    case SttFunction::MA_SLink:
+        return "MA_SLink";
+    case SttFunction::MA_Jump:
+        return "MA_Jump";
+
+    case SttFunction::MV_Create:
+        return "MV_Create";
+    case SttFunction::MV_Info:
+        return "MV_Info";
     case SttFunction::MV_Status:
         return "MV_Status";
+
+    case SttFunction::MA_Create:
+        return "MA_Create";
 
     default:
         return "Unknown system call ";
