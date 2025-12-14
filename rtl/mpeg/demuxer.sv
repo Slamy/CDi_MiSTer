@@ -116,7 +116,7 @@ module mpeg_demuxer (
                     demux_state <= IDLE;
 
                     if (dts_present) begin
-                        $display ("%s PES %d %d", unit, presentation_timestamp, decoding_timestamp_temp);
+                        $display ("%s PES %d DTS %d", unit, presentation_timestamp, decoding_timestamp_temp);
                     end
                     else
                         $display ("%s PES %d", unit, presentation_timestamp);
