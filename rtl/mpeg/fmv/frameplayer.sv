@@ -17,9 +17,9 @@ module frameplayer (
     input           vblank,
 
     input planar_yuv_s frame,
-    input [8:0] frame_width,  // expected to be clocked at clkddr
+    input [8:0] frame_width,  // expected to be clocked at clkvideo
     input [10:0] frame_stride,  // expected to be clocked at clkddr
-    input [8:0] frame_height,  // expected to be clocked at clkddr
+    input [8:0] frame_height,  // expected to be clocked at clkvideo
     input [8:0] offset_y,  // expected to be clocked at clkvideo
     input [8:0] offset_x,  // expected to be clocked at clkvideo
     input [8:0] window_y,  // expected to be clocked at clkvideo
@@ -54,7 +54,9 @@ module frameplayer (
 
     bit [8:0] frame_width_clkddr = 100;
     bit [8:0] frame_height_clkddr = 100;
-
+    bit [8:0] window_x_clkddr;
+    bit [8:0] window_y_clkddr;
+    
     always_ff @(posedge clkvideo) begin
         if (latch_frame_clkvideo) begin
             frame_width_clkvideo  <= frame_width;
@@ -64,8 +66,10 @@ module frameplayer (
 
     always_ff @(posedge clkddr) begin
         if (latch_frame_clkddr) begin
-            frame_width_clkddr  <= frame_width;
+            frame_width_clkddr <= frame_width;
             frame_height_clkddr <= frame_height;
+            window_x_clkddr <= window_x;
+            window_y_clkddr <= window_y;
         end
     end
 
@@ -193,6 +197,11 @@ module frameplayer (
             chroma_read_addr <= chroma_read_addr + 1;
         end
 
+        if (vblank) begin
+            initial_luma_read_addr   <= window_x[2:0];
+            initial_chroma_read_addr <= window_x[3:0];
+        end
+
         if (hblank || reset) begin
             pixelcnt <= 0;
             luma_fifo_strobe <= 0;
@@ -254,26 +263,24 @@ module frameplayer (
             ddrif.acquire <= 0;
         end
 
-        address_y_offset  <= frame_stride * window_y;
-        address_uv_offset <= 29'(frame_stride / 2) * 29'(window_y / 2);
+        address_y_offset  <= frame_stride * window_y_clkddr;
+        address_uv_offset <= 29'(frame_stride / 2) * 29'(window_y_clkddr / 2);
 
         if (reset_clkddr || vblank_clkddr || vertical_offset_wait_not_null_clkddr) begin
             fetchstate <= IDLE;
-            address_y <= latched_frame.y_adr + address_y_offset + 29'(window_x);
-            address_u <= latched_frame.u_adr + address_uv_offset + 29'(window_x / 2);
-            address_v <= latched_frame.v_adr + address_uv_offset + 29'(window_x / 2);
-            initial_luma_read_addr <= window_x[2:0];
-            initial_chroma_read_addr <= window_x[3:0];
+            address_y <= latched_frame.y_adr + address_y_offset + 29'(window_x_clkddr);
+            address_u <= latched_frame.u_adr + address_uv_offset + 29'(window_x_clkddr / 2);
+            address_v <= latched_frame.v_adr + address_uv_offset + 29'(window_x_clkddr / 2);
             fetch_and_show_frame <= latched_frame_valid && show_on_next_video_frame_clkddr;
             target_y <= 0;
             target_u <= 0;
             target_v <= 0;
-            line_alternate <= window_y[0];
+            line_alternate <= window_y_clkddr[0];
             u_requested <= 0;
             v_requested <= 0;
             y_requested <= 0;
         end else if (fetch_and_show_frame) begin
-            if (new_line_started_clkddr && linecnt_clkddr < frame_height) begin
+            if (new_line_started_clkddr && linecnt_clkddr < frame_height_clkddr) begin
                 line_alternate <= !line_alternate;
 
                 if (line_alternate) begin
