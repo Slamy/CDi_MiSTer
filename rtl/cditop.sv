@@ -640,11 +640,28 @@ module cditop (
         bit [15:0] V_VCMD;
         bit [15:0] V_DTSVal;
         bit [31:0] V_SCR;
+        bit [15:0] V_Status;   //0x136
+        bit [15:0] V_SigStat;  //0x13c
+        bit [15:0] V_AsyStat;  //0x16e
     } fdrvs1 = '{default: 0};
     bit [23:0] fdrvs1_static  /*verilator public_flat_rw*/ = 0;
     always @(posedge clk30) begin
 
         if (fdrvs1_static != 0 && bus_ack && write_strobe) begin
+
+            if (addr_byte == fdrvs1_static + 24'h0136) begin
+                fdrvs1.V_Status = cpu_data;
+                $display("V_Status = %d dez", cpu_data);
+            end
+            if (addr_byte == fdrvs1_static + 24'h013c) begin
+                fdrvs1.V_SigStat = cpu_data;
+                $display("V_SigStat = %d dez", cpu_data);
+            end
+            if (addr_byte == fdrvs1_static + 24'h016e) begin
+                fdrvs1.V_AsyStat = cpu_data;
+                $display("V_AsyStat = %d dez", cpu_data);
+            end
+
             if (addr_byte == fdrvs1_static + 24'h0134) begin
                 fdrvs1.V_Stat = cpu_data;
                 $display("V_Stat = %d dez", cpu_data);
@@ -670,10 +687,13 @@ module cditop (
                 fdrvs1.V_SCR[31:16] = cpu_data;
                 $display("V_SCR = %x", {cpu_data, fdrvs1.V_SCR[15:0]});
             end
+
             if (addr_byte == fdrvs1_static + 24'h0cc) begin
                 fdrvs1.V_SCR[15:0] = cpu_data;
                 $display("V_SCR = %x", {fdrvs1.V_SCR[31:16], cpu_data});
             end
+
+
         end
     end
 `endif
