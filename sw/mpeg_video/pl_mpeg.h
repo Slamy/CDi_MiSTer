@@ -1954,6 +1954,8 @@ typedef struct {
 	int v;
 } plm_video_motion_t;
 
+#define DDR_FRAMEBUFFER_CNT 20
+
 struct plm_video_t {
 	int time;
 	int frames_decoded;
@@ -1984,7 +1986,7 @@ struct plm_video_t {
 	plm_frame_t frame_forward;
 	plm_frame_t frame_backward;
 
-	plm_frame_t framebuffers[20];
+	plm_frame_t framebuffers[DDR_FRAMEBUFFER_CNT];
 
 	uint8_t *frames_data;
 
@@ -2254,7 +2256,8 @@ int plm_video_decode_sequence_header(plm_video_t *self) {
 	seq_hdr_conf.chroma_width = seq_hdr_conf.mb_width << 3;
 	seq_hdr_conf.chroma_height = seq_hdr_conf.mb_height << 3;
 
-	seq_hdr_conf.fbindex = 0;
+	if (seq_hdr_conf.fbindex >= DDR_FRAMEBUFFER_CNT)
+		seq_hdr_conf.fbindex = 0;
 
 	fifo_ctrl->has_sequence_header = TRUE;
 	__asm volatile("": : :"memory");
@@ -2346,7 +2349,7 @@ void plm_video_decode_picture(plm_video_t *self) {
 	self->frame_current.temporal_ref = self->temporal_ref;
 
 	seq_hdr_conf.fbindex++;
-	if (seq_hdr_conf.fbindex == 20)
+	if (seq_hdr_conf.fbindex >= DDR_FRAMEBUFFER_CNT)
 		seq_hdr_conf.fbindex = 0;
 
 	while (PLM_START_IS_SLICE(self->start_code)) {
