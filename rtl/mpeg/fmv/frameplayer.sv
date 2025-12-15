@@ -52,10 +52,20 @@ module frameplayer (
     bit [8:0] frame_width_clkvideo = 100;
     bit [8:0] frame_height_clkvideo = 100;
 
+    bit [8:0] frame_width_clkddr = 100;
+    bit [8:0] frame_height_clkddr = 100;
+
     always_ff @(posedge clkvideo) begin
         if (latch_frame_clkvideo) begin
             frame_width_clkvideo  <= frame_width;
             frame_height_clkvideo <= frame_height;
+        end
+    end
+
+    always_ff @(posedge clkddr) begin
+        if (latch_frame_clkddr) begin
+            frame_width_clkddr  <= frame_width;
+            frame_height_clkddr <= frame_height;
         end
     end
 
@@ -282,8 +292,8 @@ module frameplayer (
                         ddrif.read <= 1;
                         ddrif.acquire <= 1;
                         address_u <= address_u + 29'(frame_stride / 2);
-                        ddrif.burstcnt <= 8'(9'(frame_width + 15) / 16) + 1;
-                        data_burst_cnt <= 7'(9'(frame_width + 15) / 16) + 1;
+                        ddrif.burstcnt <= 8'(9'(frame_width_clkddr + 15) / 16) + 1;
+                        data_burst_cnt <= 7'(9'(frame_width_clkddr + 15) / 16) + 1;
                         fetchstate <= WAITING;
                         target_u <= 1;
                     end else if (!v_requested) begin
@@ -292,8 +302,8 @@ module frameplayer (
                         ddrif.read <= 1;
                         ddrif.acquire <= 1;
                         address_v <= address_v + 29'(frame_stride / 2);
-                        ddrif.burstcnt <= 8'(9'(frame_width + 15) / 16) + 1;
-                        data_burst_cnt <= 7'(9'(frame_width + 15) / 16) + 1;
+                        ddrif.burstcnt <= 8'(9'(frame_width_clkddr + 15) / 16) + 1;
+                        data_burst_cnt <= 7'(9'(frame_width_clkddr + 15) / 16) + 1;
                         fetchstate <= WAITING;
                         target_v <= 1;
                     end else if (!y_requested) begin
@@ -302,8 +312,8 @@ module frameplayer (
                         ddrif.read <= 1;
                         ddrif.acquire <= 1;
                         address_y <= address_y + 29'(frame_stride);
-                        ddrif.burstcnt <= 8'(9'(frame_width + 7) / 8) + 1;
-                        data_burst_cnt <= 7'(9'(frame_width + 7) / 8) + 1;
+                        ddrif.burstcnt <= 8'(9'(frame_width_clkddr + 7) / 8) + 1;
+                        data_burst_cnt <= 7'(9'(frame_width_clkddr + 7) / 8) + 1;
                         fetchstate <= WAITING;
                         target_y <= 1;
                     end

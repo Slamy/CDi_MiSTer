@@ -29,6 +29,7 @@ module mpeg_video (
     input [8:0] window_height,
     input show_on_next_video_frame,
     output event_sequence_end,
+    output bit event_new_sequence_parameters,
     output event_buffer_underflow,
     output bit event_picture_starts_display,
     output event_last_picture_starts_display,
@@ -1194,7 +1195,7 @@ module mpeg_video (
     // just_decoded_commit is set for one clk_mpeg tick to indicate change
     // just_decoded_commit_clk30 is this flag moved over to the clk30 domain
     // When just_decoded_commit_clk30 is high, the stability of all frame info is assumed
-    flag_cross_domain cross_just_decoded_commit(
+    flag_cross_domain cross_just_decoded_commit (
         .clk_a(clk_mpeg),
         .clk_b(clk30),
         .flag_in_clk_a(just_decoded_commit),
@@ -1204,16 +1205,20 @@ module mpeg_video (
     always_ff @(posedge clk30) begin
         vblank_q1 <= vblank;
         vblank_q2 <= vblank_q1;
+        event_new_sequence_parameters <= 0;
 
         if (just_decoded_commit_clk30) begin
             frame_period   <= frame_period_clk_mpeg;
             decoder_width  <= decoder_width_clk_mpeg;
             decoder_height <= decoder_height_clk_mpeg;
+
+            if (decoder_width != decoder_width_clk_mpeg) event_new_sequence_parameters <= 1;
         end
 
         if (!dsp_enable) begin
             decoder_width  <= 0;
             decoder_height <= 0;
+            frame_period   <= 0;
         end
 
         for_display_valid <= for_display_valid_clk_mpeg;
@@ -1279,7 +1284,7 @@ module mpeg_video (
         .reset(reset_dsp_enabled_clk_mpeg),
         .wdata(just_decoded),
         .we(just_decoded_commit),
-        .strobe(latch_frame_for_display_clk_mpeg),
+        .strobe(latch_frame_for_display_clk_mpeg && show_on_next_video_frame),
         .valid(for_display_valid_clk_mpeg),
         .q(for_display),
         .cnt(pictures_in_fifo_clk_mpeg)

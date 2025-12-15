@@ -68,9 +68,9 @@ module vmpeg (
     wire fmv_word_data_valid  /*verilator public_flat_rd*/ = mpeg_word_valid && !dma_for_fma;
     wire fma_word_data_valid  /*verilator public_flat_rd*/ = mpeg_word_valid && dma_for_fma;
 
-    wire event_decoding_started;
-    wire event_frame_decoded;
-    wire event_underflow;
+    wire fma_event_decoding_started;
+    wire fma_event_frame_decoded;
+    wire fma_event_underflow;
     bit  dsp_reset_input_fifo;
     bit  fma_dsp_enable = 0;
     bit  fmv_dsp_enable = 0;
@@ -91,11 +91,12 @@ module vmpeg (
         .audio_right(audio_right),
         .sample_tick44(sample_tick44),
         .playback_active(),
-        .event_decoding_started(event_decoding_started),
-        .event_frame_decoded(event_frame_decoded),
-        .event_underflow(event_underflow)
+        .event_decoding_started(fma_event_decoding_started),
+        .event_frame_decoded(fma_event_frame_decoded),
+        .event_underflow(fma_event_underflow)
     );
 
+    wire fmv_event_new_sequence_parameters;
     wire fmv_event_picture_starts_display;
     wire fmv_event_last_picture_starts_display;
     wire fmv_event_first_intra_frame_starts_display;
@@ -140,6 +141,7 @@ module vmpeg (
         .window_height(video_ctrl_window_height[8:0]),
         .show_on_next_video_frame(fmv_show_on_next_video_frame),
         .event_sequence_end(fmv_event_sequence_end),
+        .event_new_sequence_parameters(fmv_event_new_sequence_parameters),
         .event_buffer_underflow(fmv_event_buffer_underflow),
         .event_picture_starts_display(fmv_event_picture_starts_display),
         .event_last_picture_starts_display(fmv_event_last_picture_starts_display),
@@ -228,7 +230,7 @@ module vmpeg (
     typedef struct packed {
         bit erdv;  // ?
         bit erdd;  // ?
-        bit vcup;  // ?
+        bit vcup;  // Video Clip Update ?
         bit pai;   // Pause Interrupt ?
 
         bit vsync;  // Vertical Synchronization ?
@@ -514,12 +516,19 @@ module vmpeg (
                 end
             end
 
+            if (fmv_event_new_sequence_parameters) begin
+                // fmv_interrupt_status_register.vcup <= 1;
+                // fmv_interrupt_status_register.seq <= 1;
+            end
             if (fmv_event_sequence_header) begin
                 fmv_interrupt_status_register.seq <= 1;
                 $display("Cause FMV Seq Event");
             end
             if (fmv_event_group_of_pictures) fmv_interrupt_status_register.gop <= 1;
-            if (fmv_event_picture) fmv_interrupt_status_register.pic <= 1;
+            if (fmv_event_picture) begin
+                fmv_interrupt_status_register.pic <= 1;
+
+            end
             if (fmv_event_last_picture_starts_display) fmv_interrupt_status_register.eod <= 1;
             if (fmv_event_program_end) fmv_interrupt_status_register.eii <= 1;
             if (fmv_event_sequence_end) fmv_interrupt_status_register.esi <= 1;
@@ -528,7 +537,7 @@ module vmpeg (
                 $display("FMV Underflow");
             end
 
-            if (event_decoding_started) begin
+            if (fma_event_decoding_started) begin
                 // Decoding started
                 fma_status_register[4] <= 1;
 
@@ -536,7 +545,7 @@ module vmpeg (
                 fma_interrupt_status_register[4] <= 1;
             end
 
-            if (event_frame_decoded) begin
+            if (fma_event_frame_decoded) begin
                 // Frame Header Updated
                 fma_status_register[2]           <= 1;
 
@@ -546,13 +555,9 @@ module vmpeg (
                 // Stream change IRQ
                 fma_interrupt_status_register[1] <= pending_fma_stream_change;
                 pending_fma_stream_change        <= 0;
-
-                // Really correct?
-                image_width                      <= {5'b0, fmv_decoder_width};
-                image_height                     <= {7'b0, fmv_decoder_height};
             end
 
-            if (event_underflow) begin
+            if (fma_event_underflow) begin
                 // Underflow
                 fma_status_register[3] <= 1;
 
@@ -746,6 +751,10 @@ module vmpeg (
 
                             if (din[3]) begin  // 0008 Play
                                 fmv_playback_active <= 1;
+
+                                // Really correct?
+                                image_width <= {5'b0, fmv_decoder_width};
+                                image_height <= {7'b0, fmv_decoder_height};
                             end
 
                             if (din[4]) begin  // 0010 Pause
@@ -805,7 +814,7 @@ module vmpeg (
 
                             // 0008 RegsUpd
                             if (din[3]) begin
-                                register_update_latch <= 1;
+                                //register_update_latch <= 1;
                                 $display("RegsUpd");
                             end
 
@@ -817,7 +826,7 @@ module vmpeg (
                             // Show Window on next picture change 0400
                             if (din[10]) begin
                                 fmv_show_on_next_video_frame <= 1;
-                                register_update_latch <= 1;
+                                //register_update_latch <= 1;
                             end
 
                             // TODO this might not be right
