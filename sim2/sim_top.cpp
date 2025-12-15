@@ -315,6 +315,7 @@ class CDi {
     uint16_t hps_buffer_index = 0;
     bool hps_nvram_backup_active{false};
     bool ignore_first_hps_din{false};
+    bool executing_dvc_rom_instructions{false};
 
     int instanceid;
 
@@ -823,7 +824,16 @@ class CDi {
                 AnalyzeSyscall();
             }
 
-            if (print_instructions) {
+            if (m_pc == 0x0e52e50) {
+                // We are at the beginning of IrqSrvc in fdrvs1. This means that A2 contains fdrvs1_static
+                uint32_t *cpu_a =
+                    &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[8];
+                dut.rootp->emu__DOT__cditop__DOT__fdrvs1_static = cpu_a[2];
+            }
+
+            executing_dvc_rom_instructions = m_pc >= 0xe40000 && m_pc < 0xe7ffff;
+
+            if (print_instructions || executing_dvc_rom_instructions) {
                 printstate();
             }
 
@@ -837,6 +847,15 @@ class CDi {
 
             prevpc = m_pc;
         }
+
+        if (executing_dvc_rom_instructions && dut.rootp->emu__DOT__cditop__DOT__bus_ack &&
+            (dut.rootp->emu__DOT__cditop__DOT__addr_byte & 0xf00000) != 0xe00000) {
+
+            printf("CPU %s %x %x %d%d\n", dut.rootp->emu__DOT__cditop__DOT__write_strobe ? "Write" : "Read",
+                   dut.rootp->emu__DOT__cditop__DOT__addr_byte, dut.rootp->emu__DOT__cditop__DOT__cpu_data,
+                   dut.rootp->emu__DOT__cditop__DOT__uds, dut.rootp->emu__DOT__cditop__DOT__lds);
+        }
+
 #endif
 
         // Simulate television
@@ -1123,7 +1142,8 @@ class CDi {
             clock30();
         }
 
-        memset(&dut.rootp->emu__DOT__ddram[0], 0x80, 5000000);
+        memset(&dut.rootp->emu__DOT__ddram[0], 0x00, 5000000);
+        memset(&dut.rootp->emu__DOT__ram[0], 0x00, 2097152*2);
 
 #if 0
         FILE *f = fopen("ddramdump.bin", "rb");

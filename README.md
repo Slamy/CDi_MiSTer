@@ -59,6 +59,7 @@ Expected synthesis times with Quartus 17.0.2
 
 ### TODOs
 
+* Fix stop of CD reading from MiSTer Main when reading is deactivated
 * "Uncover featuring Tatjana (Europe)" regressions?
 * Star Trek VI - Terre Inconnue (France) (Disc 1) freezes? Disc 2 does too?
 * Regression of "Historia del Arte Español" (working in DVC rc2)

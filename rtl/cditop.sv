@@ -83,8 +83,8 @@ module cditop (
 
     wire write_strobe  /*verilator public_flat_rd*/;
     wire as  /*verilator public_flat_rd*/;
-    wire lds;
-    wire uds;
+    wire lds  /*verilator public_flat_rd*/;
+    wire uds  /*verilator public_flat_rd*/;
 
     bit bus_ack  /*verilator public_flat_rd*/;
 
@@ -93,7 +93,7 @@ module cditop (
     wire [23:1] addr;
     wire [23:0] addr_byte  /*verilator public_flat_rd*/ = {addr[23:1], 1'b0};
 
-    wire [15:0] cpu_data = write_strobe ? cpu_data_out : data_in;
+    wire [15:0] cpu_data  /*verilator public_flat_rd*/ = write_strobe ? cpu_data_out : data_in;
 
     wire mcd212_bus_ack;
     bit cdic_bus_ack;
@@ -629,7 +629,54 @@ module cditop (
                 if (vmpeg_intreq) irq_in4owner <= VMPEG;
             end
         endcase
-
     end
+
+
+`ifdef VERILATOR
+    // Tool to observe variables in fdrvs1 driver code
+    struct {
+        bit [7:0]  V_BufStat;
+        bit [15:0] V_Stat;
+        bit [15:0] V_VCMD;
+        bit [15:0] V_DTSVal;
+        bit [31:0] V_SCR;
+    } fdrvs1 = '{default: 0};
+    bit [23:0] fdrvs1_static  /*verilator public_flat_rw*/ = 0;
+    always @(posedge clk30) begin
+
+        if (fdrvs1_static != 0 && bus_ack && write_strobe) begin
+            if (addr_byte == fdrvs1_static + 24'h0134) begin
+                fdrvs1.V_Stat = cpu_data;
+                $display("V_Stat = %d dez", cpu_data);
+            end
+
+            // I assume that fdrvs1_static is always aligned to words
+            if (addr_byte == fdrvs1_static + 24'h017a) begin  // Location is 0x17b
+                fdrvs1.V_BufStat = cpu_data[7:0];
+                $display("V_BufStat = %d dez", cpu_data[7:0]);
+            end
+
+            if (addr_byte == fdrvs1_static + 24'h016c) begin
+                fdrvs1.V_VCMD = cpu_data;
+                $display("V_VCMD = %x", cpu_data);
+            end
+
+            if (addr_byte == fdrvs1_static + 24'h01c0) begin
+                fdrvs1.V_DTSVal = cpu_data;
+                $display("V_DTSVal = %x", cpu_data);
+            end
+
+            if (addr_byte == fdrvs1_static + 24'h0ca) begin
+                fdrvs1.V_SCR[31:16] = cpu_data;
+                $display("V_SCR = %x", {cpu_data, fdrvs1.V_SCR[15:0]});
+            end
+            if (addr_byte == fdrvs1_static + 24'h0cc) begin
+                fdrvs1.V_SCR[15:0] = cpu_data;
+                $display("V_SCR = %x", {fdrvs1.V_SCR[31:16], cpu_data});
+            end
+        end
+    end
+`endif
+
 endmodule
 
