@@ -29,7 +29,7 @@ module frameplayer (
     input latch_frame_clkvideo,
     input latch_frame_clkddr,
     input invalidate_latched_frame,
-    input show_on_next_video_frame
+    input show_on_next_video_frame // expected to be clocked at clkddr
 );
 
     assign ddrif.byteenable = 8'hff;
@@ -56,7 +56,7 @@ module frameplayer (
     bit [8:0] frame_height_clkddr = 100;
     bit [8:0] window_x_clkddr;
     bit [8:0] window_y_clkddr;
-    
+
     always_ff @(posedge clkvideo) begin
         if (latch_frame_clkvideo) begin
             frame_width_clkvideo  <= frame_width;
@@ -242,13 +242,6 @@ module frameplayer (
         .signal_out_clk_b(vertical_offset_wait_not_null_clkddr)
     );
 
-    wire show_on_next_video_frame_clkddr;
-    signal_cross_domain cross_vshow_on_next_video_frame (
-        .clk_a(clkvideo),
-        .clk_b(clkddr),
-        .signal_in_clk_a(show_on_next_video_frame),
-        .signal_out_clk_b(show_on_next_video_frame_clkddr)
-    );
 
     always_ff @(posedge clkddr) begin
         linecnt_clkddr <= linecnt;
@@ -271,7 +264,7 @@ module frameplayer (
             address_y <= latched_frame.y_adr + address_y_offset + 29'(window_x_clkddr);
             address_u <= latched_frame.u_adr + address_uv_offset + 29'(window_x_clkddr / 2);
             address_v <= latched_frame.v_adr + address_uv_offset + 29'(window_x_clkddr / 2);
-            fetch_and_show_frame <= latched_frame_valid && show_on_next_video_frame_clkddr;
+            fetch_and_show_frame <= latched_frame_valid && show_on_next_video_frame;
             target_y <= 0;
             target_u <= 0;
             target_v <= 0;

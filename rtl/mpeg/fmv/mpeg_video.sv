@@ -1279,12 +1279,20 @@ module mpeg_video (
     );
 
 
+    wire show_on_next_video_frame_clkddr;
+    signal_cross_domain cross_vshow_on_next_video_frame (
+        .clk_a(clk30),
+        .clk_b(clk_mpeg),
+        .signal_in_clk_a(show_on_next_video_frame),
+        .signal_out_clk_b(show_on_next_video_frame_clkddr)
+    );
+
     yuv_frame_adr_fifo readyframes (
         .clk(clk_mpeg),
         .reset(reset_dsp_enabled_clk_mpeg),
         .wdata(just_decoded),
         .we(just_decoded_commit),
-        .strobe(latch_frame_for_display_clk_mpeg && show_on_next_video_frame),
+        .strobe(latch_frame_for_display_clk_mpeg && show_on_next_video_frame_clkddr),
         .valid(for_display_valid_clk_mpeg),
         .q(for_display),
         .cnt(pictures_in_fifo_clk_mpeg)
@@ -1311,7 +1319,7 @@ module mpeg_video (
         .latch_frame_clkvideo(latch_frame_for_display),
         .latch_frame_clkddr(latch_frame_for_display_clk_mpeg),
         .invalidate_latched_frame(reset_persistent_storage_clk_mpeg),
-        .show_on_next_video_frame(show_on_next_video_frame)
+        .show_on_next_video_frame(show_on_next_video_frame_clkddr)
     );
 endmodule
 
