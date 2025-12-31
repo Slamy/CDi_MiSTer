@@ -1,4 +1,5 @@
 `include "videotypes.svh"
+`include "mpeg/util.svh"
 
 module cditop (
     input clk30,
@@ -336,6 +337,7 @@ module cditop (
     rgb888_s mcd212_video_out;
     wire debug_video_fifo_overflow;
     wire debug_audio_fifo_overflow;
+    linear_volume_s mpeg_dsp_volume;
 
     vmpeg vmpeg_inst (
         .clk(clk30),
@@ -370,6 +372,7 @@ module cditop (
         .audio_right(mpeg_audio_right),
         .sample_tick44,
         .clk45tick(mpeg_45tick),
+        .dsp_volume(mpeg_dsp_volume),
         .ddrif
     );
 
@@ -556,7 +559,7 @@ module cditop (
         .csdac2n(csdac2n),
         .csdac1n(csdac1n),
         .clkdac(clkdac),
-
+        .mpeg_volume(mpeg_dsp_volume),
         .audio_left_in(cdic_audio_left),
         .audio_right_in(cdic_audio_right),
         .mpeg_left_in(mpeg_audio_left),

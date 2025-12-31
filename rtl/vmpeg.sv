@@ -1,4 +1,4 @@
-
+`include "mpeg/util.svh"
 
 module vmpeg (
     input clk,
@@ -37,6 +37,7 @@ module vmpeg (
     output signed [15:0] audio_right,
     input sample_tick44,
     input clk45tick,
+    output linear_volume_s dsp_volume,
 
     output bit mpeg_ram_enabled,  // Prohibits detection of MPEG RAM by the OS RAM crawler
     output bit debug_audio_fifo_overflow,
@@ -91,7 +92,11 @@ module vmpeg (
         .playback_active(),
         .event_decoding_started(fma_event_decoding_started),
         .event_frame_decoded(fma_event_frame_decoded),
-        .event_underflow(fma_event_underflow)
+        .event_underflow(fma_event_underflow),
+        .dspa(fma_dspa),
+        .dspd(din[7:0]),
+        .dspd_strobe(write_strobe && bus_ack && access && address[15:1] == 15'h1812),
+        .dsp_volume
     );
 
     wire fmv_event_picture_starts_display;
@@ -300,6 +305,10 @@ module vmpeg (
     bit [31:0] fma_dclk;
     bit [31:0] fmv_dclk;
     bit [15:0] fma_dclkl_latch;
+
+    // FMA DSPA @ 00E03022
+    // Address for indirect access into DSP memory?
+    bit [7:0] fma_dspa;
 
     // FMV SYSCMD @ 00E040C0
     (* keep *) (* noprune *) bit [15:0] fmv_system_command_register = 0;
@@ -735,7 +744,13 @@ module vmpeg (
                             fma_interrupt_enable_register <= din;
                             $display("FMA IER %x %x", address[15:1], din);
                         end
-
+                        15'h1811: begin
+                            fma_dspa <= din[7:0];
+                            $display("FMA DSPA %x %x", address[15:1], din);
+                        end
+                        15'h1812: begin
+                            $display("FMA DSPD %x %x", address[15:1], din);
+                        end
                         // FMV Registers
                         15'h2030: begin
                             fmv_interrupt_enable_register <= din;

@@ -11,6 +11,8 @@ Titles which require the Digital Video Cartridge are considered experimental.
 
 ## Usage
 
+### Required ROM files
+
 Place `cdi200.rom` as `boot0.rom` in `/media/fat/games/CD-i`.
 Place `zx405042p__cdi_slave_2.0__b43t__zzmk9213.mc68hc705c8a_withtestrom.7206` as `boot1.rom` next to it.
 Place `vmpega_split.rom` as `boot2.rom` next to it for DVC functionality.
@@ -28,6 +30,8 @@ To generate the vmpeg_split rom, use this:
 
     dd if=vmpega.rom bs=1024 count=128 of=vmpega_split.rom
 
+### NvRAM storage
+
 Save files are stored inside an 8K NvRAM. MiSTer will create one save file per CD.
 Whenever the NvRAM state changes, the "User" LED will light up, indicating
 a change is queued to store. When the OSD is opened, the NvRAM will be flushed to SD card.
@@ -37,6 +41,25 @@ The save files containing the NvRAM are compatible with the CD-i emulation of MA
 Digital gamepads, analog gamepads and mice are supported for use with this core.
 To play a title, load a CD and press on the play button at the start screen.
 CD images can be stored as CHD or CUE/BIN format.
+
+### OSD
+
+* Audio & Video
+  * Video Region
+    * PAL/NTSC - essentially a 50/60 Hz switch. PAL is preferred for the CD-i, reset required to apply
+  * Aspect Ratio
+  * Scale
+  * Vertical Crop - Off, On(270) - For improved integer scaling
+  * RGB Scale
+    * 0-255 - Full RGB range
+    * 16-235 - Reduced RGB range (might provide more accurate color / more contrast)
+* Hardware Config
+  * Disable VMPEG DVC - Reset core to take effect
+  * Overclock input device - Increase update rate (no longer accurate, but recommended for games)
+  * Fast CD Seek - Skip 20 sector seek delay, a real CDIC always ensures (might be unstable)
+  * CPU Turbo - Slightly increases CPU speed (might be unstable)
+  * NvRAM live update - Allows loading NvRAM from storage on CD image change without reset (might corrupt NvRAM)
+* Autoplay - Injects a kernel module into OS9 to skip the system menu and directly start the title (thx to CD-i Fan for this)
 
 ## Troubleshooting
 

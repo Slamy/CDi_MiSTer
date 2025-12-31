@@ -1,10 +1,14 @@
 module dual_ad7528_attenuation (
     input clk,
+
+    // Connection to SLAVE GPIOs
     input datadac,  // Selects DAC A/B and is data for shift register
     input csdac2n,  // Latches DAC for attenuation of right Audio
     input csdac1n,  // Latches DAC for attenuation of left Audio
     input clkdac,   // Clocks shift register
-    //input kill, // grounds audio if true
+
+    // Configuration by MPEG DSP
+    input linear_volume_s mpeg_volume,
 
     input signed [15:0] audio_left_in,
     input signed [15:0] audio_right_in,
@@ -17,10 +21,14 @@ module dual_ad7528_attenuation (
 );
 
     enum {
-        LEFT_A,
-        LEFT_B,
-        RIGHT_A,
-        RIGHT_B
+        CDIC_LEFT_A,
+        CDIC_LEFT_B,
+        MPEG_LEFT_A,
+        MPEG_LEFT_B,
+        CDIC_RIGHT_A,
+        CDIC_RIGHT_B,
+        MPEG_RIGHT_A,
+        MPEG_RIGHT_B
     } state;
 
     bit clkdac_q;
@@ -77,7 +85,8 @@ module dual_ad7528_attenuation (
 
     // MAC register
     // To save some ressources, we use only one DSP block for all 4 multiplications here
-    // How wide does the Accu need to be? We have 3 sources (VMPEG, CDIC Left, CDIC Right) and
+    // How wide does the Accu need to be? We have 4 sources
+    // (VMPEG Left, VMPEG Right, CDIC Left, CDIC Right) and
     // we use 8 bits for fractions. So 16 + 8 + 2 = 26 bits
     bit signed [25:0] temp;
     bit signed [23:8] temp_clipped;
@@ -88,6 +97,49 @@ module dual_ad7528_attenuation (
         else temp_clipped[23:8] = temp[23:8];
     end
 
+    bit signed  [15:0] mul_a;  /* 16 bit sample */
+    bit signed  [ 8:0] mul_b;  /* 9 bit factor */
+    wire signed [25:0] mul_out = mul_a * mul_b;  /* 9 + 16 = 25 bit product */
+
+    always_comb begin
+        case (state)
+            CDIC_LEFT_A: begin
+                mul_a = audio_left_in;
+                mul_b = signed'({1'b0, factor_left_a});
+            end
+            CDIC_LEFT_B: begin
+                mul_a = audio_right_in;
+                mul_b = signed'({1'b0, factor_left_b});
+            end
+            CDIC_RIGHT_A: begin
+                mul_a = audio_right_in;
+                mul_b = signed'({1'b0, factor_right_a});
+            end
+            CDIC_RIGHT_B: begin
+                mul_a = audio_left_in;
+                mul_b = signed'({1'b0, factor_right_b});
+            end
+
+            MPEG_LEFT_A: begin
+                mul_a = mpeg_left_in;
+                mul_b = signed'({1'b0, mpeg_volume.factor_l2l});
+            end
+            MPEG_LEFT_B: begin
+                mul_a = mpeg_right_in;
+                mul_b = signed'({1'b0, mpeg_volume.factor_r2l});
+            end
+            MPEG_RIGHT_A: begin
+                mul_a = mpeg_left_in;
+                mul_b = signed'({1'b0, mpeg_volume.factor_l2r});
+            end
+            MPEG_RIGHT_B: begin
+                mul_a = mpeg_right_in;
+                mul_b = signed'({1'b0, mpeg_volume.factor_r2r});
+            end
+        endcase
+
+    end
+
     // Left and Right might be swapped here. There is a reason for that:
     // According to an internal memo http://icdia.co.uk/docs/mono2status.zip
     // there was discrepancy between left and right on Mono I and Mono II
@@ -96,25 +148,42 @@ module dual_ad7528_attenuation (
     // with the panning of Zelda's Adventure
     always_ff @(posedge clk) begin
         case (state)
-            LEFT_A: begin
+            CDIC_LEFT_A: begin
                 audio_left_out <= temp_clipped[23:8];
 
-                state <= LEFT_B;
-                temp <= signed'({1'b0, factor_left_a}) * audio_left_in + 26'(signed'({mpeg_right_in,8'b10000000}));
+                state <= CDIC_LEFT_B;
+                temp <= mul_out;
             end
-            LEFT_B: begin
-                state <= RIGHT_A;
-                temp  <= temp + signed'({1'b0, factor_left_b}) * audio_right_in;
+            CDIC_LEFT_B: begin
+                state <= MPEG_RIGHT_A;
+                temp  <= temp + mul_out;
             end
-            RIGHT_A: begin
+            MPEG_RIGHT_A: begin
+                state <= MPEG_RIGHT_B;
+                temp  <= temp + mul_out;
+            end
+            MPEG_RIGHT_B: begin
+                state <= CDIC_RIGHT_A;
+                temp  <= temp + mul_out;
+            end
+
+            CDIC_RIGHT_A: begin
                 audio_right_out <= temp_clipped[23:8];
 
-                state <= RIGHT_B;
-                temp <= signed'({1'b0, factor_right_a}) * audio_right_in + 26'(signed'({mpeg_left_in,8'b10000000}));
+                state <= CDIC_RIGHT_B;
+                temp <= mul_out;
             end
-            RIGHT_B: begin
-                state <= LEFT_A;
-                temp  <= temp + signed'({1'b0, factor_right_b}) * audio_left_in;
+            CDIC_RIGHT_B: begin
+                state <= MPEG_LEFT_A;
+                temp  <= temp + mul_out;
+            end
+            MPEG_LEFT_A: begin
+                state <= MPEG_LEFT_B;
+                temp  <= temp + mul_out;
+            end
+            MPEG_LEFT_B: begin
+                state <= CDIC_LEFT_A;
+                temp  <= temp + mul_out;
             end
         endcase
     end

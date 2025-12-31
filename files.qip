@@ -19,6 +19,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/mcd212.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mk48t08b.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/demuxer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fma/audio_firmware_memory.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fma/dsp_registers.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fma/mpeg_audio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fma/mpeg_audiofifo.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fma/mpeg_input_stream_fifo_8k.sv

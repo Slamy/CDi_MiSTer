@@ -154,6 +154,57 @@ The DVC MPEG related registers are mapped at 0xe00000 into the CPU memory map
     0x0062  B0_BY	
     0x0064  B0_DCMD
 
+### Attenuation of FMA
+
+Example syscall recorded in cdiemu
+
+    @0027FB22(cdi_fmvtest) TRAP[2689] #0 I$SetStt <= d0.w=4 d1.w=MA_Cntrl d2.w=1 d3.l=$42434445 d4.w=0
+
+Effect is visible afterwards. According to this process, the attenuation is calculated on the DSP 56001
+since the parameters are written into its memory space
+
+    @00E4FC40(madriv) WR.W 00E03022 <= 0000 [S] .DSPA
+    @00E4FC46(madriv) FMA DSP[MODE] <= 0080
+    @00E4FC46(madriv) WR.W 00E03024 <= 0080 [S] .DSPD
+    @00E4FC4C(madriv) WR.W 00E03022 <= 0001 [S] .DSPA
+    @00E4FC52(madriv) FMA DSP[TARGET] <= 0093
+    @00E4FC52(madriv) WR.W 00E03024 <= 0093 [S] .DSPD
+
+    @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FC5C(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
+    @00E4FC70(madriv) WR.W 00E03024 <= 0044 [S] .DSPD  <--
+
+    @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FC78(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
+    @00E4FC8C(madriv) WR.W 00E03024 <= 0043 [S] .DSPD  <--
+
+    @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FC94(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
+    @00E4FCA8(madriv) WR.W 00E03024 <= 0045 [S] .DSPD  <--
+
+    @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FCB0(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
+    @00E4FCC4(madriv) FMA ATTEN <= 44434542
+    @00E4FCC4(madriv) WR.W 00E03024 <= 0042 [S] .DSPD  <--
+
+    @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+
+    @00E4FCCC(madriv) WR.W 00E03022 <= 0000 [S] .DSPA
+    @00E4FCD2(madriv) FMA DSP[MODE] <= 00E2
+    @00E4FCD2(madriv) WR.W 00E03024 <= 00E2 [S] .DSPD
+    @00E4EDDE(madriv) FMA STAT => 0000
+    @00E4EDDE(madriv) RD.W 00E03002 => 0000 [S] .STAT
+    @00E4F838(madriv) FMA STAT => 0000
+    @00E4F838(madriv) RD.W 00E03002 => 0000 [S] .STAT
+    @00E4F840(madriv) WR.W 00D00032 <= 0000 [S] MA_STAT{ ASY_Stat=0 }
+    @00E4F846(madriv) WR.W 00D00032 <= 0000 [S] MA_STAT{ ASY_Stat=0 }
+
+
 ## Resources
 
 https://github.com/cdifan/cdichips?tab=readme-ov-file#mpeg-chips
@@ -294,3 +345,5 @@ V_BufStat
   waitstart	equ		33   0x21 set in StrtPlay?
   waitnormal	equ		34
   waitsector	equ		35
+
+

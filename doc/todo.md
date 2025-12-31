@@ -1,5 +1,8 @@
 # TODOs and known issues
 
+* Fix VCD detection, so that the VCD pixel clock is applied
+* Add support for MPEG Layer I
+  * Affected disc is "AIMS - Learning About Ecology (1995)(AIMS Multimedia)(US)"
 * Add support for an emulated Peacekeeper Revolver Light Gun
 * "Who Shot Johnny Rock?" is not stopping the Philips Logo animation when pressing a button
     * A gun shot can be heard, so the press is registered.

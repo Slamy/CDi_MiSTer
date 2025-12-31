@@ -19,7 +19,12 @@ module mpeg_audio (
 
     output bit event_decoding_started,
     output bit event_frame_decoded,
-    output bit event_underflow
+    output bit event_underflow,
+
+    input [7:0] dspa,
+    input [7:0] dspd,
+    input dspd_strobe,
+    output linear_volume_s dsp_volume
 );
 
     // 8kB of MPEG stream memory to fill from outside
@@ -69,6 +74,15 @@ module mpeg_audio (
             end
         end
     end
+
+    dsp_registers registerbank (
+        .clk,
+        .reset,
+        .dspa,
+        .dspd,
+        .dspd_strobe,
+        .volume(dsp_volume)
+    );
 
     // 28000 byte of memory are required
     wire [31:0] memory_out;

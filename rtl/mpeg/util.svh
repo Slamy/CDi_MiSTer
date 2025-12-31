@@ -8,6 +8,14 @@ typedef struct {
     bit first_intra_frame_of_gop;
 } planar_yuv_s;
 
+typedef struct packed {
+    bit [7:0] factor_r2r;
+    bit [7:0] factor_l2r;
+    bit [7:0] factor_r2l;
+    bit [7:0] factor_l2l;
+} linear_volume_s;
+
+
 function [31:0] ones_mask(bit [4:0] n);
     begin
         ones_mask = (32'h1 << n) - 1;  // n ones at LSB

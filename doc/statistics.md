@@ -2,10 +2,10 @@
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  24,945 / 41,910 ( 60 % )
-    Total registers              27763
+    Logic utilization (in ALMs)  24,868 / 41,910 ( 59 % )
+    Total registers              27616
     Total block memory bits      2,314,448 / 5,662,720 ( 41 % )
-    Total DSP Blocks             102 / 112 ( 91 % )
+    Total DSP Blocks             99 / 112 ( 88 % )
 
 Expected synthesis times with Quartus 17.0.2
 
