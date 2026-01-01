@@ -34,12 +34,21 @@ module servo_hle (
         OPEN
     } tray_state = CLOSED;
 
+    // Some measurements from a 210/05
+    // A closed tray with Audio CD is B0 00 01 25
+    // A closed tray with no disc is B0 00 03 25
+    // A closed tray with Robocop is B0 00 04 25
+    // A closed tray with Tetris is B0 00 04 25
+    // cdiemu seems to use B0 00 02 25, which
+    // seems to work alright for a CD-i title.
+    // But the detection of VCDs is not performed with that Disc state
     bit [15:0] b0_result;  // Disc State Word
+
     always_comb begin
         b0_result = 0;
 
         case (disc_state)
-            CDI: b0_result[15:8] = 8'h02;
+            CDI: b0_result[15:8] = 8'h04;
             AUDIO: b0_result[15:8] = 8'h01;
             default: b0_result[15:8] = 8'h03;
         endcase
