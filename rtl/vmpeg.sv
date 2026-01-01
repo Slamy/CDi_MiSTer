@@ -254,7 +254,8 @@ module vmpeg (
         bit seq;  // SEQ Decoded
     } interrupt_flags_s;
 
-    // VMPEG VCD @ 00E01000
+    // VMPEG VCD @ 00E01xxx
+    // The lower 12 bits are don't care bits on real hardware
     // Write only register. Reading is impossible!
     // 0 for base case pixel clock of 15 MHz
     // 1 for VCD pixel clock of 13.5 MHz
@@ -683,12 +684,14 @@ module vmpeg (
                         if (!mpeg_ram_enabled) $display("MPEG RAM Enabled!");
                     end
 
+
+                    if (address[15:1+8] == 7'h08) begin
+                        // VMPEG Pixelclock 
+                        $display("VMPEG VCD %x %x", address[15:1], din);
+                        vcd_pixel_clock <= din[0];
+                    end
+
                     case (address[15:1])
-                        // VMPEG Pixelclock
-                        15'h0800: begin
-                            $display("VMPEG VCD %x %x", address[15:1], din);
-                            vcd_pixel_clock <= din[0];
-                        end
                         // FMA Registers
                         15'h1800: begin
                             $display("FMA CMD %x %x", address[15:1], din);
