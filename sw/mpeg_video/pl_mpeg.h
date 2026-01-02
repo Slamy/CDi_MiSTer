@@ -1973,7 +1973,7 @@ typedef struct {
 	int v;
 } plm_video_motion_t;
 
-#define DDR_FRAMEBUFFER_CNT 20
+#define DDR_FRAMEBUFFER_CNT 30
 
 struct plm_video_t {
 	int time;
@@ -2211,7 +2211,7 @@ void plm_video_allocate_framebuffers(plm_video_t *self)
 	plm_video_init_frame(self, &self->frame_forward, self->frames_data + frame_data_size * 1);
 	plm_video_init_frame(self, &self->frame_backward, self->frames_data + frame_data_size * 2);
 
-	for (int i=0;i<20;i++)
+	for (int i=0;i<DDR_FRAMEBUFFER_CNT;i++)
 		plm_video_init_frame(self, &self->framebuffers[i], self->frames_data + frame_data_size * (3+i));
 }
 

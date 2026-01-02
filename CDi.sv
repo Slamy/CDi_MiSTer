@@ -585,7 +585,7 @@ module emu (
 
 `ifdef VERILATOR
     // DDR3 simulation
-    bit [63:0] ddram[5000000/8]  /*verilator public_flat_rd*/;
+    bit [63:0] ddram[16777216/8]  /*verilator public_flat_rd*/;
 
     int ddr_latencycnt;
     bit [7:0] ddr_words_to_prove;
@@ -605,7 +605,8 @@ module emu (
         DDRAM_DOUT_READY <= 0;
 
         if (DDRAM_WE && !DDRAM_BUSY) begin
-            ddram[DDRAM_ADDR[19:0]] <= DDRAM_DIN;
+            assert (DDRAM_ADDR[21] == 0);
+            ddram[DDRAM_ADDR[20:0]] <= DDRAM_DIN;
             //$display("Write at %x %x",DDRAM_ADDR, DDRAM_DIN);
         end
 
@@ -619,7 +620,7 @@ module emu (
         if (DDRAM_BUSY) begin
             if (ddr_latencycnt > 0) ddr_latencycnt <= ddr_latencycnt - 1;
             else begin
-                DDRAM_DOUT <= ddram[ddr_addr[19:0]];
+                DDRAM_DOUT <= ddram[ddr_addr[20:0]];
                 ddr_addr <= ddr_addr + 1;
                 DDRAM_DOUT_READY <= 1;
                 ddr_words_to_prove <= ddr_words_to_prove - 1;

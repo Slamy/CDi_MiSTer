@@ -92,7 +92,7 @@ static void push_frame(plm_frame_t *frame)
 
 	__asm volatile("" : : : "memory");
 
-	while (frame_display_fifo->pictures_in_fifo > 8)
+	while (frame_display_fifo->pictures_in_fifo > 17)
 		__asm volatile("" : : : "memory");
 
 	*((volatile plm_frame_t **)OUTPORT_FRAME) = frame;
@@ -124,17 +124,11 @@ static void push_frame(plm_frame_t *frame)
 	frame_display_fifo->frameperiod_rawhdr = seq_hdr_conf.frameperiod;
 	frame_display_fifo->temporal_ref = frame->temporal_ref;
 	
-	if (frame_display_fifo->pictures_in_fifo < 5)
+	if (frame_display_fifo->pictures_in_fifo < 3)
 	{
 		// It seems our FIFO is loosing pictures. Maybe the frame rate is slightly off?
 		// Increase frame period by 0.1Hz when running at 25 FPS
 		frame_display_fifo->frameperiod_30mhz = period30mhz + 4780;
-	}
-	else if (frame_display_fifo->pictures_in_fifo > 6)
-	{
-		// It seems our FIFO is slightly overflowing. Maybe the frame rate is slightly off?
-		// Decrease frame period by 0.1Hz when running at 25 FPS
-		frame_display_fifo->frameperiod_30mhz = period30mhz - 4780;
 	}
 	else
 	{

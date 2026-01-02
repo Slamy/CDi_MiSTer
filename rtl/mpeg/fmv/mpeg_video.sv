@@ -35,7 +35,7 @@ module mpeg_video (
     output bit event_picture_starts_display,
     output event_last_picture_starts_display,
     output bit event_first_intra_frame_starts_display,
-    output [3:0] pictures_in_fifo,
+    output [4:0] pictures_in_fifo,
 
     output bit [10:0] decoder_width,
     output bit [ 8:0] decoder_height,
@@ -490,7 +490,7 @@ module mpeg_video (
                             dmem_rsp_payload_data_1 = {31'b0, has_sequence_header};
 
                         if (dmem_cmd_payload_address_1_q == 32'h10003028)
-                            dmem_rsp_payload_data_1 = {28'b0, pictures_in_fifo_clk_mpeg};
+                            dmem_rsp_payload_data_1 = {27'b0, pictures_in_fifo_clk_mpeg};
                         if (dmem_cmd_payload_address_1_q == 32'h1000302c)
                             dmem_rsp_payload_data_1 = {31'b0, playback_active_clkddr};
                     end
@@ -697,12 +697,12 @@ module mpeg_video (
         .flag_out_clk_b(latch_frame_for_display_clk_mpeg)
     );
 
-    wire [3:0] pictures_in_fifo_clk_mpeg  /*verilator public_flat_rd*/;
-    wire [3:0] pictures_in_fifo_clk_mpeg_gray_d;
-    bit  [3:0] pictures_in_fifo_clk_mpeg_gray_q;
-    bit  [3:0] pictures_in_fifo_clk30_gray;
+    wire [4:0] pictures_in_fifo_clk_mpeg  /*verilator public_flat_rd*/;
+    wire [4:0] pictures_in_fifo_clk_mpeg_gray_d;
+    bit  [4:0] pictures_in_fifo_clk_mpeg_gray_q;
+    bit  [4:0] pictures_in_fifo_clk30_gray;
     b2g_converter #(
-        .WIDTH(4)
+        .WIDTH(5)
     ) pictures_in_fifo_b2g (
         .binary((event_at_least_one_frame_clk_mpeg && pictures_in_fifo_clk_mpeg==0) ? 1 : pictures_in_fifo_clk_mpeg),
         .gray(pictures_in_fifo_clk_mpeg_gray_d)
@@ -711,7 +711,7 @@ module mpeg_video (
         pictures_in_fifo_clk_mpeg_gray_q <= pictures_in_fifo_clk_mpeg_gray_d;
     always_ff @(posedge clk30) pictures_in_fifo_clk30_gray <= pictures_in_fifo_clk_mpeg_gray_q;
     g2b_converter #(
-        .WIDTH(4)
+        .WIDTH(5)
     ) pictures_in_fifo_g2b (
         .binary(pictures_in_fifo),
         .gray  (pictures_in_fifo_clk30_gray)

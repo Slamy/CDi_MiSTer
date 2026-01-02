@@ -895,6 +895,7 @@ class CDi {
             prevpc = m_pc;
         }
 
+#if 0
         if (executing_dvc_rom_instructions && dut.rootp->emu__DOT__cditop__DOT__bus_ack &&
             (dut.rootp->emu__DOT__cditop__DOT__addr_byte & 0xf00000) != 0xe00000) {
 
@@ -902,7 +903,7 @@ class CDi {
                    dut.rootp->emu__DOT__cditop__DOT__addr_byte, dut.rootp->emu__DOT__cditop__DOT__cpu_data,
                    dut.rootp->emu__DOT__cditop__DOT__uds, dut.rootp->emu__DOT__cditop__DOT__lds);
         }
-
+#endif
 #endif
 
         // Simulate television

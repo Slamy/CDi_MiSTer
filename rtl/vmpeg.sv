@@ -116,7 +116,7 @@ module vmpeg (
     bit fmv_playback_active;
     wire fmv_event_sequence_end;
     wire fmv_event_buffer_underflow;
-    wire [3:0] fmv_pictures_in_fifo;
+    wire [4:0] fmv_pictures_in_fifo;
 
 
     bit [8:0] latched_display_offset_y;
@@ -463,7 +463,7 @@ module vmpeg (
             15'h204E: dout = 0;  // e0409c GEN_SYNC_DIFF? Always reads 0 on real machine
             15'h204F: dout = 16'hfe96;  // e0409e GEN_DEC_DELAY? Always changing but negative?
             15'h2050: dout = {1'b0, fmv_decoding_timestamp[21:7]};  // 00E040A0 Decoding Timestamp
-            15'h2052: dout = {12'b0, fmv_pictures_in_fifo};  // 00E040A4 ?? Pictures in fifo?
+            15'h2052: dout = {11'b0, fmv_pictures_in_fifo};  // 00E040A4 ?? Pictures in fifo?
             15'h2054: dout = fmv_decoder_frameperiod_90khz;  // E040A8 Picture Rate Only read.
             15'h2055: dout = fmv_display_rate;  // e040aa ?? Display Rate ? Only read.
             15'h2056: dout = fmv_frame_rate;  // e040ac ?? GEN_FRAME_RATE Read and written.

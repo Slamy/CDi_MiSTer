@@ -11,16 +11,16 @@ module yuv_frame_adr_fifo (
     output bit valid,
     output planar_yuv_s q,
     // State
-    output [3:0] cnt
+    output [4:0] cnt
 );
 
-    planar_yuv_s ram[16];
+    planar_yuv_s ram[32];
 
     // Clock domain of output
-    bit [3:0] raddr;  // 512 x 8
+    bit [4:0] raddr;
 
     // Clock domain of input
-    bit [3:0] waddr;  // 64 x 64
+    bit [4:0] waddr;
 
     assign cnt = waddr - raddr;
 
@@ -32,8 +32,8 @@ module yuv_frame_adr_fifo (
             ram[waddr] <= wdata;
             waddr <= waddr + 1;
 
-            assert (cnt < 10);
-            assert (cnt < 10);
+            assert (cnt < 28);
+            assert (cnt < 28);
         end
 
         if (strobe) begin
