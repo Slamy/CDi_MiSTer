@@ -39,6 +39,7 @@ module vmpeg (
     input clk45tick,
     output linear_volume_s dsp_volume,
 
+    input debug_disable_vcd_clock,
     output bit mpeg_ram_enabled,  // Prohibits detection of MPEG RAM by the OS RAM crawler
     output bit debug_audio_fifo_overflow,
     output bit debug_video_fifo_overflow
@@ -137,7 +138,7 @@ module vmpeg (
         .data_strobe(fmv_data_valid && fmv_packet_body),
         .fifo_full(fmv_fifo_full),
         .ddrif,
-        .vcd_pixel_clock(vcd_pixel_clock),
+        .vcd_pixel_clock(vcd_pixel_clock && !debug_disable_vcd_clock),
         .hsync,
         .vsync,
         .hblank,
