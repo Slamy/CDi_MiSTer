@@ -28,11 +28,24 @@ module sample_rate_converter (
 );
     bit [9:0] phase_accumulator = 0;
     bit [1:0] phase_accu_last = 0;
-
+    
+    // A VCD has a width of 352. The CD-i uses 384.
     // 352/384*256=234,666666666667
     // 234 does cut off a whole VCD pixel, so better not
     // 235 is not 100% correct but looks alright as a first test
-    localparam kVcdPhaseInc = 235;
+    // After some analysis with real hardware, a VMPEG DVC
+    // is cutting 1 pixel on the left and 5 on the right,
+    // when trying to go for the whole 352 horizontal pixels.
+    // The Robocop VCD seems to know that, as it configures the DVC as follows:
+    //   move.l #$00140000,$00E04074 ; (X=0,Y=20)
+    //   move.l #$00F00159,$00E04078 ; (W=345,H=240)
+    //   move.l #$00000007,$00E0407C ; (X=7,Y=0)
+    // 7 pixels are removed from the footage, since 352 horizontal pixels are present
+    // in the stream.
+    // To actually get the correct pixel clock, we need 13.5/15*256=230.4
+    // There might be a debate on what we actually want. The correct pixel clock?
+    // Or the whole width of the footage?
+    localparam kVcdPhaseInc = 231;
 
     // Use 256 to skip the phase accumulation, resulting into 30 MHz pixel clock to match the base case
     localparam kBaseCasePhaseInc = 256;

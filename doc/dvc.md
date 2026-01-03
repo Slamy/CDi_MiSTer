@@ -204,6 +204,16 @@ since the parameters are written into its memory space
     @00E4F840(madriv) WR.W 00D00032 <= 0000 [S] MA_STAT{ ASY_Stat=0 }
     @00E4F846(madriv) WR.W 00D00032 <= 0000 [S] MA_STAT{ ASY_Stat=0 }
 
+### Notes about Robocop
+
+The MPEG stream itself is 352 x 240 but the software decides to cut some pixels off.
+
+@00E5276E(fmvdrv) FMV SCRPOS 00140000 (X=0,Y=20)
+@00E5276E(fmvdrv) WR.L 00E04074 <= 00140000 [S] .SCRPOS.SCRPOSYH
+@00E52784(fmvdrv) FMV DECWIN 00F00159 (W=345,H=240)
+@00E52784(fmvdrv) WR.L 00E04078 <= 00F00159 [S] .DECWIN.DECWINHH
+@00E5278C(fmvdrv) FMV DECOFF 00000007 (X=7,Y=0)
+@00E5278C(fmvdrv) WR.L 00E0407C <= 00000007 [S] .DECOFF.DECOFFYH
 
 ## Resources
 
