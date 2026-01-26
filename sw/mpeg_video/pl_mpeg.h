@@ -2377,6 +2377,14 @@ void plm_video_decode_picture(plm_video_t *self) {
 		self->start_code = plm_dma_buffer_next_start_code(self->buffer);
 	}
 
+	// Predict skipped macroblocks after the last slice
+	while (self->macroblock_address < seq_hdr_conf.mb_size - 1 ) {
+		self->macroblock_address++;
+		self->mb_row = self->macroblock_address / seq_hdr_conf.mb_width;
+		self->mb_col = self->macroblock_address % seq_hdr_conf.mb_width;
+		plm_video_predict_macroblock(self);
+	}
+
 	// If we have reached this point, we have at least one frame that will be
 	// returned, even if the decoding process was aborted, trying to get another one
 	frame_display_fifo->event_at_least_one_frame=1;
