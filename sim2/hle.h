@@ -410,6 +410,7 @@ enum SttFunction {
     MV_Abort = 0x100,
     MV_BColor = 0x101,
     MV_ChSpeed = 0x102,
+    MV_Close = 0x103, // from cdiemu
     MV_Conceal = 0x104,
     MV_Continue = 0x105,
     MV_Freeze = 0x106,
@@ -427,6 +428,7 @@ enum SttFunction {
     MV_Show = 0x112,
     MV_Trigger = 0x113,
     MV_Window = 0x114,
+    MV_Jump = 0x116,
     MV_ReqSync = 0x117,
 
     MA_Abort = 0x011E, // from cdiemu
@@ -673,6 +675,8 @@ const char *sttFunctionToString(const uint16_t stt) {
         return "MV_BColor";
     case SttFunction::MV_ChSpeed:
         return "MV_ChSpeed";
+    case SttFunction::MV_Close:
+        return "MV_Close";
     case SttFunction::MV_Conceal:
         return "MV_Conceal";
     case SttFunction::MV_Continue:
@@ -707,6 +711,8 @@ const char *sttFunctionToString(const uint16_t stt) {
         return "MV_Trigger";
     case SttFunction::MV_Window:
         return "MV_Window";
+    case SttFunction::MV_Jump:
+        return "MV_Jump";
     case SttFunction::MV_ReqSync:
         return "MV_ReqSync";
 

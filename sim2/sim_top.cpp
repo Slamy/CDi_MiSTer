@@ -21,7 +21,7 @@
 
 #define SCC68070
 #define SLAVE
-// #define TRACE
+#define TRACE
 // #define SIMULATE_RC5
 
 #define PL_MPEG_IMPLEMENTATION
@@ -1193,7 +1193,7 @@ class CDi {
         dut.rootp->emu__DOT__img_size = 4096;
         dut.rootp->emu__DOT__rc_eye = 1; // RC Eye signal is idle high
 
-        dut.rootp->emu__DOT__tvmode_ntsc = false;
+        dut.rootp->emu__DOT__tvmode_ntsc = true;
 
         dut.RESET = 1;
         dut.UART_RXD = 1;
