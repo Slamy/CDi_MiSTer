@@ -21,7 +21,6 @@
 * Fix Christmas Crisis bonus ride
     * Might still stutter. Analysis required.
 * "Mutant Rampage - Bodyslam" has a tendency to freeze?
-* "Mad Dog McCree (Europe)" seems to have corruption on macroblock level to the bottom right of the screen
 * "The Last Bounty Hunter", "Drug Wars", "Mad Dog 2", "Who Shot Johnny Rock?" have regressions (works in rc2)?
 * "Chaos Control" has video glitches?
 * "The Lost Ride" has video and audio glitches

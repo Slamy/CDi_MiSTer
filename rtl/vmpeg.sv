@@ -313,8 +313,12 @@ module vmpeg (
     // Increments with 45 kHz
     // Must never be written to by CPU. Causes system reset on real 210/05
     bit [31:0] fma_dclk;
+
     bit [31:0] fmv_dclk;
     bit [15:0] fma_dclkl_latch;
+
+    bit [31:0] fmv_dclk_start_video;
+    bit fmv_dclk_start_video_latched;
 
     // FMA DSPA @ 00E03022
     // Address for indirect access into DSP memory?
@@ -547,6 +551,7 @@ module vmpeg (
             fma_status_register <= 0;
             fma_stream_number <= 0;
             fmv_dclk <= 0;
+            fmv_dclk_start_video_latched <= 0;
             fmv_decoder_command <= 0;
             fmv_dsp_enable <= 0;
             fmv_frame_rate <= 0;
@@ -558,9 +563,9 @@ module vmpeg (
             fmv_stream_number <= 0;
             fmv_system_command_register <= 0;
             fmv_video_data_input_command_register <= 0;
-            image_width <= 0;
             image_height <= 0;
             image_rt <= 0;
+            image_width <= 0;
             mpeg_ram_enabled <= 0;
             mpeg_ram_enabled_cnt <= 0;
             pending_fma_stream_change <= 0;
@@ -580,6 +585,12 @@ module vmpeg (
 
             if (restart_fmv_dsp_enable_q) fmv_dsp_enable <= 1;
             if (fmv_decoding_timestamp_updated) fmv_video_data_input_command_register[14] <= 1;
+
+            // implementation of playback delay
+            if (fmv_dclk_start_video_latched && fmv_dclk_start_video == fma_dclk) begin
+                fmv_dclk_start_video_latched <= 0;
+                fmv_playback_active <= 1;
+            end
 
             if (vsync && !vsync_q) begin
                 fmv_interrupt_status_register.vsync <= 1;
@@ -841,7 +852,8 @@ module vmpeg (
                             fmv_system_command_register <= din;
 
                             if (din[3]) begin  // 0008 Play
-                                fmv_playback_active <= 1;
+                                fmv_dclk_start_video <= fma_dclk + 32'd3000;  // 65ms delay
+                                fmv_dclk_start_video_latched <= 1;
 
                                 // Really correct?
                                 image_width <= {5'b0, fmv_decoder_width};
@@ -856,20 +868,24 @@ module vmpeg (
 
                             if (din[4]) begin  // 0010 Pause
                                 fmv_playback_active <= 0;
+                                fmv_dclk_start_video_latched <= 0;
                                 fmv_interrupt_status_register.pai <= 1;
                             end
 
                             if (din[5]) begin  // 0020 Continue
-                                fmv_playback_active <= 1;
+                                fmv_dclk_start_video <= fma_dclk + 32'd3000;  // 65ms delay
+                                fmv_dclk_start_video_latched <= 1;
                                 fmv_slow_motion <= din[2:0];
                             end
 
                             if (din[6]) begin  // 0040 Step
                                 fmv_single_step <= 1;
+                                fmv_dclk_start_video_latched <= 0;
                             end
 
                             if (din[7]) begin  // 0080 Stop
                                 fmv_playback_active <= 0;
+                                fmv_dclk_start_video_latched <= 0;
                                 // TODO can't be correct
                                 fmv_decoder_command[6] <= 0;
                                 fmv_decoder_command[1] <= 0;
@@ -878,6 +894,7 @@ module vmpeg (
                             if (din[8]) begin  // 0100 Clear FIFO? What to do?
                                 fmv_dsp_enable <= 0;
                                 fmv_playback_active <= 0;
+                                fmv_dclk_start_video_latched <= 0;
                                 restart_fmv_dsp_enable <= 1;
                             end
 
@@ -894,6 +911,7 @@ module vmpeg (
                             if (din[13]) begin  // 2000 Decoder off
                                 fmv_dsp_enable <= 0;
                                 fmv_playback_active <= 0;
+                                fmv_dclk_start_video_latched <= 0;
                                 fmv_reset_persistent_storage <= 1;
                                 $display("FMV Decoder Off");
 
