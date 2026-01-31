@@ -246,8 +246,9 @@ module emu (
         "P3O[11],CPU Turbo,No,Yes(U);",
         "P3O[8],NvRAM live update,No,Yes(U);",
 
+        "-;",
+        "O[21:19],Pointer Speed,22ER9021 N,22ER9021 II,RV 8701,Robby,22ER9021 I;",
         "O[14],Autoplay,Yes,No;",
-
         "-;",
         "T[0],Reset;",
         "R[0],Reset and close OSD;",
@@ -715,6 +716,7 @@ module emu (
     wire config_disable_seek_time = 1;
     wire debug_disable_vcd_clock = 0;
     wire debug_activate_vcd_filter = 1;
+    wire [2:0] pointing_dev_speed = 0;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -732,6 +734,7 @@ module emu (
     wire config_disable_seek_time = status[16];
     wire debug_disable_vcd_clock = status[17];
     wire debug_activate_vcd_filter = !status[18];
+    wire [2:0] pointing_dev_speed = status[21:19];
 
     always_ff @(posedge clk_sys) begin
         // only change during resets
@@ -764,7 +767,8 @@ module emu (
         .mister_mouse(config_first_player_back_port ? 0 : MOUSE),
         .rts(slave_rts),
         .serial_out(slave_serial_in),
-        .overclock(overclock_pointing_device)
+        .overclock(overclock_pointing_device),
+        .speed_setting(pointing_dev_speed)
     );
 
     // ""INPUT 2" port at the back of a CDI 210/05
@@ -775,7 +779,8 @@ module emu (
         .mister_mouse(config_first_player_back_port ? MOUSE : 0),
         .rts(config_first_player_back_port ? scc68070_rts : 1'b1),
         .serial_out(scc68070_bypass_serial_in),
-        .overclock(overclock_pointing_device)
+        .overclock(overclock_pointing_device),
+        .speed_setting(pointing_dev_speed)
     );
 
     wire cd_sector_tick;
