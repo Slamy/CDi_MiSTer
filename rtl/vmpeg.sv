@@ -65,20 +65,22 @@ module vmpeg (
 
     wire mpeg_xferwrite = (address[15:1] == 15'h206F) && bus_ack && write_strobe && access;
     wire mpeg_word_valid = dma_data_valid || mpeg_xferwrite;
-    bit  dma_for_fma;
+    bit dma_for_fma;
     wire fmv_data_valid  /*verilator public_flat_rd*/ = mpeg_data_valid && !dma_for_fma;
     wire fma_data_valid  /*verilator public_flat_rd*/ = mpeg_data_valid && dma_for_fma;
 
     wire fma_event_decoding_started;
     wire fma_event_frame_decoded;
     wire fma_event_underflow;
-    bit  dsp_reset_input_fifo;
-    bit  fma_dsp_enable = 0;
-    bit  fmv_dsp_enable = 0;
-    bit  fmv_reset_persistent_storage = 0;
+    bit dsp_reset_input_fifo;
+    bit fma_dsp_enable = 0;
+    bit fmv_dsp_enable = 0;
+    bit fmv_reset_persistent_storage = 0;
 
     wire fma_fifo_full;
     wire fmv_fifo_full;
+
+    wire [31:0] fma_mpeg_audio_header;
 
     mpeg_audio audio (
         .clk(clk),
@@ -98,7 +100,8 @@ module vmpeg (
         .dspa(fma_dspa),
         .dspd(din[7:0]),
         .dspd_strobe(write_strobe && bus_ack && access && address[15:1] == 15'h1812),
-        .dsp_volume
+        .dsp_volume,
+        .mpeg_audio_header(fma_mpeg_audio_header)
     );
 
     wire fmv_event_picture_starts_display;
@@ -451,8 +454,8 @@ module vmpeg (
             15'h1807: dout = 16'h0042;  // 0x0E0300E some counter?
             15'h1808: dout = fma_dclk[31:16];  // 0x0E03010
             15'h1809: dout = fma_dclkl_latch;  // 0x0E03012
-            15'h180A: dout = 16'h00fd;  // 0x0E03014 MPEG Audio Header High
-            15'h180B: dout = 16'h50c0;  // 0x0E03016 MPEG Audio Header Low
+            15'h180A: dout = fma_mpeg_audio_header[31:16];  // 0x0E03014 MPEG Audio Header High
+            15'h180B: dout = fma_mpeg_audio_header[15:0];  // 0x0E03016 MPEG Audio Header Low
             15'h180C: dout = {15'b0, fma_dsp_enable};  // 0x0E03018 RUN?
             15'h180D: dout = fma_interrupt_status_register;  // 0x0E0301A
             15'h180E: dout = fma_interrupt_enable_register;  // 0x0E0301C

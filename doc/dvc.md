@@ -283,6 +283,9 @@ A3 is 00e04000 which is the base of FMV registers
 Memory Map
 
   FMV (we have actually source code of this)
+    00e52944 PSOrg
+    00e5297c PSPos
+    00e52a50 PSWndw
     00e52e46 IrqSrvc
     00e52f54 UpdateSCR
     00e52f5c PC inside UpdateSCR where D0 is V_BufStat(a2)

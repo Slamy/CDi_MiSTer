@@ -24,7 +24,8 @@ module mpeg_audio (
     input [7:0] dspa,
     input [7:0] dspd,
     input dspd_strobe,
-    output linear_volume_s dsp_volume
+    output linear_volume_s dsp_volume,
+    output bit [31:0] mpeg_audio_header
 );
 
     // 8kB of MPEG stream memory to fill from outside
@@ -57,6 +58,7 @@ module mpeg_audio (
         if (reset || reset_input_fifo) begin
             mpeg_stream_fifo_write_adr <= 0;
             mpeg_stream_bit_index <= 0;
+            mpeg_audio_header <= 0;
         end else begin
             if (data_strobe) begin
                 mpeg_stream_fifo_write_adr <= mpeg_stream_fifo_write_adr + 1;
@@ -71,6 +73,11 @@ module mpeg_audio (
                 event_decoding_started <= (dmem_cmd_payload_address == 32'h10002008);
                 event_frame_decoded <= (dmem_cmd_payload_address == 32'h1000200c);
                 event_underflow <= (dmem_cmd_payload_address == 32'h10002010);
+                if (dmem_cmd_payload_address == 32'h10002014) begin
+                    mpeg_audio_header <= dmem_cmd_payload_data;
+                    $display("MPEG Audio Header %x", dmem_cmd_payload_data);
+                end
+
             end
         end
     end
@@ -284,7 +291,6 @@ module mpeg_audio (
     end
 `endif
 
-    bit [31:0] debug_l_storage;
     bit [31:0] dmem_cmd_payload_address_q;
     bit dmem_cmd_valid_q;
     bit dmem_cmd_ready_q;
@@ -304,14 +310,6 @@ module mpeg_audio (
             if (dmem_cmd_payload_address == 32'h10000030) soft_state <= dmem_cmd_payload_data;
             if (dmem_cmd_payload_address == 32'h10000000)
                 $display("Debug out %x", dmem_cmd_payload_data);
-            if (dmem_cmd_payload_address == 32'h10000040)
-                $display("Debug A %x", dmem_cmd_payload_data);
-            if (dmem_cmd_payload_address == 32'h10000044)
-                $display("Debug B %x", dmem_cmd_payload_data);
-
-            if (dmem_cmd_payload_address == 32'h10000004) debug_l_storage <= dmem_cmd_payload_data;
-            if (dmem_cmd_payload_address == 32'h10000008)
-                $display("Debug %d %d", signed'(debug_l_storage), signed'(dmem_cmd_payload_data));
         end
 
         if (dmem_cmd_valid && dmem_cmd_ready) begin

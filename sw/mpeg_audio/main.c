@@ -26,12 +26,12 @@ struct io_fifo_control
 	uint32_t signal_decoding_started;
 	uint32_t signal_frame_decoded;
 	uint32_t signal_underflow;
+	uint32_t mpeg_audio_header;
 };
 
 struct io_audio_out
 {
 	uint32_t sample;
-	uint32_t fifo_full;
 };
 
 volatile struct io_synth_window_mac *const synth_window_mac = (volatile struct io_synth_window_mac *)0x10001000;
@@ -156,8 +156,4 @@ void main(void)
 	// Wait forever
 	for (;;)
 		;
-}
-
-uint32_t *irq(uint32_t *regs, uint32_t irqs)
-{
 }
