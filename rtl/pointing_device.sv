@@ -100,13 +100,13 @@ module pointing_device (
     //   speed II sends 2 4 6 8 10 12 14 16 16 16...
     // RV 8701 (the spoon controller) with no speed setting
     //   2 2 2 2 2 2 8 8 8 8
-    bit signed [7:0] speed_lut [5][8]={
+    bit signed [7:0] speed_lut [5*8]='{
         // verilog_format: off
-        {2, 2, 4, 4, 6, 6, 8, 8}, // 22ER9021 N
-        {2, 4, 6, 8,10,12,14,16}, // 22ER9021 II
-        {2, 2, 2, 2, 2, 2, 8, 8}, // RV 8701
-        {2, 6,10,14,18,22,24,26}, // Mah Boi
-        {1, 1, 1, 1, 1, 1, 1, 1}  // 22ER9021 I
+        2,  2,  4,  4,  6,  6,  8,  8, // 22ER9021 N
+        2,  4,  6,  8, 10, 12, 14, 16, // 22ER9021 II
+        2,  2,  2,  2,  2,  2,  8,  8, // RV 8701
+        2,  6, 10, 14, 18, 22, 26, 30, // Mah Boi
+        1,  1,  1,  1,  1,  1,  1,  1  // 22ER9021 I
         // verilog_format: on
     };
 
@@ -118,7 +118,7 @@ module pointing_device (
         b1 = mister_joystick[6] | mister_joystick[4] | mister_mouse[0];
         b2 = mister_joystick[6] | mister_joystick[5] | mister_mouse[1];
 
-        speed = speed_lut[speed_setting][accel];
+        speed = speed_lut[{speed_setting,accel}];
 
         // handle d pad
         if (mister_joystick[0]) x = speed;
