@@ -905,9 +905,6 @@ module vmpeg (
                             if (din[7]) begin  // 0080 Stop
                                 fmv_playback_active <= 0;
                                 fmv_dclk_start_video_latched <= 0;
-                                // TODO can't be correct
-                                fmv_decoder_command[6] <= 0;
-                                fmv_decoder_command[1] <= 0;
                             end
 
                             if (din[8]) begin  // 0100 Clear FIFO? What to do?
