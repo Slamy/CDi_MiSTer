@@ -95,7 +95,7 @@ struct image_synthesis_descriptor *get_next_ready_synthesis_desc()
 {
     struct image_synthesis_descriptor *retval = &image_synthesis_buffer[0][image_synthesis_buffer_index[0]++];
 
-    OUT_DEBUG = 35;
+    DEBUG_STATE = 35;
     __asm volatile("" : : : "memory");
 
     while (retval->ready == 0)
@@ -110,7 +110,7 @@ struct image_synthesis_descriptor *get_next_ready_synthesis_desc()
             ;
     }
 
-    OUT_DEBUG = 36;
+    DEBUG_STATE = 36;
 
     if (image_synthesis_buffer_index[0] == SHARED_BUFFER_ENTRIES)
         image_synthesis_buffer_index[0] = 0;

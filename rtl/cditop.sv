@@ -89,7 +89,7 @@ module cditop (
 
     parallelel_spi slave_servo_spi ();
 
-    wire write_strobe  /*verilator public_flat_rd*/;
+    (* keep *) (* noprune *) wire write_strobe  /*verilator public_flat_rd*/;
     wire as  /*verilator public_flat_rd*/;
     wire lds  /*verilator public_flat_rd*/;
     wire uds  /*verilator public_flat_rd*/;
@@ -99,9 +99,20 @@ module cditop (
     bit [15:0] data_in;
     wire [15:0] cpu_data_out;
     wire [23:1] addr;
-    wire [23:0] addr_byte  /*verilator public_flat_rd*/ = {addr[23:1], 1'b0};
+    (* keep *) (* noprune *) wire [23:0] addr_byte  /*verilator public_flat_rd*/ = {
+        addr[23:1], 1'b0
+    };
+    (* keep *) (* noprune *) wire [15:0] cpu_data  /*verilator public_flat_rd*/ = write_strobe ? cpu_data_out : data_in;
 
-    wire [15:0] cpu_data  /*verilator public_flat_rd*/ = write_strobe ? cpu_data_out : data_in;
+    (* keep *) (* noprune *) bit write_strobe_q;
+    (* keep *) (* noprune *) bit [15:0] cpu_data_q;
+    (* keep *) (* noprune *) bit [23:0] addr_byte_q;
+
+    always_ff @(posedge clk30) begin
+        write_strobe_q <= write_strobe;
+        cpu_data_q <= cpu_data;
+        addr_byte_q <= addr_byte;
+    end
 
     wire mcd212_bus_ack;
     bit cdic_bus_ack;

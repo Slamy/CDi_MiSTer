@@ -62,7 +62,7 @@ void main(void)
     if (desc->ready == 1)
     {
       uint8_t *d = (uint8_t *)(((uint32_t)desc->cwp.d) + 0x50000000);
-      OUT_DEBUG = 33;
+      DEBUG_STATE = 33;
 
       write_pixels(desc->cwp.macroblock_intra, desc->cwp.n,
                    desc->cwp.block_data, desc->cwp.di, d, desc->cwp.dw,
@@ -72,7 +72,7 @@ void main(void)
     {
       uint8_t *s = (uint8_t *)(((uint32_t)desc->cpm.s) + 0x50000000);
       uint8_t *d = (uint8_t *)(((uint32_t)desc->cpm.d) + 0x50000000);
-      OUT_DEBUG = 34;
+      DEBUG_STATE = 34;
 
       macroblock_worker(s, d, desc->cpm.odd_h, desc->cpm.odd_v,
                         desc->cpm.interpolate, desc->cpm.dw, desc->cpm.di,

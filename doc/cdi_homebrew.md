@@ -16,7 +16,7 @@ I usually build and deploy my images like this in my homebrew projects.
 
 Then I press the User button on the MiSTer to force a reset.
 
-## Access to debugging console
+## Access to debugging terminal
 
 The back port of a CD-i 210/05 is a serial port. OS9 will use it to provide the output of `printf()` when
 it is not being used by a Pointing Device. Ensure `OSD -> Hardware Config -> Ports` is set to `UART Back`.

@@ -164,6 +164,10 @@ module vmpeg (
         .event_first_intra_frame_gop_starts_display(fmv_event_first_intra_frame_gop_starts_display),
         .event_first_intra_frame_seq_starts_display(fmv_event_first_intra_frame_seq_starts_display),
         .pictures_in_fifo(fmv_pictures_in_fifo),
+        .demuxer_decoding_timestamp(fmv_demuxer_decoding_timestamp_reduced_view),
+        .demuxer_decoding_timestamp_updated(fmv_demuxer_decoding_timestamp_updated),
+        .last_decoded_timestamp(fmv_decoder_last_decoded_timestamp),
+        .last_decoded_timestamp_updated(fmv_decoder_last_decoded_timestamp_updated),
         .decoder_width(fmv_decoder_width),
         .decoder_height(fmv_decoder_height),
         .display_width(fmv_display_width),
@@ -186,16 +190,19 @@ module vmpeg (
 
     wire signed [32:0] fma_system_clock_reference_start_time;
     wire fma_system_clock_reference_start_time_valid;
-    wire signed [32:0] fmv_system_clock_reference_start_time;
-    wire fmv_system_clock_reference_start_time_valid;
     wire fmv_event_program_end;
     wire fma_event_program_end;
 
     bit [3:0] fmv_stream_number;
     bit [3:0] fma_stream_number;
 
-    wire signed [32:0] fmv_decoding_timestamp;
-    wire fmv_decoding_timestamp_updated;
+    wire signed [32:0] fmv_demuxer_decoding_timestamp;
+    wire fmv_demuxer_decoding_timestamp_updated;
+
+    wire fmv_decoder_last_decoded_timestamp_updated;
+    // How the CPU reads it from 00E040A0
+    wire signed [14:0] fmv_demuxer_decoding_timestamp_reduced_view = fmv_demuxer_decoding_timestamp[21:7];
+    wire signed [14:0] fmv_decoder_last_decoded_timestamp;
 
     mpeg_demuxer #(
         .unit("FMA")
@@ -223,11 +230,11 @@ module vmpeg (
         .data_valid(fmv_data_valid),
         .mpeg_packet_body(fmv_packet_body),
         .stream_filter(fmv_stream_number),
-        .dclk(fmv_dclk),
-        .system_clock_reference_start_time(fmv_system_clock_reference_start_time),
-        .decoding_timestamp(fmv_decoding_timestamp),
-        .decoding_timestamp_updated(fmv_decoding_timestamp_updated),
-        .system_clock_reference_start_time_valid(fmv_system_clock_reference_start_time_valid),
+        .dclk(),
+        .system_clock_reference_start_time(),
+        .decoding_timestamp(fmv_demuxer_decoding_timestamp),
+        .decoding_timestamp_updated(fmv_demuxer_decoding_timestamp_updated),
+        .system_clock_reference_start_time_valid(),
         .event_program_end(fmv_event_program_end)
     );
 
@@ -309,6 +316,9 @@ module vmpeg (
 
     bit [31:0] fmv_dclk_start_video;
     bit fmv_dclk_start_video_latched;
+
+    bit [31:0] fmv_dclk_pause_video;
+    bit fmv_dclk_pause_video_latched;
 
     // FMA DSPA @ 00E03022
     // Address for indirect access into DSP memory?
@@ -461,10 +471,8 @@ module vmpeg (
             15'h2001: dout = image_width;  // 00E04002 ?? Written then Read
             15'h2002: dout = image_height;  // 00E04004 ?? Written then Read
             15'h2003: dout = image_rt;  // 00E04006 ??
-            15'h2004:
-            dout = fmv_display_timecode[15:0];  // 00E04008 Temporal time code High. During scan
-            15'h2005:
-            dout = fmv_display_timecode[31:16];  // 00E0400C Temporal time code Low. During scan
+            15'h2004: dout = fmv_display_timecode[15:0];  // 00E04008 Temporal time code High
+            15'h2005: dout = fmv_display_timecode[31:16];  // 00E0400C Temporal time code Low
             15'h2029: dout = {5'b0, fmv_display_width};  // e04052 Picture Width ?? Only read
             15'h202a: dout = {7'b0, fmv_display_height};  // e04054 Picture Height ?? Only read
             15'h202b: dout = {8'b0, fmv_decoder_frameperiod_rawhdr};  // e04056 Pic Rt ??
@@ -490,7 +498,8 @@ module vmpeg (
             15'h204C: dout = fmv_dclk[21:6];  // 0E04098 GEN_SYSCR
             15'h204E: dout = 0;  // e0409c GEN_SYNC_DIFF? Always reads 0 on real machine
             15'h204F: dout = 16'hfe96;  // e0409e GEN_DEC_DELAY? Always changing but negative?
-            15'h2050: dout = {1'b0, fmv_decoding_timestamp[21:7]};  // 00E040A0 Decoding Timestamp
+            15'h2050:
+            dout = {1'b0, fmv_decoder_last_decoded_timestamp};  // 00E040A0 Decoding Timestamp
             15'h2052: dout = {11'b0, fmv_pictures_in_fifo};  // 00E040A4 ?? Pictures in fifo?
             15'h2054: dout = fmv_decoder_frameperiod_90khz;  // E040A8 Picture Rate Only read.
             15'h2055: dout = fmv_display_rate;  // e040aa ?? Display Rate ? Only read.
@@ -579,13 +588,20 @@ module vmpeg (
         end else begin
 
             if (restart_fmv_dsp_enable_q) fmv_dsp_enable <= 1;
-            if (fmv_decoding_timestamp_updated) fmv_video_data_input_command_register[14] <= 1;
+            if (fmv_decoder_last_decoded_timestamp_updated)
+                fmv_video_data_input_command_register[14] <= 1;
 
             // implementation of playback delay
             if (fmv_dclk_start_video_latched && fmv_dclk_start_video == fma_dclk) begin
                 fmv_dclk_start_video_latched <= 0;
                 fmv_playback_active <= 1;
             end
+
+            if (fmv_dclk_pause_video_latched && fmv_dclk_pause_video == fma_dclk) begin
+                fmv_dclk_pause_video_latched <= 0;
+                fmv_interrupt_status_register.pai <= 1;
+            end
+
 
             if (vsync && !vsync_q) begin
                 fmv_interrupt_status_register.vsync <= 1;
@@ -671,6 +687,8 @@ module vmpeg (
 
             if (clk45tick) begin
                 fma_dclk <= fma_dclk + 1;
+
+                // TODO Concerning slow motion, some changes might be required
                 fmv_dclk <= fmv_dclk + 1;
 
                 if (timer_cnt[15+3:0+3] >= fmv_timer_compare_register) begin
@@ -868,12 +886,14 @@ module vmpeg (
                             if (din[4]) begin  // 0010 Pause
                                 fmv_playback_active <= 0;
                                 fmv_dclk_start_video_latched <= 0;
-                                fmv_interrupt_status_register.pai <= 1;
+
+                                fmv_dclk_pause_video <= fma_dclk + 32'd100;
+                                fmv_dclk_pause_video_latched <= 1;
                             end
 
                             if (din[5]) begin  // 0020 Continue
-                                fmv_dclk_start_video <= fma_dclk + 32'd3000;  // 65ms delay
-                                fmv_dclk_start_video_latched <= 1;
+                                fmv_playback_active <= 1;
+                                fmv_dclk_start_video_latched <= 0;
                                 fmv_slow_motion <= din[2:0];
                             end
 

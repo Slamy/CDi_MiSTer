@@ -39,12 +39,12 @@ volatile struct io_fifo_control *const fifo_ctrl = (volatile struct io_fifo_cont
 volatile struct io_audio_out *const io_audio_out_left = (volatile struct io_audio_out *)0x10003000;
 volatile struct io_audio_out *const io_audio_out_right = (volatile struct io_audio_out *)0x10004000;
 
-#define OUTPORT 0x10000000
 #define OUTPORT_L 0x10000004
 #define OUTPORT_R 0x10000008
 #define OUTPORT_END 0x1000000c
 
-#define OUT_DEBUG *(volatile uint32_t *)0x10000030
+#define DEBUG_STATE *(volatile uint32_t *)0x10000030
+#define DEBUG_OUT *(volatile uint32_t *)0x10000000
 
 void print_chr(char ch);
 void print_str(const char *p);
@@ -56,34 +56,9 @@ void stop_verilator();
 #define PLM_NO_STDIO
 #include "pl_mpeg.h"
 
-void print_chr(char ch)
-{
-	*((volatile uint8_t *)OUTPORT) = ch;
-}
-
-void print_str(const char *p)
-{
-	while (*p != 0)
-		*((volatile uint8_t *)OUTPORT) = *(p++);
-}
-
 void stop_verilator()
 {
 	*((volatile uint8_t *)OUTPORT_END) = 0;
-}
-
-void test_vector_unit()
-{
-	synth_window_mac->result = 0;
-	synth_window_mac->addr = 0;
-	synth_window_mac->index = 1;
-	// while (synth_window_mac->busy);
-
-	synth_window_mac->result = 0;
-	synth_window_mac->addr = 0;
-	synth_window_mac->index = 1;
-	// while (synth_window_mac->busy);
-	*((volatile intsample_t *)OUTPORT) = synth_window_mac->result;
 }
 
 volatile union
@@ -92,32 +67,6 @@ volatile union
 	volatile uint8_t int8[4];
 	volatile uint16_t int16[2];
 } testenv;
-
-void test_memory()
-{
-	testenv.int32 = 0x12345678;
-	*((volatile uint32_t *)OUTPORT) = testenv.int32;
-	testenv.int8[0] = 0x42;
-	*((volatile uint32_t *)OUTPORT) = testenv.int32;
-	*((volatile uint32_t *)OUTPORT) = testenv.int8[0];
-	testenv.int8[0] = 0x81;
-	testenv.int8[1] = 0x92;
-	testenv.int16[1] = 0x5aa5;
-	*((volatile uint32_t *)OUTPORT) = testenv.int32;
-	*((volatile uint32_t *)OUTPORT) = testenv.int8[0];
-	*((volatile uint32_t *)OUTPORT) = testenv.int8[1];
-	stop_verilator();
-}
-
-void test_mpegmemory()
-{
-	// expect
-	// Debug out ba010000
-	// Debug out 00010021
-	*((volatile uint32_t *)OUTPORT) = *(uint32_t *)0x20000000;
-	*((volatile uint32_t *)OUTPORT) = *(uint32_t *)0x20000004;
-	stop_verilator();
-}
 
 void main(void)
 {

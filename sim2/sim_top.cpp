@@ -922,6 +922,11 @@ class CDi {
             dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_x == 0) {
             char filename[100];
 
+            
+                //if (frame_index == 250) {
+                //    status = 1;
+                //}
+                
 #ifndef SIMULATE_RC5
             if (dut.rootp->emu__DOT__tvmode_ntsc) {
                 // NTSC
@@ -929,7 +934,7 @@ class CDi {
                 // PAL
                 // space_ace_pal();
                 // braindead13_pal();
-                lost_ride_pal();
+                // lost_ride_pal();
             }
 #endif
 

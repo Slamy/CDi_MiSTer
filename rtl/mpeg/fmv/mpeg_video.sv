@@ -40,6 +40,10 @@ module mpeg_video (
     output bit event_first_intra_frame_gop_starts_display,
     output bit event_first_intra_frame_seq_starts_display,
     output [4:0] pictures_in_fifo,
+    input [14:0] demuxer_decoding_timestamp,
+    input demuxer_decoding_timestamp_updated,
+    output bit [14:0] last_decoded_timestamp,
+    output last_decoded_timestamp_updated,
 
     output bit [10:0] decoder_width,
     output bit [ 8:0] decoder_height,
@@ -50,7 +54,6 @@ module mpeg_video (
     output bit [15:0] decoder_frameperiod_90khz,
     output bit [ 7:0] decoder_frameperiod_rawhdr
 );
-
     ddr_if worker_2_ddr ();
     ddr_if worker_3_ddr ();
     ddr_if worker_4_ddr ();
@@ -230,7 +233,7 @@ module mpeg_video (
 
     always_ff @(posedge clk_mpeg) begin
         if (fifo_full_clk_mpeg) begin
-            $display("VIDEO FIFO FULL");
+            //$display("VIDEO FIFO FULL");
             //$finish();
         end
 
@@ -467,11 +470,39 @@ module mpeg_video (
         .signal_out_clk_b(playback_active_clkddr)
     );
 
+    bit last_decoded_timestamp_updated_clk_mpeg;
+    flag_cross_domain cross_last_decoded_timestamp_updated (
+        .clk_a(clk_mpeg),
+        .clk_b(clk30),
+        .flag_in_clk_a(last_decoded_timestamp_updated_clk_mpeg),
+        .flag_out_clk_b(last_decoded_timestamp_updated)
+    );
+
+    wire demuxer_decoding_timestamp_updated_clk_mpeg;
+    flag_cross_domain cross_demuxer_decoding_timestamp_updated (
+        .clk_a(clk30),
+        .clk_b(clk_mpeg),
+        .flag_in_clk_a(demuxer_decoding_timestamp_updated),
+        .flag_out_clk_b(demuxer_decoding_timestamp_updated_clk_mpeg)
+    );
+
+    bit [14:0] last_decoded_timestamp_clk_mpeg;
+
+    always_ff @(posedge clk30) begin
+        if (last_decoded_timestamp_updated)
+            last_decoded_timestamp <= last_decoded_timestamp_clk_mpeg;
+    end
+
+    bit [14:0] demuxer_decoding_timestamp_clk_mpeg;
+
     always_ff @(posedge clk_mpeg) begin
         if (expose_frame_struct_adr_clk_mpeg) begin
             frame_struct_adr <= dmem_cmd_payload_data_1;
         end
         if (expose_frame_y_adr_clk_mpeg) frame_y_adr <= dmem_cmd_payload_data_1;
+
+        if (demuxer_decoding_timestamp_updated_clk_mpeg)
+            demuxer_decoding_timestamp_clk_mpeg <= demuxer_decoding_timestamp;
     end
 
     always_comb begin
@@ -499,6 +530,8 @@ module mpeg_video (
                             dmem_rsp_payload_data_1 = {16'b0, dct_coeff_result};
                         if (dmem_cmd_payload_address_1_q == 32'h10002010)
                             dmem_rsp_payload_data_1 = {31'b0, has_sequence_header};
+                        if (dmem_cmd_payload_address_1_q == 32'h10002014)
+                            dmem_rsp_payload_data_1 = {17'b0, demuxer_decoding_timestamp_clk_mpeg};
 
                         if (dmem_cmd_payload_address_1_q == 32'h10003028)
                             dmem_rsp_payload_data_1 = {27'b0, pictures_in_fifo_clk_mpeg};
@@ -506,6 +539,7 @@ module mpeg_video (
                             dmem_rsp_payload_data_1 = {31'b0, playback_active_clkddr};
                         if (dmem_cmd_payload_address_1_q == 32'h1000303c)
                             dmem_rsp_payload_data_1 = {29'b0, slow_motion_clkddr};
+
 
 
                     end
@@ -542,6 +576,7 @@ module mpeg_video (
         dmem_cmd_payload_write_1_q <= dmem_cmd_payload_write_1;
 
         event_sequence_end_clk_mpeg <= 0;
+        last_decoded_timestamp_updated_clk_mpeg <= 0;
 
         if (dmem_cmd_payload_address_1 == 32'h1000000c && dmem_cmd_payload_write_1 && dmem_cmd_valid_1 && dmem_cmd_ready_1)begin
             $display("Core 1 stopped at %x with code %x", imem_cmd_payload_address_1,
@@ -610,6 +645,11 @@ module mpeg_video (
                             $display("has_sequence_header %d", dmem_cmd_payload_data_1[0]);
                         end
 
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h2018) begin
+                            last_decoded_timestamp_clk_mpeg <= dmem_cmd_payload_data_1[14:0];
+                            last_decoded_timestamp_updated_clk_mpeg <= 1;
+                        end
+
                     end
                 end
                 4'd0: begin
@@ -667,7 +707,6 @@ module mpeg_video (
         .flag_in_clk_a(just_decoded_commit),
         .flag_out_clk_b(just_decoded_commit_clk30)
     );
-
 
     always_ff @(posedge clk30) begin
         vblank_q1 <= vblank;

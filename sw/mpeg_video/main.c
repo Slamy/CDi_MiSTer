@@ -28,6 +28,7 @@ extern caddr_t _sp;	 /* _end is set in the linker command file */
 void print_chr(char ch);
 void print_str(const char *p);
 void stop_verilator();
+void advertise_at_least_one_frame();
 
 // #define SOFT_CONVOLVE
 int seq_hdr_latched;
@@ -148,20 +149,40 @@ static void push_frame(plm_frame_t *frame)
 	__asm volatile("" : : : "memory");
 }
 
+uint32_t last_demuxer_dts = 0;
+uint32_t demuxer_dts;
+
+void update_dts_register()
+{
+	if (last_demuxer_dts != demuxer_dts)
+	{
+		fifo_ctrl->last_decoded_timestamp = demuxer_dts;
+		last_demuxer_dts = demuxer_dts;
+	}
+}
+
+void advertise_at_least_one_frame()
+{
+	__asm volatile("" : : : "memory");
+	frame_display_fifo->event_at_least_one_frame = 1;
+	update_dts_register();
+	__asm volatile("" : : : "memory");
+}
+
 void main(void)
 {
-	OUT_DEBUG = 1;
+	DEBUG_STATE = 1;
 
 	plm_dma_buffer_t *buffer = plm_buffer_create_with_memory((uint8_t *)0x20000000, 700 * 1024 * 1024);
 	if (!buffer)
 		*((volatile uint8_t *)OUTPORT_END) = 2;
 
-	OUT_DEBUG = 29;
+	DEBUG_STATE = 29;
 
 	while (!plm_dma_buffer_has(buffer, 1000))
 		;
 
-	OUT_DEBUG = 30;
+	DEBUG_STATE = 30;
 
 	plm_video_t *mpeg = plm_video_create_with_buffer(buffer, 0);
 	if (!mpeg)
@@ -171,11 +192,15 @@ void main(void)
 
 	for (;;)
 	{
+		demuxer_dts = fifo_ctrl->demuxer_decoding_timestamp;
+		__asm volatile("" : : : "memory");
 		plm_frame_t *frame = plm_video_decode(mpeg);
+		update_dts_register();
+		__asm volatile("" : : : "memory");
 
 		if (frame)
 		{
-			OUT_DEBUG = 27;
+			DEBUG_STATE = 27;
 
 			worker_cnt = 0;
 			sync_to_worker();
@@ -184,7 +209,7 @@ void main(void)
 			worker_cnt = 2;
 			sync_to_worker();
 
-			OUT_DEBUG = 28;
+			DEBUG_STATE = 28;
 
 			push_frame(frame);
 			underflow_occured = 0;

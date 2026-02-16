@@ -183,8 +183,11 @@ by emulation errors but are also present on the real machine.
   * Yes, those exist on real hardware as well and are maybe hidden by overscan
   * A side note, "Dr. Dearth" was probably filmed in front of a blue screen, but the cut out is not very good.
     Blue pixels at the edges are visible on real hardware as well.
-* "The Lost Ride" sometimes has an unexpected mirrored column of pixels on the right side of the screen
-  * This happens on real hardware as well. This seems to be an oversight by the developer.
+* "The Lost Ride"
+  * It sometimes has an unexpected mirrored column of pixels on the right side of the screen
+    * This happens on real hardware as well. This seems to be an oversight by the developer.
+  * The main menu has a weird freeze frame when the cutscene before that is skipped
+    * Like on real hardware. I don't know what they were thinking.
 * During the intro of "The Ultimate Noah's Ark", the Mike Wilks artwork has repeated pixels on the bottom and right edge.
   * This looks wrong but real hardware does that too.
   * There is also a weirdly wrong column of pixels during the title page on the left inside the black frame
