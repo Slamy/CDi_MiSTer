@@ -21,7 +21,7 @@
 
 #define SCC68070
 #define SLAVE
-#define TRACE
+// #define TRACE
 // #define SIMULATE_RC5
 
 #define PL_MPEG_IMPLEMENTATION
@@ -888,7 +888,7 @@ class CDi {
                 dut.rootp->emu__DOT__cditop__DOT__fdrvs1_static = cpu_a[2];
             }
 
-#if 1
+#if 0
             executing_dvc_rom_instructions = m_pc >= 0xe40000 && m_pc < 0xe7ffff;
 #endif
             if (print_instructions || executing_dvc_rom_instructions) {
@@ -922,11 +922,6 @@ class CDi {
             dut.rootp->emu__DOT__cditop__DOT__mcd212_inst__DOT__video_x == 0) {
             char filename[100];
 
-            
-                //if (frame_index == 250) {
-                //    status = 1;
-                //}
-                
 #ifndef SIMULATE_RC5
             if (dut.rootp->emu__DOT__tvmode_ntsc) {
                 // NTSC
@@ -1065,9 +1060,9 @@ class CDi {
                 fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fma_mp2);
             }
 #ifdef TRACE
-            // if (!do_trace)
-            //     fprintf(stderr, "Trace on!\n");
-            // do_trace = true;
+            if (!do_trace)
+                fprintf(stderr, "Trace on!\n");
+            do_trace = true;
 #endif
         }
 
@@ -1312,7 +1307,7 @@ int main(int argc, char **argv) {
 
     switch (machineindex) {
     case 0:
-        f_cd_bin = fopen("images/nonis2.bin", "rb");
+        f_cd_bin = fopen("images/braindead13.bin", "rb");
         break;
     case 1:
         f_cd_bin = fopen("images/braindead13.bin", "rb");

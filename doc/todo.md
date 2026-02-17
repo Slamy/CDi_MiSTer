@@ -1,14 +1,9 @@
 # TODOs and known issues
 
 * Check correct timing of DVC clipping functionality when scroll bit is reset
-* Regression of "Imagination in Motion - A New Era in 3D Chill Out Video"
-    * Pausing and continue causes audio stop
-    * Working in 260123, broken in 260131
 * Regression of "The Apprentice"?
     * The audio on the title screen sometimes has crackles. (~5% chance of occurrence)
     * Start of regression unknown
-* Moving window homebrew test timing is broken with 260123
-    * Was working in 260104. Also broken with 260116
 * Implement the speed setting of the 22ER9017 Touchpad
 * Add support for MPEG Layer I
     * Affected disc is "AIMS - Learning About Ecology (1995)(AIMS Multimedia)(US)"

@@ -68,6 +68,16 @@ volatile union
 	volatile uint16_t int16[2];
 } testenv;
 
+// 10000 results into at least having 2 TIM interrupts after
+// the last frame has been decoded, before UNF occurs.
+// This seems to be stable with pausing and continuing a playback of
+// "Imagination in Motion - A New Era in 3D Chill Out Video"
+// but also seems to be stable with "The Lost Ride".
+// 100000 was too long for Lost Ride, resulting into audio glitches.
+// It was reduced to 100, which caused problems with "Imagination in Motion"
+// Keep in mind, this heavily relies on compiler optimization and core speed.
+const int kTimeOut = 10000;
+
 void main(void)
 {
 	plm_dma_buffer_t *buffer = plm_buffer_create_with_memory((uint8_t *)0x20000000, 700 * 1024 * 1024, 0);
@@ -77,7 +87,7 @@ void main(void)
 
 	fifo_ctrl->signal_decoding_started = 1;
 
-	int timeout = 100;
+	int timeout = kTimeOut;
 
 	while (timeout)
 	{
@@ -88,7 +98,7 @@ void main(void)
 			// Give some feedback to the user that we are running
 			cnt++;
 			fifo_ctrl->signal_frame_decoded = cnt;
-			timeout = 100;
+			timeout = kTimeOut;
 		}
 		else
 		{
