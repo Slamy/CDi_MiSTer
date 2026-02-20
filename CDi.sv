@@ -230,7 +230,7 @@ module emu (
         "P2F1,ROM,Replace Boot ROM;",
         "P2O[2],Disable Audio Att.,No,Yes;",
         "P2O[3],UART Fake Space,No,Yes;",
-        "P2O[7:6],Force Video Plane,Original,A,B;",
+        "P2O[7:6],Force Video Plane,Original,A,B,DVC;",
         "P2O[12],SERVO Audio CD,No,Yes;",
         "P2O[17],Disable VCD pixel clock,No,Yes;",
         "P2O[18],Activate VCD filter,Yes,No;",

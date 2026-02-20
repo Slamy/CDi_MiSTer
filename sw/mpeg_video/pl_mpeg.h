@@ -186,6 +186,8 @@ typedef struct plm_video_t plm_video_t;
 typedef struct plm_audio_t plm_audio_t;
 
 
+int seq_hdr_latched;
+
 // Demuxed MPEG PS packet
 // The type maps directly to the various MPEG-PES start codes. PTS is the
 // presentation time stamp of the packet in seconds. Note that not all packets
@@ -229,6 +231,7 @@ typedef struct {
 	plm_plane_t cb;
 	int picture_type;
 	int temporal_ref;
+	int timecode;
 } plm_frame_t;
 
 
@@ -1504,6 +1507,7 @@ static const int PLM_START_SLICE_LAST = 0xAF;
 static const int PLM_START_PICTURE = 0x00;
 static const int PLM_START_EXTENSION = 0xB5;
 static const int PLM_START_USER_DATA = 0xB2;
+static const int PLM_START_GROUP_OF_PICTURES = 0xB8;
 
 #define PLM_START_IS_SLICE(c) \
 	(c >= PLM_START_SLICE_FIRST && c <= PLM_START_SLICE_LAST)
@@ -1985,6 +1989,7 @@ struct plm_video_t {
 	int start_code;
 	int picture_type;
 	int temporal_ref;
+	int timecode; // from GOP
 
 	plm_video_motion_t motion_forward;
 	plm_video_motion_t motion_backward;
@@ -2022,6 +2027,7 @@ static inline uint8_t plm_clamp(int n) {
 	return n;
 }
 
+int plm_video_decode_group_of_pictures(plm_video_t *self);
 int plm_video_decode_sequence_header(plm_video_t *self);
 void plm_video_init_frame(plm_video_t *self, plm_frame_t *frame);
 void plm_video_decode_picture(plm_video_t *self);
@@ -2155,6 +2161,9 @@ plm_frame_t *plm_video_decode(plm_video_t *self) {
 			}
 			plm_video_decode_sequence_header(self);
 		}
+		else if  (self->start_code == PLM_START_GROUP_OF_PICTURES){
+			plm_video_decode_group_of_pictures(self);
+		}
 		else if (self->start_code == -1) {
 			// If we reached the end of the file and the previously decoded
 			// frame was a reference frame, we still have to return it.
@@ -2176,7 +2185,6 @@ plm_frame_t *plm_video_decode(plm_video_t *self) {
 
 
 	} while (!frame);
-	
 	OUT_DEBUG = 15;
 
 	frame->time = self->time;
@@ -2203,6 +2211,24 @@ int plm_video_has_header(plm_video_t *self) {
 	}
 
 	return TRUE;
+}
+
+int plm_video_decode_group_of_pictures(plm_video_t *self) {
+	if (!plm_dma_buffer_has(self->buffer, 11+2+12)) {
+		return FALSE;
+	}
+
+	// skip drop frame flag
+	plm_dma_buffer_skip(self->buffer, 1);
+
+	uint32_t hours_minutes =  plm_dma_buffer_read(self->buffer, 11);
+
+	// skip marker
+	plm_dma_buffer_skip(self->buffer, 1);
+
+	uint32_t seconds_frame =  plm_dma_buffer_read(self->buffer, 12);
+
+	self->timecode = (hours_minutes<<12) | seconds_frame;
 }
 
 int plm_video_decode_sequence_header(plm_video_t *self) {
@@ -2273,6 +2299,8 @@ int plm_video_decode_sequence_header(plm_video_t *self) {
 		plm_video_init_frame(self, &self->frame_forward);
 		plm_video_init_frame(self, &self->frame_backward);
 	}
+	__asm volatile("": : :"memory");
+	seq_hdr_latched=1;
 
 	return TRUE;
 }
@@ -2361,10 +2389,10 @@ void plm_video_decode_picture(plm_video_t *self) {
 
 	// Decode all slices
 	plm_video_init_frame(self, &self->frame_current);
-
 	self->frame_current.picture_type = self->picture_type;
 	self->frame_current.temporal_ref = self->temporal_ref;
-
+	self->frame_current.timecode = self->timecode;
+	
 	while (PLM_START_IS_SLICE(self->start_code)) {
 		OUT_DEBUG = 7;
 

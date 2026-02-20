@@ -1353,7 +1353,7 @@ module mcd212 (
 
         vsd = backdrop_pixel && image_coding_method_register.ev;
 `ifdef VERILATOR
-        // vsd = 1;
+        //vsd = 1;
 `endif
     end
 

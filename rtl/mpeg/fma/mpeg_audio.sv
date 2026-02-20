@@ -55,6 +55,11 @@ module mpeg_audio (
         event_frame_decoded <= 0;
         event_underflow <= 0;
 
+        if (fifo_full) begin
+            $display("AUDIO FIFO FULL");
+            $finish();
+        end
+
         if (reset || reset_input_fifo) begin
             mpeg_stream_fifo_write_adr <= 0;
             mpeg_stream_bit_index <= 0;

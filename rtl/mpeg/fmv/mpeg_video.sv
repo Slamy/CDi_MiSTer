@@ -37,12 +37,16 @@ module mpeg_video (
     output event_buffer_underflow,
     output bit event_picture_starts_display,
     output event_last_picture_starts_display,
-    output bit event_first_intra_frame_starts_display,
+    output bit event_first_intra_frame_gop_starts_display,
+    output bit event_first_intra_frame_seq_starts_display,
     output [4:0] pictures_in_fifo,
 
     output bit [10:0] decoder_width,
     output bit [ 8:0] decoder_height,
-    output bit [ 7:0] decoder_tempref,
+    output bit [10:0] display_width,
+    output bit [ 8:0] display_height,
+    output bit [ 7:0] display_tempref,
+    output bit [31:0] display_timecode,
     output bit [15:0] decoder_frameperiod_90khz,
     output bit [ 7:0] decoder_frameperiod_rawhdr
 );
@@ -594,6 +598,12 @@ module mpeg_video (
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3038) begin
                             just_decoded.tempref <= dmem_cmd_payload_data_1[7:0];
                         end
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h3044) begin
+                            just_decoded.timecode <= dmem_cmd_payload_data_1;
+                        end
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h3048) begin
+                            just_decoded.first_intra_frame_of_seq <= dmem_cmd_payload_data_1[0];
+                        end
 
                         if (dmem_cmd_payload_address_1[15:0] == 16'h2010) begin
                             has_sequence_header <= dmem_cmd_payload_data_1[0];
@@ -638,8 +648,8 @@ module mpeg_video (
     bit [23:0] playback_frame_cnt;
 
     bit latch_frame_until_vblank = 0;
-    bit first_intra_frame_of_gop_in_prep;
     bit first_intra_frame_of_gop_clk30;
+    bit first_intra_frame_of_seq_clk30;
 
     bit vblank_q1;
     bit vblank_q2;
@@ -658,14 +668,18 @@ module mpeg_video (
         .flag_out_clk_b(just_decoded_commit_clk30)
     );
 
+
     always_ff @(posedge clk30) begin
         vblank_q1 <= vblank;
         vblank_q2 <= vblank_q1;
 
         if (latch_frame_for_display) begin
-            decoder_width   <= for_display.width;
-            decoder_height  <= for_display.height;
-            decoder_tempref <= for_display.tempref;
+            display_width <= for_display.width;
+            display_height <= for_display.height;
+            display_tempref <= for_display.tempref;
+            display_timecode <= for_display.timecode;
+            first_intra_frame_of_gop_clk30 <= for_display.first_intra_frame_of_gop;
+            first_intra_frame_of_seq_clk30 <= for_display.first_intra_frame_of_seq;
         end
 
         if (just_decoded_commit_clk30) begin
@@ -680,16 +694,18 @@ module mpeg_video (
             decoder_width <= 0;
             decoder_height <= 0;
             frame_period <= 0;
-            decoder_tempref <= 0;
+            display_tempref <= 0;
+            display_timecode <= 0;
             decoder_frameperiod_90khz <= 0;
             decoder_frameperiod_rawhdr <= 0;
         end
 
         for_display_valid <= for_display_valid_clk_mpeg;
-        first_intra_frame_of_gop_clk30 <= for_display.first_intra_frame_of_gop;
+
 
         event_picture_starts_display <= 0;
-        event_first_intra_frame_starts_display <= 0;
+        event_first_intra_frame_gop_starts_display <= 0;
+        event_first_intra_frame_seq_starts_display <= 0;
         event_last_picture_starts_display <= 0;
 
         latch_frame_for_display <= 0;
@@ -697,7 +713,8 @@ module mpeg_video (
         if (latch_frame_until_vblank && !vblank && vblank_q1 && vblank_q2) begin
             latch_frame_until_vblank <= 0;
             event_picture_starts_display <= 1;
-            event_first_intra_frame_starts_display <= first_intra_frame_of_gop_in_prep;
+            event_first_intra_frame_gop_starts_display <= first_intra_frame_of_gop_clk30;
+            event_first_intra_frame_seq_starts_display <= first_intra_frame_of_seq_clk30;
             event_last_picture_starts_display <= !for_display_valid;
         end
 
@@ -708,16 +725,14 @@ module mpeg_video (
 
             if (playback_frame_cnt >= frame_period - 1) playback_frame_cnt <= 0;
             if (playback_frame_cnt == 0 && for_display_valid) begin
-                latch_frame_for_display <= 1;
+                latch_frame_for_display  <= 1;
                 latch_frame_until_vblank <= 1;
-                first_intra_frame_of_gop_in_prep <= first_intra_frame_of_gop_clk30;
             end
         end
 
         if (single_step) begin
             latch_frame_until_vblank <= 1;
-            latch_frame_for_display <= 1;
-            first_intra_frame_of_gop_in_prep <= first_intra_frame_of_gop_clk30;
+            latch_frame_for_display  <= 1;
         end
     end
 

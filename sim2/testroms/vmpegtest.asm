@@ -10,7 +10,7 @@ main:
 	move.w #$0000,$303FFE ; Data buffer
 
 	move.w #$0002,$E03000 ; FMA CMD - On
-	move.w #$0006,$E03008 ; FMA Stream
+	move.w #$0000,$E03008 ; FMA Stream
 
 	move.w #$2000,$E040C0 ; FMV SYSCMD - Decoder off
 	nop
@@ -56,7 +56,7 @@ main:
 	move.w #$0100,$303C06 ; File Register
 	move.l #$ffffffff,$303C08 ; Channel Register
 	move.w #$0000,$303C0C ; Audio Channel Register
-	move.l #$01133900,$303C02 ; Timer Register
+	move.l #$00323400,$303C02 ; Timer Register
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 
 	move.l #0,$0E0407C ;FMV_DECOFF
@@ -68,7 +68,7 @@ main:
 	; But I feel lazy and use the number of pics instead
 waitforpics:
 	jsr WaitForSectorAndUse
-	cmp.w #4,$00E040A4 ; Compare 5 against pictures in FIFO
+	cmp.w #2,$00E040A4 ; Compare 5 against pictures in FIFO
 	bmi waitforpics
 
 	move.w #$0008,$E040C0 ; FMV SYSCMD - Play

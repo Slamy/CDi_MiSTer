@@ -6,9 +6,11 @@ typedef struct {
     bit [28:0] u_adr;
     bit [28:0] v_adr;
     bit first_intra_frame_of_gop;
+    bit first_intra_frame_of_seq;
     bit [10:0] width;
     bit [8:0] height;
     bit [7:0] tempref;
+    bit [31:0] timecode;
 } planar_yuv_s;
 
 typedef struct packed {
@@ -17,7 +19,6 @@ typedef struct packed {
     bit [7:0] factor_r2l;
     bit [7:0] factor_l2l;
 } linear_volume_s;
-
 
 function [31:0] ones_mask(bit [4:0] n);
     begin

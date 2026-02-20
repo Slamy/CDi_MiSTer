@@ -385,7 +385,8 @@ module cditop (
         .ddrif
     );
 
-    assign vidout = mcd212_vsd ? fmv_video_out : mcd212_video_out;
+    wire force_dvc_video = debug_force_video_plane == 2'b11;
+    assign vidout = (mcd212_vsd || force_dvc_video) ? fmv_video_out : mcd212_video_out;
 
 `ifndef DISABLE_MAIN_CPU
     wire reset68k;

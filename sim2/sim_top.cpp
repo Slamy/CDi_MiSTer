@@ -21,7 +21,7 @@
 
 #define SCC68070
 #define SLAVE
-// #define TRACE
+#define TRACE
 // #define SIMULATE_RC5
 
 #define PL_MPEG_IMPLEMENTATION
@@ -888,7 +888,7 @@ class CDi {
                 dut.rootp->emu__DOT__cditop__DOT__fdrvs1_static = cpu_a[2];
             }
 
-#if 0
+#if 1
             executing_dvc_rom_instructions = m_pc >= 0xe40000 && m_pc < 0xe7ffff;
 #endif
             if (print_instructions || executing_dvc_rom_instructions) {
@@ -929,6 +929,7 @@ class CDi {
                 // PAL
                 // space_ace_pal();
                 // braindead13_pal();
+                lost_ride_pal();
             }
 #endif
 
@@ -971,9 +972,9 @@ class CDi {
         }
 
         // Simulate Audio
-        if (dut.rootp->emu__DOT__cditop__DOT__sample_tick44) {
-            int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__audio__DOT__fifo_out_left;
-            int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__audio__DOT__fifo_out_right;
+        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick) {
+            int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_left;
+            int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;
             fwrite(&sample_l, 2, 1, f_audio_left);
             fwrite(&sample_r, 2, 1, f_audio_right);
         }
@@ -1306,7 +1307,7 @@ int main(int argc, char **argv) {
 
     switch (machineindex) {
     case 0:
-        f_cd_bin = fopen("images/braindead13.bin", "rb");
+        f_cd_bin = fopen("images/nonis2.bin", "rb");
         break;
     case 1:
         f_cd_bin = fopen("images/braindead13.bin", "rb");

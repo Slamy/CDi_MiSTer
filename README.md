@@ -188,6 +188,8 @@ by emulation errors but are also present on the real machine.
 * During the intro of "The Ultimate Noah's Ark", the Mike Wilks artwork has repeated pixels on the bottom and right edge.
   * This looks wrong but real hardware does that too.
   * There is also a weirdly wrong column of pixels during the title page on the left inside the black frame
+* "Marlboro – Follow Your Dreams" is not booting and hangs on a cyan screen
+  * You are probably using NTSC mode. Being made by a German publisher, this title was probably only tested on European models. It behaves like this on real hardware as well
 
 ## Simulation
 

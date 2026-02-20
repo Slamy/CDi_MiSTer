@@ -30,6 +30,7 @@ void print_str(const char *p);
 void stop_verilator();
 
 // #define SOFT_CONVOLVE
+int seq_hdr_latched;
 
 #define PL_MPEG_IMPLEMENTATION
 #define PLM_NO_STDIO
@@ -109,10 +110,14 @@ static void push_frame(plm_frame_t *frame)
 	{
 		first_intra_frame_of_gop_occured = true;
 		frame_display_fifo->first_intra_frame_of_gop = 1;
+
+		frame_display_fifo->first_intra_frame_of_seq = seq_hdr_latched;
+		seq_hdr_latched = false;
 	}
 	else
 	{
 		frame_display_fifo->first_intra_frame_of_gop = 0;
+		frame_display_fifo->first_intra_frame_of_seq = 0;
 	}
 
 	frame_display_fifo->width = frame->width;
@@ -124,6 +129,7 @@ static void push_frame(plm_frame_t *frame)
 	frame_display_fifo->frameperiod_90khz = period90khz;
 	frame_display_fifo->frameperiod_rawhdr = seq_hdr_conf.frameperiod;
 	frame_display_fifo->temporal_ref = frame->temporal_ref;
+	frame_display_fifo->timecode = frame->timecode;
 
 	if (frame_display_fifo->pictures_in_fifo < 3)
 	{

@@ -106,10 +106,8 @@ module vmpeg (
 
     wire fmv_event_picture_starts_display;
     wire fmv_event_last_picture_starts_display;
-    wire fmv_event_first_intra_frame_starts_display;
-    wire fmv_event_sequence_header = fmv_event_first_intra_frame_starts_display;
-    wire fmv_event_group_of_pictures = fmv_event_first_intra_frame_starts_display;
-    wire fmv_event_picture = fmv_event_picture_starts_display;
+    wire fmv_event_first_intra_frame_seq_starts_display;
+    wire fmv_event_first_intra_frame_gop_starts_display;
     // TIMECD @ 00E04058
     // example 0x07800280 -> 10:00:30.0
     // mv_info() would have MD_TimeCd=0x0a001e00
@@ -117,7 +115,7 @@ module vmpeg (
     // [27:22] 6 Bit Seconds. Not BCD
     // [5:0] 6 Bit Minutes. Not BCD
     // [10:6] 5 Bits Hours. Not BCD
-    wire [31:0] fmv_timecode;
+    wire [31:0] fmv_display_timecode;
     bit fmv_playback_active;
     bit fmv_single_step;
     wire fmv_event_sequence_end;
@@ -163,11 +161,15 @@ module vmpeg (
         .event_buffer_underflow(fmv_event_buffer_underflow),
         .event_picture_starts_display(fmv_event_picture_starts_display),
         .event_last_picture_starts_display(fmv_event_last_picture_starts_display),
-        .event_first_intra_frame_starts_display(fmv_event_first_intra_frame_starts_display),
+        .event_first_intra_frame_gop_starts_display(fmv_event_first_intra_frame_gop_starts_display),
+        .event_first_intra_frame_seq_starts_display(fmv_event_first_intra_frame_seq_starts_display),
         .pictures_in_fifo(fmv_pictures_in_fifo),
         .decoder_width(fmv_decoder_width),
         .decoder_height(fmv_decoder_height),
-        .decoder_tempref(fmv_decoder_tempref),
+        .display_width(fmv_display_width),
+        .display_height(fmv_display_height),
+        .display_tempref(fmv_display_tempref),
+        .display_timecode(fmv_display_timecode),
         .decoder_frameperiod_90khz(fmv_decoder_frameperiod_90khz),
         .decoder_frameperiod_rawhdr(fmv_decoder_frameperiod_rawhdr)
     );
@@ -181,18 +183,6 @@ module vmpeg (
             if (fmv_fifo_full) debug_video_fifo_overflow <= 1;
         end
     end
-
-    mpeg_video_start_code_decoder startcode (
-        .clk,
-        .reset,
-        .mpeg_data(mpeg_data),
-        .data_valid(fmv_data_valid && fmv_packet_body),
-        .event_sequence_header(),
-        .event_group_of_pictures(),
-        .event_picture(),
-        .tmpref(),
-        .timecode(fmv_timecode)
-    );
 
     wire signed [32:0] fma_system_clock_reference_start_time;
     wire fma_system_clock_reference_start_time_valid;
@@ -398,7 +388,10 @@ module vmpeg (
 
     wire [10:0] fmv_decoder_width;
     wire [ 8:0] fmv_decoder_height;
-    wire [ 7:0] fmv_decoder_tempref;
+    wire [10:0] fmv_display_width;
+    wire [ 8:0] fmv_display_height;
+
+    wire [ 7:0] fmv_display_tempref;
     wire [15:0] fmv_decoder_frameperiod_90khz;
     wire [ 7:0] fmv_decoder_frameperiod_rawhdr;
 
@@ -468,14 +461,16 @@ module vmpeg (
             15'h2001: dout = image_width;  // 00E04002 ?? Written then Read
             15'h2002: dout = image_height;  // 00E04004 ?? Written then Read
             15'h2003: dout = image_rt;  // 00E04006 ??
-            15'h2004: dout = fmv_timecode[31:16];  // 00E04008 Temporal time code High. During scan
-            15'h2005: dout = fmv_timecode[15:0];  // 00E0400C Temporal time code Low. During scan
-            15'h2029: dout = {5'b0, fmv_decoder_width};  // e04052 Picture Width ?? Only read
-            15'h202a: dout = {7'b0, fmv_decoder_height};  // e04054 Picture Height ?? Only read
+            15'h2004:
+            dout = fmv_display_timecode[15:0];  // 00E04008 Temporal time code High. During scan
+            15'h2005:
+            dout = fmv_display_timecode[31:16];  // 00E0400C Temporal time code Low. During scan
+            15'h2029: dout = {5'b0, fmv_display_width};  // e04052 Picture Width ?? Only read
+            15'h202a: dout = {7'b0, fmv_display_height};  // e04054 Picture Height ?? Only read
             15'h202b: dout = {8'b0, fmv_decoder_frameperiod_rawhdr};  // e04056 Pic Rt ??
-            15'h202c: dout = fmv_timecode[31:16];  // 00E04058 Time Code High ??
-            15'h202d: dout = fmv_timecode[15:0];  // 00E0405A Time Code Low ??
-            15'h202e: dout = {6'b0, fmv_decoder_tempref, 2'b0};  // 00E0405C TMP REF?? SYS_VSR?
+            15'h202c: dout = fmv_display_timecode[15:0];  // 00E04058 Time Code High ??
+            15'h202d: dout = fmv_display_timecode[31:16];  // 00E0405A Time Code Low ??
+            15'h202e: dout = {6'b0, fmv_display_tempref, 2'b0};  // 00E0405C TMP REF?? SYS_VSR?
             15'h202f: dout = fmv_fifo_full ? 0 : 16'h2000;  // 00E0405E ? SYS_STS
             15'h2030: dout = fmv_interrupt_enable_register;  // 0E04060
             15'h2031: dout = fmv_interrupt_status_register;  // 0E04062
@@ -613,12 +608,13 @@ module vmpeg (
                 end
             end
 
-            if (fmv_event_sequence_header) begin
+            if (fmv_event_first_intra_frame_seq_starts_display) begin
                 fmv_interrupt_status_register.seq <= 1;
                 $display("Cause FMV Seq Event");
             end
-            if (fmv_event_group_of_pictures) fmv_interrupt_status_register.gop <= 1;
-            if (fmv_event_picture) begin
+            if (fmv_event_first_intra_frame_gop_starts_display)
+                fmv_interrupt_status_register.gop <= 1;
+            if (fmv_event_picture_starts_display) begin
                 fmv_interrupt_status_register.pic <= 1;
 
                 image_width <= {5'b0, fmv_decoder_width};
