@@ -226,7 +226,7 @@ module mpeg_video (
 
     always_ff @(posedge clk_mpeg) begin
         if (fifo_full_clk_mpeg) begin
-            $display("FIFO FULL");
+            $display("VIDEO FIFO FULL");
             //$finish();
         end
 
@@ -520,7 +520,6 @@ module mpeg_video (
     planar_yuv_s just_decoded;
     bit [10:0] decoder_width_clk_mpeg = 100;
     bit [8:0] decoder_height_clk_mpeg = 100;
-    bit [7:0] decoder_tempref_clk_mpeg;
     bit [15:0] decoder_frameperiod_90khz_clk_mpeg;
     bit [7:0] decoder_frameperiod_rawhdr_clk_mpeg;
 
@@ -571,10 +570,15 @@ module mpeg_video (
                             just_decoded.u_adr <= dmem_cmd_payload_data_1[28:0];
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3008)
                             just_decoded.v_adr <= dmem_cmd_payload_data_1[28:0];
-                        if (dmem_cmd_payload_address_1[15:0] == 16'h300c)
+
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h300c) begin
+                            just_decoded.width <= dmem_cmd_payload_data_1[10:0];
                             decoder_width_clk_mpeg <= dmem_cmd_payload_data_1[10:0];
-                        if (dmem_cmd_payload_address_1[15:0] == 16'h3010)
+                        end
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h3010) begin
+                            just_decoded.height <= dmem_cmd_payload_data_1[8:0];
                             decoder_height_clk_mpeg <= dmem_cmd_payload_data_1[8:0];
+                        end
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3014)
                             frame_period_clk_mpeg <= dmem_cmd_payload_data_1[23:0];
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3018)
@@ -587,8 +591,9 @@ module mpeg_video (
                             decoder_frameperiod_rawhdr_clk_mpeg <= dmem_cmd_payload_data_1[7:0];
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3034)
                             decoder_frameperiod_90khz_clk_mpeg <= dmem_cmd_payload_data_1[15:0];
-                        if (dmem_cmd_payload_address_1[15:0] == 16'h3038)
-                            decoder_tempref_clk_mpeg <= dmem_cmd_payload_data_1[7:0];
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h3038) begin
+                            just_decoded.tempref <= dmem_cmd_payload_data_1[7:0];
+                        end
 
                         if (dmem_cmd_payload_address_1[15:0] == 16'h2010) begin
                             has_sequence_header <= dmem_cmd_payload_data_1[0];
@@ -616,7 +621,7 @@ module mpeg_video (
 
 
     planar_yuv_s for_display;
-    wire just_decoded_commit = dmem_cmd_payload_write_1 && dmem_cmd_valid_1 && dmem_cmd_ready_1 && dmem_cmd_payload_address_1==32'h10003010;
+    wire just_decoded_commit = dmem_cmd_payload_write_1 && dmem_cmd_valid_1 && dmem_cmd_ready_1 && dmem_cmd_payload_address_1==32'h10003040;
     wire for_display_valid_clk_mpeg;
     bit latch_frame_for_display;
     wire latch_frame_for_display_clk_mpeg;
@@ -657,13 +662,18 @@ module mpeg_video (
         vblank_q1 <= vblank;
         vblank_q2 <= vblank_q1;
 
+        if (latch_frame_for_display) begin
+            decoder_width   <= for_display.width;
+            decoder_height  <= for_display.height;
+            decoder_tempref <= for_display.tempref;
+        end
+
         if (just_decoded_commit_clk30) begin
             frame_period <= frame_period_clk_mpeg;
-            decoder_width <= decoder_width_clk_mpeg;
-            decoder_height <= decoder_height_clk_mpeg;
-            decoder_tempref <= decoder_tempref_clk_mpeg;
             decoder_frameperiod_90khz <= decoder_frameperiod_90khz_clk_mpeg;
             decoder_frameperiod_rawhdr <= decoder_frameperiod_rawhdr_clk_mpeg;
+            decoder_width <= decoder_width_clk_mpeg;
+            decoder_height <= decoder_height_clk_mpeg;
         end
 
         if (!dsp_enable) begin
@@ -772,7 +782,6 @@ module mpeg_video (
         .vblank,
         .frame(for_display),
         .frame_width(window_width),
-        .frame_stride(decoder_width_clk_mpeg),
         .frame_height(window_height),
         .offset_y(display_offset_y),
         .offset_x(display_offset_x),

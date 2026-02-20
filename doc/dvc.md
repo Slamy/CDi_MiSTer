@@ -23,6 +23,18 @@ There are different chipsets available
   * Based on the MCD270 with audio and video decoding integrated into one
   * Uses 512kB of RAM for buffering and reconstruction
 
+## Timing of events
+
+The green book is not very clear about the timing of the OS events.
+This is a measurement (using soundcard) of the UART on the top channel
+and video on the bottom.
+When the application is getting a PIC event, a character is printed.
+
+![PIC Event relative to picture display](vmpeg_pic_timing.png)
+
+It clearly shows that the PIC event is more related to the start of a picture
+and not the finished display of one.
+
 ## Green Book
 
 According to 4.3.2.2 the maximum picture size depends on the frame rate

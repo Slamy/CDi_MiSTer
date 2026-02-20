@@ -621,6 +621,9 @@ module vmpeg (
             if (fmv_event_picture) begin
                 fmv_interrupt_status_register.pic <= 1;
 
+                image_width <= {5'b0, fmv_decoder_width};
+                image_height <= {7'b0, fmv_decoder_height};
+                image_rt <= {8'b0, fmv_decoder_frameperiod_rawhdr};
             end
             if (fmv_event_last_picture_starts_display) fmv_interrupt_status_register.eod <= 1;
             if (fmv_event_program_end) fmv_interrupt_status_register.eii <= 1;

@@ -6,6 +6,9 @@ typedef struct {
     bit [28:0] u_adr;
     bit [28:0] v_adr;
     bit first_intra_frame_of_gop;
+    bit [10:0] width;
+    bit [8:0] height;
+    bit [7:0] tempref;
 } planar_yuv_s;
 
 typedef struct packed {
