@@ -185,7 +185,6 @@ typedef struct plm_demux_t plm_demux_t;
 typedef struct plm_video_t plm_video_t;
 typedef struct plm_audio_t plm_audio_t;
 
-void advertise_at_least_one_frame();
 int seq_hdr_latched;
 
 // Demuxed MPEG PS packet
@@ -223,7 +222,6 @@ typedef struct {
 // different from the internal size of the 3 planes.
 
 typedef struct {
-	int32_t time;
 	unsigned int width;
 	unsigned int height;
 	plm_plane_t y;
@@ -232,6 +230,7 @@ typedef struct {
 	int picture_type;
 	int temporal_ref;
 	int timecode;
+	int ready_for_display;
 } plm_frame_t;
 
 
@@ -909,9 +908,6 @@ int plm_get_height(plm_t *self) {
 		: 0;
 }
 
-int64_t plm_get_time(plm_t *self) {
-	return self->time;
-}
 
 int64_t plm_get_duration(plm_t *self) {
 	return plm_demux_get_duration(self->demux, PLM_DEMUX_PACKET_VIDEO_1);
@@ -931,25 +927,6 @@ int plm_has_ended(plm_t *self) {
 	return self->has_ended;
 }
 
-
-plm_frame_t *plm_decode_video(plm_t *self) {
-	if (!plm_init_decoders(self)) {
-		return NULL;
-	}
-
-	if (!self->video_packet_type) {
-		return NULL;
-	}
-
-	plm_frame_t *frame = plm_video_decode(self->video_decoder);
-	if (frame) {
-		self->time = frame->time;
-	}
-	else if (plm_demux_has_ended(self->demux)) {
-		plm_handle_end(self);
-	}
-	return frame;
-}
 
 
 void plm_read_video_packet(plm_buffer_t *buffer, void *user) {
@@ -1283,13 +1260,8 @@ static inline int plm_dma_buffer_has(plm_dma_buffer_t *self, size_t count) {
 	while (((fifo_ctrl->write_byte_index << 3) - fifo_ctrl->read_bit_index) < count)
 	{
 		__asm volatile("" : : : "memory");
-		// If the driver has not yet instructed to play, we will wait patiently
-		// But if the driver has told us to play, we accept an abort of the stream
-		// as long as no pictures are left in the output FIFO
-		if (frame_display_fifo->playback_active && frame_display_fifo->pictures_in_fifo == 0)
-		{
-			return FALSE;
-		}
+		// We need patience now. If we have reached this point, there has to be picture data
+		// if it doesn't exist, a real VMPEG stalls. We need to stall as well
 	}
 	return TRUE;
 }
@@ -1394,28 +1366,21 @@ void plm_dma_buffer_skip(plm_dma_buffer_t *self, size_t count) {
 	}
 }
 
-static const int PLM_START_SEQ_END = 0xB7;
-
-int plm_dma_buffer_next_start_code(plm_dma_buffer_t *self) {
+int plm_dma_buffer_next_start_code(plm_dma_buffer_t *self)
+{
 	plm_dma_buffer_align(self);
 
-	while (plm_dma_buffer_has(self, (4 << 3))) {
+	while (plm_dma_buffer_has(self, (4 << 3)))
+	{
 		size_t byte_index = (fifo_ctrl->read_bit_index) >> 3;
 		if (
 			self->bytes[byte_index] == 0x00 &&
 			self->bytes[byte_index + 1] == 0x00 &&
-			self->bytes[byte_index + 2] == 0x01
-		) {
+			self->bytes[byte_index + 2] == 0x01)
+		{
 			fifo_ctrl->read_bit_index = (byte_index + 4) << 3;
 
 			int startcode = self->bytes[byte_index + 3];
-
-			if (startcode == PLM_START_SEQ_END)
-			{
-				frame_display_fifo->event_sequence_end=1;
-				__asm volatile("" : : : "memory");
-			}
-
 			return startcode;
 		}
 		fifo_ctrl->read_bit_index += 8;
@@ -1423,19 +1388,24 @@ int plm_dma_buffer_next_start_code(plm_dma_buffer_t *self) {
 	return -1;
 }
 
-int plm_dma_buffer_find_start_code(plm_dma_buffer_t *self, int code) {
+int plm_dma_buffer_find_start_code(plm_dma_buffer_t *self, int code)
+{
 	int current = 0;
-	while (TRUE) {
+	while (TRUE)
+	{
 		current = plm_dma_buffer_next_start_code(self);
-		if (current == code || current == -1) {
+		if (current == code || current == -1)
+		{
 			return current;
 		}
 	}
 	return -1;
 }
 
-int plm_dma_buffer_peek_non_zero(plm_dma_buffer_t *self, int bit_count) {
-	if (!plm_dma_buffer_has(self, bit_count)) {
+int plm_dma_buffer_peek_non_zero(plm_dma_buffer_t *self, int bit_count)
+{
+	if (!plm_dma_buffer_has(self, bit_count))
+	{
 		return FALSE;
 	}
 
@@ -1444,18 +1414,20 @@ int plm_dma_buffer_peek_non_zero(plm_dma_buffer_t *self, int bit_count) {
 	return val != 0;
 }
 
-int16_t plm_dma_buffer_read_vlc(plm_dma_buffer_t *self, const plm_vlc_t *table) {
+int16_t plm_dma_buffer_read_vlc(plm_dma_buffer_t *self, const plm_vlc_t *table)
+{
 	plm_vlc_t state = {0, 0};
-	do {
+	do
+	{
 		state = table[state.index + plm_dma_buffer_read(self, 1)];
 	} while (state.index > 0);
 	return state.value;
 }
 
-uint16_t plm_dma_buffer_read_vlc_uint(plm_dma_buffer_t *self, const plm_vlc_uint_t *table) {
+uint16_t plm_dma_buffer_read_vlc_uint(plm_dma_buffer_t *self, const plm_vlc_uint_t *table)
+{
 	return (uint16_t)plm_dma_buffer_read_vlc(self, (const plm_vlc_t *)table);
 }
-
 
 // ----------------------------------------------------------------------------
 // plm_demux implementation
@@ -1464,7 +1436,8 @@ static const int PLM_START_PACK = 0xBA;
 static const int PLM_START_END = 0xB9;
 static const int PLM_START_SYSTEM = 0xBB;
 
-struct plm_demux_t {
+struct plm_demux_t
+{
 	plm_dma_buffer_t *buffer;
 	int destroy_buffer_when_done;
 	int64_t system_clock_ref;
@@ -1484,17 +1457,15 @@ struct plm_demux_t {
 	plm_packet_t next_packet;
 };
 
-
 void plm_demux_buffer_seek(plm_demux_t *self, size_t pos);
 int64_t plm_demux_decode_time(plm_demux_t *self);
 plm_packet_t *plm_demux_decode_packet(plm_demux_t *self, int type);
 plm_packet_t *plm_demux_get_packet(plm_demux_t *self);
 
-
 // -----------------------------------------------------------------------------
 // plm_video implementation
 
-// Inspired by Java MPEG-1 Video Decoder and Player by Zoltan Korandi 
+// Inspired by Java MPEG-1 Video Decoder and Player by Zoltan Korandi
 // https://sourceforge.net/projects/javampeg1video/
 
 static const int PLM_VIDEO_PICTURE_TYPE_INTRA = 1;
@@ -1502,6 +1473,7 @@ static const int PLM_VIDEO_PICTURE_TYPE_PREDICTIVE = 2;
 static const int PLM_VIDEO_PICTURE_TYPE_B = 3;
 
 static const int PLM_START_SEQUENCE = 0xB3;
+static const int PLM_START_SEQ_END = 0xB7;
 static const int PLM_START_SLICE_FIRST = 0x01;
 static const int PLM_START_SLICE_LAST = 0xAF;
 static const int PLM_START_PICTURE = 0x00;
@@ -1512,7 +1484,7 @@ static const int PLM_START_GROUP_OF_PICTURES = 0xB8;
 #define PLM_START_IS_SLICE(c) \
 	(c >= PLM_START_SLICE_FIRST && c <= PLM_START_SLICE_LAST)
 
-#define TICKS_30MHZ(x) (x ? 30000000.0/x : 10000)
+#define TICKS_30MHZ(x) (x ? 30000000.0 / x : 10000)
 // Longest frame period: 1251251.25125125 = 30000000 / 23.976
 // Requires 21 bits for storage
 static const uint32_t PLM_VIDEO_PICTURE_RATE_30MHZ[] = {
@@ -1534,7 +1506,7 @@ static const uint32_t PLM_VIDEO_PICTURE_RATE_30MHZ[] = {
 	TICKS_30MHZ(0.0),
 };
 
-#define TICKS_90KHZ(x) (x ? 90000.0/x : 100)
+#define TICKS_90KHZ(x) (x ? 90000.0 / x : 100)
 static const uint32_t PLM_VIDEO_PICTURE_RATE_90KHZ[] = {
 	TICKS_90KHZ(0.000),
 	TICKS_90KHZ(23.976),
@@ -1553,7 +1525,6 @@ static const uint32_t PLM_VIDEO_PICTURE_RATE_90KHZ[] = {
 	TICKS_90KHZ(0.000),
 	TICKS_90KHZ(0.0),
 };
-
 
 static const uint8_t PLM_VIDEO_ZIG_ZAG[] = {
 	 0,  1,  8, 16,  9,  2,  3, 10,
@@ -1652,13 +1623,12 @@ static inline int plm_dma_read_macroblock_address_increment(plm_dma_buffer_t *bu
 	}
 	else
 	{
-		fifo_ctrl->hw_huffman_read_dct_coeff=1;
+		fifo_ctrl->hw_huffman_read_dct_coeff = 1;
 		__asm volatile("" : : : "memory");
 		result = fifo_ctrl->hw_huffman_read_dct_coeff;
 	}
 	return result;
 }
-
 
 static const plm_vlc_t PLM_VIDEO_MACROBLOCK_TYPE_INTRA[] = {
 	{  1 << 1,    0}, {       0,  0x01},  //   0: x
@@ -1954,7 +1924,7 @@ static const plm_vlc_uint_t PLM_VIDEO_DCT_COEFF[] = {
 static inline uint16_t plm_dma_read_dct_coeff(plm_dma_buffer_t *buffer)
 {
 	uint16_t result;
-	
+
 	// Use soft huffman decoding in case we have less than 16 bits
 
 	if (!plm_dma_buffer_has_noblock(buffer, 16))
@@ -1963,7 +1933,7 @@ static inline uint16_t plm_dma_read_dct_coeff(plm_dma_buffer_t *buffer)
 	}
 	else
 	{
-		fifo_ctrl->hw_huffman_read_dct_coeff=0;
+		fifo_ctrl->hw_huffman_read_dct_coeff = 0;
 		__asm volatile("" : : : "memory");
 		return fifo_ctrl->hw_huffman_read_dct_coeff;
 	}
@@ -1971,7 +1941,8 @@ static inline uint16_t plm_dma_read_dct_coeff(plm_dma_buffer_t *buffer)
 	return result;
 }
 
-typedef struct {
+typedef struct
+{
 	int full_px;
 	int is_set;
 	int r_size;
@@ -1982,7 +1953,8 @@ typedef struct {
 // We use 16 MB of memory to store the framebuffers
 #define DDR_MEMORY_AREA 16777216
 
-struct plm_video_t {
+struct plm_video_t
+{
 	int time;
 	int frames_decoded;
 
@@ -2017,11 +1989,14 @@ struct plm_video_t {
 	int assume_no_b_frames;
 };
 
-static inline uint8_t plm_clamp(int n) {
-	if (n > 255) {
+static inline uint8_t plm_clamp(int n)
+{
+	if (n > 255)
+	{
 		n = 255;
 	}
-	else if (n < 0) {
+	else if (n < 0)
+	{
 		n = 0;
 	}
 	return n;
@@ -2042,16 +2017,17 @@ void plm_video_process_macroblock(plm_video_t *self, uint8_t *s, uint8_t *d, int
 void plm_video_decode_block(plm_video_t *self, int block);
 void plm_video_idct(int *block);
 
-plm_video_t * plm_video_create_with_buffer(plm_dma_buffer_t *buffer, int destroy_when_done) {
+plm_video_t *plm_video_create_with_buffer(plm_dma_buffer_t *buffer, int destroy_when_done)
+{
 
 	static plm_video_t plm_instance;
-	plm_video_t *self =&plm_instance;
+	plm_video_t *self = &plm_instance;
 	memset(self, 0, sizeof(plm_video_t));
-	
+
 	self->buffer = buffer;
 	self->destroy_buffer_when_done = destroy_when_done;
 
-	__asm volatile("": : :"memory");
+	__asm volatile("" : : : "memory");
 
 	if (fifo_ctrl->has_sequence_header)
 	{
@@ -2096,43 +2072,46 @@ plm_video_t * plm_video_create_with_buffer(plm_dma_buffer_t *buffer, int destroy
 	return self;
 }
 
-int plm_video_get_width(plm_video_t *self) {
+int plm_video_get_width(plm_video_t *self)
+{
 	return plm_video_has_header(self)
-		? seq_hdr_conf.width
-		: 0;
+			   ? seq_hdr_conf.width
+			   : 0;
 }
 
-int plm_video_get_height(plm_video_t *self) {
+int plm_video_get_height(plm_video_t *self)
+{
 	return plm_video_has_header(self)
-		? seq_hdr_conf.height
-		: 0;
+			   ? seq_hdr_conf.height
+			   : 0;
 }
 
-void plm_video_set_no_delay(plm_video_t *self, int no_delay) {
+void plm_video_set_no_delay(plm_video_t *self, int no_delay)
+{
 	self->assume_no_b_frames = no_delay;
 }
 
-int64_t plm_video_get_time(plm_video_t *self) {
-	return self->time;
-}
-
-int plm_video_has_ended(plm_video_t *self) {
+int plm_video_has_ended(plm_video_t *self)
+{
 	return plm_dma_buffer_has_ended(self->buffer);
 }
 
-plm_frame_t *plm_video_decode(plm_video_t *self) {
-	static int stay_here=FALSE;
+plm_frame_t *plm_video_decode(plm_video_t *self)
+{
+
+	// used to avoid finding a sequence header again
+	static int dont_find_next_header = FALSE;
 
 	plm_frame_t *frame = NULL;
 
 	// In case the sequence header was parsed before reset
 	self->start_code = PLM_START_SEQUENCE;
 
-    do {
-        DEBUG_STATE = 2;
-		if (!stay_here)
-		    self->start_code = plm_dma_buffer_next_start_code(self->buffer);
-		stay_here=FALSE;
+	do {
+		DEBUG_STATE = 2;
+		if (!dont_find_next_header)
+			self->start_code = plm_dma_buffer_next_start_code(self->buffer);
+		dont_find_next_header = FALSE;
 
 		if (self->start_code == PLM_START_PICTURE && fifo_ctrl->has_sequence_header) {
 			plm_video_decode_picture(self);
@@ -2150,13 +2129,26 @@ plm_frame_t *plm_video_decode(plm_video_t *self) {
 				self->has_reference_frame = TRUE;
 			}
 		}
+		else if (self->start_code == PLM_START_SEQ_END)
+		{
+			frame_display_fifo->event_sequence_end = 1;
+			__asm volatile("" : : : "memory");
+
+			if (self->has_reference_frame && !self->assume_no_b_frames && (self->picture_type == PLM_VIDEO_PICTURE_TYPE_INTRA || self->picture_type == PLM_VIDEO_PICTURE_TYPE_PREDICTIVE))
+			{
+				self->has_reference_frame = FALSE;
+				frame = &self->frame_backward;
+				fifo_ctrl->has_sequence_header = FALSE;
+				break;
+			}
+		}
 		else if (self->start_code == PLM_START_SEQUENCE){
 			if (self->has_reference_frame)
 			{
 				self->has_reference_frame = FALSE;
 				frame = &self->frame_backward;
 				fifo_ctrl->has_sequence_header = FALSE;
-				stay_here = TRUE;
+				dont_find_next_header = TRUE;
 				break;
 			}
 			plm_video_decode_sequence_header(self);
@@ -2165,17 +2157,8 @@ plm_frame_t *plm_video_decode(plm_video_t *self) {
 			plm_video_decode_group_of_pictures(self);
 		}
 		else if (self->start_code == -1) {
-			// If we reached the end of the file and the previously decoded
-			// frame was a reference frame, we still have to return it.
-			if (
-				self->has_reference_frame &&
-				plm_dma_buffer_has_ended(self->buffer) 
-			) {
-				self->has_reference_frame = FALSE;
-				frame = &self->frame_backward;
-				break;
-			}
-
+			// This should be impossible!
+			*((volatile uint8_t *)OUTPORT_END) = 9;
 			return NULL;
 		}
 
@@ -2183,7 +2166,6 @@ plm_frame_t *plm_video_decode(plm_video_t *self) {
 	} while (!frame);
 	DEBUG_STATE = 15;
 
-	frame->time = self->time;
 	self->frames_decoded++;
 	
 	return frame;
@@ -2320,6 +2302,8 @@ void plm_video_init_frame(plm_video_t *self, plm_frame_t *frame) {
 	frame->cb.height = seq_hdr_conf.chroma_height;
 	frame->cb.data = seq_hdr_conf.next_framebuffer + luma_plane_size + chroma_plane_size;
 
+	frame->ready_for_display = FALSE;
+
 	seq_hdr_conf.next_framebuffer += frame_data_size;
 	if (((uint32_t)(seq_hdr_conf.next_framebuffer + frame_data_size)) >= DDR_MEMORY_AREA)
 		seq_hdr_conf.next_framebuffer=0;
@@ -2337,6 +2321,7 @@ void plm_video_decode_picture(plm_video_t *self) {
 		return;
 	}
 
+	OUTPORT = 0x8000 | self->picture_type;
 	DEBUG_STATE = 4;
 
 	// Forward full_px, f_code
@@ -2407,9 +2392,8 @@ void plm_video_decode_picture(plm_video_t *self) {
 		plm_video_predict_macroblock(self);
 	}
 
-	// If we have reached this point, we have at least one frame that will be
-	// returned, even if the decoding process was aborted, trying to get another one
-	advertise_at_least_one_frame();
+	self->frame_current.ready_for_display = TRUE;
+	frame_display_fifo->event_frame_decoded = 1;
 	
 	// If this is a reference picture rotate the prediction pointers
 	if (

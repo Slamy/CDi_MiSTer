@@ -27,6 +27,16 @@
 #define PL_MPEG_IMPLEMENTATION
 #include "pl_mpeg_pc.h"
 
+char GetPictureType(int val)
+{
+    switch (val){
+        case PLM_VIDEO_PICTURE_TYPE_INTRA: return 'I';
+        case PLM_VIDEO_PICTURE_TYPE_PREDICTIVE: return 'P';
+        case PLM_VIDEO_PICTURE_TYPE_B: return 'B';
+        default: return '?';
+    }
+}
+
 int write_bmp(const char *path, int width, int height, uint8_t *pixels) {
     FILE *fh = fopen(path, "wb");
     if (!fh) {
@@ -62,12 +72,14 @@ typedef struct {
 } plm_plane2_t;
 
 typedef struct {
-    int32_t time;
     unsigned int width;
     unsigned int height;
     plm_plane2_t y;
     plm_plane2_t cr;
     plm_plane2_t cb;
+	int picture_type;
+	int temporal_ref;
+	int timecode;
 } plm_frame2_t;
 
 #define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
@@ -1014,13 +1026,17 @@ class CDi {
             // do_trace = true;
 #endif
             sprintf(bmp_name, "%d/%03d.bmp", instanceid, fmv_frame_cnt);
-            printf("FMV Writing %s at Fifo Level %d at Frame Level %d\n", bmp_name,
+            printf("FMV Writing %s at Fifo Level %d at Frame Level %d %d %c\n", bmp_name,
                    dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__fifo_level,
-                   dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_fifo_clk_mpeg);
+                   dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_input_fifo,
+                   dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_output_fifo,
+                   GetPictureType(frame.picture_type));
             ;
-            fprintf(stderr, "FMV Writing %s at Fifo Level %d at Frame Level %d\n", bmp_name,
+            fprintf(stderr, "FMV Writing %s at Fifo Level %d at Frame Level %d %d %c\n", bmp_name,
                     dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__fifo_level,
-                    dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_fifo_clk_mpeg);
+                    dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_input_fifo,
+                    dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_output_fifo,
+                    GetPictureType(frame.picture_type));
 
             write_bmp(bmp_name, w, h, pixels);
 
@@ -1307,7 +1323,7 @@ int main(int argc, char **argv) {
 
     switch (machineindex) {
     case 0:
-        f_cd_bin = fopen("images/braindead13.bin", "rb");
+        f_cd_bin = fopen("images/breakout.bin", "rb");
         break;
     case 1:
         f_cd_bin = fopen("images/braindead13.bin", "rb");

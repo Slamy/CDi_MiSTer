@@ -1,5 +1,10 @@
 # TODOs and known issues
 
+* Randomly no audio after pause in Addams Family
+    * Reproducable with 260131 and 260222
+    * Not occuring with 260123? Or very unlikely?
+* Regression with Addams Family
+    * Disc 2 crashes again starting with 260222 when opening menu
 * Check random audio video out of sync (e.g. Mad Dog McCree)
 * Check correct timing of DVC clipping functionality when scroll bit is reset
 * Regression of "The Apprentice"?

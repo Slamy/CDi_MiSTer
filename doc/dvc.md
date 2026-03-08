@@ -25,6 +25,19 @@ There are different chipsets available
 
 ## Timing of events
 
+### Detection of a stream end
+
+The FMV driver adds `00 00 01 B7` at the end of the stream in case it ends unexpectedly.
+It does that at least in hostplay mode. CD? Not yet confirmed.
+
+The code can look something like this
+  
+  00 00 01 BA 21 00 01 00 01 C3 33 67 Pack header
+  00 00 01 E0 00 06 0F                PES Header
+  00 00 01 B7 00                      Sequence End
+
+This should be used to detect the stream end.
+
 ### FMV
 
 The green book is not very clear about the timing of the OS events.
