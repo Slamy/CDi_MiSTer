@@ -33,17 +33,9 @@ void stop_verilator();
 #define PLM_NO_STDIO
 #include "pl_mpeg.h"
 
-void print_chr(char ch) { *((volatile uint8_t *)OUTPORT) = ch; }
-
-void print_str(const char *p)
-{
-  while (*p != 0)
-    *((volatile uint8_t *)OUTPORT) = *(p++);
-}
 
 void stop_verilator()
 {
-  print_str("Nope\n");
   *((volatile uint8_t *)OUTPORT_END) = 4;
 }
 
