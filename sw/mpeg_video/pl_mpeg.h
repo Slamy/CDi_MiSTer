@@ -2199,14 +2199,21 @@ int plm_video_decode_group_of_pictures(plm_video_t *self) {
 	// skip drop frame flag
 	plm_dma_buffer_skip(self->buffer, 1);
 
+	// 5 bits hour
+	// 6 bits minute
 	uint32_t hours_minutes =  plm_dma_buffer_read(self->buffer, 11);
 
 	// skip marker
 	plm_dma_buffer_skip(self->buffer, 1);
 
+	// 6 bits seconds
+	// 6 bits picture
 	uint32_t seconds_frame =  plm_dma_buffer_read(self->buffer, 12);
 
-	self->timecode = (hours_minutes<<12) | seconds_frame;
+	// according to FMV driver
+	// High  SSSS SSSS SSPP PPPP
+	// Low   HHHH HHHH HHMM MMMM
+	self->timecode = (seconds_frame << 16) | (hours_minutes);
 }
 
 int plm_video_decode_sequence_header(plm_video_t *self) {

@@ -474,13 +474,13 @@ module vmpeg (
             15'h2001: dout = image_width;  // 00E04002 ?? Written then Read
             15'h2002: dout = image_height;  // 00E04004 ?? Written then Read
             15'h2003: dout = image_rt;  // 00E04006 ??
-            15'h2004: dout = fmv_display_timecode[15:0];  // 00E04008 Temporal time code High
-            15'h2005: dout = fmv_display_timecode[31:16];  // 00E0400C Temporal time code Low
+            15'h2004: dout = fmv_display_timecode[31:16];  // 00E04008 Temporal time code High
+            15'h2005: dout = fmv_display_timecode[15:0];  // 00E0400C Temporal time code Low
             15'h2029: dout = {5'b0, fmv_display_width};  // e04052 Picture Width ?? Only read
             15'h202a: dout = {7'b0, fmv_display_height};  // e04054 Picture Height ?? Only read
             15'h202b: dout = {8'b0, fmv_decoder_frameperiod_rawhdr};  // e04056 Pic Rt ??
-            15'h202c: dout = fmv_display_timecode[15:0];  // 00E04058 Time Code High ??
-            15'h202d: dout = fmv_display_timecode[31:16];  // 00E0405A Time Code Low ??
+            15'h202c: dout = fmv_display_timecode[31:16];  // 00E04058 Time Code High ??
+            15'h202d: dout = fmv_display_timecode[15:0];  // 00E0405A Time Code Low ??
             15'h202e: dout = {6'b0, fmv_display_tempref, 2'b0};  // 00E0405C TMP REF?? SYS_VSR?
             15'h202f: dout = fmv_fifo_full ? 0 : 16'h2000;  // 00E0405E ? SYS_STS
             15'h2030: dout = fmv_interrupt_enable_register;  // 0E04060
@@ -501,10 +501,7 @@ module vmpeg (
             15'h204C: dout = fmv_dclk[21:6];  // 0E04098 GEN_SYSCR
             15'h204E: dout = 0;  // e0409c GEN_SYNC_DIFF? Always reads 0 on real machine
             15'h204F: dout = 1;  // e0409e GEN_DEC_DELAY? Always changing but negative?
-            15'h2050:
-            dout = {
-                1'b0, fmv_demuxer_decoding_timestamp_reduced_view
-            };  // 00E040A0 Decoding Timestamp
+            15'h2050: dout = {1'b0, fmv_demuxer_decoding_timestamp_reduced_view};  // 00E040A0 DTS
             15'h2052: dout = {10'b0, fmv_pictures_in_fifo};  // 00E040A4 ?? Pictures in fifo?
             15'h2054: dout = fmv_decoder_frameperiod_90khz;  // E040A8 Picture Rate Only read.
             15'h2055: dout = fmv_display_rate;  // e040aa ?? Display Rate ? Only read.

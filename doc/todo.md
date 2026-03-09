@@ -1,10 +1,16 @@
 # TODOs and known issues
 
+* Random hang of playback controls in Addams Family Disc 2. Movie still playing. Sudden rainbow colors.
+    * Reproduced by frequently pausing and resuming
+    * No regression. Always present since 251123
 * Randomly no audio after pause in Addams Family
     * Reproducable with 260131 and 260222
     * Not occuring with 260123? Or very unlikely?
+* Randomly no audio in Mad Dog McCree? Unclear reproduction
 * Regression with Addams Family
     * Disc 2 crashes again starting with 260222 when opening menu
+    * Working with 176e9b6403b82f3e62a0379f44110ee49baf92ba
+    * Crashing with 594bae844ef81a836fbeeaee652605899d7cd68f
 * Check random audio video out of sync (e.g. Mad Dog McCree)
 * Check correct timing of DVC clipping functionality when scroll bit is reset
 * Regression of "The Apprentice"?

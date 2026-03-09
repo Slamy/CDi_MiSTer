@@ -27,13 +27,16 @@
 #define PL_MPEG_IMPLEMENTATION
 #include "pl_mpeg_pc.h"
 
-char GetPictureType(int val)
-{
-    switch (val){
-        case PLM_VIDEO_PICTURE_TYPE_INTRA: return 'I';
-        case PLM_VIDEO_PICTURE_TYPE_PREDICTIVE: return 'P';
-        case PLM_VIDEO_PICTURE_TYPE_B: return 'B';
-        default: return '?';
+char GetPictureType(int val) {
+    switch (val) {
+    case PLM_VIDEO_PICTURE_TYPE_INTRA:
+        return 'I';
+    case PLM_VIDEO_PICTURE_TYPE_PREDICTIVE:
+        return 'P';
+    case PLM_VIDEO_PICTURE_TYPE_B:
+        return 'B';
+    default:
+        return '?';
     }
 }
 
@@ -77,9 +80,9 @@ typedef struct {
     plm_plane2_t y;
     plm_plane2_t cr;
     plm_plane2_t cb;
-	int picture_type;
-	int temporal_ref;
-	int timecode;
+    int picture_type;
+    int temporal_ref;
+    int timecode;
 } plm_frame2_t;
 
 #define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
@@ -749,9 +752,11 @@ class CDi {
                 break;
             case 4:
                 printf("Exception - Illegal instruction\n");
+                status = 1;
                 break;
             case 5:
                 printf("Exception - Division by zero\n");
+                status = 1;
                 break;
             case 8:
                 printf("Exception - Privilege violation \n");
@@ -760,12 +765,6 @@ class CDi {
                 printf("Exception - %d ??? \n", dut.rootp->emu__DOT__cditop__DOT__addr_byte >> 2);
                 break;
             }
-        }
-
-        // Abort on illegal Instructions
-        if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__trap_illegal) {
-            fprintf(stderr, "Illegal Instruction!\n");
-            exit(1);
         }
 
 #endif
@@ -1323,7 +1322,7 @@ int main(int argc, char **argv) {
 
     switch (machineindex) {
     case 0:
-        f_cd_bin = fopen("images/breakout.bin", "rb");
+        f_cd_bin = fopen("images/addams.bin", "rb");
         break;
     case 1:
         f_cd_bin = fopen("images/braindead13.bin", "rb");

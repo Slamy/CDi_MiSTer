@@ -56,7 +56,7 @@ main:
 	move.w #$0100,$303C06 ; File Register
 	move.l #$ffffffff,$303C08 ; Channel Register
 	move.w #$0000,$303C0C ; Audio Channel Register
-	move.l #$01341100,$303C02 ; Timer Register
+	move.l #$00437300,$303C02 ; Timer Register
 	move.w #$C000,$303FFE ; Start the Read by setting bit 15 of the data buffer
 
 	move.l #0,$0E0407C ;FMV_DECOFF
