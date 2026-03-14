@@ -21,7 +21,7 @@
 
 #define SCC68070
 #define SLAVE
-// #define TRACE
+#define TRACE
 // #define SIMULATE_RC5
 
 #define PL_MPEG_IMPLEMENTATION
@@ -899,7 +899,7 @@ class CDi {
                 dut.rootp->emu__DOT__cditop__DOT__fdrvs1_static = cpu_a[2];
             }
 
-#if 0
+#if 1
             executing_dvc_rom_instructions = m_pc >= 0xe40000 && m_pc < 0xe7ffff;
 #endif
             if (print_instructions || executing_dvc_rom_instructions) {

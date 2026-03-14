@@ -410,3 +410,6 @@ V_BufStat
   waitsector	equ		35
 
 
+Useful signaltap exe_pc adresses to catch
+
+00e521fc PauseErr dez 15016444

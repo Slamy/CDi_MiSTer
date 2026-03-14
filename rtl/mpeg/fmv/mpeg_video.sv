@@ -158,8 +158,8 @@ module mpeg_video (
     bit [4:0] pictures_in_mpeg_decoder;
 
     always_comb begin
-        pictures_in_fifo = pictures_in_input_fifo + 6'(pictures_in_output_fifo + pictures_in_mpeg_decoder);
-        if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
+        pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder;
+        //if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
     end
 
     always_ff @(posedge clk30) begin

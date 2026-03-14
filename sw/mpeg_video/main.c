@@ -82,7 +82,7 @@ static void push_frame(plm_frame_t *frame)
 
 	__asm volatile("" : : : "memory");
 
-	while (frame_display_fifo->pictures_in_output_fifo > 25)
+	while (frame_display_fifo->pictures_in_output_fifo > 2)
 		__asm volatile("" : : : "memory");
 
 	*((volatile plm_frame_t **)OUTPORT_FRAME) = frame;
