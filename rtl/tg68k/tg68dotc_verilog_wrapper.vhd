@@ -17,7 +17,23 @@ entity tg68kdotc_verilog_wrapper is
       nWr            : out std_logic;
       nUDS, nLDS     : out std_logic;
       nResetOut      : out std_logic;
-      skipFetch      : out std_logic
+      skipFetch      : out std_logic;
+      d0					: out std_logic_vector(31 downto 0);
+      d1					: out std_logic_vector(31 downto 0);
+      d2					: out std_logic_vector(31 downto 0);
+      d3					: out std_logic_vector(31 downto 0);
+      d4					: out std_logic_vector(31 downto 0);
+      d5					: out std_logic_vector(31 downto 0);
+      d6					: out std_logic_vector(31 downto 0);
+      d7					: out std_logic_vector(31 downto 0);
+      a0					: out std_logic_vector(31 downto 0);
+      a1					: out std_logic_vector(31 downto 0);
+      a2					: out std_logic_vector(31 downto 0);
+      a3					: out std_logic_vector(31 downto 0);
+      a4					: out std_logic_vector(31 downto 0);
+      a5					: out std_logic_vector(31 downto 0);
+      a6					: out std_logic_vector(31 downto 0);
+      a7					: out std_logic_vector(31 downto 0)
   );
 end entity;
 
@@ -42,7 +58,23 @@ begin
       nUDS => nUDS,
       nLDS => nLDS,
       nResetOut => nResetOut,
-      skipFetch => skipFetch
+      skipFetch => skipFetch,
+      d0 => d0,
+      d1 => d1,
+      d2 => d2,
+      d3 => d3,
+      d4 => d4,
+      d5 => d5,
+      d6 => d6,
+      d7 => d7,
+      a0 => a0,
+      a1 => a1,
+      a2 => a2,
+      a3 => a3,
+      a4 => a4,
+      a5 => a5,
+      a6 => a6,
+      a7 => a7
     );
 
 end architecture;

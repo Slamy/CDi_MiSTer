@@ -138,7 +138,23 @@ entity TG68KdotC_Kernel is
 		skipFetch				: out std_logic;
 		regin_out				: out std_logic_vector(31 downto 0);
 		CACR_out					: out std_logic_vector( 3 downto 0);
-		VBR_out					: out std_logic_vector(31 downto 0)
+		VBR_out					: out std_logic_vector(31 downto 0);
+		d0					: out std_logic_vector(31 downto 0);
+		d1					: out std_logic_vector(31 downto 0);
+		d2					: out std_logic_vector(31 downto 0);
+		d3					: out std_logic_vector(31 downto 0);
+		d4					: out std_logic_vector(31 downto 0);
+		d5					: out std_logic_vector(31 downto 0);
+		d6					: out std_logic_vector(31 downto 0);
+		d7					: out std_logic_vector(31 downto 0);
+		a0					: out std_logic_vector(31 downto 0);
+		a1					: out std_logic_vector(31 downto 0);
+		a2					: out std_logic_vector(31 downto 0);
+		a3					: out std_logic_vector(31 downto 0);
+		a4					: out std_logic_vector(31 downto 0);
+		a5					: out std_logic_vector(31 downto 0);
+		a6					: out std_logic_vector(31 downto 0);
+		a7					: out std_logic_vector(31 downto 0)
 		);
 end TG68KdotC_Kernel;
 
@@ -555,6 +571,24 @@ PROCESS (long_start, reg_QB, data_write_tmp, exec, data_read, data_write_mux, me
 -----------------------------------------------------------------------------
 PROCESS (clk, regfile, RDindex_A, RDindex_B, exec)
 	BEGIN
+		d0 <= regfile(0);
+		d1 <= regfile(1);
+		d2 <= regfile(2);
+		d3 <= regfile(3);
+		d4 <= regfile(4);
+		d5 <= regfile(5);
+		d6 <= regfile(6);
+		d7 <= regfile(7);
+		
+		a0 <= regfile(0);
+		a1 <= regfile(1);
+		a2 <= regfile(2);
+		a3 <= regfile(3);
+		a4 <= regfile(4);
+		a5 <= regfile(5);
+		a6 <= regfile(6);
+		a7 <= regfile(7);
+
 		reg_QA <= regfile(RDindex_A);
 		reg_QB <= regfile(RDindex_B);
 		IF rising_edge(clk) THEN

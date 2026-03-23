@@ -199,7 +199,40 @@ module scc68070 (
         end
     end
 
+    (* keep *) (* noprune *) wire [31:0] d0;
+    (* keep *) (* noprune *) wire [31:0] d1;
+    (* keep *) (* noprune *) wire [31:0] d2;
+    (* keep *) (* noprune *) wire [31:0] d3;
+    (* keep *) (* noprune *) wire [31:0] d4;
+    (* keep *) (* noprune *) wire [31:0] d5;
+    (* keep *) (* noprune *) wire [31:0] d6;
+    (* keep *) (* noprune *) wire [31:0] d7;
+
+    (* keep *) (* noprune *) wire [31:0] a0;
+    (* keep *) (* noprune *) wire [31:0] a1;
+    (* keep *) (* noprune *) wire [31:0] a2;
+    (* keep *) (* noprune *) wire [31:0] a3;
+    (* keep *) (* noprune *) wire [31:0] a4;
+    (* keep *) (* noprune *) wire [31:0] a5;
+    (* keep *) (* noprune *) wire [31:0] a6;
+    (* keep *) (* noprune *) wire [31:0] a7;
+
+    (* keep *) (* noprune *) bit [31:0] waitstart_compare;
+    (* keep *) (* noprune *) bit waitstart_exe;
+
+    always_ff @(posedge clk) begin
+
+        if (as && bus_ack) begin
+            waitstart_exe <= (internal_addr == 32'h00e533ee);
+
+            if (internal_addr == 32'h00e5340c) begin
+                waitstart_compare <= d0;
+            end
+        end
+    end
+
     /*verilator tracing_off*/
+`ifdef VERILATOR
     tg68kdotc_verilog_wrapper tg68 (
         .clk(clk),
         .nReset(!reset),
@@ -218,6 +251,42 @@ module scc68070 (
         .nResetOut(nResetOut),
         .skipFetch(skipFetch)
     );
+`else
+    tg68kdotc_verilog_wrapper tg68 (
+        .clk(clk),
+        .nReset(!reset),
+        .clkena_in(clkena_in),
+        .data_in(internal_data_in),
+        .IPL(~ipl),
+        .IPL_autovector(autovector_q),
+        .berr(bus_err),
+        .addr_out(internal_addr),
+        .FC(fc),
+        .data_write(data_out),
+        .busstate(busstate),
+        .nWr(internal_nWr),
+        .nUDS(internal_UDSn),
+        .nLDS(internal_LDSn),
+        .nResetOut(nResetOut),
+        .skipFetch(skipFetch),
+        .d0(d0),
+        .d1(d1),
+        .d2(d2),
+        .d3(d3),
+        .d4(d4),
+        .d5(d5),
+        .d6(d6),
+        .d7(d7),
+        .a0(a0),
+        .a1(a1),
+        .a2(a2),
+        .a3(a3),
+        .a4(a4),
+        .a5(a5),
+        .a6(a6),
+        .a7(a7)
+    );
+`endif
     /*verilator tracing_on*/
 
     struct packed {
