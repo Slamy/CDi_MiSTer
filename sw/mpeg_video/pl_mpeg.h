@@ -1250,11 +1250,6 @@ size_t plm_buffer_tell_file_callback(plm_buffer_t *self, void *user) {
 
 #endif // PLM_NO_STDIO
 
-
-int plm_buffer_has_ended(plm_buffer_t *self) {
-	return self->has_ended;
-}
-
 static inline int plm_dma_buffer_has(plm_dma_buffer_t *self, size_t count) {
 	__asm volatile("" : : : "memory");
 	while (((fifo_ctrl->write_byte_index << 3) - fifo_ctrl->read_bit_index) < count)
@@ -1274,11 +1269,6 @@ static inline int plm_dma_buffer_has_noblock(plm_dma_buffer_t *self, size_t coun
 		return TRUE;
 	}
 	return FALSE;
-}
-
-int plm_dma_buffer_has_ended(plm_dma_buffer_t *self)
-{
-	return !plm_dma_buffer_has_noblock(self, 32);
 }
 
 int plm_buffer_has(plm_buffer_t *self, size_t count) {
@@ -2089,11 +2079,6 @@ int plm_video_get_height(plm_video_t *self)
 void plm_video_set_no_delay(plm_video_t *self, int no_delay)
 {
 	self->assume_no_b_frames = no_delay;
-}
-
-int plm_video_has_ended(plm_video_t *self)
-{
-	return plm_dma_buffer_has_ended(self->buffer);
 }
 
 plm_frame_t *plm_video_decode(plm_video_t *self)

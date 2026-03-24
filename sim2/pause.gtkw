@@ -1,0 +1,91 @@
+[*]
+[*] GTKWave Analyzer v3.3.126 (w)1999-2026 BSI
+[*] Mon Mar 16 11:51:34 2026
+[*]
+[dumpfile] "/tmp/waveform.vcd"
+[dumpfile_mtime] "Mon Mar 16 11:51:33 2026"
+[dumpfile_size] 2853564578
+[savefile] "/home/andre/GIT/scc68070/sim2/pause.gtkw"
+[timestart] 208350000
+[size] 2560 1348
+[pos] -1 -1
+*-20.558132 214371000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.emu.
+[treeopen] TOP.emu.cditop.
+[treeopen] TOP.emu.cditop.vmpeg_inst.
+[treeopen] TOP.emu.cditop.vmpeg_inst.video.
+[sst_width] 423
+[signals_width] 659
+[sst_expanded] 1
+[sst_vpaned_height] 416
+@22
+TOP.emu.cditop.fdrvs1.V_AsyStat[15:0]
+@24
+TOP.emu.cditop.fdrvs1.V_BufStat[7:0]
+@22
+TOP.emu.cditop.fdrvs1.V_DTSVal[15:0]
+TOP.emu.cditop.fdrvs1.V_DecOff[31:0]
+TOP.emu.cditop.fdrvs1.V_Frozen[7:0]
+TOP.emu.cditop.fdrvs1.V_LCntr[15:0]
+TOP.emu.cditop.fdrvs1.V_NISFnd[31:0]
+TOP.emu.cditop.fdrvs1.V_PRPA[15:0]
+TOP.emu.cditop.fdrvs1.V_PWI[31:0]
+TOP.emu.cditop.fdrvs1.V_PausedSCR[31:0]
+TOP.emu.cditop.fdrvs1.V_PicRt[7:0]
+TOP.emu.cditop.fdrvs1.V_PlayType[15:0]
+@24
+TOP.emu.cditop.fdrvs1.V_SCR[31:0]
+@22
+TOP.emu.cditop.fdrvs1.V_ScrOff[31:0]
+TOP.emu.cditop.fdrvs1.V_ScrOrg[31:0]
+TOP.emu.cditop.fdrvs1.V_Scroll[15:0]
+TOP.emu.cditop.fdrvs1.V_SigStat[15:0]
+TOP.emu.cditop.fdrvs1.V_Speed[31:0]
+@25
+TOP.emu.cditop.fdrvs1.V_Stat[15:0]
+@22
+TOP.emu.cditop.fdrvs1.V_Status[15:0]
+TOP.emu.cditop.fdrvs1.V_StepDone[7:0]
+TOP.emu.cditop.fdrvs1.V_SyncDone[7:0]
+TOP.emu.cditop.fdrvs1.V_Sync[7:0]
+TOP.emu.cditop.fdrvs1.V_UpdFlag[7:0]
+TOP.emu.cditop.fdrvs1.V_VCMD[15:0]
+TOP.emu.cditop.fdrvs1.V_Window[31:0]
+@200
+-
+@28
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.dcl
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.eii
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.eod
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.erdd
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.erdv
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.esi
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.gop
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.ndat
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.ovf
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.pai
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.pic
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.rfb
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.seq
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.tim
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.vcup
+@24
+TOP.emu.cditop.vmpeg_inst.fmv_interrupt_status_register.vsync
+@200
+-
+@28
+TOP.emu.cditop.vmpeg_inst.video.vblank
+TOP.emu.cditop.vmpeg_inst.fmv_playback_active
+@22
+TOP.emu.cditop.vmpeg_inst.fmv_decoder_command[15:0]
+TOP.emu.cditop.vmpeg_inst.fmv_system_command_register[15:0]
+TOP.emu.cditop.vmpeg_inst.fmv_demuxer_decoding_timestamp[32:0]
+TOP.emu.cditop.vmpeg_inst.fmv_demuxer_decoding_timestamp_reduced_view[14:0]
+TOP.emu.cditop.vmpeg_inst.fmv_pictures_in_fifo[5:0]
+TOP.emu.cditop.vmpeg_inst.video.pictures_in_input_fifo[5:0]
+TOP.emu.cditop.vmpeg_inst.video.pictures_in_output_fifo[4:0]
+TOP.emu.cditop.vmpeg_inst.fmv_decoder_command[15:0]
+TOP.emu.cditop.vmpeg_inst.fmv_video_data_input_command_register[15:0]
+[pattern_trace] 1
+[pattern_trace] 0

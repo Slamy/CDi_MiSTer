@@ -224,6 +224,9 @@ module mpeg_video (
     wire [28:0] fifo_level_clk_mpeg = mpeg_stream_fifo_write_adr_clk_mpeg - mpeg_stream_fifo_read_adr;
     wire fifo_full_clk_mpeg = fifo_level_clk_mpeg > 29'd28000;
 
+    (* keep *) (* noprune *) bit [28:0] fifo_level_clk_mpeg_q;
+    always_ff @(posedge clk30) fifo_level_clk_mpeg_q <= fifo_level_clk_mpeg;
+
     bit has_sequence_header = 0;
     bit hw_read_mem_ready = 0;
     wire [4:0] hw_read_bit_shift = mpeg_stream_bit_index[4:0];

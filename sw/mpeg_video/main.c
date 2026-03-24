@@ -120,16 +120,7 @@ static void push_frame(plm_frame_t *frame)
 	frame_display_fifo->temporal_ref = frame->temporal_ref;
 	frame_display_fifo->timecode = frame->timecode;
 
-	if (frame_display_fifo->pictures_in_output_fifo < 3)
-	{
-		// It seems our FIFO is loosing pictures. Maybe the frame rate is slightly off?
-		// Increase frame period by 0.1Hz when running at 25 FPS
-		frame_display_fifo->frameperiod_30mhz = period30mhz + 4780;
-	}
-	else
-	{
-		frame_display_fifo->frameperiod_30mhz = period30mhz;
-	}
+	frame_display_fifo->frameperiod_30mhz = period30mhz;
 
 	// The order is crucial. Everything written above must be in I/O by now
 	__asm volatile("" : : : "memory");

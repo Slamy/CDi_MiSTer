@@ -80,9 +80,9 @@ typedef struct {
     plm_plane2_t y;
     plm_plane2_t cr;
     plm_plane2_t cb;
-	int picture_type;
-	int temporal_ref;
-	int timecode;
+    int picture_type;
+    int temporal_ref;
+    int timecode;
 } plm_frame2_t;
 
 #define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
@@ -110,6 +110,8 @@ int toc_entry_count = 0;
 typedef VerilatedFstC tracetype_t;
 
 static bool do_trace{true};
+static bool do_trace_started_once_via_fma{false};
+static bool do_trace_started_once_via_fmv{false};
 #endif
 volatile sig_atomic_t status = 0;
 
@@ -1063,9 +1065,11 @@ class CDi {
                 fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fmv_m1v);
             }
 #ifdef TRACE
-            if (!do_trace)
-                fprintf(stderr, "Trace on!\n");
-            do_trace = true;
+            if (!do_trace && !do_trace_started_once_via_fmv) {
+                fprintf(stderr, "Trace on by FMV!\n");
+                do_trace = true;
+                do_trace_started_once_via_fmv = true;
+            }
 #endif
         }
         if (dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__fma_data_valid) {
@@ -1075,9 +1079,11 @@ class CDi {
                 fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fma_mp2);
             }
 #ifdef TRACE
-            if (!do_trace)
-                fprintf(stderr, "Trace on!\n");
-            do_trace = true;
+            if (!do_trace && !do_trace_started_once_via_fma) {
+                fprintf(stderr, "Trace on via FMA!\n");
+                do_trace = true;
+                do_trace_started_once_via_fma = true;
+            }
 #endif
         }
 
@@ -1341,10 +1347,10 @@ int main(int argc, char **argv) {
         f_cd_bin = fopen("images/startrek.bin", "rb");
         break;
     case 6:
-        f_cd_bin = fopen("images/FMVTEST.BIN", "rb");
+        f_cd_bin = fopen("images/FMVTEST_wo_pause.BIN", "rb");
         break;
     case 7:
-        f_cd_bin = fopen("images/7thguest_german.bin", "rb");
+        f_cd_bin = fopen("images/FMVTEST_with_pause.BIN", "rb");
         break;
     case 8:
         f_cd_bin = fopen("images/Dragon_s_Lair_US.bin", "rb");
