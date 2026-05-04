@@ -1347,10 +1347,10 @@ int main(int argc, char **argv) {
         f_cd_bin = fopen("images/startrek.bin", "rb");
         break;
     case 6:
-        f_cd_bin = fopen("images/FMVTEST_wo_pause.BIN", "rb");
+        f_cd_bin = fopen("images/FMVTEST.BIN", "rb");
         break;
     case 7:
-        f_cd_bin = fopen("images/FMVTEST_with_pause.BIN", "rb");
+        f_cd_bin = fopen("images/7thguest_german.bin", "rb");
         break;
     case 8:
         f_cd_bin = fopen("images/Dragon_s_Lair_US.bin", "rb");

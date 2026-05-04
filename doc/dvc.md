@@ -23,6 +23,40 @@ There are different chipsets available
   * Based on the MCD270 with audio and video decoding integrated into one
   * Uses 512kB of RAM for buffering and reconstruction
 
+## Syscalls
+
+### MVStat
+
+Result structure according to https://github.com/TwBurn/cdi-docs/blob/main/mv_cbnd.md
+
+```c
+	typedef struct _motionstatus {
+	    unsigned short  MVS_LCntr;      /* loops remaining */
+	             char   *MVS_CurAdr;    /* address to retrieve data */
+	    unsigned int    MVS_Speed;      /* display speed */
+	    unsigned int    MVS_ImgSz;      /* image size of current stream */
+	    unsigned int    MVS_TimeCd;     /* timecode of current picture */
+	    unsigned short  MVS_TmpRef;     /* temporal reference */
+	    unsigned short  MVS_Stream;     /* current stream number */
+	    unsigned char   MVS_PicRt,      /* picture rate */
+	                    MVS_Res1;       /* reserved */
+	    unsigned int    MVS_DSC,        /* Video decoder system clock */
+	                    MVS_Res2;       /* reserved */
+} MotionStatus;
+```
+
+Source of this info according to `getstat.a`
+
+    MVS_LCntr <- V_LCntr
+    MVS_CurAdr <- V_CurAddr + V_Offset
+    MVS_Speed <- V_ChipSpd
+    MVS_ImgSz <- V_PWI
+    MVS_TimeCd <- SYS_TCL (long read at 0x0E04058)
+    MVS_TmpRef <- SYS_VSR (short read at 0x0E0405C)
+    MVS_Stream <- V_Stream
+    MVS_PicRt <- V_PRPA
+    MVS_DSC <- V_SCR
+
 ## Timing of events
 
 ### Detection of a stream end
