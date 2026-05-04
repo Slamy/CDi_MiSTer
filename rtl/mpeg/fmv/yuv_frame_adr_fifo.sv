@@ -33,13 +33,11 @@ module yuv_frame_adr_fifo (
             waddr <= waddr + 1;
 
             assert (cnt < 28);
-            assert (cnt < 28);
         end
 
         if (strobe) begin
             raddr <= raddr + 1;
 
-            assert (cnt > 0);
             assert (cnt > 0);
         end
 

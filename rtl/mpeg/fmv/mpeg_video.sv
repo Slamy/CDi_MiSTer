@@ -725,6 +725,7 @@ module mpeg_video (
     bit first_intra_frame_of_seq_clk30;
 
     bit vsync_q;
+    bit hsync_q;
     bit vblank_q1;
     bit vblank_q2;
     bit for_display_valid;
@@ -744,6 +745,7 @@ module mpeg_video (
 
     always_ff @(posedge clk30) begin
         vsync_q   <= vsync;
+        hsync_q   <= hsync;
         vblank_q1 <= vblank;
         vblank_q2 <= vblank_q1;
 
@@ -789,7 +791,7 @@ module mpeg_video (
             event_last_picture_starts_display <= !for_display_valid && pictures_in_mpeg_decoder==0;
         end
 
-        if ((latch_frame_until_vsync || (desync > 10000)) && !vsync && vsync_q) begin
+        if (latch_frame_until_vsync && !vsync && vsync_q) begin
             latch_frame_until_vsync <= 0;
             event_potential_picture_starts_display <= 1;
 
@@ -797,6 +799,10 @@ module mpeg_video (
                 latch_frame_for_display  <= 1;
                 latch_frame_until_vblank <= 1;
             end
+        end
+
+        if (vblank && !hsync && hsync_q && desync > 10000) begin
+            latch_frame_for_display <= 1;
         end
 
         playback_frame_cnt <= playback_frame_cnt + 1;

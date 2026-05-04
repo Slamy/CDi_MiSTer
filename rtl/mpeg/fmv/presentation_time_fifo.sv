@@ -32,14 +32,12 @@ module presentation_time_fifo (
             ram[waddr] <= wdata;
             waddr <= waddr + 1;
 
-            assert (cnt < 62)
             assert (cnt < 62);
         end
 
         if (strobe) begin
             raddr <= raddr + 1;
 
-            assert (cnt > 0);
             assert (cnt > 0);
         end
 
