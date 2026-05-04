@@ -174,6 +174,7 @@ module vmpeg (
         .event_first_intra_frame_seq_starts_display(fmv_event_first_intra_frame_seq_starts_display),
         .pictures_in_fifo(fmv_pictures_in_fifo),
         .demuxer_presentation_timestamp(fmv_demuxer_presentation_timestamp),
+        .demuxer_system_clock_reference(fmv_demuxer_system_clock_reference),
         .decoder_width(fmv_decoder_width),
         .decoder_height(fmv_decoder_height),
         .display_width(fmv_display_width),

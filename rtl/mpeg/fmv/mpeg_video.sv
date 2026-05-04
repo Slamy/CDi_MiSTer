@@ -44,6 +44,7 @@ module mpeg_video (
     output bit event_first_intra_frame_seq_starts_display,
     output bit [5:0] pictures_in_fifo,
     input signed [32:0] demuxer_presentation_timestamp,
+    input signed [32:0] demuxer_system_clock_reference,
     output bit event_potential_picture_starts_display,
 
     output bit [10:0] decoder_width,
@@ -161,11 +162,15 @@ module mpeg_video (
         .reset,
         .wdata(demuxer_presentation_timestamp),
         .we(picture_added_in_input_fifo),
+        // Add pts_fifo_valid to avoid underflows (just in case)
         .strobe(latch_frame_for_display && pts_fifo_valid),
         .valid(pts_fifo_valid),
         .q(pts_fifo_out),
         .cnt(pictures_in_fifo)
     );
+
+    wire signed [32:0] desync = demuxer_system_clock_reference - pts_fifo_out;
+
     bit  [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
     bit  [4:0] pictures_in_mpeg_decoder;
@@ -176,6 +181,7 @@ module mpeg_video (
     end
 
     always_ff @(posedge clk30) begin
+        // Catch something that should not be possible
         if (latch_frame_for_display) assert (pts_fifo_valid);
 
         event_buffer_underflow <= pictures_in_fifo==1 && latch_frame_for_display && pictures_in_mpeg_decoder==0;
