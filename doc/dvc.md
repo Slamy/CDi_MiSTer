@@ -362,6 +362,7 @@ Memory Map
     00e5312a HandleData
     00e53312 H_DataExit (end of HandleData)
     00e53318 NotReady
+    00e5333c CopyData
     00e533ee WaitStart
     00e535b4 HandleWaitS
     00e536ee HandleFirst

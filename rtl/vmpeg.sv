@@ -173,6 +173,7 @@ module vmpeg (
         .event_first_intra_frame_gop_starts_display(fmv_event_first_intra_frame_gop_starts_display),
         .event_first_intra_frame_seq_starts_display(fmv_event_first_intra_frame_seq_starts_display),
         .pictures_in_fifo(fmv_pictures_in_fifo),
+        .demuxer_presentation_timestamp(fmv_demuxer_presentation_timestamp),
         .decoder_width(fmv_decoder_width),
         .decoder_height(fmv_decoder_height),
         .display_width(fmv_display_width),
@@ -201,7 +202,9 @@ module vmpeg (
     bit [3:0] fmv_stream_number;
     bit [3:0] fma_stream_number;
 
+    wire signed [32:0] fmv_demuxer_system_clock_reference;
     wire signed [32:0] fmv_demuxer_decoding_timestamp;
+    wire signed [32:0] fmv_demuxer_presentation_timestamp;
     wire fmv_demuxer_decoding_timestamp_updated;
 
     // How the CPU reads it from 00E040A0
@@ -217,9 +220,12 @@ module vmpeg (
         .mpeg_packet_body(fma_packet_body),
         .stream_filter(fma_stream_number),
         .dclk(fma_dclk),
+        .system_clock_reference(),
         .system_clock_reference_start_time(fma_system_clock_reference_start_time),
         .decoding_timestamp(),
         .decoding_timestamp_updated(),
+        .presentation_timestamp(),
+        .presentation_timestamp_updated(),
         .system_clock_reference_start_time_valid(fma_system_clock_reference_start_time_valid),
         .event_program_end(fma_event_program_end)
     );
@@ -234,9 +240,12 @@ module vmpeg (
         .mpeg_packet_body(fmv_packet_body),
         .stream_filter(fmv_stream_number),
         .dclk(),
+        .system_clock_reference(fmv_demuxer_system_clock_reference),
         .system_clock_reference_start_time(),
         .decoding_timestamp(fmv_demuxer_decoding_timestamp),
         .decoding_timestamp_updated(fmv_demuxer_decoding_timestamp_updated),
+        .presentation_timestamp(fmv_demuxer_presentation_timestamp),
+        .presentation_timestamp_updated(),
         .system_clock_reference_start_time_valid(),
         .event_program_end(fmv_event_program_end)
     );

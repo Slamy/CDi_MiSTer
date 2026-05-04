@@ -43,6 +43,7 @@ module mpeg_video (
     output bit event_first_intra_frame_gop_starts_display,
     output bit event_first_intra_frame_seq_starts_display,
     output bit [5:0] pictures_in_fifo,
+    input signed [32:0] demuxer_presentation_timestamp,
     output bit event_potential_picture_starts_display,
 
     output bit [10:0] decoder_width,
@@ -152,17 +153,31 @@ module mpeg_video (
 
     wire picture_added_in_input_fifo = picture_startcode;
 
+    wire pts_fifo_valid;
+    wire signed [32:0] pts_fifo_out;
 
-    bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
+    presentation_time_fifo pts_fifo (
+        .clk(clk30),
+        .reset,
+        .wdata(demuxer_presentation_timestamp),
+        .we(picture_added_in_input_fifo),
+        .strobe(latch_frame_for_display && pts_fifo_valid),
+        .valid(pts_fifo_valid),
+        .q(pts_fifo_out),
+        .cnt(pictures_in_fifo)
+    );
+    bit  [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
-    bit [4:0] pictures_in_mpeg_decoder;
+    bit  [4:0] pictures_in_mpeg_decoder;
 
     always_comb begin
-        pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder;
+        //pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder + pictures_in_output_fifo;
         //if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
     end
 
     always_ff @(posedge clk30) begin
+        if (latch_frame_for_display) assert (pts_fifo_valid);
+
         event_buffer_underflow <= pictures_in_fifo==1 && latch_frame_for_display && pictures_in_mpeg_decoder==0;
 
         if (just_decoded_commit_clk30) begin
