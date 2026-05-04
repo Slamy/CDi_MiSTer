@@ -23,6 +23,16 @@ There are different chipsets available
   * Based on the MCD270 with audio and video decoding integrated into one
   * Uses 512kB of RAM for buffering and reconstruction
 
+## Time and Durations
+
+Periods in certain time systems
+
+             90 khz   45 kHz
+    25 Hz    3600     1800
+    30 Hz    3000     1500
+    50 Hz    1800     900
+    60 Hz    1500     750
+
 ## Syscalls
 
 ### MVStat

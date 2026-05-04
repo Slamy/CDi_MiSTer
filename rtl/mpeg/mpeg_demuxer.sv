@@ -6,12 +6,13 @@ module mpeg_demuxer (
     output bit mpeg_packet_body,
     input [31:0] dclk,  // Increments with 45 kHz
     input [3:0] stream_filter,
-    output bit signed [32:0] system_clock_reference,
+    output bit signed [32:0] system_clock_reference,  // in 90 Khz ticks
     output bit signed [32:0] system_clock_reference_start_time,
     output bit signed [32:0] decoding_timestamp,  // can be PTS when DTS is absent
-    output bit signed [32:0] presentation_timestamp,
+    output bit signed [32:0] presentation_timestamp,  // in 90 Khz ticks
     output bit decoding_timestamp_updated,
     output bit presentation_timestamp_updated,
+    output bit system_clock_reference_updated,
     output bit system_clock_reference_start_time_valid,
     output bit event_program_end
 );
@@ -57,6 +58,7 @@ module mpeg_demuxer (
     always_ff @(posedge clk) begin
         event_program_end <= 0;
         decoding_timestamp_updated <= 0;
+        system_clock_reference_updated <= 0;
         presentation_timestamp_updated <= 0;
 
         if (reset) begin
@@ -91,6 +93,7 @@ module mpeg_demuxer (
                     demux_state <= IDLE;
                     $display ("%s PACK %d", unit, system_clock_reference_temp);
                     system_clock_reference <= system_clock_reference_temp;
+                    system_clock_reference_updated <= 1;
                 end
 
                 {PACK4, 8'h??}: begin

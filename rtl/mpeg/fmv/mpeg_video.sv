@@ -171,9 +171,9 @@ module mpeg_video (
 
     wire signed [32:0] desync = demuxer_system_clock_reference - pts_fifo_out;
 
-    bit  [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
+    bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
-    bit  [4:0] pictures_in_mpeg_decoder;
+    bit [4:0] pictures_in_mpeg_decoder;
 
     always_comb begin
         //pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder + pictures_in_output_fifo;
@@ -789,7 +789,7 @@ module mpeg_video (
             event_last_picture_starts_display <= !for_display_valid && pictures_in_mpeg_decoder==0;
         end
 
-        if (latch_frame_until_vsync && !vsync && vsync_q) begin
+        if ((latch_frame_until_vsync || (desync > 10000)) && !vsync && vsync_q) begin
             latch_frame_until_vsync <= 0;
             event_potential_picture_starts_display <= 1;
 
