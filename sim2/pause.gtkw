@@ -1,13 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.126 (w)1999-2026 BSI
-[*] Mon May  4 17:46:36 2026
+[*] Tue May  5 10:56:24 2026
 [*]
-[dumpfile] "(null)"
+[dumpfile] "/tmp/waveform.vcd"
+[dumpfile_mtime] "Tue May  5 09:57:33 2026"
+[dumpfile_size] 5509583017
 [savefile] "/home/andre/GIT/scc68070/sim2/pause.gtkw"
-[timestart] 669200000
-[size] 1920 1152
+[timestart] 0
+[size] 2560 1348
 [pos] -1 -1
-*-24.706062 735133621 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-25.905531 159000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.emu.
 [treeopen] TOP.emu.cditop.
@@ -15,7 +17,9 @@
 [sst_width] 423
 [signals_width] 659
 [sst_expanded] 1
-[sst_vpaned_height] 348
+[sst_vpaned_height] 416
+@22
+TOP.emu.cditop.vmpeg_inst.fmv_dclk[31:0]
 @200
 -
 @22
@@ -92,8 +96,15 @@ TOP.emu.cditop.vmpeg_inst.video.pictures_in_mpeg_decoder[4:0]
 TOP.emu.cditop.vmpeg_inst.video.pictures_in_output_fifo[4:0]
 @28
 TOP.emu.cditop.vmpeg_inst.video.latch_frame_for_display
-@8421
+@8420
 TOP.emu.cditop.vmpeg_inst.video.desync[32:0]
+TOP.emu.cditop.vmpeg_inst.video.desync2[15:0]
+@22
+TOP.emu.cditop.vmpeg_inst.video.pts_fifo_out[32:0]
+@28
+TOP.emu.cditop.vmpeg_inst.video.pts_fifo_valid
+@29
+TOP.emu.cditop.vmpeg_inst.video.just_decoded_commit
 @22
 TOP.emu.cditop.vmpeg_inst.fmv_decoder_command[15:0]
 TOP.emu.cditop.vmpeg_inst.fmv_video_data_input_command_register[15:0]

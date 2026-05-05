@@ -175,6 +175,7 @@ module vmpeg (
         .pictures_in_fifo(fmv_pictures_in_fifo),
         .demuxer_presentation_timestamp(fmv_demuxer_presentation_timestamp),
         .demuxer_system_clock_reference(fmv_demuxer_system_clock_reference),
+        .dclk(fmv_dclk),
         .decoder_width(fmv_decoder_width),
         .decoder_height(fmv_decoder_height),
         .display_width(fmv_display_width),
@@ -208,7 +209,7 @@ module vmpeg (
     wire signed [32:0] fmv_demuxer_presentation_timestamp;
     wire fmv_demuxer_decoding_timestamp_updated;
 
-    // How the CPU reads it from 00E040A0
+    // How the CPU reads it from GEN_DEC_TIM1 @ 00E040A0
     wire signed [14:0] fmv_demuxer_decoding_timestamp_reduced_view = fmv_demuxer_decoding_timestamp[21:7];
 
     mpeg_demuxer #(
@@ -326,6 +327,9 @@ module vmpeg (
     // Must never be written to by CPU. Causes system reset on real 210/05
     bit [31:0] fma_dclk;
 
+    // GEN_SYSCR @ 0E04098
+    // only bits 21:7 can be changed by the CPU
+    // Increments with 45 kHz
     bit [31:0] fmv_dclk;
     bit [15:0] fma_dclkl_latch;
 

@@ -45,6 +45,7 @@ module mpeg_video (
     output bit [5:0] pictures_in_fifo,
     input signed [32:0] demuxer_presentation_timestamp,
     input signed [32:0] demuxer_system_clock_reference,
+    input signed [31:0] dclk,  // only 21:7 shall be used (16 bit)
     output bit event_potential_picture_starts_display,
 
     output bit [10:0] decoder_width,
@@ -170,6 +171,8 @@ module mpeg_video (
     );
 
     wire signed [32:0] desync = demuxer_system_clock_reference - pts_fifo_out;
+    // only bits 21:7 can be changed by the CPU
+    wire signed [15:0] desync2 = dclk[21:7] - pts_fifo_out[21:7];
 
     bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;

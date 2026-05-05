@@ -25,13 +25,23 @@ There are different chipsets available
 
 ## Time and Durations
 
-Periods in certain time systems
+Periods in certain time systems. Since this can be totally confusing,
+here some notes.
 
-             90 khz   45 kHz
-    25 Hz    3600     1800
-    30 Hz    3000     1500
-    50 Hz    1800     900
-    60 Hz    1500     750
+            33 bit   32 bit   16 bit
+            90 khz   45 kHz   703.125 Hz
+    25 Hz   3600     1800
+    30 Hz   3000     1500
+    50 Hz   1800     900
+    60 Hz   1500     750
+
+Some registers and variables
+
+  FMA DCLK        45 kHz                  00E03010 long word
+  GEN_PICT_RATE   90 kHz                  00E040A8
+  GEN_DEC_TIM1    DTS / 128 = 703.125 Hz  00E040A0
+  GEN_SYSCR       703.125 Hz              00E04098
+  V_SCR           22.5 kHz                FMV driver
 
 ## Syscalls
 
@@ -75,7 +85,7 @@ The FMV driver adds `00 00 01 B7` at the end of the stream in case it ends unexp
 It does that at least in hostplay mode. CD? Not yet confirmed.
 
 The code can look something like this
-  
+
   00 00 01 BA 21 00 01 00 01 C3 33 67 Pack header
   00 00 01 E0 00 06 0F                PES Header
   00 00 01 B7 00                      Sequence End
@@ -156,7 +166,7 @@ The resulting stream can be authored into a VideoCD with tools like vcdxbuild
 ### Authoring of Video CDs
 
 Since a configuration file is required, use tools like `k3b` to create it. Usually a VideoCD can be created just with this application. Under the hood, `vcdxbuild` is used.
-For fine tuning, the configuration can be exported and the tools can be called from shell. 
+For fine tuning, the configuration can be exported and the tools can be called from shell.
 
     vcdxbuild --cue-file=VIDEOCD.cue --bin-file=VIDEOCD.bin config.xml
 
@@ -197,39 +207,39 @@ The DVC MPEG related registers are mapped at 0xe00000 into the CPU memory map
     0x0012  T_DCMD
 
             Display control buffer 0
-    0x0014  B0_STAT	
-    0x0016  B0_PWI	
-    0x0018  B0_PHE	
-    0x0020  B0_PRPA	
-    0x0022  B0_TCL	
-    0x0024  B0_TCH	
-    0x0026  B0_VSR	
-    0x0028  B0_BX	
-    0x002a  B0_BY	
+    0x0014  B0_STAT
+    0x0016  B0_PWI
+    0x0018  B0_PHE
+    0x0020  B0_PRPA
+    0x0022  B0_TCL
+    0x0024  B0_TCH
+    0x0026  B0_VSR
+    0x0028  B0_BX
+    0x002a  B0_BY
     0x002c  B0_DCMD
 
             Display control buffer 1
-    0x002e  B0_STAT	
-    0x0030  B0_PWI	
-    0x0032  B0_PHE	
-    0x0034  B0_PRPA	
-    0x0036  B0_TCL	
-    0x0038  B0_TCH	
-    0x003a  B0_VSR	
-    0x003c  B0_BX	
-    0x003e  B0_BY	
+    0x002e  B0_STAT
+    0x0030  B0_PWI
+    0x0032  B0_PHE
+    0x0034  B0_PRPA
+    0x0036  B0_TCL
+    0x0038  B0_TCH
+    0x003a  B0_VSR
+    0x003c  B0_BX
+    0x003e  B0_BY
     0x0040  B0_DCMD
 
             Display control buffer 2
-    0x0042  B0_STAT	
-    0x0044  B0_PWI	
-    0x0046  B0_PHE	
-    0x0048  B0_PRPA	
-    0x005a  B0_TCL	
-    0x005c  B0_TCH	
-    0x005e  B0_VSR	
-    0x0060  B0_BX	
-    0x0062  B0_BY	
+    0x0042  B0_STAT
+    0x0044  B0_PWI
+    0x0046  B0_PHE
+    0x0048  B0_PRPA
+    0x005a  B0_TCL
+    0x005c  B0_TCH
+    0x005e  B0_VSR
+    0x0060  B0_BX
+    0x0062  B0_BY
     0x0064  B0_DCMD
 
 ### Attenuation of FMA
@@ -249,28 +259,28 @@ since the parameters are written into its memory space
     @00E4FC52(madriv) WR.W 00E03024 <= 0093 [S] .DSPD
 
     @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
-    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S]
     @00E4FC5C(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
     @00E4FC70(madriv) WR.W 00E03024 <= 0044 [S] .DSPD  <--
 
     @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
-    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S]
     @00E4FC78(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
     @00E4FC8C(madriv) WR.W 00E03024 <= 0043 [S] .DSPD  <--
 
     @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
-    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S]
     @00E4FC94(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
     @00E4FCA8(madriv) WR.W 00E03024 <= 0045 [S] .DSPD  <--
 
     @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
-    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S]
     @00E4FCB0(madriv) WR.W 00E03022 <= 0007 [S] .DSPA
     @00E4FCC4(madriv) FMA ATTEN <= 44434542
     @00E4FCC4(madriv) WR.W 00E03024 <= 0042 [S] .DSPD  <--
 
     @00E4FCE6(madriv) WR.W 00E03022 <= 0002 [S] .DSPA
-    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S] 
+    @00E4FCEC(madriv) RD.W 00E03024 => 0004 [S]
 
     @00E4FCCC(madriv) WR.W 00E03022 <= 0000 [S] .DSPA
     @00E4FCD2(madriv) FMA DSP[MODE] <= 00E2
@@ -380,7 +390,7 @@ Memory Map
     00e544b6 DecodTS
     00e54546 Copy_It
     00e54610 UpdPCLPtr
-    
+
 
     00dfb180 FMV Driver state (A2)
     V_DataSize *(unsigned long*)(0x00dfb180 + 0x126)
@@ -405,7 +415,7 @@ Memory Map
     00e504f0 IRQ Routine
     00e5120c FMA Status 3002 is read here (ANDed with 0x38?)
     00e50e6a DMA Transfer to FMA
-    
+
     00dfb8f0 FMA Driver state? (A2)
     00dfb3e0 FMA Driver state? (A2)
     00dfb730 FMA Driver state? (A2)
@@ -432,7 +442,7 @@ Memory Map
 
 V_BufStat
 
-  normal		equ		1   
+  normal		equ		1
   slow	  	equ		2
   scanning	equ		3
   single		equ		4
@@ -449,7 +459,7 @@ V_BufStat
   idle		  equ		15
   pausing		equ		16
   * The following values are only used in the V_BufStat field.
-  waitfirst	equ		32   0x20 operation seems to start here 
+  waitfirst	equ		32   0x20 operation seems to start here
   waitstart	equ		33   0x21 set in StrtPlay?
   waitnormal	equ		34
   waitsector	equ		35
