@@ -174,6 +174,7 @@ module mpeg_video (
     // only bits 21:6 can be changed by the CPU
     wire signed [15:0] desync2 = dclk[21:6] - dts_fifo_out[22:7];
 
+    (* keep *) (* noprune *) bit signed [15:0] desync2_q_clk_mpeg;
     (* keep *) (* noprune *) bit signed [15:0] desync2_q;
     (* keep *) (* noprune *) bit signed [32:0] desync_q;
 
@@ -184,6 +185,10 @@ module mpeg_video (
     always_comb begin
         //pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder + pictures_in_output_fifo;
         //if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
+    end
+
+    always_ff @(posedge clk_mpeg) begin
+        if (latch_frame_for_display_clk_mpeg) desync2_q_clk_mpeg <= desync2_q;
     end
 
     always_ff @(posedge clk30) begin
@@ -586,6 +591,8 @@ module mpeg_video (
                         if (dmem_cmd_payload_address_1_q == 32'h10002010)
                             dmem_rsp_payload_data_1 = {31'b0, has_sequence_header};
 
+                        if (dmem_cmd_payload_address_1_q == 32'h10003018)
+                            dmem_rsp_payload_data_1 = 32'(desync2_q_clk_mpeg);
                         if (dmem_cmd_payload_address_1_q == 32'h10003028)
                             dmem_rsp_payload_data_1 = {27'b0, pictures_in_output_fifo_clk_mpeg};
                         if (dmem_cmd_payload_address_1_q == 32'h1000302c)
@@ -812,16 +819,9 @@ module mpeg_video (
             end
         end
 
-        /*
-        if (vblank && !hsync && hsync_q && desync > 10000) begin
-            $display("FrameSkip");
-            latch_frame_for_display <= 1;
-        end
-        */
-
         playback_frame_cnt <= playback_frame_cnt + 1;
         if (playback_frame_cnt >= frame_period - 1) playback_frame_cnt <= 0;
-        if (playback_frame_cnt == 0 && frame_period > 120000) begin
+        if (playback_frame_cnt == 0 && frame_period > 1200) begin
             latch_frame_until_vsync <= 1;
         end
 

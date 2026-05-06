@@ -5,39 +5,40 @@
 // binary, for any purpose, commercial or non-commercial, and by any
 // means.
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-struct io_synth_window_mac
-{
-	uint32_t *addr;
-	uint32_t index;
-	uint32_t result;
+struct io_synth_window_mac {
+    uint32_t *addr;
+    uint32_t index;
+    uint32_t result;
 };
 
-struct io_fifo_control
-{
-	uint32_t write_byte_index;
-	uint32_t read_bit_index;
-	uint32_t signal_decoding_started;
-	uint32_t signal_frame_decoded;
-	uint32_t signal_underflow;
-	uint32_t mpeg_audio_header;
+struct io_fifo_control {
+    uint32_t write_byte_index;
+    uint32_t read_bit_index;
+    uint32_t signal_decoding_started;
+    uint32_t signal_frame_decoded;
+    uint32_t signal_underflow;
+    uint32_t mpeg_audio_header;
 };
 
-struct io_audio_out
-{
-	uint32_t sample;
+struct io_audio_out {
+    uint32_t sample;
 };
 
-volatile struct io_synth_window_mac *const synth_window_mac = (volatile struct io_synth_window_mac *)0x10001000;
-volatile struct io_fifo_control *const fifo_ctrl = (volatile struct io_fifo_control *)0x10002000;
-volatile struct io_audio_out *const io_audio_out_left = (volatile struct io_audio_out *)0x10003000;
-volatile struct io_audio_out *const io_audio_out_right = (volatile struct io_audio_out *)0x10004000;
+volatile struct io_synth_window_mac *const synth_window_mac =
+    (volatile struct io_synth_window_mac *)0x10001000;
+volatile struct io_fifo_control *const fifo_ctrl =
+    (volatile struct io_fifo_control *)0x10002000;
+volatile struct io_audio_out *const io_audio_out_left =
+    (volatile struct io_audio_out *)0x10003000;
+volatile struct io_audio_out *const io_audio_out_right =
+    (volatile struct io_audio_out *)0x10004000;
 
 #define OUTPORT_L 0x10000004
 #define OUTPORT_R 0x10000008
@@ -56,16 +57,12 @@ void stop_verilator();
 #define PLM_NO_STDIO
 #include "pl_mpeg.h"
 
-void stop_verilator()
-{
-	*((volatile uint8_t *)OUTPORT_END) = 0;
-}
+void stop_verilator() { *((volatile uint8_t *)OUTPORT_END) = 0; }
 
-volatile union
-{
-	volatile uint32_t int32;
-	volatile uint8_t int8[4];
-	volatile uint16_t int16[2];
+volatile union {
+    volatile uint32_t int32;
+    volatile uint8_t int8[4];
+    volatile uint16_t int16[2];
 } testenv;
 
 // 10000 results into at least having 2 TIM interrupts after
@@ -78,41 +75,37 @@ volatile union
 // Keep in mind, this heavily relies on compiler optimization and core speed.
 const int kTimeOut = 10000;
 
-void main(void)
-{
-	plm_dma_buffer_t *buffer = plm_buffer_create_with_memory((uint8_t *)0x20000000, 700 * 1024 * 1024, 0);
-	plm_audio_t *mpeg = plm_audio_create_with_buffer(buffer);
+void main(void) {
+    plm_dma_buffer_t *buffer = plm_buffer_create_with_memory(
+        (uint8_t *)0x20000000, 700 * 1024 * 1024, 0);
+    plm_audio_t *mpeg = plm_audio_create_with_buffer(buffer);
 
-	int cnt = 0;
+    int cnt = 0;
 
-	fifo_ctrl->signal_decoding_started = 1;
+    fifo_ctrl->signal_decoding_started = 1;
 
-	int timeout = kTimeOut;
+    int timeout = kTimeOut;
 
-	while (timeout)
-	{
-		plm_samples_t *samples = plm_audio_decode(mpeg);
+    while (timeout) {
+        plm_samples_t *samples = plm_audio_decode(mpeg);
 
-		if (samples)
-		{
-			// Give some feedback to the user that we are running
-			cnt++;
-			fifo_ctrl->signal_frame_decoded = cnt;
-			timeout = kTimeOut;
-		}
-		else
-		{
-			// For some reason, it is possible that a frame might not have
-			// been decoded with one call to plm_decode_audio()
-			// But on the second, it is successful?
-			// Happens with Philips Bumper on Lucky Luke
-			timeout--;
-		}
-	}
+        if (samples) {
+            // Give some feedback to the user that we are running
+            cnt++;
+            fifo_ctrl->signal_frame_decoded = cnt;
+            timeout = kTimeOut;
+        } else {
+            // For some reason, it is possible that a frame might not have
+            // been decoded with one call to plm_decode_audio()
+            // But on the second, it is successful?
+            // Happens with Philips Bumper on Lucky Luke
+            timeout--;
+        }
+    }
 
-	fifo_ctrl->signal_underflow = 1;
+    fifo_ctrl->signal_underflow = 1;
 
-	// Wait forever
-	for (;;)
-		;
+    // Wait forever
+    for (;;)
+        ;
 }

@@ -1,24 +1,23 @@
 [*]
 [*] GTKWave Analyzer v3.3.126 (w)1999-2026 BSI
-[*] Wed May  6 16:06:54 2026
+[*] Wed May  6 19:10:32 2026
 [*]
 [dumpfile] "/tmp/waveform.vcd"
-[dumpfile_mtime] "Wed May  6 16:05:02 2026"
-[dumpfile_size] 3102284716
+[dumpfile_mtime] "Wed May  6 19:10:32 2026"
+[dumpfile_size] 1031222540
 [savefile] "/home/andre/GIT/scc68070/sim2/pause.gtkw"
-[timestart] 143420000
-[size] 1920 1152
-[pos] -1921 119
-*-19.419363 145554441 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 102530000
+[size] 2560 1348
+[pos] -1 -1
+*-23.191690 159480000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.emu.
 [treeopen] TOP.emu.cditop.
 [treeopen] TOP.emu.cditop.vmpeg_inst.
-[treeopen] TOP.emu.cditop.vmpeg_inst.video.
 [sst_width] 423
-[signals_width] 422
+[signals_width] 586
 [sst_expanded] 1
-[sst_vpaned_height] 697
+[sst_vpaned_height] 833
 @22
 TOP.emu.cditop.vmpeg_inst.audio_demuxer.system_clock_reference_start_time[32:0]
 @28
@@ -99,7 +98,7 @@ TOP.emu.cditop.vmpeg_inst.fmv_decoder_active
 @22
 TOP.emu.cditop.vmpeg_inst.fmv_decoder_command[15:0]
 TOP.emu.cditop.vmpeg_inst.fmv_system_command_register[15:0]
-@24
+@420
 TOP.emu.cditop.vmpeg_inst.fmv_demuxer_decoding_timestamp[32:0]
 @22
 TOP.emu.cditop.vmpeg_inst.fmv_demuxer_decoding_timestamp_reduced_view[14:0]
@@ -112,6 +111,8 @@ TOP.emu.cditop.vmpeg_inst.video.pictures_in_mpeg_decoder[4:0]
 TOP.emu.cditop.vmpeg_inst.video.pictures_in_output_fifo[4:0]
 @28
 TOP.emu.cditop.vmpeg_inst.video.latch_frame_for_display
+@420
+TOP.emu.cditop.vmpeg_inst.video.dts_fifo_out[32:0]
 @22
 TOP.emu.cditop.vmpeg_inst.dclk_diff[31:0]
 @8420
@@ -119,10 +120,7 @@ TOP.emu.cditop.vmpeg_inst.video.desync[32:0]
 TOP.emu.cditop.vmpeg_inst.video.desync2[15:0]
 TOP.emu.cditop.vmpeg_inst.video.desync_q[32:0]
 TOP.emu.cditop.vmpeg_inst.video.desync2_q[15:0]
-@24
-TOP.emu.cditop.vmpeg_inst.video.pts_fifo_out[32:0]
 @28
-TOP.emu.cditop.vmpeg_inst.video.pts_fifo_valid
 TOP.emu.cditop.vmpeg_inst.video.just_decoded_commit
 TOP.emu.cditop.vmpeg_inst.video.event_frame_decoded
 @22
@@ -139,7 +137,7 @@ TOP.emu.cditop.vmpeg_inst.video.soft_state1[31:0]
 TOP.emu.cditop.vmpeg_inst.fmv_dclk[31:0]
 TOP.emu.cditop.vmpeg_inst.fma_dclk[31:0]
 TOP.emu.cditop.vmpeg_inst.video_demuxer.decoding_timestamp_temp[32:0]
-@421
+@420
 TOP.emu.cditop.vmpeg_inst.video_demuxer.presentation_timestamp[32:0]
 TOP.emu.cditop.vmpeg_inst.video_demuxer.decoding_timestamp[32:0]
 @22
@@ -156,9 +154,13 @@ TOP.emu.cditop.vmpeg_inst.video_demuxer.system_clock_reference_start_time[32:0]
 TOP.emu.cditop.vmpeg_inst.video_demuxer.system_clock_reference_start_time_valid
 @24
 TOP.emu.cditop.vmpeg_inst.fmv_timer_compare_register[15:0]
-TOP.emu.cditop.vmpeg_inst.video.just_decoded.pts[15:0]
-TOP.emu.cditop.vmpeg_inst.video.for_display.pts[15:0]
 @22
-TOP.emu.cditop.vmpeg_inst.video.pts_fifo.cnt[5:0]
+TOP.emu.cditop.vmpeg_inst.video_demuxer.decoding_timestamp[32:0]
+@28
+TOP.emu.cditop.vmpeg_inst.video_demuxer.decoding_timestamp_updated
+@22
+TOP.emu.cditop.vmpeg_inst.video_demuxer.presentation_timestamp[32:0]
+@28
+TOP.emu.cditop.vmpeg_inst.video_demuxer.presentation_timestamp_updated
 [pattern_trace] 1
 [pattern_trace] 0
