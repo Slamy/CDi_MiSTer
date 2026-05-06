@@ -45,7 +45,7 @@ module mpeg_video (
     output bit [5:0] pictures_in_fifo,
     input signed [32:0] demuxer_presentation_timestamp,
     input signed [32:0] demuxer_system_clock_reference,
-    input signed [31:0] dclk,  // only 21:7 shall be used (16 bit)
+    input signed [31:0] dclk,  // only 21:6 shall be used (16 bit)
     output bit event_potential_picture_starts_display,
 
     output bit [10:0] decoder_width,
@@ -171,8 +171,11 @@ module mpeg_video (
     );
 
     wire signed [32:0] desync = demuxer_system_clock_reference - pts_fifo_out;
-    // only bits 21:7 can be changed by the CPU
-    wire signed [15:0] desync2 = dclk[21:7] - pts_fifo_out[21:7];
+    // only bits 21:6 can be changed by the CPU
+    wire signed [15:0] desync2 = dclk[21:6] - pts_fifo_out[22:7];
+
+    (* keep *) (* noprune *) bit signed [15:0] desync2_q;
+    (* keep *) (* noprune *) bit signed [32:0] desync_q;
 
     bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
@@ -185,7 +188,11 @@ module mpeg_video (
 
     always_ff @(posedge clk30) begin
         // Catch something that should not be possible
-        if (latch_frame_for_display) assert (pts_fifo_valid);
+        if (latch_frame_for_display) begin
+            assert (pts_fifo_valid);
+            desync2_q <= desync2;
+            desync_q  <= desync;
+        end
 
         event_buffer_underflow <= pictures_in_fifo==1 && latch_frame_for_display && pictures_in_mpeg_decoder==0;
 
@@ -805,6 +812,7 @@ module mpeg_video (
         end
 
         if (vblank && !hsync && hsync_q && desync > 10000) begin
+            $display("FrameSkip");
             latch_frame_for_display <= 1;
         end
 

@@ -30,18 +30,61 @@ here some notes.
 
             33 bit   32 bit   16 bit
             90 khz   45 kHz   703.125 Hz
-    25 Hz   3600     1800
-    30 Hz   3000     1500
-    50 Hz   1800     900
-    60 Hz   1500     750
+    25 Hz   3600     1800     28.125
+    30 Hz   3000     1500     23.43
+    50 Hz   1800     900      14.0625
+    60 Hz   1500     750      11.71875
 
 Some registers and variables
 
-  FMA DCLK        45 kHz                  00E03010 long word
-  GEN_PICT_RATE   90 kHz                  00E040A8
-  GEN_DEC_TIM1    DTS / 128 = 703.125 Hz  00E040A0
-  GEN_SYSCR       703.125 Hz              00E04098
-  V_SCR           22.5 kHz                FMV driver
+    FMA DCLK        45 kHz        00E03010 long word
+    GEN_PICT_RATE   90 kHz        00E040A8 word
+    GEN_DEC_TIM1    703.125 Hz    00E040A0 word
+    GEN_SYSCR       703.125 Hz    00E04098 word
+    V_SCR           22.5 kHz      long word in FMV driver
+
+Some possible operations to not forget. Often found in the driver code
+
+    22.5 kHz >> 5 = 703.125 Hz
+    45 kHz >> 6 = 703.125 Hz
+    90 kHz >> 7 = 703.125 Hz
+    22.5 kHz / 32 = 703.125 Hz
+    90 kHz / 128 = 703.125 Hz
+
+Offsets between Video and Audio are declared in 22.5 kHz
+Example: When starting `mv_cdplay()` in sync wait mode first and
+`ma_cdplay()` with an offset of 11250, it will result into
+playback of audio half of a second earlier than video.
+If the offset is -11250, it should result into playback of video half of a second earlier than audio.
+But no, it just stops, for some reason.
+
+If `ma_cdplay()` is started in wait mode and make `mv_cdplay()` the follower an offset of 11250 in the latter, will result into playback of audio half of a second earlier than video too.
+
+An offset in the first waiting one is ignored.
+
+### FMV Timer
+
+V_SCR is used in the driver for representation of the System Clock Reference.
+According to the driver sources
+
+    TenmS   equ 56   value for something about 10 mS interrupt
+    TenSCR  equ 896  SCR count during 10 mS
+
+Why 896? Usually `90000/100` would be 900!
+The timer resolution is 90 kHz / 16 (or 45 kHz / 8)
+
+    90000/56/16 = 100.446428571429
+
+As the driver coder has indicated, 10 mS are not possible. The SCR increment
+is adapted to that.
+
+    90000/56.25/16 = 100.446428571429
+    90000/896      = 100.446428571429
+
+Mystery solved, though, it might be possible that this is irrelevant.
+Since V_ExtSCR is set in the FMV driver, the dclk of FMA is utilized.
+This is the connection where the audio clock (that is synchronized to the disc rotation),
+is connected with the SCR of the video footage.
 
 ## Syscalls
 
