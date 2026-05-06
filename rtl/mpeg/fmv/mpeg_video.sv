@@ -43,7 +43,7 @@ module mpeg_video (
     output bit event_first_intra_frame_gop_starts_display,
     output bit event_first_intra_frame_seq_starts_display,
     output bit [5:0] pictures_in_fifo,
-    input signed [32:0] demuxer_presentation_timestamp,
+    input signed [32:0] demuxer_decoding_timestamp,
     input signed [32:0] demuxer_system_clock_reference,
     input signed [31:0] dclk,  // only 21:6 shall be used (16 bit)
     output bit event_potential_picture_starts_display,
@@ -155,41 +155,41 @@ module mpeg_video (
 
     wire picture_added_in_input_fifo = picture_startcode;
 
-    wire pts_fifo_valid;
-    wire signed [32:0] pts_fifo_out;
+    wire dts_fifo_valid;
+    wire signed [32:0] dts_fifo_out;
 
-    presentation_time_fifo pts_fifo (
+    mpeg_timestamp_fifo dts_fifo (
         .clk(clk30),
         .reset(reset || clear_fifo),
-        .wdata(demuxer_presentation_timestamp),
+        .wdata(demuxer_decoding_timestamp),
         .we(picture_added_in_input_fifo),
-        // Add pts_fifo_valid to avoid underflows (just in case)
-        .strobe(event_frame_decoded && pts_fifo_valid),
-        .valid(pts_fifo_valid),
-        .q(pts_fifo_out),
-        .cnt(pictures_in_input_fifo)
+        // Add dts_fifo_valid to avoid underflows (just in case)
+        .strobe(latch_frame_for_display && dts_fifo_valid),
+        .valid(dts_fifo_valid),
+        .q(dts_fifo_out),
+        .cnt(pictures_in_fifo)
     );
 
-    wire signed [32:0] desync = demuxer_system_clock_reference - pts_fifo_out;
+    wire signed [32:0] desync = demuxer_system_clock_reference - dts_fifo_out;
     // only bits 21:6 can be changed by the CPU
-    wire signed [15:0] desync2 = dclk[21:6] - for_display.pts;
+    wire signed [15:0] desync2 = dclk[21:6] - dts_fifo_out[22:7];
 
     (* keep *) (* noprune *) bit signed [15:0] desync2_q;
     (* keep *) (* noprune *) bit signed [32:0] desync_q;
 
-    wire [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
+    bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
     bit [4:0] pictures_in_mpeg_decoder;
 
     always_comb begin
-        pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder + pictures_in_output_fifo;
+        //pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder + pictures_in_output_fifo;
         //if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
     end
 
     always_ff @(posedge clk30) begin
         // Catch something that should not be possible
         if (latch_frame_for_display) begin
-            assert (pts_fifo_valid);
+            assert (dts_fifo_valid);
             desync2_q <= desync2;
             desync_q  <= desync;
         end
@@ -206,8 +206,12 @@ module mpeg_video (
         end
 
         if (clear_fifo) begin
+            pictures_in_input_fifo   <= 0;
             pictures_in_mpeg_decoder <= 0;
-        end
+        end else if (event_frame_decoded && !picture_added_in_input_fifo && pictures_in_input_fifo!=0)
+            pictures_in_input_fifo <= pictures_in_input_fifo - 1;
+        else if (!event_frame_decoded && picture_added_in_input_fifo)
+            pictures_in_input_fifo <= pictures_in_input_fifo + 1;
     end
 
     mpeg_input_stream_fifo_32k in_fifo (
@@ -581,8 +585,6 @@ module mpeg_video (
                             dmem_rsp_payload_data_1 = {16'b0, dct_coeff_result};
                         if (dmem_cmd_payload_address_1_q == 32'h10002010)
                             dmem_rsp_payload_data_1 = {31'b0, has_sequence_header};
-                        if (dmem_cmd_payload_address_1_q == 32'h10002014)
-                            dmem_rsp_payload_data_1 = {16'b0, pts_fifo_out[22:7]};
 
                         if (dmem_cmd_payload_address_1_q == 32'h10003028)
                             dmem_rsp_payload_data_1 = {27'b0, pictures_in_output_fifo_clk_mpeg};
@@ -679,9 +681,6 @@ module mpeg_video (
                         end
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3044) begin
                             just_decoded.timecode <= dmem_cmd_payload_data_1;
-                        end
-                        if (dmem_cmd_payload_address_1[15:0] == 16'h3018) begin
-                            just_decoded.pts <= dmem_cmd_payload_data_1[15:0];
                         end
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3048) begin
                             just_decoded.first_intra_frame_of_seq <= dmem_cmd_payload_data_1[0];

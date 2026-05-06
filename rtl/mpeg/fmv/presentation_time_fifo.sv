@@ -1,6 +1,6 @@
 `include "../util.svh"
 
-module presentation_time_fifo (
+module mpeg_timestamp_fifo (
     input clk,
     input reset,
     // Input
@@ -45,5 +45,5 @@ module presentation_time_fifo (
         valid <= raddr != waddr;
     end
 
-endmodule : presentation_time_fifo
+endmodule : mpeg_timestamp_fifo
 

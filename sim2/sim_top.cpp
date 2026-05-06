@@ -84,7 +84,6 @@ typedef struct {
     int temporal_ref;
     int timecode;
     int ready_for_display;
-    uint32_t pts;
 } plm_frame2_t;
 
 #define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
@@ -1030,17 +1029,17 @@ class CDi {
             // do_trace = true;
 #endif
             sprintf(bmp_name, "%d/%03d.bmp", instanceid, fmv_frame_cnt);
-            printf("FMV Writing %s at Fifo Level %d at Frame Level %d %d %c PTS %d\n", bmp_name,
+            printf("FMV Writing %s at Fifo Level %d at Frame Level %d %d %c\n", bmp_name,
                    dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__fifo_level,
                    dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_input_fifo,
                    dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_output_fifo,
-                   GetPictureType(frame.picture_type), frame.pts * 128);
+                   GetPictureType(frame.picture_type));
             ;
-            fprintf(stderr, "FMV Writing %s at Fifo Level %d at Frame Level %d %d %c PTS %d\n", bmp_name,
+            fprintf(stderr, "FMV Writing %s at Fifo Level %d at Frame Level %d %d %c\n", bmp_name,
                     dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__fifo_level,
                     dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_input_fifo,
                     dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_output_fifo,
-                    GetPictureType(frame.picture_type), frame.pts * 128);
+                    GetPictureType(frame.picture_type));
 
             write_bmp(bmp_name, w, h, pixels);
 

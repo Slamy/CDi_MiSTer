@@ -231,7 +231,6 @@ typedef struct {
 	int temporal_ref;
 	int timecode;
 	int ready_for_display;
-	uint32_t pts;
 } plm_frame_t;
 
 
@@ -2365,7 +2364,6 @@ void plm_video_decode_picture(plm_video_t *self) {
 	self->frame_current.picture_type = self->picture_type;
 	self->frame_current.temporal_ref = self->temporal_ref;
 	self->frame_current.timecode = self->timecode;
-	self->frame_current.pts = fifo_ctrl->demuxer_pts_fifo_out;
 	
 	while (PLM_START_IS_SLICE(self->start_code)) {
 		DEBUG_STATE = 7;
