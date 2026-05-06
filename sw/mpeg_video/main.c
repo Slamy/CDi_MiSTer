@@ -119,7 +119,8 @@ static void push_frame(plm_frame_t *frame)
 	frame_display_fifo->frameperiod_rawhdr = seq_hdr_conf.frameperiod;
 	frame_display_fifo->temporal_ref = frame->temporal_ref;
 	frame_display_fifo->timecode = frame->timecode;
-
+	frame_display_fifo->pts = frame->pts;
+	
 	frame_display_fifo->frameperiod_30mhz = period30mhz;
 
 	// The order is crucial. Everything written above must be in I/O by now

@@ -9,6 +9,7 @@ struct io_fifo_control
 	uint32_t hw_read_count;				// @0x10002008 read + write
 	uint32_t hw_huffman_read_dct_coeff; // @0x1000200C read + write
 	uint32_t has_sequence_header;		// @0x10002010 read only
+	uint32_t demuxer_pts_fifo_out;      // @0x10002014 read only
 };
 
 struct frame_display_fifo
@@ -19,7 +20,7 @@ struct frame_display_fifo
 	uint32_t width;					   // @0x1000300C
 	uint32_t height;				   // @0x10003010
 	uint32_t frameperiod_30mhz;		   // @0x10003014, ticks of 30 MHz
-	uint32_t reserved_;			       // @0x10003018
+	uint32_t pts;			           // @0x10003018 Write only
 	uint32_t event_sequence_end;	   // @0x1000301C Write only
 	uint32_t first_intra_frame_of_gop; // @0x10003020 Write only
 	uint32_t event_buffer_underflow;   // @0x10003024 Write only

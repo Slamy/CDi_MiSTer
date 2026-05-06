@@ -11,6 +11,7 @@ typedef struct {
     bit [8:0] height;
     bit [7:0] tempref;
     bit [31:0] timecode;
+    bit [15:0] pts;
 } planar_yuv_s;
 
 typedef struct packed {

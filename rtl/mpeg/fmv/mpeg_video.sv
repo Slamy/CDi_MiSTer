@@ -160,29 +160,29 @@ module mpeg_video (
 
     presentation_time_fifo pts_fifo (
         .clk(clk30),
-        .reset,
+        .reset(reset || clear_fifo),
         .wdata(demuxer_presentation_timestamp),
         .we(picture_added_in_input_fifo),
         // Add pts_fifo_valid to avoid underflows (just in case)
-        .strobe(latch_frame_for_display && pts_fifo_valid),
+        .strobe(event_frame_decoded && pts_fifo_valid),
         .valid(pts_fifo_valid),
         .q(pts_fifo_out),
-        .cnt(pictures_in_fifo)
+        .cnt(pictures_in_input_fifo)
     );
 
     wire signed [32:0] desync = demuxer_system_clock_reference - pts_fifo_out;
     // only bits 21:6 can be changed by the CPU
-    wire signed [15:0] desync2 = dclk[21:6] - pts_fifo_out[22:7];
+    wire signed [15:0] desync2 = dclk[21:6] - for_display.pts;
 
     (* keep *) (* noprune *) bit signed [15:0] desync2_q;
     (* keep *) (* noprune *) bit signed [32:0] desync_q;
 
-    bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
+    wire [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
     bit [4:0] pictures_in_mpeg_decoder;
 
     always_comb begin
-        //pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder + pictures_in_output_fifo;
+        pictures_in_fifo = pictures_in_input_fifo + pictures_in_mpeg_decoder + pictures_in_output_fifo;
         //if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
     end
 
@@ -206,12 +206,8 @@ module mpeg_video (
         end
 
         if (clear_fifo) begin
-            pictures_in_input_fifo   <= 0;
             pictures_in_mpeg_decoder <= 0;
-        end else if (event_frame_decoded && !picture_added_in_input_fifo && pictures_in_input_fifo!=0)
-            pictures_in_input_fifo <= pictures_in_input_fifo - 1;
-        else if (!event_frame_decoded && picture_added_in_input_fifo)
-            pictures_in_input_fifo <= pictures_in_input_fifo + 1;
+        end
     end
 
     mpeg_input_stream_fifo_32k in_fifo (
@@ -508,6 +504,8 @@ module mpeg_video (
     bit [31:0] frame_y_adr  /*verilator public_flat_rd*/;
     wire expose_frame_struct_adr_clk_mpeg  = (dmem_cmd_payload_address_1 == 32'h10000010 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1) ;
     wire expose_frame_y_adr_clk_mpeg  = (dmem_cmd_payload_address_1 == 32'h10000018 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1) ;
+
+    // Frame was decoded. This doesn't mean it was commited to the output FIFO yet
     bit event_frame_decoded_clk_mpeg;
 
     wire playback_active_clkddr;
@@ -583,6 +581,8 @@ module mpeg_video (
                             dmem_rsp_payload_data_1 = {16'b0, dct_coeff_result};
                         if (dmem_cmd_payload_address_1_q == 32'h10002010)
                             dmem_rsp_payload_data_1 = {31'b0, has_sequence_header};
+                        if (dmem_cmd_payload_address_1_q == 32'h10002014)
+                            dmem_rsp_payload_data_1 = {16'b0, pts_fifo_out[22:7]};
 
                         if (dmem_cmd_payload_address_1_q == 32'h10003028)
                             dmem_rsp_payload_data_1 = {27'b0, pictures_in_output_fifo_clk_mpeg};
@@ -680,13 +680,15 @@ module mpeg_video (
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3044) begin
                             just_decoded.timecode <= dmem_cmd_payload_data_1;
                         end
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h3018) begin
+                            just_decoded.pts <= dmem_cmd_payload_data_1[15:0];
+                        end
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3048) begin
                             just_decoded.first_intra_frame_of_seq <= dmem_cmd_payload_data_1[0];
                         end
 
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3050)
                             event_frame_decoded_clk_mpeg <= 1;
-
 
                         if (dmem_cmd_payload_address_1[15:0] == 16'h2010) begin
                             has_sequence_header <= dmem_cmd_payload_data_1[0];
@@ -811,10 +813,12 @@ module mpeg_video (
             end
         end
 
+        /*
         if (vblank && !hsync && hsync_q && desync > 10000) begin
             $display("FrameSkip");
             latch_frame_for_display <= 1;
         end
+        */
 
         playback_frame_cnt <= playback_frame_cnt + 1;
         if (playback_frame_cnt >= frame_period - 1) playback_frame_cnt <= 0;
