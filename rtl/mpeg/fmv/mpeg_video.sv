@@ -156,7 +156,7 @@ module mpeg_video (
     wire picture_added_in_input_fifo = picture_startcode;
 
     wire dts_fifo_valid;
-    wire signed [32:0] dts_fifo_out;
+    (* keep *) (* noprune *) wire signed [32:0] dts_fifo_out;
 
     mpeg_timestamp_fifo dts_fifo (
         .clk(clk30),
@@ -172,10 +172,12 @@ module mpeg_video (
 
     wire signed [32:0] desync = demuxer_system_clock_reference - dts_fifo_out;
     // only bits 21:6 can be changed by the CPU
-    wire signed [15:0] desync2 = dclk[21:6] - dts_fifo_out[22:7];
+    // It should be noted that the driver wants to have bit 21 always 0.
+    // So only bits 20:6 of dclk must be used here.
+    wire signed [14:0] desync2 = dclk[20:6] - dts_fifo_out[21:7];
 
-    (* keep *) (* noprune *) bit signed [15:0] desync2_q_clk_mpeg;
-    (* keep *) (* noprune *) bit signed [15:0] desync2_q;
+    (* keep *) (* noprune *) bit signed [14:0] desync2_q_clk_mpeg;
+    (* keep *) (* noprune *) bit signed [14:0] desync2_q;
     (* keep *) (* noprune *) bit signed [32:0] desync_q;
 
     bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
