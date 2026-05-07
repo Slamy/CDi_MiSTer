@@ -117,8 +117,6 @@ static void push_frame(plm_frame_t *frame) {
 
     if (period30mhz < 400000) // much faster than 60 Hz? Better not
         period30mhz = 400000;
-    if (period30mhz > 1250000) // slower than 25 Hz? Nope
-        period30mhz = 1250000;
 
     frame_display_fifo->frameperiod_90khz = period90khz;
     frame_display_fifo->frameperiod_rawhdr = seq_hdr_conf.frameperiod;

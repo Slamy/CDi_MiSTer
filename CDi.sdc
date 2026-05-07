@@ -49,3 +49,6 @@ set_false_path -from {emu:emu|cditop:cditop|vmpeg:vmpeg_inst|mpeg_video:video|la
 
 # protected by demuxer_decoding_timestamp_updated_clk_mpeg
 set_false_path -from {emu:emu|cditop:cditop|vmpeg:vmpeg_inst|mpeg_demuxer:video_demuxer|decoding_timestamp*} -to {emu:emu|cditop:cditop|vmpeg:vmpeg_inst|mpeg_video:video|demuxer_decoding_timestamp_clk_mpeg*}
+
+#protected by TODO
+set_false_path -from {emu:emu|cditop:cditop|vmpeg:vmpeg_inst|mpeg_video:video|desync2_q*} -to {emu:emu|cditop:cditop|vmpeg:vmpeg_inst|mpeg_video:video|desync2_q_clk_mpeg*}

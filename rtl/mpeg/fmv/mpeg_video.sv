@@ -819,6 +819,11 @@ module mpeg_video (
             end
         end
 
+        if (vblank && !hsync && hsync_q && desync > 15000) begin
+            $display("FrameSkip");
+            latch_frame_for_display <= 1;
+        end
+
         playback_frame_cnt <= playback_frame_cnt + 1;
         if (playback_frame_cnt >= frame_period - 1) playback_frame_cnt <= 0;
         if (playback_frame_cnt == 0 && frame_period > 1200) begin
