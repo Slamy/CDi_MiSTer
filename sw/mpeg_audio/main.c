@@ -59,12 +59,6 @@ void stop_verilator();
 
 void stop_verilator() { *((volatile uint8_t *)OUTPORT_END) = 0; }
 
-volatile union {
-    volatile uint32_t int32;
-    volatile uint8_t int8[4];
-    volatile uint16_t int16[2];
-} testenv;
-
 // 10000 results into at least having 2 TIM interrupts after
 // the last frame has been decoded, before UNF occurs.
 // This seems to be stable with pausing and continuing a playback of
@@ -86,7 +80,7 @@ void main(void) {
 
     int timeout = kTimeOut;
 
-    while (timeout) {
+    for (;;) {
         plm_samples_t *samples = plm_audio_decode(mpeg);
 
         if (samples) {
@@ -94,18 +88,15 @@ void main(void) {
             cnt++;
             fifo_ctrl->signal_frame_decoded = cnt;
             timeout = kTimeOut;
-        } else {
+        } else if (timeout) {
             // For some reason, it is possible that a frame might not have
             // been decoded with one call to plm_decode_audio()
             // But on the second, it is successful?
             // Happens with Philips Bumper on Lucky Luke
             timeout--;
+            if (timeout == 0) {
+                fifo_ctrl->signal_underflow = 1;
+            }
         }
     }
-
-    fifo_ctrl->signal_underflow = 1;
-
-    // Wait forever
-    for (;;)
-        ;
 }

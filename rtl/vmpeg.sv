@@ -727,7 +727,7 @@ module vmpeg (
                 // Since V_ExtSCR is set, this might have no impact at all though...
                 if (timer_cnt >= {2'b00, fmv_timer_compare_register, 3'b000} + 7) begin
                     fmv_interrupt_status_register.tim <= 1;
-                    fma_interrupt_status_register[8] <= 1;
+                    fma_interrupt_status_register[8] <= !fma_fifo_full;
                     timer_cnt <= 0;
                     $display("VMPEG Timer IRQ at %d", fma_dclk);
                 end else begin
