@@ -902,6 +902,13 @@ class CDi {
                     &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[8];
                 dut.rootp->emu__DOT__cditop__DOT__fdrvs1_static = cpu_a[2];
             }
+            
+            if (m_pc == 0x0e5029a) {
+                // We are at the beginning of MA_Play in madriv. This means that A2 contains madriv_static
+                uint32_t *cpu_a =
+                    &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[8];
+                dut.rootp->emu__DOT__cditop__DOT__madriv_static = cpu_a[2];
+            }
 
 #if 1
             executing_dvc_rom_instructions = m_pc >= 0xe40000 && m_pc < 0xe7ffff;

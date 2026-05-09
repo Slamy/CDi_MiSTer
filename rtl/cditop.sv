@@ -294,7 +294,6 @@ module cditop (
 
     wire cdic_intreq;
     wire cdic_intack;
-    /*verilator tracing_off*/
     cdic cdic_inst (
         .clk(clk30),
         .clk_audio(clk_audio),
@@ -329,7 +328,6 @@ module cditop (
         .fail_not_enough_words(fail_not_enough_words),
         .fail_too_much_data(fail_too_much_data)
     );
-    /*verilator tracing_on*/
 
     // TODO might not be correct
     // CDIC seems to want manual vector
