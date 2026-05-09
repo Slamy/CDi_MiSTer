@@ -80,7 +80,7 @@ void main(void) {
 
     int timeout = kTimeOut;
 
-    for (;;) {
+    while (timeout) {
         plm_samples_t *samples = plm_audio_decode(mpeg);
 
         if (samples) {
@@ -88,15 +88,18 @@ void main(void) {
             cnt++;
             fifo_ctrl->signal_frame_decoded = cnt;
             timeout = kTimeOut;
-        } else if (timeout) {
+        } else {
             // For some reason, it is possible that a frame might not have
             // been decoded with one call to plm_decode_audio()
             // But on the second, it is successful?
             // Happens with Philips Bumper on Lucky Luke
             timeout--;
-            if (timeout == 0) {
-                fifo_ctrl->signal_underflow = 1;
-            }
         }
     }
+
+    fifo_ctrl->signal_underflow = 1;
+
+    // Wait forever
+    for (;;)
+        ;
 }

@@ -1,0 +1,4 @@
+# cdi200.rom
+
+00429cd0 CDIC SetStat
+0042a118 CDIC SS_Cont

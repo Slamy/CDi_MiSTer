@@ -48,12 +48,17 @@ module mpeg_audio (
     wire [27:0] mpeg_stream_fifo_read_adr = mpeg_stream_byte_index[27:0];
 
     wire [27:0] fifo_level = mpeg_stream_fifo_write_adr - mpeg_stream_fifo_read_adr;
-    assign fifo_full = mpeg_stream_fifo_write_adr > (mpeg_stream_fifo_read_adr + 28'd6000);
+    assign fifo_full = mpeg_stream_fifo_write_adr > (mpeg_stream_fifo_read_adr + 28'd8000);
 
     always_ff @(posedge clk) begin
         event_decoding_started <= 0;
         event_frame_decoded <= 0;
         event_underflow <= 0;
+
+        if (fifo_full) begin
+            $display("AUDIO FIFO FULL");
+            $finish();
+        end
 
         if (reset || reset_input_fifo) begin
             mpeg_stream_fifo_write_adr <= 0;
