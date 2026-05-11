@@ -469,7 +469,7 @@ Memory Map
     short* (0x120,A2) Interrupt enable mirror (written to 0x301c)
     long* (0x122,A2) DMA memory Address?
     long* (0x126,A2) DMA something? Length in bytes?
-    short* (0x12a,A2) Written after DMA transfer
+    short* (0x12a,A2) Written after DMA transfer. Written to ASY_SIG
     char* (0x12c,A2) ?
     long* (0x12e,A2) DMA memory address for something of size 0xc?
     char* (0x137,A2)
@@ -478,8 +478,10 @@ Memory Map
     char* (0x13b,A2) ?
     char* (0x140,A2)
     long* (0x14c,A2)
-    short* (0x150,A2) Interrupt state from 0x301a stored here?
+    short* (0x150,A2) Interrupt state from 0x301a stored here
     char* (0x152,A2)
+    long* (0x154,A2) DMA address for TransferMPEG in a special case?
+    char* (0x174,A2) Length for TransferMPEG in a special case?
     long*  (0x000,A2) Address of FMA (must be 00e03000)
 
 
