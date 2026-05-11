@@ -65,6 +65,10 @@ module cdic (
 
     bit [15:0] command_register = 0;
 
+    // Set when writing 1 to data_buffer_register[15]
+    // Reset after the command was accepted
+    bit execute_command = 0;
+
     // DBUF @ 303FFE
     // Bit 0 is toggled on every received sector and
     // points to the just refreshed buffer
@@ -358,6 +362,7 @@ module cdic (
         if (reset) begin
             data_target_buffer <= 0;
             audio_target_buffer <= 0;
+            execute_command <= 0;
             bus_ack <= 0;
             time_register <= 0;
             command_register <= 0;
@@ -403,6 +408,9 @@ module cdic (
             end
 
             if (cd_data_valid && cd_reading_active) begin
+                // Later than on real hardware but should be fine.
+                data_buffer_register[15] <= 0;
+
                 sector_word_index <= sector_word_index + 1;
 
                 // Reading Order of MODE2 Header Information
@@ -596,16 +604,15 @@ module cdic (
                 use_sector_data <= 1;
             end
 
-            if (data_buffer_register[15]) begin
+            if (execute_command) begin
+                execute_command <= 0;
                 x_buffer_register[15] <= 1'b0;
-                // as soon as bit 15 is set, the command is parsed and must be reset directly afterwards
-                data_buffer_register[15] <= 0;
-
                 read_cdda <= 0;
                 read_raw <= 0;
 
                 case (command_register)
                     16'h23: begin
+                        data_buffer_register[15] <= 0;  // TODO really instant?
                         $display("CDIC Command: Stop disc");
                         cd_seek_lba <= time_register_as_lba;
                         read_mode2 <= 0;
@@ -614,15 +621,18 @@ module cdic (
                         // But it won't work. It needs to be delayed. spin_down_cnt will do the job
                     end
                     16'h24: begin
+                        data_buffer_register[15] <= 0;  // TODO really instant?
                         $display("CDIC Command: Reset Mode 2");
                         cd_seek_lba <= time_register_as_lba;
                         read_mode2  <= 1;
                     end
                     16'h2b: begin
                         // Unknown purpose
+                        data_buffer_register[15] <= 0;  // TODO really instant?
                         $display("CDIC Command: Stop CDDA?");
                     end
                     16'h2e: begin
+                        data_buffer_register[15] <= 0;  // TODO really instant?
                         $display("CDIC Command: Update");
                     end
                     16'h27: begin
@@ -651,6 +661,7 @@ module cdic (
                         read_mode2 <= 0;
                     end
                     16'h2c: begin
+                        data_buffer_register[15] <= 0;  // TODO really instant?
                         $display("CDIC Command: Seek");
                         // MAME and cdiemu implement seek as Read Mode 1
                         cd_reading_active <= 1;
@@ -766,6 +777,7 @@ module cdic (
                             $display("CDIC Write Data Buffer Register %x %x", address[13:1], din);
                             data_buffer_register <= din;
 
+                            if (din[15]) execute_command <= 1;
                             if (!din[14]) begin
                                 // Reset everything related to CD reading.
                                 cd_reading_active <= 0;
