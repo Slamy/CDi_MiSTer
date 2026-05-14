@@ -453,6 +453,7 @@ Memory Map
 
   FMA (no source code available?)
 
+    00e4fe80 MA_Status
     00e5029a MA_Play
     00e502fe Stream Number transferred to register
     00e504f0 IRQ Routine
@@ -463,26 +464,45 @@ Memory Map
     00dfb3e0 FMA Driver state? (A2)
     00dfb730 FMA Driver state? (A2)
 
+    long* (0x00,A2) Address of FMA (must be 00e03000) V_PORT
+    long* (0x30,A2) V_IRQMask
     long* (0x8e,A2)
-    long* (0x96,A2)
-    long* (0x114,A2)
+    long* (0x96,A2) V_CurDesc ?
+    long* (0x9c,A2) V_PCL ?
+    long* (0xa0,A2) V_Offset ?
+    long* (0xa8,A2) V_EnLoop ?
+    word* (0xac,A2) V_LCntr ?
+    long* (0xb2,A2) V_LpStart ?
+    long* (0xbe,A2) V_CurAdr ? might be only relevant in host play
+    char* (0xc8,A2) V_Paused ?
+    char* (0xc9,A2) V_Sync ?
+    long* (0xca,A2) V_SCR ?
+    char* (0xfe,A2) V_Waste ?
+    long* (0x104,A2) V_CurDelta ? (used for SCR and PTS adjust)
+    long* (0x108,A2) V_NewDelta ? (never edited?)
+    long* (0x114,A2) ?
+    long* (0x118,A2) Subtracted from DCLK ?
     short* (0x120,A2) Interrupt enable mirror (written to 0x301c)
     long* (0x122,A2) DMA memory Address?
     long* (0x126,A2) DMA something? Length in bytes?
     short* (0x12a,A2) Written after DMA transfer. Written to ASY_SIG
-    char* (0x12c,A2) ?
+    char* (0x12c,A2) Some kind of SCR?
     long* (0x12e,A2) DMA memory address for something of size 0xc?
-    char* (0x137,A2)
-    char* (0x139,A2)
+    char* (0x136,A2) ?
+    char* (0x137,A2) ?
+    char* (0x138,A2) ?
+    char* (0x139,A2) ?
+    char* (0x140,A2) ?
     char* (0x13a,A2) ?
     char* (0x13b,A2) ?
-    char* (0x140,A2)
+    char* (0x13d,A2) ?
+    char* (0x140,A2) ?
+    long* (0x142,A2) ?
     long* (0x14c,A2)
     short* (0x150,A2) Interrupt state from 0x301a stored here
     char* (0x152,A2)
     long* (0x154,A2) DMA address for TransferMPEG in a special case?
     char* (0x174,A2) Length for TransferMPEG in a special case?
-    long*  (0x000,A2) Address of FMA (must be 00e03000)
 
 
 V_BufStat
