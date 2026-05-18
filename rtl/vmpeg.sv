@@ -230,15 +230,15 @@ module vmpeg (
         .system_clock_reference_updated(),
         .decoding_timestamp(),
         .decoding_timestamp_updated(),
-        .presentation_timestamp(),
-        .presentation_timestamp_updated(),
+        .presentation_timestamp(fma_demuxer_presentation_timestamp),
+        .presentation_timestamp_updated(fma_demuxer_presentation_timestamp_updated),
         .event_program_end(fma_event_program_end)
     );
 
-    mpeg_playback_timer fma_play_start(
+    mpeg_playback_timer fma_play_start (
         .clk,
         .reset(reset || (fma_command_register == 1) || fma_event_underflow),
-.dclk(fma_dclk),
+        .dclk(fma_dclk),
         .system_clock_reference(fma_demuxer_system_clock_reference),
         .presentation_timestamp(fma_demuxer_presentation_timestamp),
         .presentation_timestamp_strobe(fma_demuxer_presentation_timestamp_updated),
@@ -719,6 +719,8 @@ module vmpeg (
 
                 // No longer decoding
                 fma_status_register[4] <= 0;
+
+                fma_dsp_enable <= 0;
             end
 
             if (fma_event_program_end) begin
@@ -750,9 +752,10 @@ module vmpeg (
                     timer_cnt <= timer_cnt + 1;
                 end
 
-                if (fma_start_playback) begin
-                    fma_dsp_enable <= 1;
-                end
+            end
+
+            if (fma_start_playback) begin
+                fma_dsp_enable <= 1;
             end
 
             if (done_in && ack) begin
