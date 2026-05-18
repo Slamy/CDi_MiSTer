@@ -433,6 +433,7 @@ Memory Map
     00e544b6 DecodTS
     00e54546 Copy_It
     00e54610 UpdPCLPtr
+    00e53d72 SendSignal
 
 
     00dfb180 FMV Driver state (A2)
@@ -459,6 +460,7 @@ Memory Map
     00e504f0 IRQ Routine
     00e5120c FMA Status 3002 is read here (ANDed with 0x38?)
     00e50e6a DMA Transfer to FMA
+    00e511f6 OS9 Trap 0 for sending signals (good for tracing)
 
     00dfb8f0 FMA Driver state? (A2)
     00dfb3e0 FMA Driver state? (A2)

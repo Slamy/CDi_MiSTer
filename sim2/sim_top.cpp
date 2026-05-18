@@ -21,7 +21,7 @@
 
 #define SCC68070
 #define SLAVE
-#define TRACE
+// #define TRACE
 // #define SIMULATE_RC5
 
 #define PL_MPEG_IMPLEMENTATION
@@ -576,10 +576,32 @@ class CDi {
 
             call_func = func;
         }
+
         if (static_cast<SystemCallType>(call) == SystemCallType::I_GetStt) {
             SttFunction func = static_cast<SttFunction>(cpu_d[1] & 0xffff);
             printf(" GetStt %s", sttFunctionToString(func));
             call_func = func;
+        }
+
+        if (static_cast<SystemCallType>(call) == SystemCallType::F_Send) {
+            switch (prevpc) {
+            case 0x0e53d72:
+                printf(" FMV");
+                break;
+            case 0x0e511f6:
+                printf(" FMA Sig");
+                break;
+            case 0x0417f20:
+                printf(" VBLANK");
+                break;
+            case 0x042b0ce:
+                printf(" ??");
+                break;
+            case 0x42ac60:
+                printf(" PCL ?");
+                break;
+                
+            }
         }
         printf("\n");
 
@@ -607,6 +629,21 @@ class CDi {
     void lost_ride_pal() {
         if (frame_index > 150) {
             if ((frame_index % 40) == 10) {
+                press_button_signal = true;
+            }
+        }
+    }
+
+    void press_every_second() {
+        if (frame_index == 660) {
+#ifdef TRACE
+            do_trace = true;
+            fprintf(stderr, "Trace on!\n");
+#endif
+        }
+
+        if (frame_index > 200) {
+            if ((frame_index % 5) == 1) {
                 press_button_signal = true;
             }
         }
@@ -902,7 +939,7 @@ class CDi {
                     &dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__regfile[8];
                 dut.rootp->emu__DOT__cditop__DOT__fdrvs1_static = cpu_a[2];
             }
-            
+
             if (m_pc == 0x0e5029a) {
                 // We are at the beginning of MA_Play in madriv. This means that A2 contains madriv_static
                 uint32_t *cpu_a =
@@ -952,12 +989,13 @@ class CDi {
                 // space_ace_pal();
                 // braindead13_pal();
                 // lost_ride_pal();
+                press_every_second();
             }
 #endif
 
             if (press_button_signal) {
                 press_button_signal = false;
-                release_button_frame = frame_index + 10;
+                release_button_frame = frame_index + 2;
                 printf("Press a button!\n");
                 fprintf(stderr, "Press a button!\n");
                 dut.rootp->emu__DOT__JOY0 = 0b10000;
@@ -994,9 +1032,9 @@ class CDi {
         }
 
         // Simulate Audio
-        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick) {
-            int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_left;
-            int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;
+        if (dut.rootp->emu__DOT__cditop__DOT__sample_tick44) {
+            int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__audio__DOT__fifo_out_left;
+            int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__audio__DOT__fifo_out_right;
             fwrite(&sample_l, 2, 1, f_audio_left);
             fwrite(&sample_r, 2, 1, f_audio_right);
         }
@@ -1074,11 +1112,12 @@ class CDi {
                 fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fmv_m1v);
             }
 #ifdef TRACE
+            /*
             if (!do_trace && !do_trace_started_once_via_fmv) {
                 fprintf(stderr, "Trace on by FMV!\n");
                 do_trace = true;
                 do_trace_started_once_via_fmv = true;
-            }
+            }*/
 #endif
         }
         if (dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__fma_data_valid) {
@@ -1088,11 +1127,11 @@ class CDi {
                 fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fma_mp2);
             }
 #ifdef TRACE
-            if (!do_trace && !do_trace_started_once_via_fma) {
+            /*if (!do_trace && !do_trace_started_once_via_fma) {
                 fprintf(stderr, "Trace on via FMA!\n");
                 do_trace = true;
                 do_trace_started_once_via_fma = true;
-            }
+            }*/
 #endif
         }
 

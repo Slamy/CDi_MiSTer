@@ -2,7 +2,8 @@
 [*] GTKWave Analyzer v3.3.126 (w)1999-2026 BSI
 [*] Mon May 18 14:42:19 2026
 [*]
-[dumpfile] "(null)"
+[dumpfile] "/tmp/waveform.vcd"
+[dumpfile_mtime] "Sun May 17 19:20:30 2026"
 [savefile] "/home/andre/GIT/scc68070/sim2/pause.gtkw"
 [timestart] 0
 [size] 1920 1152
