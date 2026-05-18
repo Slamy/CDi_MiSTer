@@ -734,7 +734,7 @@ module emu (
     wire config_auto_play  /*verilator public_flat_rw*/ = 1;
     bit config_disable_vmpeg = 0;
     wire config_first_player_back_port = 0;
-    wire config_disable_seek_time = 1;
+    wire config_disable_seek_time = 0;
     wire debug_disable_vcd_clock = 0;
     wire debug_activate_vcd_filter = 1;
     wire [2:0] pointing_dev_speed = 0;
