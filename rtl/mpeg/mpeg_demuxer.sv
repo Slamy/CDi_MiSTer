@@ -4,16 +4,13 @@ module mpeg_demuxer (
     input [7:0] mpeg_data,
     input data_valid,
     output bit mpeg_packet_body,
-    input [31:0] dclk,  // Increments with 45 kHz
     input [3:0] stream_filter,
     output bit signed [32:0] system_clock_reference,  // in 90 Khz ticks
-    output bit signed [32:0] system_clock_reference_start_time,
     output bit signed [32:0] decoding_timestamp,  // can be PTS when DTS is absent
     output bit signed [32:0] presentation_timestamp,  // in 90 Khz ticks
     output bit decoding_timestamp_updated,
     output bit presentation_timestamp_updated,
     output bit system_clock_reference_updated,
-    output bit system_clock_reference_start_time_valid,
     output bit event_program_end
 );
     parameter string unit = "";
@@ -72,8 +69,6 @@ module mpeg_demuxer (
             presentation_timestamp <= 0;
             presentation_timestamp_temp <= 0;
             system_clock_reference_temp <= 0;
-            system_clock_reference_start_time <= 0;
-            system_clock_reference_start_time_valid <= 0;
         end else if (data_valid) begin
 
             if (packet_length_decreasing) begin
@@ -139,10 +134,7 @@ module mpeg_demuxer (
                         decoding_timestamp_updated <= 1;
                     end
 
-                    if (!system_clock_reference_start_time_valid) begin
-                        system_clock_reference_start_time_valid <= 1;
-                        system_clock_reference_start_time[32:1] <= dclk + presentation_timestamp_temp[32:1] - system_clock_reference_temp[32:1];
-                    end
+
                 end
 
                 {PES_DTS4, 8'b???????1}: begin // DTS

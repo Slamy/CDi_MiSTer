@@ -196,13 +196,17 @@ module vmpeg (
         end
     end
 
-    wire signed [32:0] fma_system_clock_reference_start_time;
-    wire fma_system_clock_reference_start_time_valid;
     wire fmv_event_program_end;
     wire fma_event_program_end;
 
     bit [3:0] fmv_stream_number;
     bit [3:0] fma_stream_number;
+
+    wire signed [32:0] fma_demuxer_system_clock_reference;
+    wire signed [32:0] fma_demuxer_decoding_timestamp;
+    wire signed [32:0] fma_demuxer_presentation_timestamp;
+    wire fma_demuxer_presentation_timestamp_updated;
+    wire fma_start_playback;
 
     wire signed [32:0] fmv_demuxer_system_clock_reference;
     wire signed [32:0] fmv_demuxer_decoding_timestamp;
@@ -222,16 +226,23 @@ module vmpeg (
         .data_valid(fma_data_valid),
         .mpeg_packet_body(fma_packet_body),
         .stream_filter(fma_stream_number),
-        .dclk(fma_dclk),
-        .system_clock_reference(),
+        .system_clock_reference(fma_demuxer_system_clock_reference),
         .system_clock_reference_updated(),
-        .system_clock_reference_start_time(fma_system_clock_reference_start_time),
         .decoding_timestamp(),
         .decoding_timestamp_updated(),
         .presentation_timestamp(),
         .presentation_timestamp_updated(),
-        .system_clock_reference_start_time_valid(fma_system_clock_reference_start_time_valid),
         .event_program_end(fma_event_program_end)
+    );
+
+    mpeg_playback_timer fma_play_start(
+        .clk,
+        .reset(reset || (fma_command_register == 1) || fma_event_underflow),
+.dclk(fma_dclk),
+        .system_clock_reference(fma_demuxer_system_clock_reference),
+        .presentation_timestamp(fma_demuxer_presentation_timestamp),
+        .presentation_timestamp_strobe(fma_demuxer_presentation_timestamp_updated),
+        .start_playback(fma_start_playback)
     );
 
     mpeg_demuxer #(
@@ -243,15 +254,12 @@ module vmpeg (
         .data_valid(fmv_data_valid),
         .mpeg_packet_body(fmv_packet_body),
         .stream_filter(fmv_stream_number),
-        .dclk(),
         .system_clock_reference(fmv_demuxer_system_clock_reference),
         .system_clock_reference_updated(),
-        .system_clock_reference_start_time(),
         .decoding_timestamp(fmv_demuxer_decoding_timestamp),
         .decoding_timestamp_updated(fmv_demuxer_decoding_timestamp_updated),
         .presentation_timestamp(fmv_demuxer_presentation_timestamp),
         .presentation_timestamp_updated(),
-        .system_clock_reference_start_time_valid(),
         .event_program_end(fmv_event_program_end)
     );
 
@@ -314,6 +322,14 @@ module vmpeg (
     // FMA Decoding Started Interrupt   ISR_DEC            BIT_MASK(4)
     // FMA Error Interrupt              ISR_ERR            BIT_MASK(5)
     // FMA Poll Interrupt               ISR_POLL           BIT_MASK(8)
+    // A value of 0x182 is possible, indicating a bit 7
+    // A value of 0x44 is also possible, indicating a bit 6
+    // Bit 7 is occurring together with CSU when decoding has started
+    // but playback not yet.
+    // Bit 6 is occurring together with POLL (is it?) when
+    // playback is performed too.
+    // Both bits 6 and 7 seem to be ignored by madriv and are
+    // never enabled in FMA_IER
     bit [15:0] fma_interrupt_status_register;
     // FMA IER @ 00E0301C
     // typical value is 0x013d?
@@ -734,7 +750,7 @@ module vmpeg (
                     timer_cnt <= timer_cnt + 1;
                 end
 
-                if (fma_system_clock_reference_start_time_valid && fma_dclk == fma_system_clock_reference_start_time[32:1] && !fma_dsp_enable) begin
+                if (fma_start_playback) begin
                     fma_dsp_enable <= 1;
                 end
             end

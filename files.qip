@@ -38,6 +38,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/sample_rate_converte
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/worker_firmware_memory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/fmv/yuv_frame_adr_fifo.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/mpeg_demuxer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/mpeg_playback_timer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/mpeg/VexiiRiscv.v
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/pointing_device.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/resetdelay.sv

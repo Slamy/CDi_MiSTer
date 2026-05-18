@@ -497,7 +497,7 @@ Memory Map
     char* (0x13b,A2) ?
     char* (0x13d,A2) ?
     char* (0x140,A2) ?
-    long* (0x142,A2) ?
+    long* (0x142,A2) Something with SCR? Subtract?
     long* (0x14c,A2)
     short* (0x150,A2) Interrupt state from 0x301a stored here
     char* (0x152,A2)
