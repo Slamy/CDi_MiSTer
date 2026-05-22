@@ -1,14 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.126 (w)1999-2026 BSI
-[*] Mon May 18 14:42:19 2026
+[*] Tue May 19 17:12:33 2026
 [*]
 [dumpfile] "/tmp/waveform.vcd"
-[dumpfile_mtime] "Sun May 17 19:20:30 2026"
+[dumpfile_mtime] "Tue May 19 17:10:50 2026"
+[dumpfile_size] 8265701601
 [savefile] "/home/andre/GIT/scc68070/sim2/pause.gtkw"
-[timestart] 0
-[size] 1920 1152
+[timestart] 1038900000
+[size] 2560 1348
 [pos] -1 -1
-*-26.940144 332192261 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-25.199341 1286670000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.emu.
 [treeopen] TOP.emu.cditop.
@@ -17,7 +18,7 @@
 [sst_width] 423
 [signals_width] 586
 [sst_expanded] 1
-[sst_vpaned_height] 693
+[sst_vpaned_height] 828
 @22
 TOP.emu.cditop.madriv.dma_addr[31:0]
 @28
@@ -26,9 +27,8 @@ TOP.emu.cditop.vmpeg_inst.fma_play_start.presentation_timestamp_strobe
 TOP.emu.cditop.vmpeg_inst.fma_play_start.system_clock_reference[32:0]
 TOP.emu.cditop.vmpeg_inst.fma_play_start.presentation_timestamp[32:0]
 TOP.emu.cditop.vmpeg_inst.fma_play_start.system_clock_reference_start_time[32:0]
-@29
-TOP.emu.cditop.vmpeg_inst.fma_play_start.system_clock_reference_start_time_valid
 @28
+TOP.emu.cditop.vmpeg_inst.fma_play_start.system_clock_reference_start_time_valid
 TOP.emu.cditop.vmpeg_inst.fma_event_underflow
 @22
 TOP.emu.cditop.madriv.irq_enable[15:0]
