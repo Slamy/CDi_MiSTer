@@ -860,8 +860,6 @@ module cdic (
                         default: begin
                         end
                     endcase
-
-
                 end
             end
         end
