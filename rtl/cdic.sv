@@ -4,6 +4,8 @@
 `include "bus.svh"
 `include "audiotypes.svh"
 
+`define DEBUG_HPS_DATA
+
 `define dp_hps_data(statement) `ifdef DEBUG_HPS_DATA $display``statement `endif
 `define dp_dma_write(statement) `ifdef DEBUG_CDIC_DMA $display``statement `endif
 

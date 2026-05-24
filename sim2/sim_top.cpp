@@ -1,4 +1,5 @@
 // Include common routines
+#include <sys/types.h>
 #include <verilated.h>
 #include <verilated_fst_c.h>
 #include <verilated_vcd_c.h>
@@ -226,6 +227,22 @@ void check_scramble(int lba, uint8_t *buffer) {
         if (mode2_lba == lba && mode == 2) {
             descramble_sector(buffer);
         }
+    }
+}
+
+void reinterleave_rw_subchannels(const uint8_t rw[6][12], uint16_t raw[96]) {
+    memset(raw, 0, sizeof(uint16_t) * 96);
+
+    for (int symbol = 0; symbol < 96; symbol++) {
+        uint8_t out = 0;
+
+        for (int ch = 0; ch < 6; ch++) {
+            uint8_t bit = (rw[ch][symbol >> 3] >> (7 - (symbol & 7))) & 1;
+
+            out |= bit << (5 - ch);
+        }
+
+        raw[symbol] = htons(out);
     }
 }
 
@@ -849,11 +866,19 @@ class CDi {
             subcode_data(dut.rootp->emu__DOT__cd_hps_lba, out);
 
             // Subcode RW from .sub file
+            uint8_t rw[kSubcodeRWSize];
+            // First we read the raw bytes
             file_offset = (lba - 150) * kSubcodeRWSize;
             res = fseek(f_sub_bin, file_offset, SEEK_SET);
             assert(res == 0);
-            res = fread(hps_buffer, 1, kSubcodeRWSize, f_sub_bin);
+            res = fread(rw, 1, kSubcodeRWSize, f_sub_bin);
             assert(res == kSubcodeRWSize);
+            /*
+            // Then we need to convert them to words
+            for (int i = 0; i < kSubcodeRWSize; i++) {
+                out.rw[i] = htons(rw[i]);
+            }*/
+            reinterleave_rw_subchannels(reinterpret_cast<uint8_t (*)[12]>(&rw[24]), out.rw);
 
             hps_buffer_index = 0;
         }
