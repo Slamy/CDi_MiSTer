@@ -79,9 +79,7 @@ There are 2 options according to the manual for reading sub channels R-W
       (not de-interleaved, not error corrected, L-EC data included in the track image)
     rw
       for reading packed R-W sub-channel data
-      (de-interleaved and error corrected) 
-
-
+      (de-interleaved and error corrected)
 
 A CD sector is stored as 2448 byte -> 2352 byte of Audio + 96 byte of subcode
 Sector 77 would be interesting. The subcode would be at 2448*77+2352=190848 (0x2E980)
