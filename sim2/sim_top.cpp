@@ -41,7 +41,7 @@ char GetPictureType(int val) {
     }
 }
 
-int write_bmp(const char *path, int width, int height, uint8_t *pixels) {
+int WriteBmp(const char *path, int width, int height, uint8_t *pixels) {
     FILE *fh = fopen(path, "wb");
     if (!fh) {
         return 0;
@@ -130,7 +130,7 @@ template <typename T, typename U> constexpr T BIT(T x, U n) noexcept {
 bool press_button_signal{false};
 bool print_instructions{false};
 
-void signal_handler(int signum, siginfo_t *info, void *context) {
+void SignalHandler(int signum, siginfo_t *info, void *context) {
     fprintf(stderr, "Received signal %d\n", signum);
 
     switch (signum) {
@@ -157,7 +157,7 @@ void signal_handler(int signum, siginfo_t *info, void *context) {
 }
 
 // got from mame
-uint32_t lba_from_time(uint32_t m_time) {
+uint32_t LbaFromTime(uint32_t m_time) {
     const uint8_t bcd_mins = (m_time >> 24) & 0xff;
     const uint8_t mins_upper_digit = bcd_mins >> 4;
     const uint8_t mins_lower_digit = bcd_mins & 0xf;
@@ -734,7 +734,7 @@ class CDi {
 
 #ifdef SIMULATE_RC5
         if (time30mhz >= rc5_fliptime) {
-            dut.rootp->emu__DOT__rc_eye = rc5_nextstate;
+            SetRcEye(rc5_nextstate);
 
             fprintf(stderr, "Set RC5!\n");
             char buffer[100];
@@ -768,7 +768,7 @@ class CDi {
             int32_t lba = dut.rootp->emu__DOT__cd_hps_lba;
             uint32_t m_time = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__time_register;
 
-            uint32_t reference_lba = lba_from_time(m_time);
+            uint32_t reference_lba = LbaFromTime(m_time);
             // assert(lba == reference_lba);
             // assert(lba >= 150);
             uint32_t file_offset = (lba - 150) * kSectorSize;
@@ -1080,7 +1080,7 @@ class CDi {
                     dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__fifo_level,
                     dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__video__DOT__pictures_in_fifo_clk_mpeg);
 
-            write_bmp(bmp_name, w, h, pixels);
+            WriteBmp(bmp_name, w, h, pixels);
 
             free(pixels);
             fmv_frame_cnt++;
@@ -1206,6 +1206,13 @@ class CDi {
         fmv_index++;
     }
 
+    void SetRcEye(int val) {
+        if (val)
+            dut.USER_IN |= 0b100;
+        else
+            dut.USER_IN &= ~0b100;
+    }
+
     CDi(int i) {
         instanceid = i;
 
@@ -1250,7 +1257,7 @@ class CDi {
         dut.eval();
         dut.rootp->emu__DOT__debug_uart_fake_space = false;
         dut.rootp->emu__DOT__img_size = 4096;
-        dut.rootp->emu__DOT__rc_eye = 1; // RC Eye signal is idle high
+        SetRcEye(1); // RC Eye signal is idle high
 
         dut.rootp->emu__DOT__tvmode_ntsc = false;
 
@@ -1277,8 +1284,8 @@ class CDi {
 
         start = std::chrono::system_clock::now();
 #ifdef TRACE
-        //do_trace = false;
-        //fprintf(stderr, "Trace off!\n");
+        // do_trace = false;
+        // fprintf(stderr, "Trace off!\n");
 #endif
 
 #ifdef SIMULATE_RC5
@@ -1348,7 +1355,7 @@ int main(int argc, char **argv) {
 #endif
 
     struct sigaction sa;
-    sa.sa_sigaction = signal_handler;
+    sa.sa_sigaction = SignalHandler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_SIGINFO;
 

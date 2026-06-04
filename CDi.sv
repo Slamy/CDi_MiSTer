@@ -186,7 +186,6 @@ module emu (
 `endif
 
     assign ADC_BUS = 'Z;
-    assign USER_OUT = '1;
     assign {UART_RTS, UART_DTR} = 0;
     assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 `ifdef VERILATOR
@@ -238,7 +237,8 @@ module emu (
 
         "P3,Hardware Config;",
         "P3-;",
-        "P3O[15],Ports, P1 Front + UART Back, P1 Back + P2 Front;",
+        "P3O[15],Ports,P1 Front + UART Back,P1 Back + P2 Front;",
+        "P3O[21:20],SNAC,Disabled,Only Ir RC5,Front Split Port,Back Port;",
         "P3O[5],Overclock input device,No,Yes;",
         "P3O[13],Disable VMPEG DVC,No,Yes;",
         "P3-;",
@@ -729,7 +729,7 @@ module emu (
     bit enable_reset_on_nvram_img_mount = 0;
     bit enable_reset_on_cd_img_mount = 0;
     bit [1:0] debug_limited_to_full = 0;
-    bit audio_cd_in_tray /*verilator public_flat_rw */ = 0;
+    bit audio_cd_in_tray  /*verilator public_flat_rw */ = 0;
     bit config_disable_cpu_starve = 1;
     bit config_auto_play  /*verilator public_flat_rw */ = 1;
     bit config_disable_vmpeg = 0;
@@ -738,6 +738,8 @@ module emu (
     bit debug_disable_vcd_clock = 0;
     bit debug_activate_vcd_filter = 1;
     bit [2:0] pointing_dev_speed = 0;
+    wire snac_enable_split_port = 0;
+    wire snac_enable_infrared = 0;
 `else
     // Status seems to be all zero after reset
     // Should be considered for defining the default
@@ -757,6 +759,8 @@ module emu (
     wire debug_disable_vcd_clock = status[17];
     wire debug_activate_vcd_filter = !status[18];
     wire [2:0] pointing_dev_speed = status[21:19];
+    wire snac_enable_split_port = status[21:20] == 2;
+    wire snac_enable_infrared = status[21:20] != 0;
 
     always_ff @(posedge clk_sys) begin
         // only change during resets
@@ -775,6 +779,9 @@ module emu (
 
     bytestream slave_serial_out ();
     bytestream slave_serial_in ();
+    bytestream snac_rxd2_stream ();
+    bytestream virtual_front_rxd2 ();
+
     wire slave_rts;
 
     bytestream scc68070_bypass_serial_out ();
@@ -787,19 +794,19 @@ module emu (
         .mister_joystick(config_first_player_back_port ? JOY1 : JOY0),
         .mister_joystick_analog(config_first_player_back_port ? JOY1_ANALOG : JOY0_ANALOG),
         .mister_mouse(config_first_player_back_port ? 0 : MOUSE),
-        .rts(slave_rts),
-        .serial_out(slave_serial_in),
+        .rts(forced_rts_flag | slave_rts),
+        .serial_out(virtual_front_rxd2),
         .overclock(overclock_pointing_device),
         .speed_setting(pointing_dev_speed)
     );
 
-    // ""INPUT 2" port at the back of a CDI 210/05
+    // "INPUT 2" port at the back of a CDI 210/05
     pointing_device pointing_dev_back (
         .clk(clk_sys),
         .mister_joystick(config_first_player_back_port ? JOY0 : JOY1),
         .mister_joystick_analog(config_first_player_back_port ? JOY0_ANALOG : JOY1_ANALOG),
         .mister_mouse(config_first_player_back_port ? MOUSE : 0),
-        .rts(config_first_player_back_port ? scc68070_rts : 1'b1),
+        .rts(forced_rts_flag | (config_first_player_back_port ? scc68070_rts : 1'b1)),
         .serial_out(scc68070_bypass_serial_in),
         .overclock(overclock_pointing_device),
         .speed_setting(pointing_dev_speed)
@@ -836,12 +843,79 @@ module emu (
         .config_disable_seek_time
     );
 
+    wire forced_snac_rts;
+    wire forced_rts_flag;
+
+    // Comments represent the USB 3.0 signal name
+    // together with the split port name
+    assign USER_OUT[0] = 1;  // D+, RXD2
+    assign USER_OUT[1] = 1;  // D-, RXD1
+    assign USER_OUT[2] = 1;  // TX-, CTS1
+    assign USER_OUT[3] = 1;  // GND DRAIN, RTS1
+    assign USER_OUT[4] = ~(slave_rts | forced_snac_rts);  // RX+, RTS2
+    assign USER_OUT[5] = 1;  // RX-, TXD1
+    assign USER_OUT[6] = 1;  // TX+, RC-Eye
+
+    rts_forcer rtsforcer (
+        .clk(clk_sys),
+        .config_state({status[21:20], config_first_player_back_port}),
+        .rts_flag(forced_rts_flag),
+        .rts_snac(forced_snac_rts)
+    );
+
+    wire snac_rxd2;
+    wire snac_rc_eye;
+
+    // To avoid metastability issues with external input
+    signal_cross_domain deboune_snac_rxd2 (
+        .clk_a(clk_sys),
+        .signal_in_clk_a(~USER_IN[0]),
+        .clk_b(clk_sys),
+        .signal_out_clk_b(snac_rxd2)
+    );
+
+    // To avoid metastability issues with external input
+    signal_cross_domain deboune_rc_eye (
+        .clk_a(clk_sys),
+        .signal_in_clk_a(USER_IN[6]),
+        .clk_b(clk_sys),
+        .signal_out_clk_b(snac_rc_eye)
+    );
+
+    // The SLAVE has no real UART at the moment
+    // We fake it externally
+    uart_rx #(
+        .CLK_FRE  (30),
+        .BAUD_RATE(1200)
+    ) snac_uart_rxd2 (
+        .clk          (clk_sys),
+        .rst_n        (!cditop_reset),
+        .rx_data      (snac_rxd2_stream.data),
+        .rx_data_valid(snac_rxd2_stream.write),
+        .rx_data_ready(1'b1),                    // always ready
+        .rx_pin       (snac_rxd2)
+    );
+
+    // Connects the SLAVE RXD either to SNAC or the virtual pointing device
+    bytestream_mux slave_rxd_mux (
+        .use_b(snac_enable_split_port),
+        .a(virtual_front_rxd2),
+        .b(snac_rxd2_stream),
+        .dst(slave_serial_in)
+    );
+
     wire fail_not_enough_words;
     wire fail_too_much_data;
-    wire debug_irq_hangup;
 
-    // TODO requires connection and testing with real photo diode
-    bit rc_eye  /*verilator public_flat_rw*/;
+    wire rc_eye_double_debounce;
+    wire rc_eye = snac_enable_infrared && rc_eye_double_debounce;
+
+    // It is unclear whether this is really required. For now it doesn't hurt.
+    rc5_debouncer rc5debounce (
+        .clk(clk_sys),
+        .in (snac_rc_eye),
+        .out(rc_eye_double_debounce)
+    );
 
     ddr_if ddr_host ();
 
@@ -1086,4 +1160,68 @@ module emu (
         endcase
     end
 
+endmodule
+
+// It is unclear whether this is really required. For now it doesn't hurt.
+module rc5_debouncer (
+    input clk,
+    input in,
+    output bit out
+);
+    // The shortest pulse of RC5 is 439 microseconds
+    // These are 13170 30 MHz ticks
+    // We are going for 1024 ticks here to have a filter of 34 microseconds
+    // Or let's only use 512 for half of it.
+
+    bit [8:0] count;
+
+    always_ff @(posedge clk) begin
+        if (in && count != '1) count <= count + 1;
+        else if (!in && count != '0) count <= count - 1;
+
+        if (count[8:7] == 3) out <= 1;
+        if (count[8:7] == 0) out <= 0;
+    end
+endmodule
+
+// When replugging the controllers, we should force
+// an RTS low phase to reset them.
+module rts_forcer (
+    input clk,
+    input [2:0] config_state,
+    output bit rts_flag,  // only a single clock cycle
+    output rts_snac  // >10ms time for SNAC
+);
+
+    // According to "Technical Info Pointing Devices"
+    // Device ID timing, the minimium RTS negation time
+    // is 10ms without a defined maximum.
+    // A 19 bit counter should work here.
+    // It will start at 320000 and count down
+
+    bit [18:0] count;
+    bit [ 2:0] config_state_q;
+
+    assign rts_snac = count != 0;
+
+    always_ff @(posedge clk) begin
+        config_state_q <= config_state;
+        rts_flag <= 0;
+
+        if (config_state_q != config_state) begin
+            count <= 320000;
+            rts_flag <= 1;
+        end else if (count != 0) count <= count - 1;
+    end
+
+endmodule
+
+module bytestream_mux (
+    input use_b,
+    bytestream.sink a,
+    bytestream.sink b,
+    bytestream.source dst
+);
+    assign dst.write = use_b ? b.write : a.write;
+    assign dst.data  = use_b ? b.data : a.data;
 endmodule

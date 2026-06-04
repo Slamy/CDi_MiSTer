@@ -2,8 +2,8 @@
 
 Core Utilization:
 
-    Logic utilization (in ALMs)  25,302 / 41,910 ( 60 % )
-    Total registers              28406
+    Logic utilization (in ALMs)  25,467 / 41,910 ( 61 % )
+    Total registers              28693
     Total block memory bits      2,325,760 / 5,662,720 ( 41 % )
     Total DSP Blocks             99 / 112 ( 88 % )
 

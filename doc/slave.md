@@ -2,7 +2,7 @@
 
 ## Pinout
 
-![Pinout of the DIL variant of a 68HC05](slave.svg)
+![Pinout of the DIL variant of a 68HC05](pic/slave.svg)
 
 ## Memory Map
 
