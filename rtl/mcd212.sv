@@ -2,6 +2,8 @@
 `include "videotypes.svh"
 
 // MCD 212 - DRAM and Video
+`define DEBUG_RASTER
+`define DEBUG_VSR
 
 `define dp_vsr(statement) `ifdef DEBUG_VSR $display``statement `endif
 `define dp_dcaptr(statement) `ifdef DEBUG_DCA $display``statement `endif

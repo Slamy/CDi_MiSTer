@@ -1,7 +1,6 @@
 // Include common routines
 #include <verilated.h>
 #include <verilated_fst_c.h>
-#include <verilated_vcd_c.h>
 
 // Include model header, generated from Verilating "top.v"
 #include "Vemu.h"
@@ -818,7 +817,7 @@ void forked_run() {
 
     const char *env_ramdumps = std::getenv("CDI_RAMDUMPS");
 
-    std::string path = env_ramdumps ? (std::string(env_ramdumps) + "/*.bin") : "ramdumps/*.bin";
+    std::string path = env_ramdumps ? (std::string(env_ramdumps) + "/comptons5*.bin") : "ramdumps/*.bin";
     printf("Reading ram dumps from %s\n", path.c_str());
     auto ramdumps = glob(path);
     size_t chunksize = std::max((size_t)ramdumps.size() / kNumberForks, (size_t)1);

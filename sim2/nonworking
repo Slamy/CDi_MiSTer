@@ -1,0 +1,1360 @@
+vasm 1.8f (c) in 2002-2019 Volker Barthelmann
+vasm M68k/CPU32/ColdFire cpu backend 2.3e (c) 2002-2019 Frank Wille
+vasm motorola syntax module 3.12c (c) 2002-2019 Frank Wille
+vasm binary output module 1.8a (c) 2002-2009,2013,2015,2017 Volker Barthelmann
+
+.text(acrx2):	          32 bytes
+make: Verzeichnis „/home/andre/GIT/scc68070/sim2/obj_dir“ wird betreten
+g++  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=1 -DVM_TRACE_FST=1 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable      -Os  -c -o videosim_top.o ../videosim_top.cpp
+g++    videosim_top.o verilated.o verilated_dpi.o verilated_fst_c.o verilated_threads.o Vemu__ALL.a   -lz /usr/lib/x86_64-linux-gnu/libpng.so  -pthread -lpthread -latomic   -o Vemu
+make: Verzeichnis „/home/andre/GIT/scc68070/sim2/obj_dir“ wird verlassen
+- V e r i l a t i o n   R e p o r t: Verilator 5.048 2026-04-26 rev vUNKNOWN-built20260429
+- Verilator: Built from 0.000 MB sources in 0 modules, into 0.000 MB in 0 C++ files needing 0.000 MB
+- Verilator: Walltime 2.437 s (elab=0.000, cvt=0.000, bld=2.435); cpu 0.001 s on 8 threads; allocated 19.691 MB
+Reading ram dumps from /home/andre/Projekte/cdiramdups/ramdumps//comptons5*.bin
+Splitting 1 ram dumps into 14 sizes of 1
+Runner 0 is PID 0
+Runner 0 /home/andre/Projekte/cdiramdups/ramdumps//comptons5_mister_blackscreen.bin
+RAM Zeroed
+Video Timing Parameters: 01000
+Cursor X: 384 Y: 140
+Cursor Control 101110000000000000001001
+Cursor 0 0000000000000000
+Cursor 1 0100000000000000
+Cursor 2 0110000000000000
+Trans Color Plane B 63 63 63
+Cursor 3 0111000000000000
+Cursor 4 0111100000000000
+Cursor 5 0111110000000000
+DYUV Abs. Start Plane B 128 128 128
+Cursor 6 0111111000000000
+Line   0 Weight B 63
+Cursor 7 0111111100000000
+Mosaic B 0 00000001
+Cursor 8 0111111110000000
+Cursor 9 0111110000000000
+Cursor a 0110110000000000
+Cursor b 0100011000000000
+Cursor c 0000011000000000
+Cursor d 0000001100000000
+Cursor e 0000001100000000
+Cursor f 0000000000000000
+Line   0 Transparency Control MX:0 TB:1000 TA:1000
+Plane B ignored 40
+Plane A in front of Plane B
+Line   0 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Trans Color Plane A 63 63 63
+Line   0 Weight A 63
+Mosaic A 0 00000001
+Reload VSR1 000000
+Line   0 Transparency Control MX:1 TB:0001 TA:0001
+Line   0 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Backdrop Color 0000
+Line   0 Region CH0 0   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 1   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 2   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 3   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 5   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 6   CMD:0000   RF:0   Weight: 0   X:   0
+CLUT A    0  63 63 63
+CLUT A    1   0  0  0
+CLUT A    2  13 13 13
+CLUT A    3  27 27 27
+CLUT A    4  35 35 35
+CLUT A    5  43 43 43
+CLUT A    6  50 50 50
+CLUT A    7  54 54 54
+CLUT A    8  60 60 60
+CLUT A    9   0  0  0
+CLUT A   10   0  0  0
+CLUT A   11   0  0  0
+CLUT A   12   0  0  0
+CLUT A   13   0  0  0
+CLUT A   14   0  0  0
+CLUT A   15   0  0  0
+CLUT A   16   0  0  0
+CLUT A   17   0  0  0
+CLUT A   18   0  0  0
+CLUT A   19   0  0  0
+CLUT A   20   0  0  0
+CLUT A   21   0  0  0
+CLUT A   22   0  0  0
+CLUT A   23   0  0  0
+CLUT A   24   0  0  0
+CLUT A   25   0  0  0
+CLUT A   26   0  0  0
+CLUT A   27   0  0  0
+CLUT A   28   0  0  0
+CLUT A   29   0  0  0
+CLUT A   30   0  0  0
+CLUT A   31   0  0  0
+CLUT A   32   0  0  0
+CLUT A   33   0  0  0
+CLUT A   34   0  0  0
+CLUT A   35   0  0  0
+CLUT A   36   0  0  0
+CLUT A   37   0  0  0
+CLUT A   38   0  0  0
+CLUT A   39   0  0  0
+CLUT A   40   0  0  0
+CLUT A   41   0  0  0
+CLUT A   42   0  0  0
+CLUT A   43   0  0  0
+CLUT A   44   0  0  0
+CLUT A   45   0  0  0
+CLUT A   46   0  0  0
+CLUT A   47   0  0  0
+CLUT A   48   0  0  0
+CLUT A   49   0  0  0
+CLUT A   50   0  0  0
+CLUT A   51   0  0  0
+CLUT A   52   0  0  0
+CLUT A   53   0  0  0
+CLUT A   54   0  0  0
+CLUT A   55   0  0  0
+CLUT A   56   0  0  0
+CLUT A   57   0  0  0
+CLUT A   58   0  0  0
+CLUT A   59   0  0  0
+CLUT A   60   0  0  0
+CLUT A   61   0  0  0
+CLUT A   62   0  0  0
+CLUT A   63   0  0  0
+CLUT A   64   0  0  0
+CLUT A   65   0  0  0
+CLUT A   66   0  0  0
+CLUT A   67   0  0  0
+CLUT A   68   0  0  0
+CLUT A   69   0  0  0
+CLUT A   70   0  0  0
+CLUT A   71   0  0  0
+CLUT A   72   0  0  0
+CLUT A   73   0  0  0
+CLUT A   74   0  0  0
+CLUT A   75   0  0  0
+CLUT A   76   0  0  0
+CLUT A   77   0  0  0
+CLUT A   78   0  0  0
+CLUT A   79   0  0  0
+CLUT A   80   0  0  0
+CLUT A   81   0  0  0
+CLUT A   82   0  0  0
+CLUT A   83   0  0  0
+CLUT A   84   0  0  0
+CLUT A   85   0  0  0
+CLUT A   86   0  0  0
+CLUT A   87   0  0  0
+CLUT A   88   0  0  0
+CLUT A   89   0  0  0
+CLUT A   90   0  0  0
+CLUT A   91   0  0  0
+CLUT A   92   0  0  0
+CLUT A   93   0  0  0
+CLUT A   94   0  0  0
+CLUT A   95   0  0  0
+CLUT A   96   0  0  0
+CLUT A   97   0  0  0
+CLUT A   98   0  0  0
+CLUT A   99   0  0  0
+CLUT A  100  62 62 62
+CLUT A  101   0  0  0
+CLUT A  102  30 33 37
+CLUT A  103  20 20 24
+CLUT A  104  22 22 26
+CLUT A  105  24 24 28
+CLUT A  106  12 12 14
+CLUT A  107  35 35 39
+CLUT A  108  39 39 43
+CLUT A  109  18 18 20
+CLUT A  110  41 41 45
+CLUT A  111  43 43 47
+CLUT A  112  28 28 30
+CLUT A  113  47 47 49
+CLUT A  114   8  6 20
+CLUT A  115  12  8 24
+CLUT A  116  33 28 33
+CLUT A  117  43 33 39
+CLUT A  118  47 22 33
+CLUT A  119  22 12 16
+CLUT A  120  35 18 24
+CLUT A  121  43  6 18
+CLUT A  122  24  4 10
+CLUT A  123  33  4 12
+CLUT A  124  53  8 20
+CLUT A  125  51 14 24
+CLUT A  126  35 12 18
+CLUT A  127   8  8  8
+CLUT A  128  20 63  0
+CLUT A  129   0  0  1
+CLUT A  130   0  0  2
+CLUT A  131   0  0  4
+CLUT A  132   0  2  3
+CLUT A  133   2  1  2
+CLUT A  134   0  2  4
+CLUT A  135   2  1  4
+CLUT A  136   0  1  6
+CLUT A  137   2  2  4
+CLUT A  138   1  2  7
+CLUT A  139   1  1  8
+CLUT A  140   4  2  4
+CLUT A  141   2  2  7
+CLUT A  142   2  4  6
+CLUT A  143   2  2  8
+CLUT A  144   5  5  6
+CLUT A  145   3  3 10
+CLUT A  146   4  3 10
+CLUT A  147   3  3 12
+CLUT A  148   3  4 11
+CLUT A  149   4  4 12
+CLUT A  150   6  6  9
+CLUT A  151  10  5  6
+CLUT A  152   4  4 14
+CLUT A  153   5  9 10
+CLUT A  154   6  6 13
+CLUT A  155  12  9  5
+CLUT A  156   2  4 22
+CLUT A  157  10  9 10
+CLUT A  158  10 10 13
+CLUT A  159  12 11 12
+CLUT A  160   9 13 13
+CLUT A  161  13 13 10
+CLUT A  162  23 10  5
+CLUT A  163  13 13 13
+CLUT A  164  10  5 24
+CLUT A  165  13 13 14
+CLUT A  166  11 19 10
+CLUT A  167  14 13 14
+CLUT A  168  15 14 12
+CLUT A  169  13 14 14
+CLUT A  170  14 14 14
+CLUT A  171  12 12 21
+CLUT A  172  16 16 16
+CLUT A  173   0 25 25
+CLUT A  174  19 11 20
+CLUT A  175   1 13 41
+CLUT A  176  18 18 18
+CLUT A  177  40  9  6
+CLUT A  178  13 18 24
+CLUT A  179  24 22 10
+CLUT A  180  18 18 21
+CLUT A  181  18 21 19
+CLUT A  182  21 21 20
+CLUT A  183  36 22  5
+CLUT A  184  38  3 24
+CLUT A  185  19 20 27
+CLUT A  186  25 22 22
+CLUT A  187  20 26 24
+CLUT A  188  18  0 54
+CLUT A  189   0 18 55
+CLUT A  190   0 37 37
+CLUT A  191  27 27 21
+CLUT A  192  43 25  7
+CLUT A  193   9 34 35
+CLUT A  194  25 26 27
+CLUT A  195  52 23  4
+CLUT A  196  21 24 34
+CLUT A  197  28 34 20
+CLUT A  198  56  6 21
+CLUT A  199  44 34  5
+CLUT A  200   0 42 42
+CLUT A  201  59 24  3
+CLUT A  202  30 29 28
+CLUT A  203  33 30 26
+CLUT A  204  52 18 19
+CLUT A  205  35 36 19
+CLUT A  206   0 46 46
+CLUT A  207  28 29 36
+CLUT A  208  34 33 29
+CLUT A  209   0 48 48
+CLUT A  210  53 35  9
+CLUT A  211  36 35 28
+CLUT A  212  34 34 34
+CLUT A  213  36 35 33
+CLUT A  214  56  9 39
+CLUT A  215  33 33 37
+CLUT A  216  37 42 25
+CLUT A  217  59 36 11
+CLUT A  218  34 36 37
+CLUT A  219  29 34 44
+CLUT A  220  43 41 24
+CLUT A  221  36 36 36
+CLUT A  222  34 35 41
+CLUT A  223  36 36 39
+CLUT A  224  36 36 41
+CLUT A  225  39 39 39
+CLUT A  226  40 40 40
+CLUT A  227  38 38 42
+CLUT A  228  42 38 39
+CLUT A  229  44 49 28
+CLUT A  230  53 42 26
+CLUT A  231  37 41 43
+CLUT A  232  39 39 44
+CLUT A  233  44 44 34
+CLUT A  234  54 53 15
+CLUT A  235  40 40 43
+CLUT A  236  41 41 45
+CLUT A  237  42 42 42
+CLUT A  238  39 42 51
+CLUT A  239  45 49 38
+CLUT A  240  44 44 44
+CLUT A  241  45 42 45
+CLUT A  242  53 45 36
+CLUT A  243  44 44 47
+CLUT A  244  46 46 46
+CLUT A  245  48 48 48
+CLUT A  246  49 49 52
+CLUT A  247  50 50 50
+CLUT A  248  60 55 40
+CLUT A  249  52 52 52
+CLUT A  250  55 55 55
+CLUT A  251  56 56 56
+CLUT A  252  58 58 58
+CLUT A  253  63 62 51
+SERVO ff ff
+CLUT A  254  61 61 61
+CLUT A  255   0  0  0
+SERVO ff ff
+Line   7 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 000000
+Line  26 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  27 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  28 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  29 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  30 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  31 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  32 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  33 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  34 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  35 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  36 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  37 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  38 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  39 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  40 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  41 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  42 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  43 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  44 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  46 Transparency Control MX:1 TB:0000 TA:0000
+Plane B in front of Plane A
+Line  46 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  47 Transparency Control MX:1 TB:0000 TA:0000
+Line  47 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  48 Transparency Control MX:1 TB:0000 TA:0000
+Line  48 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  49 Transparency Control MX:1 TB:0000 TA:0000
+Line  49 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  50 Transparency Control MX:1 TB:0000 TA:0000
+Line  50 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  51 Transparency Control MX:1 TB:0000 TA:0000
+Line  51 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+100000
+Line  52 Transparency Control MX:1 TB:0000 TA:0000
+Line  52 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  53 Transparency Control MX:1 TB:0000 TA:0000
+Line  53 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  54 Transparency Control MX:1 TB:0000 TA:0000
+Line  54 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  55 Transparency Control MX:1 TB:0000 TA:0000
+Line  55 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  56 Transparency Control MX:1 TB:0000 TA:0000
+Line  56 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  57 Transparency Control MX:1 TB:0000 TA:0000
+Line  57 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  58 Transparency Control MX:1 TB:0000 TA:0000
+Line  58 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  59 Transparency Control MX:1 TB:0000 TA:0000
+Line  59 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  60 Transparency Control MX:1 TB:0000 TA:0000
+Line  60 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  61 Transparency Control MX:1 TB:0000 TA:0000
+Line  61 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  62 Transparency Control MX:1 TB:0000 TA:0000
+Line  62 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  63 Transparency Control MX:1 TB:0000 TA:0000
+Line  63 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  64 Transparency Control MX:1 TB:0000 TA:0000
+Line  64 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  65 Transparency Control MX:1 TB:0000 TA:0000
+Line  65 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  66 Transparency Control MX:1 TB:0000 TA:0000
+Line  66 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  67 Transparency Control MX:1 TB:0000 TA:0000
+Line  67 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  68 Transparency Control MX:1 TB:0000 TA:0000
+Line  68 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  69 Transparency Control MX:1 TB:0000 TA:0000
+Line  69 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  70 Transparency Control MX:1 TB:0000 TA:0000
+Line  70 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  71 Transparency Control MX:1 TB:0000 TA:0000
+Line  71 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  72 Transparency Control MX:1 TB:0000 TA:0000
+Line  72 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  73 Transparency Control MX:1 TB:0000 TA:0000
+Line  73 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  74 Transparency Control MX:1 TB:0000 TA:0000
+Line  74 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  75 Transparency Control MX:1 TB:0000 TA:0000
+Line  75 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  76 Transparency Control MX:1 TB:0000 TA:0000
+Line  76 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  77 Transparency Control MX:1 TB:0000 TA:0000
+Line  77 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  78 Transparency Control MX:1 TB:0000 TA:0000
+Line  78 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  79 Transparency Control MX:1 TB:0000 TA:0000
+Line  79 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  80 Transparency Control MX:1 TB:0000 TA:0000
+Line  80 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  81 Transparency Control MX:1 TB:0000 TA:0000
+Line  81 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  82 Transparency Control MX:1 TB:0000 TA:0000
+Line  82 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  83 Transparency Control MX:1 TB:0000 TA:0000
+Line  83 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  84 Transparency Control MX:1 TB:0000 TA:0000
+Line  84 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  85 Transparency Control MX:1 TB:0000 TA:0000
+Line  85 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  86 Transparency Control MX:1 TB:0000 TA:0000
+Line  86 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  87 Transparency Control MX:1 TB:0000 TA:0000
+Line  87 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  88 Transparency Control MX:1 TB:0000 TA:0000
+Line  88 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  89 Transparency Control MX:1 TB:0000 TA:0000
+Line  89 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  90 Transparency Control MX:1 TB:0000 TA:0000
+Line  90 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  91 Transparency Control MX:1 TB:0000 TA:0000
+Line  91 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  92 Transparency Control MX:1 TB:0000 TA:0000
+Line  92 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  93 Transparency Control MX:1 TB:0000 TA:0000
+Line  93 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  94 Transparency Control MX:1 TB:0000 TA:0000
+Line  94 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  95 Transparency Control MX:1 TB:0000 TA:0000
+Line  95 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  96 Transparency Control MX:1 TB:0000 TA:0000
+Line  96 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  97 Transparency Control MX:1 TB:0000 TA:0000
+Line  97 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  98 Transparency Control MX:1 TB:0000 TA:0000
+Line  98 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line  99 Transparency Control MX:1 TB:0000 TA:0000
+Line  99 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 100 Transparency Control MX:1 TB:0000 TA:0000
+Line 100 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 101 Transparency Control MX:1 TB:0000 TA:0000
+Line 101 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 102 Transparency Control MX:1 TB:0000 TA:0000
+Line 102 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 103 Transparency Control MX:1 TB:0000 TA:0000
+Line 103 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+200000
+INPUT SERIAL ca
+Line 104 Transparency Control MX:1 TB:0000 TA:0000
+Line 104 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 105 Transparency Control MX:1 TB:0000 TA:0000
+Line 105 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 106 Transparency Control MX:1 TB:0000 TA:0000
+Line 106 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 107 Transparency Control MX:1 TB:0000 TA:0000
+Line 107 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 108 Transparency Control MX:1 TB:0000 TA:0000
+Line 108 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 109 Transparency Control MX:1 TB:0000 TA:0000
+Line 109 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 110 Transparency Control MX:1 TB:0000 TA:0000
+Line 110 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 111 Transparency Control MX:1 TB:0000 TA:0000
+Line 111 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 112 Transparency Control MX:1 TB:0000 TA:0000
+Line 112 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 113 Transparency Control MX:1 TB:0000 TA:0000
+Line 113 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 114 Transparency Control MX:1 TB:0000 TA:0000
+Line 114 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 115 Transparency Control MX:1 TB:0000 TA:0000
+Line 115 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 116 Transparency Control MX:1 TB:0000 TA:0000
+Line 116 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 117 Transparency Control MX:1 TB:0000 TA:0000
+Line 117 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 118 Transparency Control MX:1 TB:0000 TA:0000
+Line 118 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 119 Transparency Control MX:1 TB:0000 TA:0000
+Line 119 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 120 Transparency Control MX:1 TB:0000 TA:0000
+Line 120 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 121 Transparency Control MX:1 TB:0000 TA:0000
+Line 121 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 122 Transparency Control MX:1 TB:0000 TA:0000
+Line 122 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 123 Transparency Control MX:1 TB:0000 TA:0000
+Line 123 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 124 Transparency Control MX:1 TB:0000 TA:0000
+Line 124 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 125 Transparency Control MX:1 TB:0000 TA:0000
+Line 125 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 126 Transparency Control MX:1 TB:0000 TA:0000
+Line 126 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 127 Transparency Control MX:1 TB:0000 TA:0000
+Line 127 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 128 Transparency Control MX:1 TB:0000 TA:0000
+Line 128 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 129 Transparency Control MX:1 TB:0000 TA:0000
+Line 129 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 130 Transparency Control MX:1 TB:0000 TA:0000
+Line 130 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 131 Transparency Control MX:1 TB:0000 TA:0000
+Line 131 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 132 Transparency Control MX:1 TB:0000 TA:0000
+Line 132 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 133 Transparency Control MX:1 TB:0000 TA:0000
+Line 133 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 134 Transparency Control MX:1 TB:0000 TA:0000
+Line 134 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 135 Transparency Control MX:1 TB:0000 TA:0000
+Line 135 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 136 Transparency Control MX:1 TB:0000 TA:0000
+Line 136 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 137 Transparency Control MX:1 TB:0000 TA:0000
+Line 137 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 138 Transparency Control MX:1 TB:0000 TA:0000
+Line 138 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 139 Transparency Control MX:1 TB:0000 TA:0000
+Line 139 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 140 Transparency Control MX:1 TB:0000 TA:0000
+Line 140 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 141 Transparency Control MX:1 TB:0000 TA:0000
+Line 141 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 142 Transparency Control MX:1 TB:0000 TA:0000
+Line 142 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 143 Transparency Control MX:1 TB:0000 TA:0000
+Line 143 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 144 Transparency Control MX:1 TB:0000 TA:0000
+Line 144 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 145 Transparency Control MX:1 TB:0000 TA:0000
+Line 145 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 146 Transparency Control MX:1 TB:0000 TA:0000
+Line 146 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 147 Transparency Control MX:1 TB:0000 TA:0000
+Line 147 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 148 Transparency Control MX:1 TB:0000 TA:0000
+Line 148 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 149 Transparency Control MX:1 TB:0000 TA:0000
+Line 149 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 150 Transparency Control MX:1 TB:0000 TA:0000
+Line 150 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 151 Transparency Control MX:1 TB:0000 TA:0000
+Line 151 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 152 Transparency Control MX:1 TB:0000 TA:0000
+Line 152 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 153 Transparency Control MX:1 TB:0000 TA:0000
+Line 153 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 154 Transparency Control MX:1 TB:0000 TA:0000
+Line 154 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 155 Transparency Control MX:1 TB:0000 TA:0000
+Line 155 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+300000
+Line 156 Transparency Control MX:1 TB:0000 TA:0000
+Line 156 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 157 Transparency Control MX:1 TB:0000 TA:0000
+Line 157 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 158 Transparency Control MX:1 TB:0000 TA:0000
+Line 158 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 159 Transparency Control MX:1 TB:0000 TA:0000
+Line 159 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 160 Transparency Control MX:1 TB:0000 TA:0000
+Line 160 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 161 Transparency Control MX:1 TB:0000 TA:0000
+Line 161 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 162 Transparency Control MX:1 TB:0000 TA:0000
+Line 162 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 163 Transparency Control MX:1 TB:0000 TA:0000
+Line 163 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 164 Transparency Control MX:1 TB:0000 TA:0000
+Line 164 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 165 Transparency Control MX:1 TB:0000 TA:0000
+Line 165 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 166 Transparency Control MX:1 TB:0000 TA:0000
+Line 166 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 167 Transparency Control MX:1 TB:0000 TA:0000
+Line 167 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 168 Transparency Control MX:1 TB:0000 TA:0000
+Line 168 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 169 Transparency Control MX:1 TB:0000 TA:0000
+Line 169 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 170 Transparency Control MX:1 TB:0000 TA:0000
+Line 170 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 171 Transparency Control MX:1 TB:0000 TA:0000
+Line 171 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 172 Transparency Control MX:1 TB:0000 TA:0000
+Line 172 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 173 Transparency Control MX:1 TB:0000 TA:0000
+Line 173 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 174 Transparency Control MX:1 TB:0000 TA:0000
+Line 174 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 175 Transparency Control MX:1 TB:0000 TA:0000
+Line 175 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 176 Transparency Control MX:1 TB:0000 TA:0000
+Line 176 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 177 Transparency Control MX:1 TB:0000 TA:0000
+Line 177 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 178 Transparency Control MX:1 TB:0000 TA:0000
+Line 178 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 179 Transparency Control MX:1 TB:0000 TA:0000
+Line 179 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 180 Transparency Control MX:1 TB:0000 TA:0000
+Line 180 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 181 Transparency Control MX:1 TB:0000 TA:0000
+Line 181 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 182 Transparency Control MX:1 TB:0000 TA:0000
+Line 182 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 183 Transparency Control MX:1 TB:0000 TA:0000
+Line 183 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 184 Transparency Control MX:1 TB:0000 TA:0000
+Line 184 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 185 Transparency Control MX:1 TB:0000 TA:0000
+Line 185 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 186 Transparency Control MX:1 TB:0000 TA:0000
+Line 186 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 187 Transparency Control MX:1 TB:0000 TA:0000
+Line 187 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 188 Transparency Control MX:1 TB:0000 TA:0000
+Line 188 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 189 Transparency Control MX:1 TB:0000 TA:0000
+Line 189 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 190 Transparency Control MX:1 TB:0000 TA:0000
+Line 190 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 191 Transparency Control MX:1 TB:0000 TA:0000
+Line 191 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 192 Transparency Control MX:1 TB:0000 TA:0000
+Line 192 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 193 Transparency Control MX:1 TB:0000 TA:0000
+Line 193 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 194 Transparency Control MX:1 TB:0000 TA:0000
+Line 194 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 195 Transparency Control MX:1 TB:0000 TA:0000
+Line 195 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 196 Transparency Control MX:1 TB:0000 TA:0000
+Line 196 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 197 Transparency Control MX:1 TB:0000 TA:0000
+Line 197 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 198 Transparency Control MX:1 TB:0000 TA:0000
+Line 198 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 199 Transparency Control MX:1 TB:0000 TA:0000
+Line 199 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 200 Transparency Control MX:1 TB:0000 TA:0000
+Line 200 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 201 Transparency Control MX:1 TB:0000 TA:0000
+Line 201 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 202 Transparency Control MX:1 TB:0000 TA:0000
+Line 202 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 203 Transparency Control MX:1 TB:0000 TA:0000
+Line 203 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 204 Transparency Control MX:1 TB:0000 TA:0000
+Line 204 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 205 Transparency Control MX:1 TB:0000 TA:0000
+Line 205 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 206 Transparency Control MX:1 TB:0000 TA:0000
+Line 206 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 207 Transparency Control MX:1 TB:0000 TA:0000
+Line 207 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+400000
+Line 208 Transparency Control MX:1 TB:0000 TA:0000
+Line 208 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 209 Transparency Control MX:1 TB:0000 TA:0000
+Line 209 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 210 Transparency Control MX:1 TB:0000 TA:0000
+Line 210 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 211 Transparency Control MX:1 TB:0000 TA:0000
+Line 211 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 212 Transparency Control MX:1 TB:0000 TA:0000
+Line 212 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 213 Transparency Control MX:1 TB:0000 TA:0000
+Line 213 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 214 Transparency Control MX:1 TB:0000 TA:0000
+Line 214 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 215 Transparency Control MX:1 TB:0000 TA:0000
+Line 215 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 216 Transparency Control MX:1 TB:0000 TA:0000
+Line 216 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 217 Transparency Control MX:1 TB:0000 TA:0000
+Line 217 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 218 Transparency Control MX:1 TB:0000 TA:0000
+Line 218 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 219 Transparency Control MX:1 TB:0000 TA:0000
+Line 219 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 220 Transparency Control MX:1 TB:0000 TA:0000
+Line 220 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 221 Transparency Control MX:1 TB:0000 TA:0000
+Line 221 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 222 Transparency Control MX:1 TB:0000 TA:0000
+Line 222 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 223 Transparency Control MX:1 TB:0000 TA:0000
+Line 223 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 224 Transparency Control MX:1 TB:0000 TA:0000
+Line 224 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 225 Transparency Control MX:1 TB:0000 TA:0000
+Line 225 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 226 Transparency Control MX:1 TB:0000 TA:0000
+Line 226 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 227 Transparency Control MX:1 TB:0000 TA:0000
+Line 227 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 228 Transparency Control MX:1 TB:0000 TA:0000
+Line 228 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 229 Transparency Control MX:1 TB:0000 TA:0000
+Line 229 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 230 Transparency Control MX:1 TB:0000 TA:0000
+Line 230 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 231 Transparency Control MX:1 TB:0000 TA:0000
+Line 231 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 232 Transparency Control MX:1 TB:0000 TA:0000
+Line 232 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 233 Transparency Control MX:1 TB:0000 TA:0000
+Line 233 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 234 Transparency Control MX:1 TB:0000 TA:0000
+Line 234 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 235 Transparency Control MX:1 TB:0000 TA:0000
+Line 235 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 236 Transparency Control MX:1 TB:0000 TA:0000
+Line 236 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 237 Transparency Control MX:1 TB:0000 TA:0000
+Line 237 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 238 Transparency Control MX:1 TB:0000 TA:0000
+Line 238 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 239 Transparency Control MX:1 TB:0000 TA:0000
+Line 239 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 240 Transparency Control MX:1 TB:0000 TA:0000
+Line 240 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 241 Transparency Control MX:1 TB:0000 TA:0000
+Line 241 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 242 Transparency Control MX:1 TB:0000 TA:0000
+Line 242 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 243 Transparency Control MX:1 TB:0000 TA:0000
+Line 243 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 244 Transparency Control MX:1 TB:0000 TA:0000
+Line 244 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 245 Transparency Control MX:1 TB:0000 TA:0000
+Line 245 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 246 Transparency Control MX:1 TB:0000 TA:0000
+Line 246 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 247 Transparency Control MX:1 TB:0000 TA:0000
+Line 247 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 248 Transparency Control MX:1 TB:0000 TA:0000
+Line 248 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 249 Transparency Control MX:1 TB:0000 TA:0000
+Line 249 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 250 Transparency Control MX:1 TB:0000 TA:0000
+Line 250 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 251 Transparency Control MX:1 TB:0000 TA:0000
+Line 251 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 252 Transparency Control MX:1 TB:0000 TA:0000
+Line 252 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 253 Transparency Control MX:1 TB:0000 TA:0000
+Line 253 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 254 Transparency Control MX:1 TB:0000 TA:0000
+Line 254 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 255 Transparency Control MX:1 TB:0000 TA:0000
+Line 255 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 256 Transparency Control MX:1 TB:0000 TA:0000
+Line 256 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 257 Transparency Control MX:1 TB:0000 TA:0000
+Line 257 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 258 Transparency Control MX:1 TB:0000 TA:0000
+Line 258 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 259 Transparency Control MX:1 TB:0000 TA:0000
+Line 259 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+500000
+Line 260 Transparency Control MX:1 TB:0000 TA:0000
+Line 260 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 261 Transparency Control MX:1 TB:0000 TA:0000
+Line 261 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 262 Transparency Control MX:1 TB:0000 TA:0000
+Line 262 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 263 Transparency Control MX:1 TB:0000 TA:0000
+Line 263 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 264 Transparency Control MX:1 TB:0000 TA:0000
+Line 264 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 265 Transparency Control MX:1 TB:0000 TA:0000
+Line 265 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 266 Transparency Control MX:1 TB:0000 TA:0000
+Line 266 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 267 Transparency Control MX:1 TB:0000 TA:0000
+Line 267 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 268 Transparency Control MX:1 TB:0000 TA:0000
+Line 268 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 269 Transparency Control MX:1 TB:0000 TA:0000
+Line 269 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 270 Transparency Control MX:1 TB:0000 TA:0000
+Line 270 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 271 Transparency Control MX:1 TB:0000 TA:0000
+Line 271 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 272 Transparency Control MX:1 TB:0000 TA:0000
+Line 272 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 273 Transparency Control MX:1 TB:0000 TA:0000
+Line 273 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 274 Transparency Control MX:1 TB:0000 TA:0000
+Line 274 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 275 Transparency Control MX:1 TB:0000 TA:0000
+Line 275 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 276 Transparency Control MX:1 TB:0000 TA:0000
+Line 276 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 277 Transparency Control MX:1 TB:0000 TA:0000
+Line 277 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 278 Transparency Control MX:1 TB:0000 TA:0000
+Line 278 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 279 Transparency Control MX:1 TB:0000 TA:0000
+Line 279 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 280 Transparency Control MX:1 TB:0000 TA:0000
+Line 280 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 281 Transparency Control MX:1 TB:0000 TA:0000
+Line 281 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 282 Transparency Control MX:1 TB:0000 TA:0000
+Line 282 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 283 Transparency Control MX:1 TB:0000 TA:0000
+Line 283 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 284 Transparency Control MX:1 TB:0000 TA:0000
+Line 284 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Line 285 Transparency Control MX:1 TB:0000 TA:0000
+Line 285 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 07fb10
+Plane B ignored 40
+Line 286 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 287 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 288 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 289 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 290 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 291 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 292 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 293 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 294 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 295 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 296 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 297 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 298 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 299 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 300 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 301 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 302 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 303 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 304 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Cursor X: 384 Y: 140
+Cursor Control 101110000000000000001001
+Cursor 0 0000000000000000
+Cursor 1 0100000000000000
+Cursor 2 0110000000000000
+Trans Color Plane B 63 63 63
+Cursor 3 0111000000000000
+Cursor 4 0111100000000000
+Cursor 5 0111110000000000
+DYUV Abs. Start Plane B 128 128 128
+Cursor 6 0111111000000000
+Line 306 Weight B 63
+Cursor 7 0111111100000000
+Mosaic B 0 00000001
+Cursor 8 0111111110000000
+Cursor 9 0111110000000000
+Cursor a 0110110000000000
+Cursor b 0100011000000000
+Cursor c 0000011000000000
+Cursor d 0000001100000000
+Cursor e 0000001100000000
+Cursor f 0000000000000000
+Line 306 Transparency Control MX:0 TB:1000 TA:1000
+Plane B ignored 40
+Plane A in front of Plane B
+Line 306 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Trans Color Plane A 63 63 63
+Line 306 Weight A 63
+Mosaic A 0 00000001
+Reload VSR1 000000
+Line 306 Transparency Control MX:1 TB:0001 TA:0001
+Line 306 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Backdrop Color 0000
+Line 306 Region CH0 0   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 1   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 2   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 3   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 5   CMD:0000   RF:0   Weight: 0   X:   0
+Line 307 Region CH0 6   CMD:0000   RF:0   Weight: 0   X:   0
+CLUT A    0  63 63 63
+CLUT A    1   0  0  0
+CLUT A    2  13 13 13
+CLUT A    3  27 27 27
+CLUT A    4  35 35 35
+CLUT A    5  43 43 43
+CLUT A    6  50 50 50
+CLUT A    7  54 54 54
+CLUT A    8  60 60 60
+CLUT A    9   0  0  0
+CLUT A   10   0  0  0
+CLUT A   11   0  0  0
+CLUT A   12   0  0  0
+CLUT A   13   0  0  0
+CLUT A   14   0  0  0
+CLUT A   15   0  0  0
+CLUT A   16   0  0  0
+CLUT A   17   0  0  0
+CLUT A   18   0  0  0
+CLUT A   19   0  0  0
+CLUT A   20   0  0  0
+CLUT A   21   0  0  0
+CLUT A   22   0  0  0
+CLUT A   23   0  0  0
+CLUT A   24   0  0  0
+CLUT A   25   0  0  0
+CLUT A   26   0  0  0
+CLUT A   27   0  0  0
+CLUT A   28   0  0  0
+CLUT A   29   0  0  0
+CLUT A   30   0  0  0
+CLUT A   31   0  0  0
+CLUT A   32   0  0  0
+CLUT A   33   0  0  0
+CLUT A   34   0  0  0
+CLUT A   35   0  0  0
+CLUT A   36   0  0  0
+CLUT A   37   0  0  0
+CLUT A   38   0  0  0
+CLUT A   39   0  0  0
+CLUT A   40   0  0  0
+CLUT A   41   0  0  0
+CLUT A   42   0  0  0
+CLUT A   43   0  0  0
+CLUT A   44   0  0  0
+CLUT A   45   0  0  0
+CLUT A   46   0  0  0
+CLUT A   47   0  0  0
+CLUT A   48   0  0  0
+CLUT A   49   0  0  0
+CLUT A   50   0  0  0
+CLUT A   51   0  0  0
+CLUT A   52   0  0  0
+CLUT A   53   0  0  0
+CLUT A   54   0  0  0
+CLUT A   55   0  0  0
+CLUT A   56   0  0  0
+CLUT A   57   0  0  0
+CLUT A   58   0  0  0
+CLUT A   59   0  0  0
+CLUT A   60   0  0  0
+CLUT A   61   0  0  0
+CLUT A   62   0  0  0
+CLUT A   63   0  0  0
+CLUT A   64   0  0  0
+CLUT A   65   0  0  0
+CLUT A   66   0  0  0
+CLUT A   67   0  0  0
+CLUT A   68   0  0  0
+CLUT A   69   0  0  0
+CLUT A   70   0  0  0
+CLUT A   71   0  0  0
+CLUT A   72   0  0  0
+CLUT A   73   0  0  0
+CLUT A   74   0  0  0
+CLUT A   75   0  0  0
+CLUT A   76   0  0  0
+CLUT A   77   0  0  0
+CLUT A   78   0  0  0
+CLUT A   79   0  0  0
+CLUT A   80   0  0  0
+CLUT A   81   0  0  0
+CLUT A   82   0  0  0
+CLUT A   83   0  0  0
+CLUT A   84   0  0  0
+CLUT A   85   0  0  0
+CLUT A   86   0  0  0
+CLUT A   87   0  0  0
+CLUT A   88   0  0  0
+CLUT A   89   0  0  0
+CLUT A   90   0  0  0
+CLUT A   91   0  0  0
+CLUT A   92   0  0  0
+CLUT A   93   0  0  0
+CLUT A   94   0  0  0
+CLUT A   95   0  0  0
+CLUT A   96   0  0  0
+CLUT A   97   0  0  0
+CLUT A   98   0  0  0
+CLUT A   99   0  0  0
+CLUT A  100  62 62 62
+CLUT A  101   0  0  0
+CLUT A  102  30 33 37
+CLUT A  103  20 20 24
+CLUT A  104  22 22 26
+CLUT A  105  24 24 28
+CLUT A  106  12 12 14
+CLUT A  107  35 35 39
+CLUT A  108  39 39 43
+CLUT A  109  18 18 20
+CLUT A  110  41 41 45
+CLUT A  111  43 43 47
+CLUT A  112  28 28 30
+CLUT A  113  47 47 49
+CLUT A  114   8  6 20
+CLUT A  115  12  8 24
+CLUT A  116  33 28 33
+CLUT A  117  43 33 39
+CLUT A  118  47 22 33
+CLUT A  119  22 12 16
+CLUT A  120  35 18 24
+CLUT A  121  43  6 18
+CLUT A  122  24  4 10
+CLUT A  123  33  4 12
+CLUT A  124  53  8 20
+CLUT A  125  51 14 24
+CLUT A  126  35 12 18
+CLUT A  127   8  8  8
+CLUT A  128  20 63  0
+CLUT A  129   0  0  1
+CLUT A  130   0  0  2
+CLUT A  131   0  0  4
+CLUT A  132   0  2  3
+CLUT A  133   2  1  2
+CLUT A  134   0  2  4
+CLUT A  135   2  1  4
+CLUT A  136   0  1  6
+CLUT A  137   2  2  4
+CLUT A  138   1  2  7
+CLUT A  139   1  1  8
+CLUT A  140   4  2  4
+CLUT A  141   2  2  7
+CLUT A  142   2  4  6
+CLUT A  143   2  2  8
+CLUT A  144   5  5  6
+CLUT A  145   3  3 10
+CLUT A  146   4  3 10
+CLUT A  147   3  3 12
+CLUT A  148   3  4 11
+CLUT A  149   4  4 12
+CLUT A  150   6  6  9
+CLUT A  151  10  5  6
+CLUT A  152   4  4 14
+CLUT A  153   5  9 10
+CLUT A  154   6  6 13
+CLUT A  155  12  9  5
+CLUT A  156   2  4 22
+CLUT A  157  10  9 10
+CLUT A  158  10 10 13
+CLUT A  159  12 11 12
+CLUT A  160   9 13 13
+CLUT A  161  13 13 10
+CLUT A  162  23 10  5
+CLUT A  163  13 13 13
+CLUT A  164  10  5 24
+CLUT A  165  13 13 14
+CLUT A  166  11 19 10
+CLUT A  167  14 13 14
+CLUT A  168  15 14 12
+CLUT A  169  13 14 14
+CLUT A  170  14 14 14
+CLUT A  171  12 12 21
+CLUT A  172  16 16 16
+CLUT A  173   0 25 25
+CLUT A  174  19 11 20
+CLUT A  175   1 13 41
+CLUT A  176  18 18 18
+CLUT A  177  40  9  6
+CLUT A  178  13 18 24
+CLUT A  179  24 22 10
+CLUT A  180  18 18 21
+CLUT A  181  18 21 19
+CLUT A  182  21 21 20
+CLUT A  183  36 22  5
+CLUT A  184  38  3 24
+CLUT A  185  19 20 27
+CLUT A  186  25 22 22
+CLUT A  187  20 26 24
+CLUT A  188  18  0 54
+CLUT A  189   0 18 55
+CLUT A  190   0 37 37
+CLUT A  191  27 27 21
+Reading ram dumps from /home/andre/Projekte/cdiramdups/ramdumps//comptons5*.bin
+Splitting 1 ram dumps into 14 sizes of 1
+Child is PID 30407
+Waiting for the runners to finish...
+PID 30407 has finished!

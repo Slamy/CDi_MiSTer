@@ -1,0 +1,1599 @@
+vasm 1.8f (c) in 2002-2019 Volker Barthelmann
+vasm M68k/CPU32/ColdFire cpu backend 2.3e (c) 2002-2019 Frank Wille
+vasm motorola syntax module 3.12c (c) 2002-2019 Frank Wille
+vasm binary output module 1.8a (c) 2002-2009,2013,2015,2017 Volker Barthelmann
+
+.text(acrx2):	          32 bytes
+make: Verzeichnis „/home/andre/GIT/scc68070/sim2/obj_dir“ wird betreten
+make: Für das Ziel „default“ ist nichts zu tun.
+make: Verzeichnis „/home/andre/GIT/scc68070/sim2/obj_dir“ wird verlassen
+- V e r i l a t i o n   R e p o r t: Verilator 5.048 2026-04-26 rev vUNKNOWN-built20260429
+- Verilator: Built from 0.000 MB sources in 0 modules, into 0.000 MB in 0 C++ files needing 0.000 MB
+- Verilator: Walltime 0.019 s (elab=0.000, cvt=0.000, bld=0.018); cpu 0.001 s on 8 threads; allocated 19.691 MB
+Reading ram dumps from /home/andre/Projekte/cdiramdups/ramdumps//comptons3.bin
+Splitting 1 ram dumps into 14 sizes of 1
+Runner 0 is PID 0
+Runner 0 /home/andre/Projekte/cdiramdups/ramdumps//comptons3.bin
+RAM Zeroed
+Video Timing Parameters: 01000
+Cursor X: 216 Y: 171
+Cursor Control 101110000000000000001001
+Cursor 0 0000000000000000
+Cursor 1 0100000000000000
+Cursor 2 0110000000000000
+Trans Color Plane B 63 63 63
+Cursor 3 0111000000000000
+Cursor 4 0111100000000000
+Cursor 5 0111110000000000
+DYUV Abs. Start Plane B 128 128 128
+Cursor 6 0111111000000000
+Line   0 Weight B 63
+Cursor 7 0111111100000000
+Mosaic B 0 00000001
+Cursor 8 0111111110000000
+Cursor 9 0111110000000000
+Cursor a 0110110000000000
+Cursor b 0100011000000000
+Cursor c 0000011000000000
+Cursor d 0000001100000000
+Cursor e 0000001100000000
+Cursor f 0000000000000000
+Line   0 Transparency Control MX:0 TB:1000 TA:1000
+Plane B ignored 40
+Plane A in front of Plane B
+Line   0 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Trans Color Plane A 63 63 63
+Line   0 Weight A 63
+Mosaic A 0 00000001
+Reload VSR1 000000
+Line   0 Transparency Control MX:1 TB:0001 TA:0001
+Line   0 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Backdrop Color 0000
+Line   0 Region CH0 0   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 1   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 2   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 3   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 5   CMD:0000   RF:0   Weight: 0   X:   0
+Line   0 Region CH0 6   CMD:0000   RF:0   Weight: 0   X:   0
+CLUT A    0  63 63 63
+CLUT A    1   0  0  0
+CLUT A    2  13 13 13
+CLUT A    3  27 27 27
+CLUT A    4  35 35 35
+CLUT A    5  43 43 43
+CLUT A    6  50 50 50
+CLUT A    7  54 54 54
+CLUT A    8  60 60 60
+CLUT A    9   0  0  0
+CLUT A   10   0  0  0
+CLUT A   11   0  0  0
+CLUT A   12   0  0  0
+CLUT A   13   0  0  0
+CLUT A   14   0  0  0
+CLUT A   15   0  0  0
+CLUT A   16   0  0  0
+CLUT A   17   0  0  0
+CLUT A   18   0  0  0
+CLUT A   19   0  0  0
+CLUT A   20   0  0  0
+CLUT A   21   0  0  0
+CLUT A   22   0  0  0
+CLUT A   23   0  0  0
+CLUT A   24   0  0  0
+CLUT A   25   0  0  0
+CLUT A   26   0  0  0
+CLUT A   27   0  0  0
+CLUT A   28   0  0  0
+CLUT A   29   0  0  0
+CLUT A   30   0  0  0
+CLUT A   31   0  0  0
+CLUT A   32   0  0  0
+CLUT A   33   0  0  0
+CLUT A   34   0  0  0
+CLUT A   35   0  0  0
+CLUT A   36   0  0  0
+CLUT A   37   0  0  0
+CLUT A   38   0  0  0
+CLUT A   39   0  0  0
+CLUT A   40   0  0  0
+CLUT A   41   0  0  0
+CLUT A   42   0  0  0
+CLUT A   43   0  0  0
+CLUT A   44   0  0  0
+CLUT A   45   0  0  0
+CLUT A   46   0  0  0
+CLUT A   47   0  0  0
+CLUT A   48   0  0  0
+CLUT A   49   0  0  0
+CLUT A   50   0  0  0
+CLUT A   51   0  0  0
+CLUT A   52   0  0  0
+CLUT A   53   0  0  0
+CLUT A   54   0  0  0
+CLUT A   55   0  0  0
+CLUT A   56   0  0  0
+CLUT A   57   0  0  0
+CLUT A   58   0  0  0
+CLUT A   59   0  0  0
+CLUT A   60   0  0  0
+CLUT A   61   0  0  0
+CLUT A   62   0  0  0
+CLUT A   63   0  0  0
+CLUT A   64   0  0  0
+CLUT A   65   0  0  0
+CLUT A   66   0  0  0
+CLUT A   67   0  0  0
+CLUT A   68   0  0  0
+CLUT A   69   0  0  0
+CLUT A   70   0  0  0
+CLUT A   71   0  0  0
+CLUT A   72   0  0  0
+CLUT A   73   0  0  0
+CLUT A   74   0  0  0
+CLUT A   75   0  0  0
+CLUT A   76   0  0  0
+CLUT A   77   0  0  0
+CLUT A   78   0  0  0
+CLUT A   79   0  0  0
+CLUT A   80   0  0  0
+CLUT A   81   0  0  0
+CLUT A   82   0  0  0
+CLUT A   83   0  0  0
+CLUT A   84   0  0  0
+CLUT A   85   0  0  0
+CLUT A   86   0  0  0
+CLUT A   87   0  0  0
+CLUT A   88   0  0  0
+CLUT A   89   0  0  0
+CLUT A   90   0  0  0
+CLUT A   91   0  0  0
+CLUT A   92   0  0  0
+CLUT A   93   0  0  0
+CLUT A   94   0  0  0
+CLUT A   95   0  0  0
+CLUT A   96   0  0  0
+CLUT A   97   0  0  0
+CLUT A   98   0  0  0
+CLUT A   99   0  0  0
+CLUT A  100  62 62 62
+CLUT A  101   0  0  0
+CLUT A  102  30 33 37
+CLUT A  103  20 20 24
+CLUT A  104  22 22 26
+CLUT A  105  24 24 28
+CLUT A  106  12 12 14
+CLUT A  107  35 35 39
+CLUT A  108  39 39 43
+CLUT A  109  18 18 20
+CLUT A  110  41 41 45
+CLUT A  111  43 43 47
+CLUT A  112  28 28 30
+CLUT A  113  47 47 49
+CLUT A  114   8  6 20
+CLUT A  115  12  8 24
+CLUT A  116  33 28 33
+CLUT A  117  43 33 39
+CLUT A  118  47 22 33
+CLUT A  119  22 12 16
+CLUT A  120  35 18 24
+CLUT A  121  43  6 18
+CLUT A  122  24  4 10
+CLUT A  123  33  4 12
+CLUT A  124  53  8 20
+CLUT A  125  51 14 24
+CLUT A  126  35 12 18
+CLUT A  127   8  8  8
+CLUT A  128  20 63  0
+CLUT A  129   0  0  1
+CLUT A  130   0  0  2
+CLUT A  131   0  0  4
+CLUT A  132   0  2  3
+CLUT A  133   2  1  2
+CLUT A  134   0  2  4
+CLUT A  135   2  1  4
+CLUT A  136   0  1  6
+CLUT A  137   2  2  4
+CLUT A  138   1  2  7
+CLUT A  139   1  1  8
+CLUT A  140   4  2  4
+CLUT A  141   2  2  7
+CLUT A  142   2  4  6
+CLUT A  143   2  2  8
+CLUT A  144   5  5  6
+CLUT A  145   3  3 10
+CLUT A  146   4  3 10
+CLUT A  147   3  3 12
+CLUT A  148   3  4 11
+CLUT A  149   4  4 12
+CLUT A  150   6  6  9
+CLUT A  151  10  5  6
+CLUT A  152   4  4 14
+CLUT A  153   5  9 10
+CLUT A  154   6  6 13
+CLUT A  155  12  9  5
+CLUT A  156   2  4 22
+CLUT A  157  10  9 10
+CLUT A  158  10 10 13
+CLUT A  159  12 11 12
+CLUT A  160   9 13 13
+CLUT A  161  13 13 10
+CLUT A  162  23 10  5
+CLUT A  163  13 13 13
+CLUT A  164  10  5 24
+CLUT A  165  13 13 14
+CLUT A  166  11 19 10
+CLUT A  167  14 13 14
+CLUT A  168  15 14 12
+CLUT A  169  13 14 14
+CLUT A  170  14 14 14
+CLUT A  171  12 12 21
+CLUT A  172  16 16 16
+CLUT A  173   0 25 25
+CLUT A  174  19 11 20
+CLUT A  175   1 13 41
+CLUT A  176  18 18 18
+CLUT A  177  40  9  6
+CLUT A  178  13 18 24
+CLUT A  179  24 22 10
+CLUT A  180  18 18 21
+CLUT A  181  18 21 19
+CLUT A  182  21 21 20
+CLUT A  183  36 22  5
+CLUT A  184  38  3 24
+CLUT A  185  19 20 27
+CLUT A  186  25 22 22
+CLUT A  187  20 26 24
+CLUT A  188  18  0 54
+CLUT A  189   0 18 55
+CLUT A  190   0 37 37
+CLUT A  191  27 27 21
+CLUT A  192  43 25  7
+CLUT A  193   9 34 35
+CLUT A  194  25 26 27
+CLUT A  195  52 23  4
+CLUT A  196  21 24 34
+CLUT A  197  28 34 20
+CLUT A  198  56  6 21
+CLUT A  199  44 34  5
+CLUT A  200   0 42 42
+CLUT A  201  59 24  3
+CLUT A  202  30 29 28
+CLUT A  203  33 30 26
+CLUT A  204  52 18 19
+CLUT A  205  35 36 19
+CLUT A  206   0 46 46
+CLUT A  207  28 29 36
+CLUT A  208  34 33 29
+CLUT A  209   0 48 48
+CLUT A  210  53 35  9
+CLUT A  211  36 35 28
+CLUT A  212  34 34 34
+CLUT A  213  36 35 33
+CLUT A  214  56  9 39
+CLUT A  215  33 33 37
+CLUT A  216  37 42 25
+CLUT A  217  59 36 11
+CLUT A  218  34 36 37
+CLUT A  219  29 34 44
+CLUT A  220  43 41 24
+CLUT A  221  36 36 36
+CLUT A  222  34 35 41
+CLUT A  223  36 36 39
+CLUT A  224  36 36 41
+CLUT A  225  39 39 39
+CLUT A  226  40 40 40
+CLUT A  227  38 38 42
+CLUT A  228  42 38 39
+CLUT A  229  44 49 28
+CLUT A  230  53 42 26
+CLUT A  231  37 41 43
+CLUT A  232  39 39 44
+CLUT A  233  44 44 34
+CLUT A  234  54 53 15
+CLUT A  235  40 40 43
+CLUT A  236  41 41 45
+CLUT A  237  42 42 42
+CLUT A  238  39 42 51
+CLUT A  239  45 49 38
+CLUT A  240  44 44 44
+CLUT A  241  45 42 45
+CLUT A  242  53 45 36
+CLUT A  243  44 44 47
+CLUT A  244  46 46 46
+CLUT A  245  48 48 48
+CLUT A  246  49 49 52
+CLUT A  247  50 50 50
+CLUT A  248  60 55 40
+CLUT A  249  52 52 52
+CLUT A  250  55 55 55
+CLUT A  251  56 56 56
+CLUT A  252  58 58 58
+CLUT A  253  63 62 51
+SERVO ff ff
+CLUT A  254  61 61 61
+CLUT A  255   0  0  0
+SERVO ff ff
+Line   7 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Reload VSR0 000000
+Line  26 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  27 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  28 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  29 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  30 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  31 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  32 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  33 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  34 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  35 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  36 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  37 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  38 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  39 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  40 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  41 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  42 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  43 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  44 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line  46 Transparency Control MX:1 TB:0001 TA:0001
+Plane A in front of Plane B
+Line  46 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02457c
+Reload VSR1 2026c0
+Line  47 Transparency Control MX:1 TB:0001 TA:0001
+Line  47 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0246fc
+Reload VSR1 202840
+Line  48 Transparency Control MX:1 TB:0001 TA:0001
+Line  48 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02487c
+Reload VSR1 2029c0
+Line  49 Transparency Control MX:1 TB:0001 TA:0001
+Line  49 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0249fc
+Reload VSR1 202b40
+Line  50 Transparency Control MX:1 TB:0001 TA:0001
+Line  50 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 024b7c
+Reload VSR1 202cc0
+Line  51 Transparency Control MX:1 TB:0001 TA:0001
+Line  51 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 024cfc
+Reload VSR1 202e40
+100000
+Line  52 Transparency Control MX:1 TB:0001 TA:0001
+Line  52 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 024e7c
+Reload VSR1 202fc0
+Line  53 Transparency Control MX:1 TB:0001 TA:0001
+Line  53 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 024ffc
+Reload VSR1 203140
+Line  54 Transparency Control MX:1 TB:0001 TA:0001
+Line  54 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02517c
+Reload VSR1 2032c0
+Line  55 Transparency Control MX:1 TB:0001 TA:0001
+Line  55 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0252fc
+Reload VSR1 203440
+Line  56 Transparency Control MX:1 TB:0001 TA:0001
+Line  56 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02547c
+Reload VSR1 2035c0
+Line  57 Transparency Control MX:1 TB:0001 TA:0001
+Line  57 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0255fc
+Reload VSR1 203740
+Line  58 Transparency Control MX:1 TB:0001 TA:0001
+Line  58 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02577c
+Reload VSR1 2038c0
+Line  59 Transparency Control MX:1 TB:0001 TA:0001
+Line  59 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0258fc
+Reload VSR1 203a40
+Line  60 Transparency Control MX:1 TB:0001 TA:0001
+Line  60 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 025a7c
+Reload VSR1 203bc0
+Line  61 Transparency Control MX:1 TB:0001 TA:0001
+Line  61 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 025bfc
+Reload VSR1 203d40
+Line  62 Transparency Control MX:1 TB:0001 TA:0001
+Line  62 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 025d7c
+Reload VSR1 203ec0
+Line  63 Transparency Control MX:1 TB:0001 TA:0001
+Line  63 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 025efc
+Reload VSR1 204040
+Line  64 Transparency Control MX:1 TB:0001 TA:0001
+Line  64 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02607c
+Reload VSR1 2041c0
+Line  65 Transparency Control MX:1 TB:0001 TA:0001
+Line  65 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0261fc
+Reload VSR1 204340
+Line  66 Transparency Control MX:1 TB:0001 TA:0001
+Line  66 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02637c
+Reload VSR1 2044c0
+Line  67 Transparency Control MX:1 TB:0001 TA:0001
+Line  67 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0264fc
+Reload VSR1 204640
+Line  68 Transparency Control MX:1 TB:0001 TA:0001
+Line  68 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02667c
+Reload VSR1 2047c0
+Line  69 Transparency Control MX:1 TB:0001 TA:0001
+Line  69 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0267fc
+Reload VSR1 204940
+Line  70 Transparency Control MX:1 TB:0001 TA:0001
+Line  70 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02697c
+Reload VSR1 204ac0
+Line  71 Transparency Control MX:1 TB:0001 TA:0001
+Line  71 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 026afc
+Reload VSR1 204c40
+Line  72 Transparency Control MX:1 TB:0001 TA:0001
+Line  72 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 026c7c
+Reload VSR1 204dc0
+Line  73 Transparency Control MX:1 TB:0001 TA:0001
+Line  73 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 026dfc
+Reload VSR1 204f40
+Line  74 Transparency Control MX:1 TB:0001 TA:0001
+Line  74 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 026f7c
+Reload VSR1 2050c0
+Line  75 Transparency Control MX:1 TB:0001 TA:0001
+Line  75 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0270fc
+Reload VSR1 205240
+Line  76 Transparency Control MX:1 TB:0001 TA:0001
+Line  76 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02727c
+Reload VSR1 2053c0
+Line  77 Transparency Control MX:1 TB:0001 TA:0001
+Line  77 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0273fc
+Reload VSR1 205540
+Line  78 Transparency Control MX:1 TB:0001 TA:0001
+Line  78 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02757c
+Reload VSR1 2056c0
+Line  79 Transparency Control MX:1 TB:0001 TA:0001
+Line  79 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0276fc
+Reload VSR1 205840
+Line  80 Transparency Control MX:1 TB:0001 TA:0001
+Line  80 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02787c
+Reload VSR1 2059c0
+Line  81 Transparency Control MX:1 TB:0001 TA:0001
+Line  81 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0279fc
+Reload VSR1 205b40
+Line  82 Transparency Control MX:1 TB:0001 TA:0001
+Line  82 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 027b7c
+Reload VSR1 205cc0
+Line  83 Transparency Control MX:1 TB:0001 TA:0001
+Line  83 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 027cfc
+Reload VSR1 205e40
+Line  84 Transparency Control MX:1 TB:0001 TA:0001
+Line  84 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 027e7c
+Reload VSR1 205fc0
+Line  85 Transparency Control MX:1 TB:0001 TA:0001
+Line  85 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 027ffc
+Reload VSR1 206140
+Line  86 Transparency Control MX:1 TB:0001 TA:0001
+Line  86 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02817c
+Reload VSR1 2062c0
+Line  87 Transparency Control MX:1 TB:0001 TA:0001
+Line  87 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0282fc
+Reload VSR1 206440
+Line  88 Transparency Control MX:1 TB:0001 TA:0001
+Line  88 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02847c
+Reload VSR1 2065c0
+Line  89 Transparency Control MX:1 TB:0001 TA:0001
+Line  89 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0285fc
+Reload VSR1 206740
+Line  90 Transparency Control MX:1 TB:0001 TA:0001
+Line  90 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02877c
+Reload VSR1 2068c0
+Line  91 Transparency Control MX:1 TB:0001 TA:0001
+Line  91 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0288fc
+Reload VSR1 206a40
+Line  92 Transparency Control MX:1 TB:0001 TA:0001
+Line  92 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 028a7c
+Reload VSR1 206bc0
+Line  93 Transparency Control MX:1 TB:0001 TA:0001
+Line  93 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 028bfc
+Reload VSR1 206d40
+Line  94 Transparency Control MX:1 TB:0001 TA:0001
+Line  94 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 028d7c
+Reload VSR1 206ec0
+Line  95 Transparency Control MX:1 TB:0001 TA:0001
+Line  95 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 028efc
+Reload VSR1 207040
+Line  96 Transparency Control MX:1 TB:0001 TA:0001
+Line  96 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02907c
+Reload VSR1 2071c0
+Line  97 Transparency Control MX:1 TB:0001 TA:0001
+Line  97 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0291fc
+Reload VSR1 207340
+Line  98 Transparency Control MX:1 TB:0001 TA:0001
+Line  98 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02937c
+Reload VSR1 2074c0
+Line  99 Transparency Control MX:1 TB:0001 TA:0001
+Line  99 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0294fc
+Reload VSR1 207640
+Line 100 Transparency Control MX:1 TB:0001 TA:0001
+Line 100 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02967c
+Reload VSR1 2077c0
+Line 101 Transparency Control MX:1 TB:0001 TA:0001
+Line 101 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0297fc
+Reload VSR1 207940
+Line 102 Transparency Control MX:1 TB:0001 TA:0001
+Line 102 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02997c
+Reload VSR1 207ac0
+Line 103 Transparency Control MX:1 TB:0001 TA:0001
+Line 103 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 029afc
+Reload VSR1 207c40
+200000
+INPUT SERIAL ca
+Line 104 Transparency Control MX:1 TB:0001 TA:0001
+Line 104 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 029c7c
+Reload VSR1 207dc0
+Line 105 Transparency Control MX:1 TB:0001 TA:0001
+Line 105 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 029dfc
+Reload VSR1 207f40
+Line 106 Transparency Control MX:1 TB:0001 TA:0001
+Line 106 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 029f7c
+Reload VSR1 2080c0
+Line 107 Transparency Control MX:1 TB:0001 TA:0001
+Line 107 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02a0fc
+Reload VSR1 208240
+Line 108 Transparency Control MX:1 TB:0001 TA:0001
+Line 108 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02a27c
+Reload VSR1 2083c0
+Line 109 Transparency Control MX:1 TB:0001 TA:0001
+Line 109 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02a3fc
+Reload VSR1 208540
+Line 110 Transparency Control MX:1 TB:0001 TA:0001
+Line 110 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02a57c
+Reload VSR1 2086c0
+Line 111 Transparency Control MX:1 TB:0001 TA:0001
+Line 111 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02a6fc
+Reload VSR1 208840
+Line 112 Transparency Control MX:1 TB:0001 TA:0001
+Line 112 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02a87c
+Reload VSR1 2089c0
+Line 113 Transparency Control MX:1 TB:0001 TA:0001
+Line 113 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02a9fc
+Reload VSR1 208b40
+Line 114 Transparency Control MX:1 TB:0001 TA:0001
+Line 114 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02ab7c
+Reload VSR1 208cc0
+Line 115 Transparency Control MX:1 TB:0001 TA:0001
+Line 115 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02acfc
+Reload VSR1 208e40
+Line 116 Transparency Control MX:1 TB:0001 TA:0001
+Line 116 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02ae7c
+Reload VSR1 208fc0
+Line 117 Transparency Control MX:1 TB:0001 TA:0001
+Line 117 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02affc
+Reload VSR1 209140
+Line 118 Transparency Control MX:1 TB:0001 TA:0001
+Line 118 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02b17c
+Reload VSR1 2092c0
+Line 119 Transparency Control MX:1 TB:0001 TA:0001
+Line 119 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02b2fc
+Reload VSR1 209440
+Line 120 Transparency Control MX:1 TB:0001 TA:0001
+Line 120 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02b47c
+Reload VSR1 2095c0
+Line 121 Transparency Control MX:1 TB:0001 TA:0001
+Line 121 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02b5fc
+Reload VSR1 209740
+Line 122 Transparency Control MX:1 TB:0001 TA:0001
+Line 122 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02b77c
+Reload VSR1 2098c0
+Line 123 Transparency Control MX:1 TB:0001 TA:0001
+Line 123 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02b8fc
+Reload VSR1 209a40
+Line 124 Transparency Control MX:1 TB:0001 TA:0001
+Line 124 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02ba7c
+Reload VSR1 209bc0
+Line 125 Transparency Control MX:1 TB:0001 TA:0001
+Line 125 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02bbfc
+Reload VSR1 209d40
+Line 126 Transparency Control MX:1 TB:0001 TA:0001
+Line 126 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02bd7c
+Reload VSR1 209ec0
+Line 127 Transparency Control MX:1 TB:0001 TA:0001
+Line 127 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02befc
+Reload VSR1 20a040
+Line 128 Transparency Control MX:1 TB:0001 TA:0001
+Line 128 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02c07c
+Reload VSR1 20a1c0
+Line 129 Transparency Control MX:1 TB:0001 TA:0001
+Line 129 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02c1fc
+Reload VSR1 20a340
+Line 130 Transparency Control MX:1 TB:0001 TA:0001
+Line 130 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02c37c
+Reload VSR1 20a4c0
+Line 131 Transparency Control MX:1 TB:0001 TA:0001
+Line 131 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02c4fc
+Reload VSR1 20a640
+Line 132 Transparency Control MX:1 TB:0001 TA:0001
+Line 132 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02c67c
+Reload VSR1 20a7c0
+Line 133 Transparency Control MX:1 TB:0001 TA:0001
+Line 133 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02c7fc
+Reload VSR1 20a940
+Line 134 Transparency Control MX:1 TB:0001 TA:0001
+Line 134 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02c97c
+Reload VSR1 20aac0
+Line 135 Transparency Control MX:1 TB:0001 TA:0001
+Line 135 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02cafc
+Reload VSR1 20ac40
+Line 136 Transparency Control MX:1 TB:0001 TA:0001
+Line 136 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02cc7c
+Reload VSR1 20adc0
+Line 137 Transparency Control MX:1 TB:0001 TA:0001
+Line 137 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02cdfc
+Reload VSR1 20af40
+Line 138 Transparency Control MX:1 TB:0001 TA:0001
+Line 138 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02cf7c
+Reload VSR1 20b0c0
+Line 139 Transparency Control MX:1 TB:0001 TA:0001
+Line 139 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02d0fc
+Reload VSR1 20b240
+Line 140 Transparency Control MX:1 TB:0001 TA:0001
+Line 140 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02d27c
+Reload VSR1 20b3c0
+Line 141 Transparency Control MX:1 TB:0001 TA:0001
+Line 141 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02d3fc
+Reload VSR1 20b540
+Line 142 Transparency Control MX:1 TB:0001 TA:0001
+Line 142 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02d57c
+Reload VSR1 20b6c0
+Line 143 Transparency Control MX:1 TB:0001 TA:0001
+Line 143 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02d6fc
+Reload VSR1 20b840
+Line 144 Transparency Control MX:1 TB:0001 TA:0001
+Line 144 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02d87c
+Reload VSR1 20b9c0
+Line 145 Transparency Control MX:1 TB:0001 TA:0001
+Line 145 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02d9fc
+Reload VSR1 20bb40
+Line 146 Transparency Control MX:1 TB:0001 TA:0001
+Line 146 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02db7c
+Reload VSR1 20bcc0
+Line 147 Transparency Control MX:1 TB:0001 TA:0001
+Line 147 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02dcfc
+Reload VSR1 20be40
+Line 148 Transparency Control MX:1 TB:0001 TA:0001
+Line 148 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02de7c
+Reload VSR1 20bfc0
+Line 149 Transparency Control MX:1 TB:0001 TA:0001
+Line 149 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02dffc
+Reload VSR1 20c140
+Line 150 Transparency Control MX:1 TB:0001 TA:0001
+Line 150 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02e17c
+Reload VSR1 20c2c0
+Line 151 Transparency Control MX:1 TB:0001 TA:0001
+Line 151 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02e2fc
+Reload VSR1 20c440
+Line 152 Transparency Control MX:1 TB:0001 TA:0001
+Line 152 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02e47c
+Reload VSR1 20c5c0
+Line 153 Transparency Control MX:1 TB:0001 TA:0001
+Line 153 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02e5fc
+Reload VSR1 20c740
+Line 154 Transparency Control MX:1 TB:0001 TA:0001
+Line 154 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02e77c
+Reload VSR1 20c8c0
+Line 155 Transparency Control MX:1 TB:0001 TA:0001
+Line 155 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02e8fc
+Reload VSR1 20ca40
+300000
+Line 156 Transparency Control MX:1 TB:0001 TA:0001
+Line 156 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02ea7c
+Reload VSR1 20cbc0
+Line 157 Transparency Control MX:1 TB:0001 TA:0001
+Line 157 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02ebfc
+Reload VSR1 20cd40
+Line 158 Transparency Control MX:1 TB:0001 TA:0001
+Line 158 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02ed7c
+Reload VSR1 20cec0
+Line 159 Transparency Control MX:1 TB:0001 TA:0001
+Line 159 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02eefc
+Reload VSR1 20d040
+Line 160 Transparency Control MX:1 TB:0001 TA:0001
+Line 160 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02f07c
+Reload VSR1 20d1c0
+Line 161 Transparency Control MX:1 TB:0001 TA:0001
+Line 161 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02f1fc
+Reload VSR1 20d340
+Line 162 Transparency Control MX:1 TB:0001 TA:0001
+Line 162 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02f37c
+Reload VSR1 20d4c0
+Line 163 Transparency Control MX:1 TB:0001 TA:0001
+Line 163 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02f4fc
+Reload VSR1 20d640
+Line 164 Transparency Control MX:1 TB:0001 TA:0001
+Line 164 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02f67c
+Reload VSR1 20d7c0
+Line 165 Transparency Control MX:1 TB:0001 TA:0001
+Line 165 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02f7fc
+Reload VSR1 20d940
+Line 166 Transparency Control MX:1 TB:0001 TA:0001
+Line 166 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02f97c
+Reload VSR1 20dac0
+Line 167 Transparency Control MX:1 TB:0001 TA:0001
+Line 167 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02fafc
+Reload VSR1 20dc40
+Line 168 Transparency Control MX:1 TB:0001 TA:0001
+Line 168 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02fc7c
+Reload VSR1 20ddc0
+Line 169 Transparency Control MX:1 TB:0001 TA:0001
+Line 169 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02fdfc
+Reload VSR1 20df40
+Line 170 Transparency Control MX:1 TB:0001 TA:0001
+Line 170 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 02ff7c
+Reload VSR1 20e0c0
+Line 171 Transparency Control MX:1 TB:0001 TA:0001
+Line 171 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0300fc
+Reload VSR1 20e240
+Line 172 Transparency Control MX:1 TB:0001 TA:0001
+Line 172 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03027c
+Reload VSR1 20e3c0
+Line 173 Transparency Control MX:1 TB:0001 TA:0001
+Line 173 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0303fc
+Reload VSR1 20e540
+Line 174 Transparency Control MX:1 TB:0001 TA:0001
+Line 174 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03057c
+Reload VSR1 20e6c0
+Line 175 Transparency Control MX:1 TB:0001 TA:0001
+Line 175 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0306fc
+Reload VSR1 20e840
+Line 176 Transparency Control MX:1 TB:0001 TA:0001
+Line 176 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03087c
+Reload VSR1 20e9c0
+Line 177 Transparency Control MX:1 TB:0001 TA:0001
+Line 177 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0309fc
+Reload VSR1 20eb40
+Line 178 Transparency Control MX:1 TB:0001 TA:0001
+Line 178 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 030b7c
+Reload VSR1 20ecc0
+Line 179 Transparency Control MX:1 TB:0001 TA:0001
+Line 179 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 030cfc
+Reload VSR1 20ee40
+Line 180 Transparency Control MX:1 TB:0001 TA:0001
+Line 180 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 030e7c
+Reload VSR1 20efc0
+Line 181 Transparency Control MX:1 TB:0001 TA:0001
+Line 181 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 030ffc
+Reload VSR1 20f140
+Line 182 Transparency Control MX:1 TB:0001 TA:0001
+Line 182 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03117c
+Reload VSR1 20f2c0
+Line 183 Transparency Control MX:1 TB:0001 TA:0001
+Line 183 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0312fc
+Reload VSR1 20f440
+Line 184 Transparency Control MX:1 TB:0001 TA:0001
+Line 184 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03147c
+Reload VSR1 20f5c0
+Line 185 Transparency Control MX:1 TB:0001 TA:0001
+Line 185 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0315fc
+Reload VSR1 20f740
+Line 186 Transparency Control MX:1 TB:0001 TA:0001
+Line 186 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03177c
+Reload VSR1 20f8c0
+Line 187 Transparency Control MX:1 TB:0001 TA:0001
+Line 187 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0318fc
+Reload VSR1 20fa40
+Line 188 Transparency Control MX:1 TB:0001 TA:0001
+Line 188 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 031a7c
+Reload VSR1 20fbc0
+Line 189 Transparency Control MX:1 TB:0001 TA:0001
+Line 189 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 031bfc
+Reload VSR1 20fd40
+Line 190 Transparency Control MX:1 TB:0001 TA:0001
+Line 190 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 031d7c
+Reload VSR1 20fec0
+Line 191 Transparency Control MX:1 TB:0001 TA:0001
+Line 191 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 031efc
+Reload VSR1 210040
+Line 192 Transparency Control MX:1 TB:0001 TA:0001
+Line 192 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03207c
+Reload VSR1 2101c0
+Line 193 Transparency Control MX:1 TB:0001 TA:0001
+Line 193 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0321fc
+Reload VSR1 210340
+Line 194 Transparency Control MX:1 TB:0001 TA:0001
+Line 194 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03237c
+Reload VSR1 2104c0
+Line 195 Transparency Control MX:1 TB:0001 TA:0001
+Line 195 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0324fc
+Reload VSR1 210640
+Line 196 Transparency Control MX:1 TB:0001 TA:0001
+Line 196 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03267c
+Reload VSR1 2107c0
+Line 197 Transparency Control MX:1 TB:0001 TA:0001
+Line 197 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0327fc
+Reload VSR1 210940
+Line 198 Transparency Control MX:1 TB:0001 TA:0001
+Line 198 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03297c
+Reload VSR1 210ac0
+Line 199 Transparency Control MX:1 TB:0001 TA:0001
+Line 199 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 032afc
+Reload VSR1 210c40
+Line 200 Transparency Control MX:1 TB:0001 TA:0001
+Line 200 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 032c7c
+Reload VSR1 210dc0
+Line 201 Transparency Control MX:1 TB:0001 TA:0001
+Line 201 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 032dfc
+Reload VSR1 210f40
+Line 202 Transparency Control MX:1 TB:0001 TA:0001
+Line 202 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 032f7c
+Reload VSR1 2110c0
+Line 203 Transparency Control MX:1 TB:0001 TA:0001
+Line 203 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0330fc
+Reload VSR1 211240
+Line 204 Transparency Control MX:1 TB:0001 TA:0001
+Line 204 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03327c
+Reload VSR1 2113c0
+Line 205 Transparency Control MX:1 TB:0001 TA:0001
+Line 205 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0333fc
+Reload VSR1 211540
+Line 206 Transparency Control MX:1 TB:0001 TA:0001
+Line 206 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03357c
+Reload VSR1 2116c0
+Line 207 Transparency Control MX:1 TB:0001 TA:0001
+Line 207 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0336fc
+Reload VSR1 211840
+400000
+Line 208 Transparency Control MX:1 TB:0001 TA:0001
+Line 208 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03387c
+Reload VSR1 2119c0
+Line 209 Transparency Control MX:1 TB:0001 TA:0001
+Line 209 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0339fc
+Reload VSR1 211b40
+Line 210 Transparency Control MX:1 TB:0001 TA:0001
+Line 210 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 033b7c
+Reload VSR1 211cc0
+Line 211 Transparency Control MX:1 TB:0001 TA:0001
+Line 211 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 033cfc
+Reload VSR1 211e40
+Line 212 Transparency Control MX:1 TB:0001 TA:0001
+Line 212 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 033e7c
+Reload VSR1 211fc0
+Line 213 Transparency Control MX:1 TB:0001 TA:0001
+Line 213 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 033ffc
+Reload VSR1 212140
+Line 214 Transparency Control MX:1 TB:0001 TA:0001
+Line 214 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03417c
+Reload VSR1 2122c0
+Line 215 Transparency Control MX:1 TB:0001 TA:0001
+Line 215 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0342fc
+Reload VSR1 212440
+Line 216 Transparency Control MX:1 TB:0001 TA:0001
+Line 216 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03447c
+Reload VSR1 2125c0
+Line 217 Transparency Control MX:1 TB:0001 TA:0001
+Line 217 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0345fc
+Reload VSR1 212740
+Line 218 Transparency Control MX:1 TB:0001 TA:0001
+Line 218 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03477c
+Reload VSR1 2128c0
+Line 219 Transparency Control MX:1 TB:0001 TA:0001
+Line 219 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0348fc
+Reload VSR1 212a40
+Line 220 Transparency Control MX:1 TB:0001 TA:0001
+Line 220 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 034a7c
+Reload VSR1 212bc0
+Line 221 Transparency Control MX:1 TB:0001 TA:0001
+Line 221 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 034bfc
+Reload VSR1 212d40
+Line 222 Transparency Control MX:1 TB:0001 TA:0001
+Line 222 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 034d7c
+Reload VSR1 212ec0
+Line 223 Transparency Control MX:1 TB:0001 TA:0001
+Line 223 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 034efc
+Reload VSR1 213040
+Line 224 Transparency Control MX:1 TB:0001 TA:0001
+Line 224 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03507c
+Reload VSR1 2131c0
+Line 225 Transparency Control MX:1 TB:0001 TA:0001
+Line 225 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0351fc
+Reload VSR1 213340
+Line 226 Transparency Control MX:1 TB:0001 TA:0001
+Line 226 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03537c
+Reload VSR1 2134c0
+Line 227 Transparency Control MX:1 TB:0001 TA:0001
+Line 227 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0354fc
+Reload VSR1 213640
+Line 228 Transparency Control MX:1 TB:0001 TA:0001
+Line 228 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03567c
+Reload VSR1 2137c0
+Line 229 Transparency Control MX:1 TB:0001 TA:0001
+Line 229 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0357fc
+Reload VSR1 213940
+Line 230 Transparency Control MX:1 TB:0001 TA:0001
+Line 230 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03597c
+Reload VSR1 213ac0
+Line 231 Transparency Control MX:1 TB:0001 TA:0001
+Line 231 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 035afc
+Reload VSR1 213c40
+Line 232 Transparency Control MX:1 TB:0001 TA:0001
+Line 232 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 035c7c
+Reload VSR1 213dc0
+Line 233 Transparency Control MX:1 TB:0001 TA:0001
+Line 233 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 035dfc
+Reload VSR1 213f40
+Line 234 Transparency Control MX:1 TB:0001 TA:0001
+Line 234 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 035f7c
+Reload VSR1 2140c0
+Line 235 Transparency Control MX:1 TB:0001 TA:0001
+Line 235 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0360fc
+Reload VSR1 214240
+Line 236 Transparency Control MX:1 TB:0001 TA:0001
+Line 236 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03627c
+Reload VSR1 2143c0
+Line 237 Transparency Control MX:1 TB:0001 TA:0001
+Line 237 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0363fc
+Reload VSR1 214540
+Line 238 Transparency Control MX:1 TB:0001 TA:0001
+Line 238 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03657c
+Reload VSR1 2146c0
+Line 239 Transparency Control MX:1 TB:0001 TA:0001
+Line 239 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0366fc
+Reload VSR1 214840
+Line 240 Transparency Control MX:1 TB:0001 TA:0001
+Line 240 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03687c
+Reload VSR1 2149c0
+Line 241 Transparency Control MX:1 TB:0001 TA:0001
+Line 241 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0369fc
+Reload VSR1 214b40
+Line 242 Transparency Control MX:1 TB:0001 TA:0001
+Line 242 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 036b7c
+Reload VSR1 214cc0
+Line 243 Transparency Control MX:1 TB:0001 TA:0001
+Line 243 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 036cfc
+Reload VSR1 214e40
+Line 244 Transparency Control MX:1 TB:0001 TA:0001
+Line 244 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 036e7c
+Reload VSR1 214fc0
+Line 245 Transparency Control MX:1 TB:0001 TA:0001
+Line 245 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 036ffc
+Reload VSR1 215140
+Line 246 Transparency Control MX:1 TB:0001 TA:0001
+Line 246 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03717c
+Reload VSR1 2152c0
+Line 247 Transparency Control MX:1 TB:0001 TA:0001
+Line 247 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0372fc
+Reload VSR1 215440
+Line 248 Transparency Control MX:1 TB:0001 TA:0001
+Line 248 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03747c
+Reload VSR1 2155c0
+Line 249 Transparency Control MX:1 TB:0001 TA:0001
+Line 249 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0375fc
+Reload VSR1 215740
+Line 250 Transparency Control MX:1 TB:0001 TA:0001
+Line 250 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03777c
+Reload VSR1 2158c0
+Line 251 Transparency Control MX:1 TB:0001 TA:0001
+Line 251 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0378fc
+Reload VSR1 215a40
+Line 252 Transparency Control MX:1 TB:0001 TA:0001
+Line 252 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 037a7c
+Reload VSR1 215bc0
+Line 253 Transparency Control MX:1 TB:0001 TA:0001
+Line 253 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 037bfc
+Reload VSR1 215d40
+Line 254 Transparency Control MX:1 TB:0001 TA:0001
+Line 254 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 037d7c
+Reload VSR1 215ec0
+Line 255 Transparency Control MX:1 TB:0001 TA:0001
+Line 255 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 037efc
+Reload VSR1 216040
+Line 256 Transparency Control MX:1 TB:0001 TA:0001
+Line 256 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03807c
+Reload VSR1 2161c0
+Line 257 Transparency Control MX:1 TB:0001 TA:0001
+Line 257 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0381fc
+Reload VSR1 216340
+Line 258 Transparency Control MX:1 TB:0001 TA:0001
+Line 258 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03837c
+Reload VSR1 2164c0
+Line 259 Transparency Control MX:1 TB:0001 TA:0001
+Line 259 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0384fc
+Reload VSR1 216640
+500000
+Line 260 Transparency Control MX:1 TB:0001 TA:0001
+Line 260 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03867c
+Reload VSR1 2167c0
+Line 261 Transparency Control MX:1 TB:0001 TA:0001
+Line 261 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0387fc
+Reload VSR1 216940
+Line 262 Transparency Control MX:1 TB:0001 TA:0001
+Line 262 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03897c
+Reload VSR1 216ac0
+Line 263 Transparency Control MX:1 TB:0001 TA:0001
+Line 263 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 038afc
+Reload VSR1 216c40
+Line 264 Transparency Control MX:1 TB:0001 TA:0001
+Line 264 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 038c7c
+Reload VSR1 216dc0
+Line 265 Transparency Control MX:1 TB:0001 TA:0001
+Line 265 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 038dfc
+Reload VSR1 216f40
+Line 266 Transparency Control MX:1 TB:0001 TA:0001
+Line 266 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 038f7c
+Reload VSR1 2170c0
+Line 267 Transparency Control MX:1 TB:0001 TA:0001
+Line 267 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0390fc
+Reload VSR1 217240
+Line 268 Transparency Control MX:1 TB:0001 TA:0001
+Line 268 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03927c
+Reload VSR1 2173c0
+Line 269 Transparency Control MX:1 TB:0001 TA:0001
+Line 269 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0393fc
+Reload VSR1 217540
+Line 270 Transparency Control MX:1 TB:0001 TA:0001
+Line 270 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03957c
+Reload VSR1 2176c0
+Line 271 Transparency Control MX:1 TB:0001 TA:0001
+Line 271 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0396fc
+Reload VSR1 217840
+Line 272 Transparency Control MX:1 TB:0001 TA:0001
+Line 272 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03987c
+Reload VSR1 2179c0
+Line 273 Transparency Control MX:1 TB:0001 TA:0001
+Line 273 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 0399fc
+Reload VSR1 217b40
+Line 274 Transparency Control MX:1 TB:0001 TA:0001
+Line 274 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 039b7c
+Reload VSR1 217cc0
+Line 275 Transparency Control MX:1 TB:0001 TA:0001
+Line 275 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 039cfc
+Reload VSR1 217e40
+Line 276 Transparency Control MX:1 TB:0001 TA:0001
+Line 276 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 039e7c
+Reload VSR1 217fc0
+Line 277 Transparency Control MX:1 TB:0001 TA:0001
+Line 277 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 039ffc
+Reload VSR1 218140
+Line 278 Transparency Control MX:1 TB:0001 TA:0001
+Line 278 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03a17c
+Reload VSR1 2182c0
+Line 279 Transparency Control MX:1 TB:0001 TA:0001
+Line 279 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03a2fc
+Reload VSR1 218440
+Line 280 Transparency Control MX:1 TB:0001 TA:0001
+Line 280 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03a47c
+Reload VSR1 2185c0
+Line 281 Transparency Control MX:1 TB:0001 TA:0001
+Line 281 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03a5fc
+Reload VSR1 218740
+Line 282 Transparency Control MX:1 TB:0001 TA:0001
+Line 282 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03a77c
+Reload VSR1 2188c0
+Line 283 Transparency Control MX:1 TB:0001 TA:0001
+Line 283 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03a8fc
+Reload VSR1 218a40
+Line 284 Transparency Control MX:1 TB:0001 TA:0001
+Line 284 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03aa7c
+Reload VSR1 218bc0
+Line 285 Transparency Control MX:1 TB:0001 TA:0001
+Line 285 Coding A:0011 CLUT7 B:0011 CLUT7 NR:0 CS:0
+Reload VSR0 03abfc
+Plane B ignored 40
+Reload VSR1 218d40
+Line 286 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 287 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 288 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 289 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 290 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 291 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 292 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 293 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 294 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 295 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 296 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 297 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 298 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 299 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 300 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 301 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 302 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 303 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Line 304 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Plane B ignored 40
+Cursor X: 216 Y: 171
+Cursor Control 101110000000000000001001
+Cursor 0 0000000000000000
+Cursor 1 0100000000000000
+Cursor 2 0110000000000000
+Trans Color Plane B 63 63 63
+Cursor 3 0111000000000000
+Cursor 4 0111100000000000
+Cursor 5 0111110000000000
+DYUV Abs. Start Plane B 128 128 128
+Cursor 6 0111111000000000
+Line 306 Weight B 63
+Cursor 7 0111111100000000
+Mosaic B 0 00000001
+Cursor 8 0111111110000000
+Cursor 9 0111110000000000
+Cursor a 0110110000000000
+Cursor b 0100011000000000
+Cursor c 0000011000000000
+Cursor d 0000001100000000
+Cursor e 0000001100000000
+Cursor f 0000000000000000
+Line 306 Transparency Control MX:0 TB:1000 TA:1000
+Plane B ignored 40
+Plane A in front of Plane B
+Line 306 Coding A:0000 OFF B:0000 OFF NR:0 CS:0
+Trans Color Plane A 63 63 63
+Line 306 Weight A 63
+Mosaic A 0 00000001
+Reload VSR1 000000
+Line 306 Transparency Control MX:1 TB:0001 TA:0001
+Line 306 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Backdrop Color 0000
+Line 306 Region CH0 0   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 1   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 2   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 3   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 4   CMD:0000   RF:0   Weight: 0   X:   0
+Line 306 Region CH0 5   CMD:0000   RF:0   Weight: 0   X:   0
+Line 307 Region CH0 6   CMD:0000   RF:0   Weight: 0   X:   0
+CLUT A    0  63 63 63
+CLUT A    1   0  0  0
+CLUT A    2  13 13 13
+CLUT A    3  27 27 27
+CLUT A    4  35 35 35
+CLUT A    5  43 43 43
+CLUT A    6  50 50 50
+CLUT A    7  54 54 54
+CLUT A    8  60 60 60
+CLUT A    9   0  0  0
+CLUT A   10   0  0  0
+CLUT A   11   0  0  0
+CLUT A   12   0  0  0
+CLUT A   13   0  0  0
+CLUT A   14   0  0  0
+CLUT A   15   0  0  0
+CLUT A   16   0  0  0
+CLUT A   17   0  0  0
+CLUT A   18   0  0  0
+CLUT A   19   0  0  0
+CLUT A   20   0  0  0
+CLUT A   21   0  0  0
+CLUT A   22   0  0  0
+CLUT A   23   0  0  0
+CLUT A   24   0  0  0
+CLUT A   25   0  0  0
+CLUT A   26   0  0  0
+CLUT A   27   0  0  0
+CLUT A   28   0  0  0
+CLUT A   29   0  0  0
+CLUT A   30   0  0  0
+CLUT A   31   0  0  0
+CLUT A   32   0  0  0
+CLUT A   33   0  0  0
+CLUT A   34   0  0  0
+CLUT A   35   0  0  0
+CLUT A   36   0  0  0
+CLUT A   37   0  0  0
+CLUT A   38   0  0  0
+CLUT A   39   0  0  0
+CLUT A   40   0  0  0
+CLUT A   41   0  0  0
+CLUT A   42   0  0  0
+CLUT A   43   0  0  0
+CLUT A   44   0  0  0
+CLUT A   45   0  0  0
+CLUT A   46   0  0  0
+CLUT A   47   0  0  0
+CLUT A   48   0  0  0
+CLUT A   49   0  0  0
+CLUT A   50   0  0  0
+CLUT A   51   0  0  0
+CLUT A   52   0  0  0
+CLUT A   53   0  0  0
+CLUT A   54   0  0  0
+CLUT A   55   0  0  0
+CLUT A   56   0  0  0
+CLUT A   57   0  0  0
+CLUT A   58   0  0  0
+CLUT A   59   0  0  0
+CLUT A   60   0  0  0
+CLUT A   61   0  0  0
+CLUT A   62   0  0  0
+CLUT A   63   0  0  0
+CLUT A   64   0  0  0
+CLUT A   65   0  0  0
+CLUT A   66   0  0  0
+CLUT A   67   0  0  0
+CLUT A   68   0  0  0
+CLUT A   69   0  0  0
+CLUT A   70   0  0  0
+CLUT A   71   0  0  0
+CLUT A   72   0  0  0
+CLUT A   73   0  0  0
+CLUT A   74   0  0  0
+CLUT A   75   0  0  0
+CLUT A   76   0  0  0
+CLUT A   77   0  0  0
+CLUT A   78   0  0  0
+CLUT A   79   0  0  0
+CLUT A   80   0  0  0
+CLUT A   81   0  0  0
+CLUT A   82   0  0  0
+CLUT A   83   0  0  0
+CLUT A   84   0  0  0
+CLUT A   85   0  0  0
+CLUT A   86   0  0  0
+CLUT A   87   0  0  0
+CLUT A   88   0  0  0
+CLUT A   89   0  0  0
+CLUT A   90   0  0  0
+CLUT A   91   0  0  0
+CLUT A   92   0  0  0
+CLUT A   93   0  0  0
+CLUT A   94   0  0  0
+CLUT A   95   0  0  0
+CLUT A   96   0  0  0
+CLUT A   97   0  0  0
+CLUT A   98   0  0  0
+CLUT A   99   0  0  0
+CLUT A  100  62 62 62
+CLUT A  101   0  0  0
+CLUT A  102  30 33 37
+CLUT A  103  20 20 24
+CLUT A  104  22 22 26
+CLUT A  105  24 24 28
+CLUT A  106  12 12 14
+CLUT A  107  35 35 39
+CLUT A  108  39 39 43
+CLUT A  109  18 18 20
+CLUT A  110  41 41 45
+CLUT A  111  43 43 47
+CLUT A  112  28 28 30
+CLUT A  113  47 47 49
+CLUT A  114   8  6 20
+CLUT A  115  12  8 24
+CLUT A  116  33 28 33
+CLUT A  117  43 33 39
+CLUT A  118  47 22 33
+CLUT A  119  22 12 16
+CLUT A  120  35 18 24
+CLUT A  121  43  6 18
+CLUT A  122  24  4 10
+CLUT A  123  33  4 12
+CLUT A  124  53  8 20
+CLUT A  125  51 14 24
+CLUT A  126  35 12 18
+CLUT A  127   8  8  8
+CLUT A  128  20 63  0
+CLUT A  129   0  0  1
+CLUT A  130   0  0  2
+CLUT A  131   0  0  4
+CLUT A  132   0  2  3
+CLUT A  133   2  1  2
+CLUT A  134   0  2  4
+CLUT A  135   2  1  4
+CLUT A  136   0  1  6
+CLUT A  137   2  2  4
+CLUT A  138   1  2  7
+CLUT A  139   1  1  8
+CLUT A  140   4  2  4
+CLUT A  141   2  2  7
+CLUT A  142   2  4  6
+CLUT A  143   2  2  8
+CLUT A  144   5  5  6
+CLUT A  145   3  3 10
+CLUT A  146   4  3 10
+CLUT A  147   3  3 12
+CLUT A  148   3  4 11
+CLUT A  149   4  4 12
+CLUT A  150   6  6  9
+CLUT A  151  10  5  6
+CLUT A  152   4  4 14
+CLUT A  153   5  9 10
+CLUT A  154   6  6 13
+CLUT A  155  12  9  5
+CLUT A  156   2  4 22
+CLUT A  157  10  9 10
+CLUT A  158  10 10 13
+CLUT A  159  12 11 12
+CLUT A  160   9 13 13
+CLUT A  161  13 13 10
+CLUT A  162  23 10  5
+CLUT A  163  13 13 13
+CLUT A  164  10  5 24
+CLUT A  165  13 13 14
+CLUT A  166  11 19 10
+CLUT A  167  14 13 14
+CLUT A  168  15 14 12
+CLUT A  169  13 14 14
+CLUT A  170  14 14 14
+CLUT A  171  12 12 21
+CLUT A  172  16 16 16
+CLUT A  173   0 25 25
+CLUT A  174  19 11 20
+CLUT A  175   1 13 41
+CLUT A  176  18 18 18
+CLUT A  177  40  9  6
+CLUT A  178  13 18 24
+CLUT A  179  24 22 10
+CLUT A  180  18 18 21
+CLUT A  181  18 21 19
+CLUT A  182  21 21 20
+CLUT A  183  36 22  5
+CLUT A  184  38  3 24
+CLUT A  185  19 20 27
+CLUT A  186  25 22 22
+CLUT A  187  20 26 24
+CLUT A  188  18  0 54
+CLUT A  189   0 18 55
+CLUT A  190   0 37 37
+CLUT A  191  27 27 21
+Reading ram dumps from /home/andre/Projekte/cdiramdups/ramdumps//comptons3.bin
+Splitting 1 ram dumps into 14 sizes of 1
+Child is PID 30289
+Waiting for the runners to finish...
+PID 30289 has finished!

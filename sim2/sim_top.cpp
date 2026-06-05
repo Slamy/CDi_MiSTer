@@ -2,7 +2,6 @@
 #include <sys/types.h>
 #include <verilated.h>
 #include <verilated_fst_c.h>
-#include <verilated_vcd_c.h>
 
 // Include model header, generated from Verilating "top.v"
 #include "Vemu.h"
@@ -987,7 +986,7 @@ class CDi {
                 // PAL
                 // space_ace_pal();
                 // braindead13_pal();
-                // lost_ride_pal();
+                lost_ride_pal();
             }
 #endif
 
@@ -1372,8 +1371,7 @@ int main(int argc, char **argv) {
 
     switch (machineindex) {
     case 0:
-        f_cd_bin = fopen("images/karaoke.bin", "rb");
-        f_sub_bin = fopen("images/karaoke.sub", "rb");
+        f_cd_bin = fopen("images/comptons.bin", "rb");
         break;
     case 1:
         f_cd_bin = fopen("images/Apprentice_USA_single.bin", "rb");
