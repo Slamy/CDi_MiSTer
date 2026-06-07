@@ -598,15 +598,14 @@ class CDi {
                 module.addr = addr;
                 module.size = module_size;
 
-                std::string module_name;
                 for (int i = 0; i < kMaxNameSize; i++) {
                     char c = cpu_memory_read_u8(addr + module_name_addr + i);
                     if (c == 0)
                         break;
-                    module_name.push_back(c);
+                    module.name.push_back(std::move(c));
                 }
 
-                printf("Found module at %x - %x %s\n", module.addr, module.addr + module.size, module_name.c_str());
+                printf("Found module at %x - %x %s\n", module.addr, module.addr + module.size, module.name.c_str());
                 os9modules.push_back(module);
 
                 // Skip the memory area of the module to make the scan faster
@@ -718,7 +717,8 @@ class CDi {
 
         if (frame_index == 314) {
             print_instructions = 1;
-            dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__debug_print_active = 1;
+            // dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__debug_print_active = 1;
+            ScanForOs9Modules();
         }
 
         if (frame_index > 200) {
@@ -1389,6 +1389,7 @@ class CDi {
         LoadBaseCaseMemory();
         LoadDvcSysMemory();
         ScanForOs9Modules();
+        printf("%s ", ModuleNameAtAddress(0x04099ac));
         exit(0);
 #endif
 

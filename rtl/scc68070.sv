@@ -317,7 +317,8 @@ module scc68070 (
                 lir.int1n_ipl <= data_out[6:4];
             end
 
-            if (debug_print_active) begin
+            if (debug_print_active && !req1 && !req2) begin
+                // Avoid printing DMA access
                 if (memory_access && !write_strobe && !reset) begin
                     $display("CPU Read Access %x %x", internal_addr, internal_data_in);
                 end
