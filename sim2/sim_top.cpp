@@ -607,8 +607,10 @@ class CDi {
                 }
 
                 printf("Found module at %x - %x %s\n", module.addr, module.addr + module.size, module_name.c_str());
-
                 os9modules.push_back(module);
+
+                // Skip the memory area of the module to make the scan faster
+                addr += module_size - 2;
             }
         };
 
@@ -712,6 +714,11 @@ class CDi {
             do_trace = true;
             fprintf(stderr, "Trace on!\n");
 #endif
+        }
+
+        if (frame_index == 314) {
+            print_instructions = 1;
+            dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__debug_print_active = 1;
         }
 
         if (frame_index > 200) {
@@ -1378,7 +1385,7 @@ class CDi {
         fclose(f);
 #endif
 
-#if 1
+#if 0
         LoadBaseCaseMemory();
         LoadDvcSysMemory();
         ScanForOs9Modules();
