@@ -37,7 +37,7 @@ These are maybe the only real registers of the CDIC
 
 ## MAME behaviour with data
 
-No datahseets available. Will use software emulation of MAME for reconstruction.
+No datasheets available. Will use software emulation of MAME for reconstruction.
 
 First usage in MAME when "Frog Feast" disc is inserted
 
