@@ -6,8 +6,10 @@ module mpeg_video (
     input clk_mpeg,
     input reset,
     input dsp_enable,
+    input clear_fifo,
     input reset_persistent_storage,
     input playback_active,
+    input decoder_active,
     input single_step,
     input [2:0] slow_motion,
 
@@ -34,16 +36,13 @@ module mpeg_video (
     input [8:0] window_height,
     input show_on_next_video_frame,
     output event_sequence_end,
-    output event_buffer_underflow,
+    output event_frame_decoded,
+    output bit event_buffer_underflow,
     output bit event_picture_starts_display,
     output event_last_picture_starts_display,
     output bit event_first_intra_frame_gop_starts_display,
     output bit event_first_intra_frame_seq_starts_display,
-    output [4:0] pictures_in_fifo,
-    input [14:0] demuxer_decoding_timestamp,
-    input demuxer_decoding_timestamp_updated,
-    output bit [14:0] last_decoded_timestamp,
-    output last_decoded_timestamp_updated,
+    output bit [5:0] pictures_in_fifo,
     output bit event_potential_picture_starts_display,
 
     output bit [10:0] decoder_width,
@@ -135,6 +134,53 @@ module mpeg_video (
             if (hw_read_mem_ready && (!hw_read_aligned_access || mpeg_stream_bit_index[4:0]==5'b11111) )
                 mpeg_input_stream_fifo_raddr_read_fix = mpeg_input_stream_fifo_raddr_read_fix + 1;
         end
+    end
+
+    wire picture_startcode;
+
+    mpeg_video_start_code_decoder startcode (
+        .clk(clk30),
+        .reset,
+        .mpeg_data(data_byte),
+        .data_valid(data_strobe),
+        .event_sequence_header(),
+        .event_group_of_pictures(),
+        .event_picture(picture_startcode),
+        .tmpref(),
+        .timecode()
+    );
+
+    wire picture_added_in_input_fifo = picture_startcode;
+
+
+    bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
+    wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
+    bit [4:0] pictures_in_mpeg_decoder;
+
+    always_comb begin
+        pictures_in_fifo = pictures_in_input_fifo + 6'(pictures_in_output_fifo + pictures_in_mpeg_decoder);
+        if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
+    end
+
+    always_ff @(posedge clk30) begin
+        event_buffer_underflow <= pictures_in_fifo==1 && latch_frame_for_display && pictures_in_mpeg_decoder==0;
+
+        if (just_decoded_commit_clk30) begin
+            assert (pictures_in_mpeg_decoder > 0);
+            pictures_in_mpeg_decoder <= pictures_in_mpeg_decoder - 1;
+        end
+
+        if (event_frame_decoded) begin
+            pictures_in_mpeg_decoder <= pictures_in_mpeg_decoder + 1;
+        end
+
+        if (clear_fifo) begin
+            pictures_in_input_fifo   <= 0;
+            pictures_in_mpeg_decoder <= 0;
+        end else if (event_frame_decoded && !picture_added_in_input_fifo && pictures_in_input_fifo!=0)
+            pictures_in_input_fifo <= pictures_in_input_fifo - 1;
+        else if (!event_frame_decoded && picture_added_in_input_fifo)
+            pictures_in_input_fifo <= pictures_in_input_fifo + 1;
     end
 
     mpeg_input_stream_fifo_32k in_fifo (
@@ -301,7 +347,7 @@ module mpeg_video (
         .data_in2(0),
         .addr1(dmem_cmd_payload_address_1[13:2]),
         .data_in1(dmem_cmd_payload_data_1),
-        .we1(dmem_cmd_payload_address_1[31:28]==0 && dmem_cmd_valid_1 && dmem_cmd_ready_1 && 
+        .we1(dmem_cmd_payload_address_1[31:28]==0 && dmem_cmd_valid_1 && dmem_cmd_ready_1 &&
                 dmem_cmd_payload_write_1 && !reset_dsp_enabled_clk_mpeg),
         .be1(dmem_cmd_payload_mask_1),
         .data_out1(memory_out_d1)
@@ -428,9 +474,9 @@ module mpeg_video (
     bit [31:0] frame_y_adr  /*verilator public_flat_rd*/;
     wire expose_frame_struct_adr_clk_mpeg  = (dmem_cmd_payload_address_1 == 32'h10000010 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1) ;
     wire expose_frame_y_adr_clk_mpeg  = (dmem_cmd_payload_address_1 == 32'h10000018 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1) ;
-    wire event_buffer_underflow_clk_mpeg  = (dmem_cmd_payload_address_1 == 32'h10003024 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1) ;
+    bit event_frame_decoded_clk_mpeg;
+
     wire playback_active_clkddr;
-    bit event_at_least_one_frame_clk_mpeg;
 
     bit [31:0] soft_state1  /*verilator public_flat_rd*/ = 0;
     wire expose_frame_struct_adr  /*verilator public_flat_rd*/;
@@ -441,6 +487,13 @@ module mpeg_video (
         .clk_b(clk30),
         .flag_in_clk_a(event_sequence_end_clk_mpeg),
         .flag_out_clk_b(event_sequence_end)
+    );
+
+    flag_cross_domain cross_event_frame_decoded (
+        .clk_a(clk_mpeg),
+        .clk_b(clk30),
+        .flag_in_clk_a(event_frame_decoded_clk_mpeg),
+        .flag_out_clk_b(event_frame_decoded)
     );
 
     flag_cross_domain cross_expose_frame_struct_adr (
@@ -457,13 +510,6 @@ module mpeg_video (
         .flag_out_clk_b(expose_frame_y_adr)
     );
 
-    flag_cross_domain cross_event_buffer_underflow (
-        .clk_a(clk_mpeg),
-        .clk_b(clk30),
-        .flag_in_clk_a(event_buffer_underflow_clk_mpeg),
-        .flag_out_clk_b(event_buffer_underflow)
-    );
-
     signal_cross_domain cross_playback_active (
         .clk_a(clk30),
         .clk_b(clk_mpeg),
@@ -471,39 +517,11 @@ module mpeg_video (
         .signal_out_clk_b(playback_active_clkddr)
     );
 
-    bit last_decoded_timestamp_updated_clk_mpeg;
-    flag_cross_domain cross_last_decoded_timestamp_updated (
-        .clk_a(clk_mpeg),
-        .clk_b(clk30),
-        .flag_in_clk_a(last_decoded_timestamp_updated_clk_mpeg),
-        .flag_out_clk_b(last_decoded_timestamp_updated)
-    );
-
-    wire demuxer_decoding_timestamp_updated_clk_mpeg;
-    flag_cross_domain cross_demuxer_decoding_timestamp_updated (
-        .clk_a(clk30),
-        .clk_b(clk_mpeg),
-        .flag_in_clk_a(demuxer_decoding_timestamp_updated),
-        .flag_out_clk_b(demuxer_decoding_timestamp_updated_clk_mpeg)
-    );
-
-    bit [14:0] last_decoded_timestamp_clk_mpeg;
-
-    always_ff @(posedge clk30) begin
-        if (last_decoded_timestamp_updated)
-            last_decoded_timestamp <= last_decoded_timestamp_clk_mpeg;
-    end
-
-    bit [14:0] demuxer_decoding_timestamp_clk_mpeg;
-
     always_ff @(posedge clk_mpeg) begin
         if (expose_frame_struct_adr_clk_mpeg) begin
             frame_struct_adr <= dmem_cmd_payload_data_1;
         end
         if (expose_frame_y_adr_clk_mpeg) frame_y_adr <= dmem_cmd_payload_data_1;
-
-        if (demuxer_decoding_timestamp_updated_clk_mpeg)
-            demuxer_decoding_timestamp_clk_mpeg <= demuxer_decoding_timestamp;
     end
 
     always_comb begin
@@ -531,17 +549,13 @@ module mpeg_video (
                             dmem_rsp_payload_data_1 = {16'b0, dct_coeff_result};
                         if (dmem_cmd_payload_address_1_q == 32'h10002010)
                             dmem_rsp_payload_data_1 = {31'b0, has_sequence_header};
-                        if (dmem_cmd_payload_address_1_q == 32'h10002014)
-                            dmem_rsp_payload_data_1 = {17'b0, demuxer_decoding_timestamp_clk_mpeg};
 
                         if (dmem_cmd_payload_address_1_q == 32'h10003028)
-                            dmem_rsp_payload_data_1 = {27'b0, pictures_in_fifo_clk_mpeg};
+                            dmem_rsp_payload_data_1 = {27'b0, pictures_in_output_fifo_clk_mpeg};
                         if (dmem_cmd_payload_address_1_q == 32'h1000302c)
                             dmem_rsp_payload_data_1 = {31'b0, playback_active_clkddr};
                         if (dmem_cmd_payload_address_1_q == 32'h1000303c)
                             dmem_rsp_payload_data_1 = {29'b0, slow_motion_clkddr};
-
-
 
                     end
                 end
@@ -577,7 +591,7 @@ module mpeg_video (
         dmem_cmd_payload_write_1_q <= dmem_cmd_payload_write_1;
 
         event_sequence_end_clk_mpeg <= 0;
-        last_decoded_timestamp_updated_clk_mpeg <= 0;
+        event_frame_decoded_clk_mpeg <= 0;
 
         if (dmem_cmd_payload_address_1 == 32'h1000000c && dmem_cmd_payload_write_1 && dmem_cmd_valid_1 && dmem_cmd_ready_1)begin
             $display("Core 1 stopped at %x with code %x", imem_cmd_payload_address_1,
@@ -586,9 +600,6 @@ module mpeg_video (
         end
         if (dmem_cmd_payload_address_1 == 32'h10000030 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1 && dmem_cmd_ready_1)
             soft_state1 <= dmem_cmd_payload_data_1;
-
-        if (just_decoded_commit || reset_dsp_enabled_clk_mpeg)
-            event_at_least_one_frame_clk_mpeg <= 0;
 
         if (dmem_cmd_payload_address_1 == 32'h10000000 && dmem_cmd_valid_1 && dmem_cmd_payload_write_1 && dmem_cmd_ready_1)
             $display("Debug out %x", dmem_cmd_payload_data_1);
@@ -621,8 +632,6 @@ module mpeg_video (
                         end
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3014)
                             frame_period_clk_mpeg <= dmem_cmd_payload_data_1[23:0];
-                        if (dmem_cmd_payload_address_1[15:0] == 16'h3018)
-                            event_at_least_one_frame_clk_mpeg <= 1;
                         if (dmem_cmd_payload_address_1[15:0] == 16'h301c)
                             event_sequence_end_clk_mpeg <= 1;
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3020)
@@ -641,14 +650,13 @@ module mpeg_video (
                             just_decoded.first_intra_frame_of_seq <= dmem_cmd_payload_data_1[0];
                         end
 
+                        if (dmem_cmd_payload_address_1[15:0] == 16'h3050)
+                            event_frame_decoded_clk_mpeg <= 1;
+
+
                         if (dmem_cmd_payload_address_1[15:0] == 16'h2010) begin
                             has_sequence_header <= dmem_cmd_payload_data_1[0];
                             $display("has_sequence_header %d", dmem_cmd_payload_data_1[0]);
-                        end
-
-                        if (dmem_cmd_payload_address_1[15:0] == 16'h2018) begin
-                            last_decoded_timestamp_clk_mpeg <= dmem_cmd_payload_data_1[14:0];
-                            last_decoded_timestamp_updated_clk_mpeg <= 1;
                         end
 
                     end
@@ -754,7 +762,7 @@ module mpeg_video (
             event_picture_starts_display <= 1;
             event_first_intra_frame_gop_starts_display <= first_intra_frame_of_gop_clk30;
             event_first_intra_frame_seq_starts_display <= first_intra_frame_of_seq_clk30;
-            event_last_picture_starts_display <= !for_display_valid;
+            event_last_picture_starts_display <= !for_display_valid && pictures_in_mpeg_decoder==0;
         end
 
         if (latch_frame_until_vsync && !vsync && vsync_q) begin
@@ -786,24 +794,25 @@ module mpeg_video (
         .flag_out_clk_b(latch_frame_for_display_clk_mpeg)
     );
 
-    wire [4:0] pictures_in_fifo_clk_mpeg  /*verilator public_flat_rd*/;
-    wire [4:0] pictures_in_fifo_clk_mpeg_gray_d;
-    bit  [4:0] pictures_in_fifo_clk_mpeg_gray_q;
-    bit  [4:0] pictures_in_fifo_clk30_gray;
+    wire [4:0] pictures_in_output_fifo_clk_mpeg  /*verilator public_flat_rd*/;
+    wire [4:0] pictures_in_output_fifo_clk_mpeg_gray_d;
+    bit  [4:0] pictures_in_output_fifo_clk_mpeg_gray_q;
+    bit  [4:0] pictures_in_output_fifo_clk30_gray;
     b2g_converter #(
         .WIDTH(5)
-    ) pictures_in_fifo_b2g (
-        .binary((event_at_least_one_frame_clk_mpeg && pictures_in_fifo_clk_mpeg==0) ? 1 : pictures_in_fifo_clk_mpeg),
-        .gray(pictures_in_fifo_clk_mpeg_gray_d)
+    ) pictures_in_output_fifo_b2g (
+        .binary(pictures_in_output_fifo_clk_mpeg),
+        .gray  (pictures_in_output_fifo_clk_mpeg_gray_d)
     );
     always_ff @(posedge clk_mpeg)
-        pictures_in_fifo_clk_mpeg_gray_q <= pictures_in_fifo_clk_mpeg_gray_d;
-    always_ff @(posedge clk30) pictures_in_fifo_clk30_gray <= pictures_in_fifo_clk_mpeg_gray_q;
+        pictures_in_output_fifo_clk_mpeg_gray_q <= pictures_in_output_fifo_clk_mpeg_gray_d;
+    always_ff @(posedge clk30)
+        pictures_in_output_fifo_clk30_gray <= pictures_in_output_fifo_clk_mpeg_gray_q;
     g2b_converter #(
         .WIDTH(5)
-    ) pictures_in_fifo_g2b (
-        .binary(pictures_in_fifo),
-        .gray  (pictures_in_fifo_clk30_gray)
+    ) pictures_in_output_fifo_g2b (
+        .binary(pictures_in_output_fifo),
+        .gray  (pictures_in_output_fifo_clk30_gray)
     );
 
     wire show_on_next_video_frame_clkddr;
@@ -822,7 +831,7 @@ module mpeg_video (
         .strobe(latch_frame_for_display_clk_mpeg),
         .valid(for_display_valid_clk_mpeg),
         .q(for_display),
-        .cnt(pictures_in_fifo_clk_mpeg)
+        .cnt(pictures_in_output_fifo_clk_mpeg)
     );
 
     frameplayer frameplayer (
