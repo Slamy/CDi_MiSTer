@@ -1,7 +1,5 @@
 # TODOs and known issues
 
-* MPEG Video output sometimes later, sometimes earlier? Only on FPGA?
-* mv_pause() causes wrong data in FPGA? Can be reproduced since 260123 with Addams Family Disc 2
 * Integration test to confirm equal output of MPEG video during simulation vs synthesis
     * MiSTer only Register for audio loudness analysis and for detecting a white dot from CD-i software
     * Automatic check of audio vs video sync
@@ -9,9 +7,7 @@
 * Random hang of playback controls in Addams Family Disc 2. Movie still playing. Sudden rainbow colors.
     * Reproduced by frequently pausing and resuming
     * No regression. Always present since 251123
-* Randomly no audio after pause in Addams Family
-    * Reproducable with 260131 and 260222
-    * Not occuring with 260123? Or very unlikely?
+    * Can be reproduced on cdiemu as well
 * Randomly no audio in Mad Dog McCree? Unclear reproduction
 * Check random audio video out of sync (e.g. Mad Dog McCree)
 * Check correct timing of DVC clipping functionality when scroll bit is reset
@@ -36,8 +32,6 @@
 * "Solar Crusade" has video glitches?
 * "Brain Dead 13" has video glitches when switching MPEG streams
 * "The Secret of Nimh" (Philips Edition) has the wrong frame rate? Sometimes?
-* Slow motion with VCDs is desyncing audio and video
-    * Too many frames in output FIFO
 * Leaving the cake Puzzle in 7th Guest freezes (everytime?)
 * Sound bugs on the police procedures disk?
 * Find a better solution for reducing CPU speed
@@ -46,7 +40,6 @@
     * PSX core seems to halt the whole machine to avoid this situation
 * Fix regression: Audio hiccups during Philips Logo in Burn:Cycle
     * A workaround is CPU overclocking
-* Investigate input responsiveness (skipped events?)
 * Fix hang on audio track stop or change in media player
 * Cheat support?
 * Fix reset behaviour (Core is sometimes hanging after reset)
