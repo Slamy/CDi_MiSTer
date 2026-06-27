@@ -82,9 +82,10 @@ typedef struct {
     plm_plane2_t y;
     plm_plane2_t cr;
     plm_plane2_t cb;
-	int picture_type;
-	int temporal_ref;
-	int timecode;
+    int picture_type;
+    int temporal_ref;
+    int timecode;
+    int ready_for_display;
 } plm_frame2_t;
 
 #define BCD(v) ((uint8_t)((((v) / 10) << 4) | ((v) % 10)))
@@ -116,6 +117,8 @@ int toc_entry_count = 0;
 typedef VerilatedFstC tracetype_t;
 
 static bool do_trace{true};
+static bool do_trace_started_once_via_fma{false};
+static bool do_trace_started_once_via_fmv{false};
 #endif
 volatile sig_atomic_t status = 0;
 
@@ -413,7 +416,7 @@ class CDi {
         png_destroy_write_struct(&png, &info);
     }
 
-    uint16_t phase_accumulator;
+    uint32_t phase_accumulator;
 
     void clockmpeg() {
         mpeg_clk_calc_ticks++;
@@ -456,9 +459,10 @@ class CDi {
             dut.rootp->emu__DOT__clk_mpeg = (i & 1);
 
             // clk_audio is 6.615 MHz
-            // 6.615 MHz * 2^15 / 30 MHz = 7225.344
-            phase_accumulator += 7225;
-            dut.rootp->emu__DOT__clk_audio = (phase_accumulator & 0x8000) ? 1 : 0;
+            // 6.615 MHz * 2^31 / 30 MHz = 473520144,384
+            // 6.615 MHz * 2^31 / 30 MHz = 473520144,384
+            phase_accumulator += 473520144;
+            dut.rootp->emu__DOT__clk_audio = (phase_accumulator & 0x80000000) ? 1 : 0;
 
             dut.eval();
 #ifdef TRACE
@@ -481,25 +485,52 @@ class CDi {
         }
     }
 
-    /// @brief Reads from RAM based on CPU memory view
-    uint16_t cpu_memory_read_u16(uint32_t addr) {
+    uint16_t *cpu_addr_map_memory(uint32_t addr, bool writing) {
         // ensure alignment
         assert((addr & 1) == 0);
 
         if (addr < 0x080000) {
-            return dut.rootp->emu__DOT__ram[(addr) >> 1]; // Video A bank
+            return &dut.rootp->emu__DOT__ram[(addr) >> 1]; // Video A bank
         } else if (addr >= 0x200000 && addr < 0x280000) {
-            return dut.rootp->emu__DOT__ram[(addr - 0x200000 + 0x80000) >> 1]; // Video B bank
-        } else if (addr >= 0x400000 && addr <= 0x4ffbff) {
-            return dut.rootp->emu__DOT__rom[(addr - 0x400000) >> 1]; // System ROM
+            return &dut.rootp->emu__DOT__ram[(addr - 0x200000 + 0x80000) >> 1]; // Video B bank
+        } else if (addr >= 0x400000 && addr <= 0x4ffbff && !writing) {
+            return &dut.rootp->emu__DOT__rom[(addr - 0x400000) >> 1]; // System ROM
         } else if (addr >= 0xd00000 && addr <= 0xdfffff) {
-            return dut.rootp->emu__DOT__ram[(addr - 0xd00000 + 0x100000) >> 1]; // DVC RAM
-        } else if (addr >= 0xe40000 && addr < 0xe60000) {
-            return dut.rootp->emu__DOT__vmpega_rom[(addr - 0xe40000) >> 1]; // VMPEG ROM
+            return &dut.rootp->emu__DOT__ram[(addr - 0xd00000 + 0x100000) >> 1]; // DVC RAM
+        } else if (addr >= 0xe80000 && addr <= 0xefffff) {
+            return &dut.rootp->emu__DOT__ram[(addr - 0xe80000 + 0x200000) >> 1]; // DVC MPEG RAM
+        } else if (addr >= 0xe40000 && addr < 0xe60000 && !writing) {
+            return &dut.rootp->emu__DOT__vmpega_rom[(addr - 0xe40000) >> 1]; // VMPEG ROM
+        } else if (addr >= 0xe60000 && addr < 0xe80000 && !writing) {
+            return &dut.rootp->emu__DOT__vmpega_rom[(addr - 0xe60000) >> 1]; // VMPEG ROM mirror
         } else {
             printf("Not mapped? %x\n", addr);
-            return 0;
+            return nullptr;
             // exit(1);
+        }
+    }
+
+    /// @brief Reads from RAM based on CPU memory view
+    uint16_t cpu_memory_read_u16(uint32_t addr) {
+
+        uint16_t *virt = cpu_addr_map_memory(addr, false);
+        if (virt) {
+            return *virt;
+        }
+        // exit(1);
+        return 0;
+    }
+
+    /// @brief Reads from RAM based on CPU memory view
+    void cpu_memory_write_u16(uint32_t addr, uint16_t data, bool uds, bool lds) {
+        uint16_t *virt = cpu_addr_map_memory(addr, true);
+        if (virt) {
+            if (uds && lds)
+                *virt = data;
+            else if (uds)
+                *virt = (*virt & 0x00ff) | (data & 0xff00);
+            else if (lds)
+                *virt = (*virt & 0xff00) | (data & 0x00ff);
         }
     }
 
@@ -673,6 +704,7 @@ class CDi {
 
             call_func = func;
         }
+
         if (static_cast<SystemCallType>(call) == SystemCallType::I_GetStt) {
             SttFunction func = static_cast<SttFunction>(cpu_d[1] & 0xffff);
             printf(" GetStt %s", sttFunctionToString(func));
@@ -708,6 +740,20 @@ class CDi {
     }
 
     void PressEvery5Frames() {
+        if (frame_index == 660) {
+#ifdef TRACE
+            do_trace = true;
+            fprintf(stderr, "Trace on!\n");
+#endif
+        }
+
+        if (frame_index == 314) {
+            // if (frame_index == 8) {
+            print_instructions = 1;
+            dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__debug_print_active = 1;
+            ScanForOs9Modules();
+        }
+
         if (frame_index > 200) {
             if ((frame_index % 5) == 1) {
                 press_button_signal = true;
@@ -1014,6 +1060,29 @@ class CDi {
             }
         }
 
+        // simulate fast memory
+        if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__clkena_in && dut.rootp->emu__DOT__cditop__DOT__as &&
+            dut.rootp->emu__DOT__cditop__DOT__cs_fast_mem) {
+            if (dut.rootp->emu__DOT__cditop__DOT__write_strobe) {
+                cpu_memory_write_u16(dut.rootp->emu__DOT__cditop__DOT__addr_byte,
+                                     dut.rootp->emu__DOT__cditop__DOT__cpu_data_out,
+                                     dut.rootp->emu__DOT__cditop__DOT__uds, dut.rootp->emu__DOT__cditop__DOT__lds);
+                // printf("Fast CPU write at %x\n", dut.rootp->emu__DOT__cditop__DOT__addr_byte);
+            } else {
+                static int early_rom_cnt = 0;
+
+                if (dut.rootp->emu__DOT__cditop__DOT__addr_byte < 0x8 && early_rom_cnt < 4) {
+                    early_rom_cnt++;
+                    dut.rootp->emu__DOT__cditop__DOT__fast_mem_dout =
+                        cpu_memory_read_u16(0x400000 | dut.rootp->emu__DOT__cditop__DOT__addr_byte);
+                    // printf("Fast CPU early read at %x\n", dut.rootp->emu__DOT__cditop__DOT__addr_byte);
+                } else {
+                    dut.rootp->emu__DOT__cditop__DOT__fast_mem_dout =
+                        cpu_memory_read_u16(dut.rootp->emu__DOT__cditop__DOT__addr_byte);
+                    // printf("Fast CPU read at %x\n", dut.rootp->emu__DOT__cditop__DOT__addr_byte);
+                }
+            }
+        }
         // Trace System Calls
 #ifdef SCC68070
         if (dut.rootp->emu__DOT__cditop__DOT__scc68070_0__DOT__tg68__DOT__tg68kdotcinst__DOT__decodeopc &&
@@ -1040,7 +1109,7 @@ class CDi {
                 dut.rootp->emu__DOT__cditop__DOT__madriv_static = cpu_a[2];
             }
 
-#if 0
+#if 1
             executing_dvc_rom_instructions = m_pc >= 0xe40000 && m_pc < 0xe7ffff;
 #endif
             if (print_instructions || executing_dvc_rom_instructions) {
@@ -1089,7 +1158,7 @@ class CDi {
 
             if (press_button_signal) {
                 press_button_signal = false;
-                release_button_frame = frame_index + 2;
+                release_button_frame = frame_index + 10;
                 printf("Press a button!\n");
                 fprintf(stderr, "Press a button!\n");
                 dut.rootp->emu__DOT__JOY0 = 0b10000;
@@ -1118,9 +1187,6 @@ class CDi {
                 mpeg_clk_calc_ticks30 = 0;
                 mpeg_clk_calc_ticks = 0;
 
-                if (frame_index == 120) {
-                    ScanForOs9Modules();
-                }
                 frame_index++;
                 dut.rootp->emu__DOT__cditop__DOT__frame_index = frame_index;
             }
@@ -1129,9 +1195,9 @@ class CDi {
         }
 
         // Simulate Audio
-        if (dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__sample_tick) {
-            int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_left;
-            int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__cdic_inst__DOT__adpcm__DOT__fifo_out_right;
+        if (dut.rootp->emu__DOT__cditop__DOT__sample_tick44) {
+            int16_t sample_l = dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__audio__DOT__fifo_out_left;
+            int16_t sample_r = dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__audio__DOT__fifo_out_right;
             fwrite(&sample_l, 2, 1, f_audio_left);
             fwrite(&sample_r, 2, 1, f_audio_right);
         }
@@ -1209,9 +1275,12 @@ class CDi {
                 fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fmv_m1v);
             }
 #ifdef TRACE
-            if (!do_trace)
-                fprintf(stderr, "Trace on!\n");
-            do_trace = true;
+            
+            if (!do_trace && !do_trace_started_once_via_fmv) {
+                fprintf(stderr, "Trace on by FMV!\n");
+                do_trace = true;
+                do_trace_started_once_via_fmv = true;
+            }
 #endif
         }
         if (dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__fma_data_valid) {
@@ -1221,9 +1290,11 @@ class CDi {
                 fwrite(&dut.rootp->emu__DOT__cditop__DOT__vmpeg_inst__DOT__mpeg_data, 1, 1, f_fma_mp2);
             }
 #ifdef TRACE
-            if (!do_trace)
-                fprintf(stderr, "Trace on!\n");
-            do_trace = true;
+            if (!do_trace && !do_trace_started_once_via_fma) {
+                fprintf(stderr, "Trace on via FMA!\n");
+                do_trace = true;
+                do_trace_started_once_via_fma = true;
+            }
 #endif
         }
 
@@ -1387,8 +1458,8 @@ class CDi {
 
         start = std::chrono::system_clock::now();
 #ifdef TRACE
-        // do_trace = false;
-        // fprintf(stderr, "Trace off!\n");
+        do_trace = false;
+        fprintf(stderr, "Trace off!\n");
 #endif
 
 #ifdef SIMULATE_RC5

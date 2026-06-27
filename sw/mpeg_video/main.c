@@ -62,6 +62,8 @@ void dct_coeff_read(plm_dma_buffer_t *buffer) {
 #endif
 }
 
+static int32_t dts_desync_last = 0;
+
 static void push_frame(plm_frame_t *frame) {
     static int first_intra_frame_of_gop_occured = false;
     static int intra_frame_occured_during_stream = false;
@@ -104,22 +106,24 @@ static void push_frame(plm_frame_t *frame) {
     frame_display_fifo->width = frame->width;
     frame_display_fifo->height = frame->height;
 
+    int32_t dts_desync_avg =
+        (dts_desync_last + frame_display_fifo->dts_desync) / 2;
+    dts_desync_last = frame_display_fifo->dts_desync;
+
     int period30mhz = PLM_VIDEO_PICTURE_RATE_30MHZ[seq_hdr_conf.frameperiod] *
-                      (frame_display_fifo->slow_motion + 1);
+                          (frame_display_fifo->slow_motion + 1) -
+                      dts_desync_avg * 1000; // steps of 33 us
     int period90khz = PLM_VIDEO_PICTURE_RATE_90KHZ[seq_hdr_conf.frameperiod];
+
+    if (period30mhz < 400000) // much faster than 60 Hz? Better not
+        period30mhz = 400000;
 
     frame_display_fifo->frameperiod_90khz = period90khz;
     frame_display_fifo->frameperiod_rawhdr = seq_hdr_conf.frameperiod;
     frame_display_fifo->temporal_ref = frame->temporal_ref;
     frame_display_fifo->timecode = frame->timecode;
 
-    if (frame_display_fifo->pictures_in_output_fifo < 3) {
-        // It seems our FIFO is loosing pictures. Maybe the frame rate is
-        // slightly off? Increase frame period by 0.1Hz when running at 25 FPS
-        frame_display_fifo->frameperiod_30mhz = period30mhz + 4780;
-    } else {
-        frame_display_fifo->frameperiod_30mhz = period30mhz;
-    }
+    frame_display_fifo->frameperiod_30mhz = period30mhz;
 
     // The order is crucial. Everything written above must be in I/O by now
     __asm volatile("" : : : "memory");

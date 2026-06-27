@@ -43,6 +43,9 @@ module mpeg_video (
     output bit event_first_intra_frame_gop_starts_display,
     output bit event_first_intra_frame_seq_starts_display,
     output bit [5:0] pictures_in_fifo,
+    input signed [32:0] demuxer_decoding_timestamp,
+    input signed [32:0] demuxer_system_clock_reference,
+    input signed [31:0] dclk,  // only 21:6 shall be used (16 bit)
     output bit event_potential_picture_starts_display,
 
     output bit [10:0] decoder_width,
@@ -152,17 +155,60 @@ module mpeg_video (
 
     wire picture_added_in_input_fifo = picture_startcode;
 
+    wire dts_fifo_valid;
+    (* keep *) (* noprune *) wire signed [32:0] dts_fifo_out;
+
+    wire [5:0] pictures_in_dts_fifo;
+
+    mpeg_timestamp_fifo dts_fifo (
+        .clk(clk30),
+        .reset(reset || clear_fifo),
+        .wdata(demuxer_decoding_timestamp),
+        .we(picture_added_in_input_fifo),
+        // Add dts_fifo_valid to avoid underflows (just in case)
+        .strobe(latch_frame_for_display && dts_fifo_valid),
+        .valid(dts_fifo_valid),
+        .q(dts_fifo_out),
+        .cnt(pictures_in_dts_fifo)
+    );
+
+    wire signed [32:0] desync = demuxer_system_clock_reference - dts_fifo_out;
+    // only bits 21:6 can be changed by the CPU
+    // It should be noted that the driver wants to have bit 21 always 0.
+    // So only bits 20:6 of dclk must be used here.
+    wire signed [14:0] desync2 = dclk[20:6] - dts_fifo_out[21:7];
+
+    (* keep *) (* noprune *) bit signed [14:0] desync2_q_clk_mpeg;
+    (* keep *) (* noprune *) bit signed [14:0] desync2_q;
+    (* keep *) (* noprune *) bit signed [32:0] desync_q;
 
     bit [5:0] pictures_in_input_fifo  /*verilator public_flat_rd*/;
+    bit [5:0] pictures_in_input_fifo_or_decoder  /*verilator public_flat_rd*/;
     wire [4:0] pictures_in_output_fifo  /*verilator public_flat_rd*/;
     bit [4:0] pictures_in_mpeg_decoder;
 
     always_comb begin
-        pictures_in_fifo = pictures_in_input_fifo + 6'(pictures_in_output_fifo + pictures_in_mpeg_decoder);
-        if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
+        if (playback_active) begin
+            pictures_in_fifo = pictures_in_input_fifo + pictures_in_output_fifo;
+        end else begin
+            pictures_in_fifo = pictures_in_dts_fifo;
+        end
+
+        //if (pictures_in_fifo > 0 && decoder_active) pictures_in_fifo = pictures_in_fifo - 1;
+    end
+
+    always_ff @(posedge clk_mpeg) begin
+        if (latch_frame_for_display_clk_mpeg) desync2_q_clk_mpeg <= desync2_q;
     end
 
     always_ff @(posedge clk30) begin
+        // Catch something that should not be possible
+        if (latch_frame_for_display) begin
+            assert (dts_fifo_valid);
+            desync2_q <= desync2;
+            desync_q  <= desync;
+        end
+
         event_buffer_underflow <= pictures_in_fifo==1 && latch_frame_for_display && pictures_in_mpeg_decoder==0;
 
         if (just_decoded_commit_clk30) begin
@@ -175,12 +221,19 @@ module mpeg_video (
         end
 
         if (clear_fifo) begin
-            pictures_in_input_fifo   <= 0;
+            pictures_in_input_fifo <= 0;
             pictures_in_mpeg_decoder <= 0;
+            pictures_in_input_fifo_or_decoder <= 0;
         end else if (event_frame_decoded && !picture_added_in_input_fifo && pictures_in_input_fifo!=0)
             pictures_in_input_fifo <= pictures_in_input_fifo - 1;
         else if (!event_frame_decoded && picture_added_in_input_fifo)
             pictures_in_input_fifo <= pictures_in_input_fifo + 1;
+
+        if (picture_added_in_input_fifo && !event_frame_decoded)
+            pictures_in_input_fifo_or_decoder <= pictures_in_fifo + 1;
+        else if (!picture_added_in_input_fifo && event_frame_decoded)
+            pictures_in_input_fifo_or_decoder <= pictures_in_fifo - 1;
+
     end
 
     mpeg_input_stream_fifo_32k in_fifo (
@@ -223,6 +276,9 @@ module mpeg_video (
 
     wire [28:0] fifo_level_clk_mpeg = mpeg_stream_fifo_write_adr_clk_mpeg - mpeg_stream_fifo_read_adr;
     wire fifo_full_clk_mpeg = fifo_level_clk_mpeg > 29'd28000;
+
+    (* keep *) (* noprune *) bit [28:0] fifo_level_clk_mpeg_q;
+    always_ff @(posedge clk30) fifo_level_clk_mpeg_q <= fifo_level_clk_mpeg;
 
     bit has_sequence_header = 0;
     bit hw_read_mem_ready = 0;
@@ -474,6 +530,8 @@ module mpeg_video (
     bit [31:0] frame_y_adr  /*verilator public_flat_rd*/;
     wire expose_frame_struct_adr_clk_mpeg  = (dmem_cmd_payload_address_1 == 32'h10000010 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1) ;
     wire expose_frame_y_adr_clk_mpeg  = (dmem_cmd_payload_address_1 == 32'h10000018 && dmem_cmd_payload_write_1 && dmem_cmd_valid_1) ;
+
+    // Frame was decoded. This doesn't mean it was commited to the output FIFO yet
     bit event_frame_decoded_clk_mpeg;
 
     wire playback_active_clkddr;
@@ -550,6 +608,8 @@ module mpeg_video (
                         if (dmem_cmd_payload_address_1_q == 32'h10002010)
                             dmem_rsp_payload_data_1 = {31'b0, has_sequence_header};
 
+                        if (dmem_cmd_payload_address_1_q == 32'h10003018)
+                            dmem_rsp_payload_data_1 = 32'(desync2_q_clk_mpeg);
                         if (dmem_cmd_payload_address_1_q == 32'h10003028)
                             dmem_rsp_payload_data_1 = {27'b0, pictures_in_output_fifo_clk_mpeg};
                         if (dmem_cmd_payload_address_1_q == 32'h1000302c)
@@ -653,7 +713,6 @@ module mpeg_video (
                         if (dmem_cmd_payload_address_1[15:0] == 16'h3050)
                             event_frame_decoded_clk_mpeg <= 1;
 
-
                         if (dmem_cmd_payload_address_1[15:0] == 16'h2010) begin
                             has_sequence_header <= dmem_cmd_payload_data_1[0];
                             $display("has_sequence_header %d", dmem_cmd_payload_data_1[0]);
@@ -701,6 +760,7 @@ module mpeg_video (
     bit first_intra_frame_of_seq_clk30;
 
     bit vsync_q;
+    bit hsync_q;
     bit vblank_q1;
     bit vblank_q2;
     bit for_display_valid;
@@ -720,6 +780,7 @@ module mpeg_video (
 
     always_ff @(posedge clk30) begin
         vsync_q   <= vsync;
+        hsync_q   <= hsync;
         vblank_q1 <= vblank;
         vblank_q2 <= vblank_q1;
 
@@ -775,9 +836,14 @@ module mpeg_video (
             end
         end
 
+        if (vblank && !hsync && hsync_q && desync > 15000 && for_display_valid && playback_active) begin
+            $display("FrameSkip");
+            latch_frame_for_display <= 1;
+        end
+
         playback_frame_cnt <= playback_frame_cnt + 1;
         if (playback_frame_cnt >= frame_period - 1) playback_frame_cnt <= 0;
-        if (playback_frame_cnt == 0 && frame_period > 120000) begin
+        if (playback_frame_cnt == 0 && frame_period > 1200) begin
             latch_frame_until_vsync <= 1;
         end
 
