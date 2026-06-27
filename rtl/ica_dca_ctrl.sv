@@ -128,6 +128,7 @@ module ica_dca_ctrl (
                         as <= 1;
                         address <= dca_pointer;
                         // check at least for alignment on 32 bit boundary
+                        assert (dca_pointer[1:0] == 0);
 
                         if (dca_pointer[2]) begin
                             // This is bad. The access is not on a 64 bit boundary
