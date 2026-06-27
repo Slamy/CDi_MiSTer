@@ -351,8 +351,6 @@ module vmpeg (
     bit [31:0] fmv_dclk;
     bit [15:0] fma_dclkl_latch;
 
-    wire [31:0] dclk_diff = fma_dclk - fmv_dclk;
-
     bit [31:0] fmv_dclk_start_video;
     bit fmv_dclk_start_video_latched;
 
