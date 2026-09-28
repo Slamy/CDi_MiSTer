@@ -1267,8 +1267,9 @@ module mcd212 (
     end
 
     function automatic [7:0] clamped_mix(input [7:0] a, input [7:0] b);
-        bit [8:0] sum = a + b;
+        bit signed [9:0] sum = {1'b0, a} + {1'b0, b} - 16;
         if (sum > 255) clamped_mix = 255;
+        else if (sum < 0) clamped_mix = 0;
         else clamped_mix = sum[7:0];
     endfunction
 
