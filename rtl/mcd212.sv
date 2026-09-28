@@ -1290,9 +1290,9 @@ module mcd212 (
         bit backdrop_pixel;
 
         // start with the backdrop color
-        vidout.r = backdrop_color_register.r ? 8'hff : 0;
-        vidout.g = backdrop_color_register.g ? 8'hff : 0;
-        vidout.b = backdrop_color_register.b ? 8'hff : 0;
+        vidout.r = backdrop_color_register.r ? 240 : 16;
+        vidout.g = backdrop_color_register.g ? 240 : 16;
+        vidout.b = backdrop_color_register.b ? 240 : 16;
         backdrop_pixel = (!plane_a_visible_q && !plane_b_visible_q);
         if (!backdrop_color_register.y) begin
             // Half brightness
