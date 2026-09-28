@@ -819,6 +819,10 @@ void get_video_frame(std::string binpath, std::string pngpath) {
     machine.write_png_file(pngpath.c_str());
     // machine.write_png_file("1.png");
     fprintf(stderr, "Written %s\n", pngpath.c_str());
+
+    // restore PAL default
+    width = 384 * 4;
+    height = 280;
 }
 
 void forked_run() {
@@ -827,7 +831,7 @@ void forked_run() {
 
     const char *env_ramdumps = std::getenv("CDI_RAMDUMPS");
 
-    std::string path = env_ramdumps ? (std::string(env_ramdumps) + "/flash*.bin") : "ramdumps/*.bin";
+    std::string path = env_ramdumps ? (std::string(env_ramdumps) + "/*.bin") : "ramdumps/*.bin";
     printf("Reading ram dumps from %s\n", path.c_str());
     auto ramdumps = glob(path);
     size_t chunksize = std::max((size_t)ramdumps.size() / kNumberForks, (size_t)1);
