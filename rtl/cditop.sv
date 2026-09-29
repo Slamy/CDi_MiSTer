@@ -215,7 +215,6 @@ module cditop (
     // video mixing. But we won't do that here and use the digital
     // one instead
     wire mcd212_vsd;
-    /* verilator tracing_off */
     mcd212 mcd212_inst (
         .clk(clk30),
         .reset,

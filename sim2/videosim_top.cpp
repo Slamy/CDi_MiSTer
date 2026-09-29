@@ -63,11 +63,11 @@ static bool do_trace{true};
 #endif
 volatile sig_atomic_t status = 0;
 
-#define CROP
-#define TWO_ROUNDS
+// #define CROP
+// #define TWO_ROUNDS
 
-constexpr int kMaxWidth = 384 * 4;
-constexpr int kMaxHeight = 280;
+constexpr int kMaxWidth = 120 * 16;
+constexpr int kMaxHeight = 312;
 
 #ifdef CROP
 int width = 384 * 4; // default PAL
@@ -78,7 +78,7 @@ constexpr int height = 312;
 #endif
 
 const int size = kMaxWidth * kMaxHeight * 3;
-const int png_height_scale = 4;
+const int png_height_scale = 1;
 
 FILE *f_cd_bin{nullptr};
 
@@ -821,8 +821,10 @@ void get_video_frame(std::string binpath, std::string pngpath) {
     fprintf(stderr, "Written %s\n", pngpath.c_str());
 
     // restore PAL default
+#ifdef CROP
     width = 384 * 4;
     height = 280;
+#endif
 }
 
 void forked_run() {
@@ -831,7 +833,7 @@ void forked_run() {
 
     const char *env_ramdumps = std::getenv("CDI_RAMDUMPS");
 
-    std::string path = env_ramdumps ? (std::string(env_ramdumps) + "/*.bin") : "ramdumps/*.bin";
+    std::string path = env_ramdumps ? (std::string(env_ramdumps) + "/apprentice0*.bin") : "ramdumps/*.bin";
     printf("Reading ram dumps from %s\n", path.c_str());
     auto ramdumps = glob(path);
     size_t chunksize = std::max((size_t)ramdumps.size() / kNumberForks, (size_t)1);

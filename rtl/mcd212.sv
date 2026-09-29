@@ -2,6 +2,7 @@
 `include "videotypes.svh"
 
 // MCD 212 - DRAM and Video
+`define DEBUG_RASTER
 
 `define dp_vsr(statement) `ifdef DEBUG_VSR $display``statement `endif
 `define dp_dcaptr(statement) `ifdef DEBUG_DCA $display``statement `endif
@@ -1135,7 +1136,7 @@ module mcd212 (
 
     function automatic [7:0] WeightCalc(input [7:0] rgb, input [5:0] weight);
         if (weight == 0) begin
-            WeightCalc = 0;
+            WeightCalc = 16;
         end else begin
             WeightCalc = 8'((15'(rgb) * (15'(weight) + 15'd1)) >> 6);
         end
@@ -1162,9 +1163,9 @@ module mcd212 (
         end else begin
             // According to 8.1 PLANES, OFF is black level of 16
             // On a real CD-i it is much blacker than 16. I assume 0
-            plane_a.r = 0;
-            plane_a.g = 0;
-            plane_a.b = 0;
+            plane_a.r = 16;
+            plane_a.g = 16;
+            plane_a.b = 16;
         end
 
         if (command_register_dcr1.ic1) begin
@@ -1228,9 +1229,9 @@ module mcd212 (
         end else begin
             // According to 8.1 PLANES, OFF is black level of 16
             // On a real CD-i it is much blacker than 16. I assume 0
-            plane_b.r = 0;
-            plane_b.g = 0;
-            plane_b.b = 0;
+            plane_b.r = 16;
+            plane_b.g = 16;
+            plane_b.b = 16;
         end
 
         if (command_register_dcr2.ic2) begin
@@ -1290,16 +1291,19 @@ module mcd212 (
         bit backdrop_pixel;
 
         // start with the backdrop color
-        vidout.r = backdrop_color_register.r ? 240 : 16;
-        vidout.g = backdrop_color_register.g ? 240 : 16;
-        vidout.b = backdrop_color_register.b ? 240 : 16;
-        backdrop_pixel = (!plane_a_visible_q && !plane_b_visible_q);
         if (!backdrop_color_register.y) begin
             // Half brightness
-            vidout.r[7] = 0;
-            vidout.g[7] = 0;
-            vidout.b[7] = 0;
+            vidout.r = backdrop_color_register.r ? 122 : 16;
+            vidout.g = backdrop_color_register.g ? 122 : 16;
+            vidout.b = backdrop_color_register.b ? 122 : 16;
+        end else begin
+            // Full brightness
+            vidout.r = backdrop_color_register.r ? 230 : 16;
+            vidout.g = backdrop_color_register.g ? 230 : 16;
+            vidout.b = backdrop_color_register.b ? 230 : 16;
         end
+
+        backdrop_pixel = (!plane_a_visible_q && !plane_b_visible_q);
 
         if (transparency_control_register.mx) begin
             // No Mix. Only overlay
@@ -1351,7 +1355,7 @@ module mcd212 (
             end
         end
 
-        vsd = backdrop_pixel && image_coding_method_register.ev;
+        vsd = 0;
 `ifdef VERILATOR
         //vsd = 1;
 `endif
