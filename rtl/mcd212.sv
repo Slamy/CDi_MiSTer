@@ -1134,10 +1134,12 @@ module mcd212 (
         (image_coding_method_register.cm23_20_planeb != 0);
 
     function automatic [7:0] WeightCalc(input [7:0] rgb, input [5:0] weight);
+        bit [3:0] invert_weight = 15 - weight[5:2];
+
         if (weight == 0) begin
             WeightCalc = 16;
         end else begin
-            WeightCalc = 8'((15'(rgb) * (15'(weight) + 15'd1)) >> 6);
+            WeightCalc = 8'((15'(rgb) * (15'(weight) + 15'd1)) >> 6) + {4'b0, invert_weight};
         end
     endfunction
 
@@ -1354,7 +1356,7 @@ module mcd212 (
             end
         end
 
-        vsd = 0;
+        vsd = backdrop_pixel && image_coding_method_register.ev;
 `ifdef VERILATOR
         //vsd = 1;
 `endif
