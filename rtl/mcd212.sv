@@ -69,7 +69,9 @@ module mcd212 (
 
     input [1:0] debug_force_video_plane,
     input [1:0] debug_limited_to_full,
-    input disable_cpu_starve
+    input config_disable_cpu_starve,
+    input config_rgb888
+    
 );
 
     // Memory Swapping according to chapter 3.4
@@ -463,7 +465,7 @@ module mcd212 (
     always_comb begin
         cpu_starve = 0;
 
-        if (!disable_cpu_starve) begin
+        if (!config_disable_cpu_starve) begin
             if (vblank) cpu_starve = video_x > 1200;
             else cpu_starve = video_x > 1200;
         end
@@ -1151,6 +1153,12 @@ module mcd212 (
         g = clut_out0.g;
         b = clut_out0.b;
 
+        if (!config_rgb888) begin
+			r[1:0] = 0;
+            g[1:0] = 0;
+            b[1:0] = 0;
+        end
+
         if (plane_a_dyuv_active) begin
             r = dyuv0_out.r;
             g = dyuv0_out.g;
@@ -1210,6 +1218,12 @@ module mcd212 (
         r = clut_out1.r;
         g = clut_out1.g;
         b = clut_out1.b;
+
+        if (!config_rgb888) begin
+			r[1:0] = 0;
+            g[1:0] = 0;
+            b[1:0] = 0;
+        end
 
         if (plane_b_dyuv_active) begin
             r = dyuv1_out.r;
